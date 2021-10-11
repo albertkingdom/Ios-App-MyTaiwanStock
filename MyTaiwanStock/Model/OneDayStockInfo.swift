@@ -12,23 +12,32 @@ struct OneDayStockInfo: Codable {
 }
 
 struct OneDayStockInfoDetail: Codable {
-    var c: String //代號
-    var o: String //開盤
-    var l: String //最低
-    var h: String //最高
-    var tv: String //當盤成交量
-    var nf: String //公司全名
-    var z: String //當盤成交價
-    var n: String //公司簡稱
+    var stockNo: String //代號
+    var open: String //開盤
+    var low: String //最低
+    var high: String //最高
+    var fullName: String //公司全名
+    var current: String //當盤成交價
+    var shortName: String //公司簡稱
+    
+    enum CodingKeys: String, CodingKey {
+        case stockNo = "c"
+        case open = "o"
+        case low = "l"
+        case high = "h"
+        case fullName = "nf"
+        case current = "z"
+        case shortName = "n"
+    }
 }
 
 extension OneDayStockInfo {
-    static func fetchOneDayStockInfo(stockList: [StockList],completion: @escaping (Result<OneDayStockInfo,Error>) -> Void) {
+    static func fetchOneDayStockInfo(stockList: [StockNo],completion: @escaping (Result<OneDayStockInfo,Error>) -> Void) {
         var urlComponents = URLComponents(string: "https://mis.twse.com.tw/stock/api/getStockInfo.jsp")!
         
         
-        let stockListQuerys = stockList.map {"tse_\($0.stockNo).tw"}.joined(separator: "|")
-        
+        let stockListQuerys = stockList.map {"tse_\($0.stockNo!).tw"}.joined(separator: "|")
+        print("stockListQuerys, \(stockListQuerys)")
         // tse_2330.tw|tse_0050.tw
         urlComponents.queryItems = ["ex_ch":stockListQuerys,"json":"1"].map({ URLQueryItem(name: $0.key, value: $0.value)
         })
@@ -38,7 +47,7 @@ extension OneDayStockInfo {
             if let data = data {
                 do{
                     let stockInfo = try jsonDecoder.decode(OneDayStockInfo.self, from: data)
-                
+                    print("stockInfo, \(stockInfo)")
                     completion(.success(stockInfo))
                     
                 }catch {

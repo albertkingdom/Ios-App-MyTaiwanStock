@@ -26,19 +26,19 @@ class StockTableViewCell: UITableViewCell {
     
     
     func update(with stockPriceDetail:OneDayStockInfoDetail) {
-        stockNo.text = stockPriceDetail.c
-        stockName.text = stockPriceDetail.n
-        if let currentPrice = Float(stockPriceDetail.z) {
+        stockNo.text = stockPriceDetail.stockNo
+        stockName.text = stockPriceDetail.shortName
+        if let currentPrice = Float(stockPriceDetail.current) {
             stockPrice.text = String(format: "%.2f", currentPrice)
         } else {
             stockPrice.text = "-"
         }
         
         
-        if let currentPrice = Float(stockPriceDetail.z), let openPrice = Float(stockPriceDetail.o) {
+        if let currentPrice = Float(stockPriceDetail.current), let openPrice = Float(stockPriceDetail.open) {
             let diff = currentPrice - openPrice
             stockPriceDiff.text = String(format: "%.2f", diff)
-            stockPriceDiff.backgroundColor = diff > 0 ? UIColor.systemRed : UIColor.systemGreen
+            stockPriceDiff.backgroundColor = diff >= 0 ? UIColor.systemRed : UIColor.systemGreen
         } else {
             stockPriceDiff.text = "-"
         }

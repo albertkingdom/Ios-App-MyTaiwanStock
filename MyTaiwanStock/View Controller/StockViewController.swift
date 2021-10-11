@@ -4,19 +4,26 @@
 //
 //  Created by Albert Lin on 2021/10/4.
 //
-
+import CoreData
 import UIKit
 import Charts
 
 class StockViewController: UIViewController {
-
-    @IBAction func addRecord(_ sender: Any) {
+    var context: NSManagedObjectContext?
+    lazy var fetchedResultsController: NSFetchedResultsController<InvestHistory> = {
+        let fetchRequest: NSFetchRequest<InvestHistory> = InvestHistory.fetchRequest()
+        let sortDescriptor = NSSortDescriptor(key: "stockNo", ascending: false)
+        fetchRequest.sortDescriptors = [sortDescriptor]
         
-    }
+        let frc = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: context!, sectionNameKeyPath: nil, cacheName: nil)
+        frc.delegate = self
+        return frc
+    }()
+    
     @IBOutlet weak var candleStickChartView: CandleStickChartView!
     var stockInfoForCandleStickChart: [[String]]!
     var stockNo: String!
-    var history: [History]!
+    //var history: [History]!
     var stockPrice: String!
     @IBOutlet weak var dateView: UILabel!
     @IBOutlet weak var openPriceView: UILabel!
@@ -32,33 +39,17 @@ class StockViewController: UIViewController {
         tableView.dataSource = self
         
         navigationItem.title = stockNo
+       
       print("stockview viewdidload")
         
         
     }
     override func viewWillAppear(_ animated: Bool) {
-        /*
-        StockInfo.fetchStockInfo(stockNo: stockNo){ result in
-            switch result {
-            case .success(let stockInfo):
-                self.stockInfoForCandleStickChart = stockInfo.data
-
-                DispatchQueue.main.async {
-                    if self.stockInfoForCandleStickChart != nil{
-                        self.prepareForChart()
-                    }
-                }
-                
-               
-            case .failure(let error):
-                print("failure: \(error)")
-            }
-        
-        }*/
+      
         print("stockview viewwillappear")
-        history = HistoryList.loadFromDisk().filter({ history in
-            history.stockNo == self.stockNo
-        })
+        //history = HistoryList.loadFromDisk().filter({ history in
+        //    history.stockNo == self.stockNo
+        //})
         StockInfo.fetchTwoMonth(stockNo: stockNo) { data in
             self.stockInfoForCandleStickChart = data
             DispatchQueue.main.async {
@@ -67,6 +58,13 @@ class StockViewController: UIViewController {
                     self.prepareForChart()
                 }
             }
+        }
+        
+        do {
+            try fetchedResultsController.performFetch()
+            tableView.reloadData()
+        } catch {
+            fatalError("Invest history fetch error")
         }
     }
     
@@ -120,8 +118,9 @@ class StockViewController: UIViewController {
     /// navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         let destination = segue.destination as! AddHistoryViewController
-        destination.history = self.history
+        //destination.history = self.history
         destination.stockNo = self.stockNo
+        destination.context = self.context
     }
 }
 
@@ -143,14 +142,17 @@ extension StockViewController: ChartViewDelegate {
 extension StockViewController: UITableViewDataSource, UITableViewDelegate {
    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return history.count
+        //return history.count
+        guard let sectionInfo = fetchedResultsController.sections?[section] else { return 0 }
+        
+        return sectionInfo.numberOfObjects
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "historyCell", for: indexPath) as! HistoryTableViewCell
+        let cellcontent = fetchedResultsController.object(at: indexPath)
         
-        
-        cell.update(with: history[indexPath.row], stockPrice: stockPrice)
+        cell.update(with: cellcontent, stockPrice: stockPrice)
 
         return cell
     }
@@ -167,12 +169,46 @@ extension StockViewController: UITableViewDataSource, UITableViewDelegate {
     }
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            let itemToDelete = history[indexPath.row]
+            //let itemToDelete = history[indexPath.row]
             
-            history.remove(at: indexPath.row)
-            tableView.deleteRows(at: [indexPath], with: .automatic)
+            //history.remove(at: indexPath.row)
+            //tableView.deleteRows(at: [indexPath], with: .automatic)
             
             // TODO: save list to disk
+            
+            let objectToDelete = fetchedResultsController.object(at: indexPath)
+            context?.delete(objectToDelete)
+            do {
+                try context?.save()
+            } catch {
+                fatalError("\(error.localizedDescription)")
+            }
         }
+    }
+}
+
+extension StockViewController: NSFetchedResultsControllerDelegate {
+    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        tableView.beginUpdates()
+    }
+    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+        guard let _ = anObject as? InvestHistory else {
+            return
+        }
+        
+        switch type {
+        case .insert:
+            guard let newIndexPath = newIndexPath else { return }
+            tableView.insertRows(at: [newIndexPath], with: .automatic)
+        case .delete:
+            guard let indexPathToDel = indexPath else { return }
+            tableView.deleteRows(at: [indexPathToDel], with: .automatic)
+        default:
+            return
+        }
+    }
+    
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        tableView.endUpdates()
     }
 }

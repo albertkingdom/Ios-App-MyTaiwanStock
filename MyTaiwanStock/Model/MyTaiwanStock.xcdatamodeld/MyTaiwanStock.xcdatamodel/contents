@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="18154" systemVersion="20G95" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="InvestHistory" representedClassName="InvestHistory" syncable="YES" codeGenerationType="class">
+        <attribute name="amount" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="price" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="status" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="stockNo" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="StockNo" representedClassName="StockNo" syncable="YES" codeGenerationType="class">
+        <attribute name="stockNo" optional="YES" attributeType="String"/>
+    </entity>
+    <elements>
+        <element name="StockNo" positionX="-63" positionY="-18" width="128" height="44"/>
+        <element name="InvestHistory" positionX="-54" positionY="0" width="128" height="104"/>
+    </elements>
+</model>

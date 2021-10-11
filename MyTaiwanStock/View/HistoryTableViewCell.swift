@@ -25,10 +25,10 @@ class HistoryTableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
-    func update(with historyData: History, stockPrice: String) {
+    func update(with historyData: InvestHistory, stockPrice: String) {
         
         self.stockPrice = stockPrice
-        dateLabel.text = dateFormat(date: historyData.date)
+        dateLabel.text = dateFormat(date: historyData.date!)
         priceLabel.text = String(historyData.price)
         amountLabel.text = String(historyData.amount)
         let revenue = calcRevenue(price: historyData.price)

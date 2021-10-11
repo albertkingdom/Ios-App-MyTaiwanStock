@@ -6,10 +6,23 @@
 //
 
 import UIKit
+import CoreData
 
 class StockListViewController: UIViewController {
+    var context: NSManagedObjectContext?
+    
+    lazy var fetchedResultsController: NSFetchedResultsController<StockNo> = {
+        let fetchRequest: NSFetchRequest<StockNo> = StockNo.fetchRequest()
+        let sortDescriptor = NSSortDescriptor(key: "stockNo", ascending: false)
+        fetchRequest.sortDescriptors = [sortDescriptor]
+        
+        let frc = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.context!, sectionNameKeyPath: nil, cacheName: nil)
+        frc.delegate = self
+        return frc
+    }()
+    
     var onedayStockInfo: [OneDayStockInfoDetail]!
-    var stockNoList:[StockList]?
+    var stockNoList: Set<String> = []
     var filteredItems: [OneDayStockInfoDetail] = []
     var refreshControl: UIRefreshControl!
     @IBOutlet weak var searchBar: UISearchBar!
@@ -25,12 +38,29 @@ class StockListViewController: UIViewController {
         }
         
         let okAction = UIAlertAction(title: "OK", style: .default) { _ in
+            guard let context = self.context else { return }
+            
             if let stockNo = alertController.textFields?[0].text {
                 
-                self.stockNoList?.append(StockList(stockNo: stockNo))
-                MyStockList.saveToDisk(stockList: self.stockNoList!)
-                self.fetchOneDayStockInfo()
+                //self.stockNoList?.append(StockList(stockNo: stockNo))
+                //MyStockList.saveToDisk(stockList: self.stockNoList!)
+                //self.fetchOneDayStockInfo()
                 
+                // core data
+                if self.stockNoList.firstIndex(of: stockNo) != nil { return }
+                let newStockNo = StockNo(context: context)
+                newStockNo.stockNo = stockNo
+                
+                do {
+                    try context.save()
+                    self.stockNoList.insert(stockNo)
+                    print("add item to stockNoList, \(self.stockNoList)")
+                    //self.fetchOneDayStockInfo()
+                } catch {
+                    print("error, \(error.localizedDescription)")
+                }
+                
+            
             }
         }
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel, handler: nil)
@@ -46,11 +76,23 @@ class StockListViewController: UIViewController {
         searchBar.delegate = self
         
         navigationItem.leftBarButtonItem = editButtonItem
-        stockNoList = MyStockList.loadFromDisk()
+        //stockNoList = MyStockList.loadFromDisk()
         
-        
-        fetchOneDayStockInfo()
+        //core data
+        do {
+            try fetchedResultsController.performFetch()
+            fetchedResultsController.fetchedObjects?.forEach({
+                stockNoList.insert($0.stockNo!)
+            })
+            print("stockNoList, \(stockNoList)")
+        } catch {
+            fatalError("Core Data fetch error")
+        }
+        if let _ = fetchedResultsController.fetchedObjects {
+            fetchOneDayStockInfo()
+        }
 
+        // pull refresh
         refreshControl = UIRefreshControl()
         tableView.addSubview(refreshControl)
         refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
@@ -58,7 +100,9 @@ class StockListViewController: UIViewController {
    
     
     func fetchOneDayStockInfo() {
-        OneDayStockInfo.fetchOneDayStockInfo(stockList: MyStockList.loadFromDisk()){ result in
+        guard let stockNoList = fetchedResultsController.fetchedObjects else { return }
+        
+        OneDayStockInfo.fetchOneDayStockInfo(stockList: stockNoList ){ result in
             switch result {
             case .success(let stockInfo):
                 //print("success: \(stockInfo)")
@@ -100,8 +144,10 @@ extension StockListViewController: UITableViewDataSource, UITableViewDelegate {
         
 //        stockViewController.stockNo = onedayStockInfo[indexPath.row].c
 //        stockViewController.stockPrice = onedayStockInfo[indexPath.row].z
-        stockViewController.stockNo = filteredItems[indexPath.row].c
-        stockViewController.stockPrice = filteredItems[indexPath.row].z
+        stockViewController.stockNo = filteredItems[indexPath.row].stockNo
+        stockViewController.stockPrice = filteredItems[indexPath.row].current
+        
+        stockViewController.context = self.context
         navigationController?.pushViewController(stockViewController, animated: true)
     }
     
@@ -112,17 +158,23 @@ extension StockListViewController: UITableViewDataSource, UITableViewDelegate {
         if editingStyle == .delete {
             //self.stockNoList?.remove(at: index) // edit current stockno list
             //self.onedayStockInfo.remove(at: index) // edit tableview datasource
-            self.stockNoList = stockNoList?.filter({
-                $0.stockNo != itemToDelete.c
-            })
+//            self.stockNoList = stockNoList?.filter({
+//                $0.stockNo != itemToDelete.c
+//            })
+            guard let objectToDel = fetchedResultsController.fetchedObjects?.filter({
+                $0.stockNo == itemToDelete.stockNo
+            })[0] else { return }
+            context?.delete(objectToDel)
+            try? context?.save()
+            
             self.onedayStockInfo = onedayStockInfo.filter({
-                $0.c != itemToDelete.c
+                $0.stockNo != itemToDelete.stockNo
             })
             self.filteredItems = filteredItems.filter({
-                $0.c != itemToDelete.c
+                $0.stockNo != itemToDelete.stockNo
             })
             tableView.deleteRows(at: [indexPath], with: .automatic)
-            MyStockList.saveToDisk(stockList: self.stockNoList!) // save stockNo list change to disk
+            //MyStockList.saveToDisk(stockList: self.stockNoList!) // save stockNo list change to disk
         }
     }
     
@@ -160,10 +212,17 @@ extension StockListViewController: UISearchBarDelegate {
             filteredItems = onedayStockInfo
         } else {
             filteredItems = onedayStockInfo.filter({
-                $0.c.contains(searchTerm)
+                $0.stockNo.contains(searchTerm)
             })
         }
         
         tableView.reloadData()
+    }
+}
+
+extension StockListViewController: NSFetchedResultsControllerDelegate {
+    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+        fetchOneDayStockInfo()
+        
     }
 }

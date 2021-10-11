@@ -22,6 +22,7 @@
 		DF06F326270D50000031D6FE /* History.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F325270D50000031D6FE /* History.swift */; };
 		DF06F328270D61AC0031D6FE /* HistoryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F327270D61AC0031D6FE /* HistoryTableViewCell.swift */; };
 		DF06F32A270DEA1A0031D6FE /* AddHistoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F329270DEA1A0031D6FE /* AddHistoryViewController.swift */; };
+		DFD239DD270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DFD239DB270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -41,6 +42,7 @@
 		DF06F325270D50000031D6FE /* History.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = History.swift; sourceTree = "<group>"; };
 		DF06F327270D61AC0031D6FE /* HistoryTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryTableViewCell.swift; sourceTree = "<group>"; };
 		DF06F329270DEA1A0031D6FE /* AddHistoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddHistoryViewController.swift; sourceTree = "<group>"; };
+		DFD239DC270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MyTaiwanStock.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,6 +96,7 @@
 				DF06F3122709A3190031D6FE /* OneDayStockInfo.swift */,
 				DF06F323270B1A4F0031D6FE /* MyStockList.swift */,
 				DF06F325270D50000031D6FE /* History.swift */,
+				DFD239DB270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodeld */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -102,8 +105,8 @@
 			isa = PBXGroup;
 			children = (
 				DF06F2FE27097F2C0031D6FE /* StockListViewController.swift */,
-				DF06F31B270AA43A0031D6FE /* StockViewController.swift */,
 				DF06F329270DEA1A0031D6FE /* AddHistoryViewController.swift */,
+				DF06F31B270AA43A0031D6FE /* StockViewController.swift */,
 			);
 			path = "View Controller";
 			sourceTree = "<group>";
@@ -193,6 +196,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				DFD239DD270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodeld in Sources */,
 				DF06F326270D50000031D6FE /* History.swift in Sources */,
 				DF06F2FF27097F2C0031D6FE /* StockListViewController.swift in Sources */,
 				DF06F32A270DEA1A0031D6FE /* AddHistoryViewController.swift in Sources */,
@@ -422,6 +426,19 @@
 			productName = Charts;
 		};
 /* End XCSwiftPackageProductDependency section */
+
+/* Begin XCVersionGroup section */
+		DFD239DB270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodeld */ = {
+			isa = XCVersionGroup;
+			children = (
+				DFD239DC270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodel */,
+			);
+			currentVersion = DFD239DC270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodel */;
+			path = MyTaiwanStock.xcdatamodeld;
+			sourceTree = "<group>";
+			versionGroupType = wrapper.xcdatamodel;
+		};
+/* End XCVersionGroup section */
 	};
 	rootObject = DF06F2EF27097F2C0031D6FE /* Project object */;
 }

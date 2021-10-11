@@ -4,11 +4,12 @@
 //
 //  Created by Albert Lin on 2021/10/6.
 //
-
+import CoreData
 import UIKit
 
 class AddHistoryViewController: UITableViewController {
-    var history: [History]!
+    var context: NSManagedObjectContext?
+    //var history: [History]!
     var stockNo: String!
     var date: Date! = Date()
     @IBOutlet weak var stockNoTextField: UITextField!
@@ -28,13 +29,27 @@ class AddHistoryViewController: UITableViewController {
         let price = Float(priceTextField.text ?? "0"),
         let amount = Int(amountTextField.text ?? "0"),
         let date = date else { return }
-        let newId = HistoryList.createId(historyList: HistoryList.historyList)
-        let newRecord = History(id: newId, stockNo: stockNo, date: date, price: price, amount: amount, status: buyOrSell.selectedSegmentIndex)
+        //let newId = HistoryList.createId(historyList: HistoryList.historyList)
+        //let newRecord = History(id: newId, stockNo: stockNo, date: date, price: price, amount: amount, status: buyOrSell.selectedSegmentIndex)
         
+        /// core data
+        guard let context = self.context else { return }
+        let newInvestHistory = InvestHistory(context: context)
+        newInvestHistory.stockNo = stockNo
+        newInvestHistory.price = price
+        newInvestHistory.amount = Int16(amount)
+        newInvestHistory.date = date
+        newInvestHistory.status = Int16(buyOrSell.selectedSegmentIndex)
         
-        print("new record, \(newRecord)")
-        HistoryList.saveToDisk(newHistory: newRecord)
-        print("buyorsell, \(buyOrSell.selectedSegmentIndex)")
+        do {
+            try context.save()
+        } catch {
+            fatalError("\(error.localizedDescription)")
+        }
+        
+        //print("new record, \(newRecord)")
+        //HistoryList.saveToDisk(newHistory: newRecord)
+        //print("buyorsell, \(buyOrSell.selectedSegmentIndex)")
         navigationController?.popViewController(animated: true)
     }
     @IBAction func cancel(_ sender: Any) {

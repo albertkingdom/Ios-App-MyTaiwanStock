@@ -7,6 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A168E09E27146EF600C75064 /* NewsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A168E09D27146EF600C75064 /* NewsAPI.swift */; };
+		A168E0A027147C9800C75064 /* NewsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A168E09F27147C9800C75064 /* NewsListViewController.swift */; };
+		A168E0A22714822D00C75064 /* NewsListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A168E0A12714822D00C75064 /* NewsListTableViewCell.swift */; };
+		A168E0A427148D1600C75064 /* webViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A168E0A327148D1600C75064 /* webViewController.swift */; };
+		A197396227154CEB009D5917 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = A197396127154CEB009D5917 /* Kingfisher */; };
 		DF06F2FB27097F2C0031D6FE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F2FA27097F2C0031D6FE /* AppDelegate.swift */; };
 		DF06F2FD27097F2C0031D6FE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F2FC27097F2C0031D6FE /* SceneDelegate.swift */; };
 		DF06F2FF27097F2C0031D6FE /* StockListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F2FE27097F2C0031D6FE /* StockListViewController.swift */; };
@@ -26,6 +31,10 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		A168E09D27146EF600C75064 /* NewsAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsAPI.swift; sourceTree = "<group>"; };
+		A168E09F27147C9800C75064 /* NewsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsListViewController.swift; sourceTree = "<group>"; };
+		A168E0A12714822D00C75064 /* NewsListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsListTableViewCell.swift; sourceTree = "<group>"; };
+		A168E0A327148D1600C75064 /* webViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = webViewController.swift; sourceTree = "<group>"; };
 		DF06F2F727097F2C0031D6FE /* MyTaiwanStock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyTaiwanStock.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DF06F2FA27097F2C0031D6FE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DF06F2FC27097F2C0031D6FE /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -50,6 +59,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A197396227154CEB009D5917 /* Kingfisher in Frameworks */,
 				DF06F322270ACC240031D6FE /* Charts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -94,6 +104,7 @@
 			children = (
 				DF06F30F2709805E0031D6FE /* StockInfo.swift */,
 				DF06F3122709A3190031D6FE /* OneDayStockInfo.swift */,
+				A168E09D27146EF600C75064 /* NewsAPI.swift */,
 				DF06F323270B1A4F0031D6FE /* MyStockList.swift */,
 				DF06F325270D50000031D6FE /* History.swift */,
 				DFD239DB270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodeld */,
@@ -107,6 +118,8 @@
 				DF06F2FE27097F2C0031D6FE /* StockListViewController.swift */,
 				DF06F329270DEA1A0031D6FE /* AddHistoryViewController.swift */,
 				DF06F31B270AA43A0031D6FE /* StockViewController.swift */,
+				A168E09F27147C9800C75064 /* NewsListViewController.swift */,
+				A168E0A327148D1600C75064 /* webViewController.swift */,
 			);
 			path = "View Controller";
 			sourceTree = "<group>";
@@ -116,6 +129,7 @@
 			children = (
 				DF06F316270A01220031D6FE /* StockTableViewCell.swift */,
 				DF06F327270D61AC0031D6FE /* HistoryTableViewCell.swift */,
+				A168E0A12714822D00C75064 /* NewsListTableViewCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -138,6 +152,7 @@
 			name = MyTaiwanStock;
 			packageProductDependencies = (
 				DF06F321270ACC240031D6FE /* Charts */,
+				A197396127154CEB009D5917 /* Kingfisher */,
 			);
 			productName = MyTaiwanStock;
 			productReference = DF06F2F727097F2C0031D6FE /* MyTaiwanStock.app */;
@@ -168,6 +183,7 @@
 			mainGroup = DF06F2EE27097F2C0031D6FE;
 			packageReferences = (
 				DF06F320270ACC240031D6FE /* XCRemoteSwiftPackageReference "Charts" */,
+				A197396027154CEB009D5917 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 			);
 			productRefGroup = DF06F2F827097F2C0031D6FE /* Products */;
 			projectDirPath = "";
@@ -197,8 +213,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				DFD239DD270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodeld in Sources */,
+				A168E0A22714822D00C75064 /* NewsListTableViewCell.swift in Sources */,
 				DF06F326270D50000031D6FE /* History.swift in Sources */,
 				DF06F2FF27097F2C0031D6FE /* StockListViewController.swift in Sources */,
+				A168E0A027147C9800C75064 /* NewsListViewController.swift in Sources */,
 				DF06F32A270DEA1A0031D6FE /* AddHistoryViewController.swift in Sources */,
 				DF06F31C270AA43A0031D6FE /* StockViewController.swift in Sources */,
 				DF06F324270B1A4F0031D6FE /* MyStockList.swift in Sources */,
@@ -208,6 +226,8 @@
 				DF06F2FD27097F2C0031D6FE /* SceneDelegate.swift in Sources */,
 				DF06F317270A01220031D6FE /* StockTableViewCell.swift in Sources */,
 				DF06F3132709A3190031D6FE /* OneDayStockInfo.swift in Sources */,
+				A168E09E27146EF600C75064 /* NewsAPI.swift in Sources */,
+				A168E0A427148D1600C75064 /* webViewController.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -409,6 +429,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		A197396027154CEB009D5917 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 7.0.0;
+			};
+		};
 		DF06F320270ACC240031D6FE /* XCRemoteSwiftPackageReference "Charts" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/danielgindi/Charts/";
@@ -420,6 +448,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		A197396127154CEB009D5917 /* Kingfisher */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A197396027154CEB009D5917 /* XCRemoteSwiftPackageReference "Kingfisher" */;
+			productName = Kingfisher;
+		};
 		DF06F321270ACC240031D6FE /* Charts */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = DF06F320270ACC240031D6FE /* XCRemoteSwiftPackageReference "Charts" */;

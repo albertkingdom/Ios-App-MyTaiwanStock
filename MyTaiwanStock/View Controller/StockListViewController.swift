@@ -76,7 +76,8 @@ class StockListViewController: UIViewController {
         searchBar.delegate = self
         
         navigationItem.leftBarButtonItem = editButtonItem
-        //stockNoList = MyStockList.loadFromDisk()
+        navigationItem.title = "自選清單"
+
         
         //core data
         do {
@@ -140,15 +141,21 @@ extension StockListViewController: UITableViewDataSource, UITableViewDelegate {
         return cell
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let stockViewController = storyboard?.instantiateViewController(identifier: "stockViewController") as! StockViewController
-        
+        //let stockViewController = storyboard?.instantiateViewController(identifier: "stockViewController") as! StockViewController
+        let tabviewController = storyboard?.instantiateViewController(identifier: "tabBarController") as! UITabBarController
+        let stockViewController = tabviewController.viewControllers?[0] as! StockViewController
+        let newsViewController = tabviewController.viewControllers?[1] as! NewsListViewController
 //        stockViewController.stockNo = onedayStockInfo[indexPath.row].c
 //        stockViewController.stockPrice = onedayStockInfo[indexPath.row].z
         stockViewController.stockNo = filteredItems[indexPath.row].stockNo
         stockViewController.stockPrice = filteredItems[indexPath.row].current
-        
+        stockViewController.stockName = filteredItems[indexPath.row].shortName
         stockViewController.context = self.context
-        navigationController?.pushViewController(stockViewController, animated: true)
+        
+        newsViewController.stockName = filteredItems[indexPath.row].shortName
+        
+        navigationController?.pushViewController(tabviewController, animated: true)
+
     }
     
     // MARK: delete row

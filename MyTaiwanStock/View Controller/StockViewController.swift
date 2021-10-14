@@ -11,19 +11,22 @@ import Charts
 class StockViewController: UIViewController {
     var context: NSManagedObjectContext?
     lazy var fetchedResultsController: NSFetchedResultsController<InvestHistory> = {
+    
         let fetchRequest: NSFetchRequest<InvestHistory> = InvestHistory.fetchRequest()
         let sortDescriptor = NSSortDescriptor(key: "stockNo", ascending: false)
+        let predicate = NSPredicate(format: "stockNo == %@", self.stockNo!)
         fetchRequest.sortDescriptors = [sortDescriptor]
-        
+        fetchRequest.predicate = predicate
         let frc = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: context!, sectionNameKeyPath: nil, cacheName: nil)
         frc.delegate = self
         return frc
     }()
     
+
     @IBOutlet weak var candleStickChartView: CandleStickChartView!
     var stockInfoForCandleStickChart: [[String]]!
     var stockNo: String!
-    //var history: [History]!
+    var stockName: String!
     var stockPrice: String!
     @IBOutlet weak var dateView: UILabel!
     @IBOutlet weak var openPriceView: UILabel!
@@ -38,18 +41,22 @@ class StockViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         
-        navigationItem.title = stockNo
-       
-      print("stockview viewdidload")
+        tabBarController?.navigationItem.title = stockNo
+        tabBarController?.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(navigateToAddRecord))
+     
         
         
+    }
+    @objc func navigateToAddRecord() {
+        let destinationController = storyboard?.instantiateViewController(withIdentifier: "addRecordController") as! AddHistoryViewController
+        destinationController.stockNo = self.stockNo
+        destinationController.context = self.context
+        navigationController?.pushViewController(destinationController, animated: true)
     }
     override func viewWillAppear(_ animated: Bool) {
       
         print("stockview viewwillappear")
-        //history = HistoryList.loadFromDisk().filter({ history in
-        //    history.stockNo == self.stockNo
-        //})
+    
         StockInfo.fetchTwoMonth(stockNo: stockNo) { data in
             self.stockInfoForCandleStickChart = data
             DispatchQueue.main.async {
@@ -62,7 +69,7 @@ class StockViewController: UIViewController {
         
         do {
             try fetchedResultsController.performFetch()
-            tableView.reloadData()
+            //tableView.reloadData()
         } catch {
             fatalError("Invest history fetch error")
         }
@@ -115,13 +122,6 @@ class StockViewController: UIViewController {
     }
     
     
-    /// navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        let destination = segue.destination as! AddHistoryViewController
-        //destination.history = self.history
-        destination.stockNo = self.stockNo
-        destination.context = self.context
-    }
 }
 
 
@@ -169,10 +169,6 @@ extension StockViewController: UITableViewDataSource, UITableViewDelegate {
     }
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
-            //let itemToDelete = history[indexPath.row]
-            
-            //history.remove(at: indexPath.row)
-            //tableView.deleteRows(at: [indexPath], with: .automatic)
             
             // TODO: save list to disk
             

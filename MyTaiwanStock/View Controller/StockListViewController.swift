@@ -21,7 +21,7 @@ class StockListViewController: UIViewController {
         return frc
     }()
     
-    var onedayStockInfo: [OneDayStockInfoDetail]!
+    var onedayStockInfo: [OneDayStockInfoDetail] = []
     var stockNoList: Set<String> = []
     var filteredItems: [OneDayStockInfoDetail] = []
     var refreshControl: UIRefreshControl!
@@ -74,6 +74,8 @@ class StockListViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         searchBar.delegate = self
+        
+        tableView.tableFooterView = UIView()
         
         navigationItem.leftBarButtonItem = editButtonItem
         navigationItem.title = "自選清單"

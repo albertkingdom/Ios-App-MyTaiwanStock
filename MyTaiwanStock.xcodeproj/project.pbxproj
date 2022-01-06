@@ -27,6 +27,9 @@
 		DF06F326270D50000031D6FE /* History.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F325270D50000031D6FE /* History.swift */; };
 		DF06F328270D61AC0031D6FE /* HistoryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F327270D61AC0031D6FE /* HistoryTableViewCell.swift */; };
 		DF06F32A270DEA1A0031D6FE /* AddHistoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F329270DEA1A0031D6FE /* AddHistoryViewController.swift */; };
+		DF14417C2785A5630038D05D /* StatisticViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF14417B2785A5630038D05D /* StatisticViewController.swift */; };
+		DF14417E27868B240038D05D /* StatisticTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF14417D27868B240038D05D /* StatisticTableViewCell.swift */; };
+		DF14418027869C200038D05D /* StockStatistic.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF14417F27869C200038D05D /* StockStatistic.swift */; };
 		DFD239DD270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DFD239DB270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
@@ -51,6 +54,9 @@
 		DF06F325270D50000031D6FE /* History.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = History.swift; sourceTree = "<group>"; };
 		DF06F327270D61AC0031D6FE /* HistoryTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryTableViewCell.swift; sourceTree = "<group>"; };
 		DF06F329270DEA1A0031D6FE /* AddHistoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddHistoryViewController.swift; sourceTree = "<group>"; };
+		DF14417B2785A5630038D05D /* StatisticViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticViewController.swift; sourceTree = "<group>"; };
+		DF14417D27868B240038D05D /* StatisticTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticTableViewCell.swift; sourceTree = "<group>"; };
+		DF14417F27869C200038D05D /* StockStatistic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockStatistic.swift; sourceTree = "<group>"; };
 		DFD239DC270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MyTaiwanStock.xcdatamodel; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -108,6 +114,7 @@
 				DF06F323270B1A4F0031D6FE /* MyStockList.swift */,
 				DF06F325270D50000031D6FE /* History.swift */,
 				DFD239DB270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodeld */,
+				DF14417F27869C200038D05D /* StockStatistic.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -120,6 +127,7 @@
 				DF06F31B270AA43A0031D6FE /* StockViewController.swift */,
 				A168E09F27147C9800C75064 /* NewsListViewController.swift */,
 				A168E0A327148D1600C75064 /* webViewController.swift */,
+				DF14417B2785A5630038D05D /* StatisticViewController.swift */,
 			);
 			path = "View Controller";
 			sourceTree = "<group>";
@@ -130,6 +138,7 @@
 				DF06F316270A01220031D6FE /* StockTableViewCell.swift */,
 				DF06F327270D61AC0031D6FE /* HistoryTableViewCell.swift */,
 				A168E0A12714822D00C75064 /* NewsListTableViewCell.swift */,
+				DF14417D27868B240038D05D /* StatisticTableViewCell.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -224,8 +233,11 @@
 				DF06F2FB27097F2C0031D6FE /* AppDelegate.swift in Sources */,
 				DF06F3102709805E0031D6FE /* StockInfo.swift in Sources */,
 				DF06F2FD27097F2C0031D6FE /* SceneDelegate.swift in Sources */,
+				DF14418027869C200038D05D /* StockStatistic.swift in Sources */,
 				DF06F317270A01220031D6FE /* StockTableViewCell.swift in Sources */,
 				DF06F3132709A3190031D6FE /* OneDayStockInfo.swift in Sources */,
+				DF14417E27868B240038D05D /* StatisticTableViewCell.swift in Sources */,
+				DF14417C2785A5630038D05D /* StatisticViewController.swift in Sources */,
 				A168E09E27146EF600C75064 /* NewsAPI.swift in Sources */,
 				A168E0A427148D1600C75064 /* webViewController.swift in Sources */,
 			);

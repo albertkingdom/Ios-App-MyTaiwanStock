@@ -55,4 +55,7 @@ extension NewsListViewController: UITableViewDataSource, UITableViewDelegate {
         wvc.url = newsList[indexPath.row].url
         navigationController?.pushViewController(wvc, animated: true)
     }
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 100
+    }
 }

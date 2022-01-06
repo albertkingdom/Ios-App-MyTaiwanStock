@@ -9,6 +9,7 @@ import UIKit
 import CoreData
 
 class StockListViewController: UIViewController {
+    let userDefault = UserDefaults.standard
     var context: NSManagedObjectContext?
     
     lazy var fetchedResultsController: NSFetchedResultsController<StockNo> = {
@@ -114,6 +115,7 @@ class StockListViewController: UIViewController {
                 DispatchQueue.main.async {
                     self.tableView.reloadData()
                 }
+                //self.userDefault.set(self.onedayStockInfo, forKey: "stockPrice")
                 
             case .failure(let error):
                 print("failure: \(error)")
@@ -143,20 +145,15 @@ extension StockListViewController: UITableViewDataSource, UITableViewDelegate {
         return cell
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        //let stockViewController = storyboard?.instantiateViewController(identifier: "stockViewController") as! StockViewController
-        let tabviewController = storyboard?.instantiateViewController(identifier: "tabBarController") as! UITabBarController
-        let stockViewController = tabviewController.viewControllers?[0] as! StockViewController
-        let newsViewController = tabviewController.viewControllers?[1] as! NewsListViewController
-//        stockViewController.stockNo = onedayStockInfo[indexPath.row].c
-//        stockViewController.stockPrice = onedayStockInfo[indexPath.row].z
+        let stockViewController = storyboard?.instantiateViewController(identifier: "stockViewController") as! StockViewController
+
         stockViewController.stockNo = filteredItems[indexPath.row].stockNo
         stockViewController.stockPrice = filteredItems[indexPath.row].current
         stockViewController.stockName = filteredItems[indexPath.row].shortName
         stockViewController.context = self.context
         
-        newsViewController.stockName = filteredItems[indexPath.row].shortName
-        
-        navigationController?.pushViewController(tabviewController, animated: true)
+
+        navigationController?.pushViewController(stockViewController, animated: true)
 
     }
     

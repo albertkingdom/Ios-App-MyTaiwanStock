@@ -41,9 +41,11 @@ class StockViewController: UIViewController {
         tableView.delegate = self
         tableView.dataSource = self
         
-        tabBarController?.navigationItem.title = stockNo
-        tabBarController?.navigationItem.rightBarButtonItem = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(navigateToAddRecord))
-     
+
+        navigationItem.title = stockNo
+        let newsButton = UIBarButtonItem(title: "News", style: .plain, target: self, action: #selector(navigateToNews))
+        let addHistoryButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(navigateToAddRecord))
+        navigationItem.rightBarButtonItems = [addHistoryButton, newsButton]
         
         
     }
@@ -51,6 +53,12 @@ class StockViewController: UIViewController {
         let destinationController = storyboard?.instantiateViewController(withIdentifier: "addRecordController") as! AddHistoryViewController
         destinationController.stockNo = self.stockNo
         destinationController.context = self.context
+        navigationController?.pushViewController(destinationController, animated: true)
+    }
+    @objc func navigateToNews() {
+        let destinationController = storyboard?.instantiateViewController(withIdentifier: "newsListVC") as! NewsListViewController
+        destinationController.stockName = self.stockName
+        
         navigationController?.pushViewController(destinationController, animated: true)
     }
     override func viewWillAppear(_ animated: Bool) {

@@ -13,17 +13,13 @@ class webViewController: UIViewController, WKUIDelegate {
     var url: String!
     override func viewDidLoad() {
         super.viewDidLoad()
+        webView.uiDelegate = self
         let myURL = URL(string:url)
         let myRequest = URLRequest(url: myURL!)
         webView.load(myRequest)
        
     }
-    override func loadView() {
-            let webConfiguration = WKWebViewConfiguration()
-            webView = WKWebView(frame: .zero, configuration: webConfiguration)
-            webView.uiDelegate = self
-            view = webView
-    }
+
        
    
 

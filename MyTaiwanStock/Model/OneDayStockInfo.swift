@@ -19,6 +19,7 @@ struct OneDayStockInfoDetail: Codable {
     var fullName: String //公司全名
     var current: String //當盤成交價
     var shortName: String //公司簡稱
+    var yesterDayPrice: String //昨日收盤
     
     enum CodingKeys: String, CodingKey {
         case stockNo = "c"
@@ -28,10 +29,12 @@ struct OneDayStockInfoDetail: Codable {
         case fullName = "nf"
         case current = "z"
         case shortName = "n"
+        case yesterDayPrice = "y"
     }
 }
 
 extension OneDayStockInfo {
+    static var priceList: [OneDayStockInfoDetail] = []
     static func fetchOneDayStockInfo(stockList: [StockNo],completion: @escaping (Result<OneDayStockInfo,Error>) -> Void) {
         var urlComponents = URLComponents(string: "https://mis.twse.com.tw/stock/api/getStockInfo.jsp")!
         
@@ -48,6 +51,7 @@ extension OneDayStockInfo {
                 do{
                     let stockInfo = try jsonDecoder.decode(OneDayStockInfo.self, from: data)
                     print("stockInfo, \(stockInfo)")
+                    priceList = stockInfo.msgArray
                     completion(.success(stockInfo))
                     
                 }catch {

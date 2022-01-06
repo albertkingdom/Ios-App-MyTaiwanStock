@@ -20,10 +20,15 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         
         guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
         
-        let masterNavigationController = window?.rootViewController as! UINavigationController
-        let controller = masterNavigationController.topViewController as! StockListViewController
+//        let masterNavigationController = window?.rootViewController as! UINavigationController
+        let masterTabBarController = window?.rootViewController as! UITabBarController
+//        let controller = masterNavigationController.topViewController as! StockListViewController
+        let topNavController = masterTabBarController.viewControllers?.first as! UINavigationController
         
-        controller.context = appDelegate.persistentContainer.viewContext
+        let listController = topNavController.topViewController as! StockListViewController
+        let statisticController = masterTabBarController.viewControllers?[1] as! StatisticViewController
+        listController.context = appDelegate.persistentContainer.viewContext
+        statisticController.context = appDelegate.persistentContainer.viewContext
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

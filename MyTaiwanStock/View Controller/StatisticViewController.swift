@@ -68,10 +68,37 @@ class StatisticViewController: UIViewController {
                 
                 
             }
+            if stockNoToAsset.isEmpty {
+                self.showWarningPopup()
+            }
             prepareForPieChart(dataSource: stockNoToAsset, target: pieChartView)
         } catch {
             fatalError("Invest history fetch error")
         }
+    }
+    func showWarningPopup() {
+        let popupView = UIView()
+        let UILabelView = UILabel()
+        popupView.backgroundColor = .lightGray
+        popupView.alpha = 0.7
+        popupView.layer.cornerRadius = 10
+        UILabelView.text = "Please add some invest history!"
+        UILabelView.font = UIFont.systemFont(ofSize: 20)
+        UILabelView.translatesAutoresizingMaskIntoConstraints = false
+        popupView.translatesAutoresizingMaskIntoConstraints = false
+        popupView.addSubview(UILabelView)
+        view.addSubview(popupView)
+        NSLayoutConstraint.activate([
+            UILabelView.centerXAnchor.constraint(equalTo: popupView.centerXAnchor),
+            UILabelView.centerYAnchor.constraint(equalTo: popupView.centerYAnchor)
+        ])
+        NSLayoutConstraint.activate([
+            popupView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            popupView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            popupView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.7),
+            popupView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.3)
+        ])
+        
     }
     func prepareForPieChart(dataSource: [StockStatistic], target: PieChartView) {
         // entries -> pieDataset -> pieData -> pieChart
@@ -130,6 +157,7 @@ extension StatisticViewController: UITableViewDataSource, UITableViewDelegate {
         let cell = tableView.dequeueReusableCell(withIdentifier: "statisticCell", for: indexPath) as! StatisticTableViewCell
         
         cell.update(with: stockNoToAsset[indexPath.row])
+        cell.selectionStyle = .none
         return cell
     }
     

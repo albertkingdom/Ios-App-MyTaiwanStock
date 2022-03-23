@@ -7,6 +7,7 @@
 import CoreData
 import UIKit
 import Charts
+import FirebaseFirestore
 
 class StockViewController: UIViewController {
     var context: NSManagedObjectContext?
@@ -28,6 +29,24 @@ class StockViewController: UIViewController {
     var stockNo: String!
     var stockName: String!
     var stockPrice: String!
+    private let database = Firestore.firestore()
+    private var channelID: String?
+    var isHideKplot: Bool = false {
+        didSet {
+            if !isHideKplot {
+                kplotHeight.constant = 300
+                
+                showOrHideButton.setImage(UIImage(systemName: "arrow.up.to.line"), for: .normal)
+            } else {
+                kplotHeight.constant = 0
+                showOrHideButton.setImage(UIImage(systemName: "arrow.down.to.line"), for: .normal)
+            }
+            UIView.animate(withDuration: 0.5) {
+                self.view.layoutIfNeeded()
+            }
+            
+        }
+    }
     @IBOutlet weak var dateView: UILabel!
     @IBOutlet weak var openPriceView: UILabel!
     @IBOutlet weak var closePriceView: UILabel!
@@ -35,6 +54,15 @@ class StockViewController: UIViewController {
     @IBOutlet weak var lowPriceView: UILabel!
     
     @IBOutlet weak var tableView: UITableView!
+    @IBOutlet weak var kplotHeight: NSLayoutConstraint!
+    @IBOutlet weak var showOrHideButton: UIButton!
+    @IBAction func touchHideKplotButton(_ sender: Any) {
+       
+        isHideKplot = !isHideKplot
+
+      
+    }
+    @IBOutlet weak var historyContainerView: UIView!
     override func viewDidLoad() {
         super.viewDidLoad()
         candleStickChartView.delegate = self
@@ -43,10 +71,20 @@ class StockViewController: UIViewController {
         
 
         navigationItem.title = stockNo
+       
         let newsButton = UIBarButtonItem(title: "News", style: .plain, target: self, action: #selector(navigateToNews))
         let addHistoryButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(navigateToAddRecord))
-        navigationItem.rightBarButtonItems = [addHistoryButton, newsButton]
+        let chatRoomButton = UIBarButtonItem(image: UIImage(systemName: "message"), style: .plain, target: self, action: #selector(navigateToChatRoom))
+        navigationItem.rightBarButtonItems = [addHistoryButton, newsButton, chatRoomButton]
         
+        
+        checkIsExistingChannel()
+//        historyContainerView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
+//        historyContainerView.layer.cornerRadius = 15
+//        historyContainerView.layer.borderWidth = 1.5
+//        historyContainerView.layer.borderColor = UIColor.lightGray.cgColor
+//        historyContainerView.clipsToBounds = true
+//        historyContainerView.layer.shadowOffset = 
         
     }
     @objc func navigateToAddRecord() {
@@ -60,6 +98,13 @@ class StockViewController: UIViewController {
         destinationController.stockName = self.stockName
         
         navigationController?.pushViewController(destinationController, animated: true)
+    }
+    @objc func navigateToChatRoom() {
+
+        if let id = channelID {
+            let chatRoomVC = ChatViewController(channelName: "\(stockNo!) chat room", channelId: id)
+            navigationController?.pushViewController(chatRoomVC, animated: true)
+        }
     }
     override func viewWillAppear(_ animated: Bool) {
       
@@ -127,6 +172,7 @@ class StockViewController: UIViewController {
         candleStickChartView.drawBordersEnabled = true
         candleStickChartView.borderLineWidth = 0.5
         candleStickChartView.rightAxis.enabled = false
+        candleStickChartView.backgroundColor = .systemBackground
     }
     
     
@@ -148,11 +194,10 @@ extension StockViewController: ChartViewDelegate {
 
 
 extension StockViewController: UITableViewDataSource, UITableViewDelegate {
-   
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         //return history.count
         guard let sectionInfo = fetchedResultsController.sections?[section] else { return 0 }
-        
+
         return sectionInfo.numberOfObjects
     }
     
@@ -165,9 +210,42 @@ extension StockViewController: UITableViewDataSource, UITableViewDelegate {
         return cell
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        //print(indexPath)
+      
+
+        // click record to highlight corresponding value on candlestick chart
+        // get date of click record
+        if let date = fetchedResultsController.object(at: indexPath).date {
+          
+            let dateFormatter = DateFormatter()
+            dateFormatter.locale = Locale(identifier: "zh_TW")
+            dateFormatter.setLocalizedDateFormatFromTemplate("yyyy/MM/dd")
+           
+            let calendar = Calendar(identifier: .gregorian)
+            let components = calendar.dateComponents([.year, .month, .day], from: date)
+
+            if var year = components.year, let month = components.month, let day = components.day {
+                // convert date to following format like:  111/03/18
+                year = year - 1911
+                let fullMonth = month > 9 ? "month" : "0\(month)"
+                let targetDateString = "\(year)/\(fullMonth)/\(day)"
+
+                stockInfoForCandleStickChart.enumerated().forEach { index, candleData in
+                    // find the index of date in stockInfoForCandleStickChart
+                    if candleData[0] == targetDateString {
+
+                        candleStickChartView.highlightValue(x: Double(index), dataSetIndex: 0, dataIndex: -1)
+                        candleStickChartView.layoutIfNeeded()
+                    }
+                }
+                
+            }
+        }
+        
+       
     }
-    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 70
+    }
     override func setEditing(_ editing: Bool, animated: Bool) {
         super.setEditing(editing, animated: true)
         tableView.setEditing(editing, animated: true)
@@ -178,7 +256,7 @@ extension StockViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             
-            // TODO: save list to disk
+            
             
             let objectToDelete = fetchedResultsController.object(at: indexPath)
             context?.delete(objectToDelete)
@@ -214,5 +292,56 @@ extension StockViewController: NSFetchedResultsControllerDelegate {
     
     func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
         tableView.endUpdates()
+    }
+}
+
+extension StockViewController {
+
+    private var channelReference: CollectionReference {
+      return database.collection("channels")
+    }
+    private func createChannel(){
+        guard
+            let channelName = stockNo
+        else {
+            return
+        }
+        
+        
+        let documentRef = channelReference.addDocument(data: ["name": channelName]) { error in
+            if let error = error {
+                print("Error saving channel: \(error.localizedDescription)")
+            }
+        }
+        channelID = documentRef.documentID
+        
+    }
+    func checkIsExistingChannel() {
+        var isExisting = false
+        guard let channelName = stockNo
+        else {
+            return
+        }
+        channelReference.whereField("name", isEqualTo: channelName).getDocuments { (snapshot, err) in
+            if let err = err {
+                print("Error getting documents: \(err)")
+                
+            } else {
+                for document in snapshot!.documents {
+                    print("\(document.documentID) => \(document.data())")
+                    
+                }
+                
+          
+                if (snapshot!.documents.count > 0) {
+                    isExisting = true
+                    self.channelID = snapshot?.documents[0].documentID
+                    return
+                }
+                self.createChannel()
+            }
+        }
+        
+        
     }
 }

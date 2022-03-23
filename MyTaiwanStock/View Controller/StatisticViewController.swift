@@ -50,7 +50,7 @@ class StatisticViewController: UIViewController {
                         stockNoToAmountList[history.stockNo!]! += Int(history.amount) * (history.status == 0 ? 1 : -1)
                     }
                 }
-                //print("stockNoToAmountList...\(stockNoToAmountList)")
+                print("stockNoToAmountList...\(stockNoToAmountList)")
                 
 
                 let savedStockPrice = OneDayStockInfo.priceList
@@ -58,7 +58,7 @@ class StatisticViewController: UIViewController {
                 savedStockPrice.map { stock in
                     stockNoToPriceList[stock.stockNo] = stock.current != "-" ? Double(stock.current) : Double(stock.yesterDayPrice)
                 }
-                //print("stockNoToPriceList...\(stockNoToPriceList)")
+                print("stockNoToPriceList...\(stockNoToPriceList)")
 
                 stockNoToAsset = stockNoToAmountList.map({ (key: String, value: Int) in
                     StockStatistic(stockNo: key, totalAssets: Double(value) * stockNoToPriceList[key]! )
@@ -84,13 +84,17 @@ class StatisticViewController: UIViewController {
         popupView.layer.cornerRadius = 10
         UILabelView.text = "Please add some invest history!"
         UILabelView.font = UIFont.systemFont(ofSize: 20)
+        UILabelView.lineBreakMode = .byWordWrapping
+        UILabelView.numberOfLines = 3
+        UILabelView.textAlignment = .center
         UILabelView.translatesAutoresizingMaskIntoConstraints = false
         popupView.translatesAutoresizingMaskIntoConstraints = false
         popupView.addSubview(UILabelView)
         view.addSubview(popupView)
         NSLayoutConstraint.activate([
             UILabelView.centerXAnchor.constraint(equalTo: popupView.centerXAnchor),
-            UILabelView.centerYAnchor.constraint(equalTo: popupView.centerYAnchor)
+            UILabelView.centerYAnchor.constraint(equalTo: popupView.centerYAnchor),
+            UILabelView.widthAnchor.constraint(equalTo: popupView.widthAnchor, multiplier: 0.8)
         ])
         NSLayoutConstraint.activate([
             popupView.centerXAnchor.constraint(equalTo: view.centerXAnchor),

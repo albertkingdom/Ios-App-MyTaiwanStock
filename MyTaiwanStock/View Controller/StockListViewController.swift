@@ -30,7 +30,6 @@ class StockListViewController: UIViewController {
     @IBOutlet weak var searchBar: UISearchBar!
     
     @IBOutlet weak var tableView: UITableView!
-    
     @IBAction func addStockNo(_ sender: Any) {
 
         let addStockViewController = storyboard?.instantiateViewController(identifier: "addStockVC") as! AddStockNoViewController

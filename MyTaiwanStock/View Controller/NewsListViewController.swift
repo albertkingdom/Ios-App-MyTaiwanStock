@@ -16,6 +16,7 @@ class NewsListViewController: UIViewController {
         tableView.dataSource = self
         tableView.delegate = self
         guard let stockName = stockName else { return }
+        title = "\(stockName)新聞"
         NewsResult.fetchNews(queryTitle: stockName) { result in
             switch result {
             case .success(let news):
@@ -47,7 +48,7 @@ extension NewsListViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "newsCell", for: indexPath) as! NewsListTableViewCell
         cell.update(with: newsList[indexPath.row])
-        
+        cell.selectionStyle = .none
         return cell
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {

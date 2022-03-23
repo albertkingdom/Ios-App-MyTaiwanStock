@@ -23,6 +23,11 @@ class StatisticTableViewCell: UITableViewCell {
     }
     func update(with statisticDetail:StockStatistic) {
         stockNoLabel.text = statisticDetail.stockNo
-        assetLabel.text = String(format:"%.0f", statisticDetail.totalAssets)
+//        assetLabel.text = String(format:"%.0f", statisticDetail.totalAssets)
+        let formatter = NumberFormatter()
+        formatter.locale = Locale(identifier: "zh_TW")
+        formatter.maximumFractionDigits = 1
+        formatter.numberStyle = .currencyISOCode
+        assetLabel.text = formatter.string(from: NSNumber(value: statisticDetail.totalAssets))
     }
 }

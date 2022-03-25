@@ -16,7 +16,7 @@ class AddHistoryViewController: UITableViewController {
     @IBOutlet weak var stockNoTextField: UITextField!
     @IBOutlet weak var priceTextField: UITextField!
     @IBOutlet weak var amountTextField: UITextField!
-  
+    @IBOutlet weak var reasonTextView: UITextView!
     
     @IBAction func setSegmentControl(_ sender: UISegmentedControl) {
 
@@ -42,7 +42,7 @@ class AddHistoryViewController: UITableViewController {
         let price = Float(priceTextField.text ?? "0"),
         let amount = Int(amountTextField.text ?? "0"),
         let date = date else { return }
-
+        let reason = reasonTextView.text ?? ""
         
         /// core data
         guard let context = self.context else { return }
@@ -52,6 +52,7 @@ class AddHistoryViewController: UITableViewController {
         newInvestHistory.amount = Int16(amount)
         newInvestHistory.date = date
         newInvestHistory.status = Int16(buyOrSellStatus)
+        newInvestHistory.reason = reason
         
         do {
             try context.save()
@@ -75,6 +76,9 @@ class AddHistoryViewController: UITableViewController {
         priceTextField.inputAccessoryView = toolBar()
         amountTextField.inputAccessoryView = toolBar()
         navigationItem.title = "新增一筆"
+        reasonTextView.layer.borderColor = UIColor.lightGray.cgColor
+        reasonTextView.layer.borderWidth = 2
+        reasonTextView.layer.cornerRadius = 5
     }
     
     func dateFormat(date: Date) -> String {

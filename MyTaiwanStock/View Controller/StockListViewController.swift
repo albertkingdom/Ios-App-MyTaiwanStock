@@ -152,7 +152,7 @@ extension StockListViewController: UITableViewDataSource, UITableViewDelegate {
         stockViewController.stockPrice = filteredItems[indexPath.row].current
         stockViewController.stockName = filteredItems[indexPath.row].shortName
         stockViewController.context = self.context
-        
+
 
         navigationController?.pushViewController(stockViewController, animated: true)
 

@@ -20,15 +20,6 @@
         }
       },
       {
-        "package": "Charts",
-        "repositoryURL": "https://github.com/danielgindi/Charts/",
-        "state": {
-          "branch": null,
-          "revision": "66546404a6739173b8e436ab6bc1f2897cd08594",
-          "version": "3.6.0"
-        }
-      },
-      {
         "package": "Firebase",
         "repositoryURL": "https://github.com/firebase/firebase-ios-sdk",
         "state": {

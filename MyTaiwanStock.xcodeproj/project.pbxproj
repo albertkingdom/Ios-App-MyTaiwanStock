@@ -22,7 +22,6 @@
 		DF06F3132709A3190031D6FE /* OneDayStockInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F3122709A3190031D6FE /* OneDayStockInfo.swift */; };
 		DF06F317270A01220031D6FE /* StockTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F316270A01220031D6FE /* StockTableViewCell.swift */; };
 		DF06F31C270AA43A0031D6FE /* StockViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F31B270AA43A0031D6FE /* StockViewController.swift */; };
-		DF06F322270ACC240031D6FE /* Charts in Frameworks */ = {isa = PBXBuildFile; productRef = DF06F321270ACC240031D6FE /* Charts */; };
 		DF06F324270B1A4F0031D6FE /* MyStockList.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F323270B1A4F0031D6FE /* MyStockList.swift */; };
 		DF06F326270D50000031D6FE /* History.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F325270D50000031D6FE /* History.swift */; };
 		DF06F328270D61AC0031D6FE /* HistoryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F327270D61AC0031D6FE /* HistoryTableViewCell.swift */; };
@@ -30,9 +29,12 @@
 		DF14417C2785A5630038D05D /* StatisticViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF14417B2785A5630038D05D /* StatisticViewController.swift */; };
 		DF14417E27868B240038D05D /* StatisticTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF14417D27868B240038D05D /* StatisticTableViewCell.swift */; };
 		DF14418027869C200038D05D /* StockStatistic.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF14417F27869C200038D05D /* StockStatistic.swift */; };
+		DF3873A227ECC8DC000E2EAF /* LargeValueFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF3873A127ECC8DC000E2EAF /* LargeValueFormatter.swift */; };
 		DF793AD727DF8C36007C9442 /* AddStockNoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF793AD627DF8C36007C9442 /* AddStockNoViewController.swift */; };
 		DF793AD927DF8E29007C9442 /* StockNoList.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF793AD827DF8E29007C9442 /* StockNoList.swift */; };
 		DF793ADB27E03258007C9442 /* AddStockTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF793ADA27E03258007C9442 /* AddStockTableViewCell.swift */; };
+		DFA9FBDB27ED90C300632127 /* Charts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DFA9FBD827ED90AE00632127 /* Charts.framework */; platformFilter = ios; };
+		DFA9FBDC27ED90C300632127 /* Charts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DFA9FBD827ED90AE00632127 /* Charts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		DFD239DD270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DFD239DB270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodeld */; };
 		DFFEB03E27E1CE3B00C85A53 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = DFFEB03D27E1CE3B00C85A53 /* GoogleService-Info.plist */; };
 		DFFEB04127E1D00700C85A53 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = DFFEB04027E1D00700C85A53 /* FirebaseAuth */; };
@@ -44,6 +46,37 @@
 		DFFEB04E27E1D6C400C85A53 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFFEB04D27E1D6C400C85A53 /* Message.swift */; };
 		DFFEB05027E1E37D00C85A53 /* Channel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFFEB04F27E1E37D00C85A53 /* Channel.swift */; };
 /* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		DFA9FBD727ED90AE00632127 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DFA9FBD227ED90AE00632127 /* Charts.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 65AD9E95D9ED4DC0BD73A743;
+			remoteInfo = Charts;
+		};
+		DFA9FBD927ED90AE00632127 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = DFA9FBD227ED90AE00632127 /* Charts.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 1CBBC58C6CE1EBEE9852CE41;
+			remoteInfo = ChartsTests;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		DFA9FBDD27ED90C300632127 /* Embed Frameworks */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 10;
+			files = (
+				DFA9FBDC27ED90C300632127 /* Charts.framework in Embed Frameworks */,
+			);
+			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		A168E09D27146EF600C75064 /* NewsAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsAPI.swift; sourceTree = "<group>"; };
@@ -69,9 +102,11 @@
 		DF14417B2785A5630038D05D /* StatisticViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticViewController.swift; sourceTree = "<group>"; };
 		DF14417D27868B240038D05D /* StatisticTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticTableViewCell.swift; sourceTree = "<group>"; };
 		DF14417F27869C200038D05D /* StockStatistic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockStatistic.swift; sourceTree = "<group>"; };
+		DF3873A127ECC8DC000E2EAF /* LargeValueFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LargeValueFormatter.swift; sourceTree = "<group>"; };
 		DF793AD627DF8C36007C9442 /* AddStockNoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddStockNoViewController.swift; sourceTree = "<group>"; };
 		DF793AD827DF8E29007C9442 /* StockNoList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockNoList.swift; sourceTree = "<group>"; };
 		DF793ADA27E03258007C9442 /* AddStockTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddStockTableViewCell.swift; sourceTree = "<group>"; };
+		DFA9FBD227ED90AE00632127 /* Charts.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Charts.xcodeproj; path = "../../../Downloads/Charts-3.6.0/Charts.xcodeproj"; sourceTree = "<group>"; };
 		DFD239DC270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MyTaiwanStock.xcdatamodel; sourceTree = "<group>"; };
 		DFFEB03D27E1CE3B00C85A53 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		DFFEB04927E1D45000C85A53 /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
@@ -88,9 +123,9 @@
 				A197396227154CEB009D5917 /* Kingfisher in Frameworks */,
 				DFFEB04327E1D00700C85A53 /* FirebaseFirestore in Frameworks */,
 				DFFEB04527E1D00700C85A53 /* FirebaseFirestoreSwift-Beta in Frameworks */,
+				DFA9FBDB27ED90C300632127 /* Charts.framework in Frameworks */,
 				DFFEB04827E1D3BC00C85A53 /* MessageKit in Frameworks */,
 				DFFEB04127E1D00700C85A53 /* FirebaseAuth in Frameworks */,
-				DF06F322270ACC240031D6FE /* Charts in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -100,8 +135,10 @@
 		DF06F2EE27097F2C0031D6FE = {
 			isa = PBXGroup;
 			children = (
+				DFA9FBD227ED90AE00632127 /* Charts.xcodeproj */,
 				DF06F2F927097F2C0031D6FE /* MyTaiwanStock */,
 				DF06F2F827097F2C0031D6FE /* Products */,
+				DF8691F227ECC463003FF990 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -116,6 +153,7 @@
 		DF06F2F927097F2C0031D6FE /* MyTaiwanStock */ = {
 			isa = PBXGroup;
 			children = (
+				DF3873A327ECC930000E2EAF /* Util */,
 				DF06F315270A00DF0031D6FE /* View */,
 				DF06F311270984FE0031D6FE /* View Controller */,
 				DF06F30E27097F360031D6FE /* Model */,
@@ -175,6 +213,30 @@
 			path = View;
 			sourceTree = "<group>";
 		};
+		DF3873A327ECC930000E2EAF /* Util */ = {
+			isa = PBXGroup;
+			children = (
+				DF3873A127ECC8DC000E2EAF /* LargeValueFormatter.swift */,
+			);
+			path = Util;
+			sourceTree = "<group>";
+		};
+		DF8691F227ECC463003FF990 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		DFA9FBD327ED90AE00632127 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				DFA9FBD827ED90AE00632127 /* Charts.framework */,
+				DFA9FBDA27ED90AE00632127 /* ChartsTests.xctest */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -185,6 +247,7 @@
 				DF06F2F327097F2C0031D6FE /* Sources */,
 				DF06F2F427097F2C0031D6FE /* Frameworks */,
 				DF06F2F527097F2C0031D6FE /* Resources */,
+				DFA9FBDD27ED90C300632127 /* Embed Frameworks */,
 			);
 			buildRules = (
 			);
@@ -192,7 +255,6 @@
 			);
 			name = MyTaiwanStock;
 			packageProductDependencies = (
-				DF06F321270ACC240031D6FE /* Charts */,
 				A197396127154CEB009D5917 /* Kingfisher */,
 				DFFEB04027E1D00700C85A53 /* FirebaseAuth */,
 				DFFEB04227E1D00700C85A53 /* FirebaseFirestore */,
@@ -227,19 +289,41 @@
 			);
 			mainGroup = DF06F2EE27097F2C0031D6FE;
 			packageReferences = (
-				DF06F320270ACC240031D6FE /* XCRemoteSwiftPackageReference "Charts" */,
 				A197396027154CEB009D5917 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				DFFEB03F27E1D00700C85A53 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				DFFEB04627E1D3BC00C85A53 /* XCRemoteSwiftPackageReference "MessageKit" */,
 			);
 			productRefGroup = DF06F2F827097F2C0031D6FE /* Products */;
 			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = DFA9FBD327ED90AE00632127 /* Products */;
+					ProjectRef = DFA9FBD227ED90AE00632127 /* Charts.xcodeproj */;
+				},
+			);
 			projectRoot = "";
 			targets = (
 				DF06F2F627097F2C0031D6FE /* MyTaiwanStock */,
 			);
 		};
 /* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		DFA9FBD827ED90AE00632127 /* Charts.framework */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.framework;
+			path = Charts.framework;
+			remoteRef = DFA9FBD727ED90AE00632127 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		DFA9FBDA27ED90AE00632127 /* ChartsTests.xctest */ = {
+			isa = PBXReferenceProxy;
+			fileType = wrapper.cfbundle;
+			path = ChartsTests.xctest;
+			remoteRef = DFA9FBD927ED90AE00632127 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		DF06F2F527097F2C0031D6FE /* Resources */ = {
@@ -267,6 +351,7 @@
 				DF06F326270D50000031D6FE /* History.swift in Sources */,
 				DF06F2FF27097F2C0031D6FE /* StockListViewController.swift in Sources */,
 				A168E0A027147C9800C75064 /* NewsListViewController.swift in Sources */,
+				DF3873A227ECC8DC000E2EAF /* LargeValueFormatter.swift in Sources */,
 				DF06F32A270DEA1A0031D6FE /* AddHistoryViewController.swift in Sources */,
 				DFFEB04E27E1D6C400C85A53 /* Message.swift in Sources */,
 				DF06F31C270AA43A0031D6FE /* StockViewController.swift in Sources */,
@@ -497,14 +582,6 @@
 				minimumVersion = 7.0.0;
 			};
 		};
-		DF06F320270ACC240031D6FE /* XCRemoteSwiftPackageReference "Charts" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/danielgindi/Charts/";
-			requirement = {
-				kind = exactVersion;
-				version = 3.6.0;
-			};
-		};
 		DFFEB03F27E1D00700C85A53 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
@@ -528,11 +605,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = A197396027154CEB009D5917 /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;
-		};
-		DF06F321270ACC240031D6FE /* Charts */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = DF06F320270ACC240031D6FE /* XCRemoteSwiftPackageReference "Charts" */;
-			productName = Charts;
 		};
 		DFFEB04027E1D00700C85A53 /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;

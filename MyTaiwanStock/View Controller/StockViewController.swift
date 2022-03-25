@@ -24,7 +24,7 @@ class StockViewController: UIViewController {
     }()
     
 
-    @IBOutlet weak var candleStickChartView: CandleStickChartView!
+    @IBOutlet weak var combinedChartView: CombinedChartView!
     var stockInfoForCandleStickChart: [[String]]!
     var stockNo: String!
     var stockName: String!
@@ -65,10 +65,10 @@ class StockViewController: UIViewController {
     @IBOutlet weak var historyContainerView: UIView!
     override func viewDidLoad() {
         super.viewDidLoad()
-        candleStickChartView.delegate = self
+        combinedChartView.delegate = self
         tableView.delegate = self
         tableView.dataSource = self
-        
+        tableView.tableFooterView = UIView() // remove unused separator
 
         navigationItem.title = stockNo
        
@@ -79,14 +79,10 @@ class StockViewController: UIViewController {
         
         
         checkIsExistingChannel()
-//        historyContainerView.layer.maskedCorners = [.layerMinXMinYCorner, .layerMaxXMinYCorner]
-//        historyContainerView.layer.cornerRadius = 15
-//        historyContainerView.layer.borderWidth = 1.5
-//        historyContainerView.layer.borderColor = UIColor.lightGray.cgColor
-//        historyContainerView.clipsToBounds = true
-//        historyContainerView.layer.shadowOffset = 
-        
+
+
     }
+ 
     @objc func navigateToAddRecord() {
         let destinationController = storyboard?.instantiateViewController(withIdentifier: "addRecordController") as! AddHistoryViewController
         destinationController.stockNo = self.stockNo
@@ -131,23 +127,53 @@ class StockViewController: UIViewController {
     
     func prepareForChart() {
         var xLabels: [String] = []
-        var candleStickEntry: [CandleChartDataEntry] = []
-        var candleDataSet: CandleChartDataSet
-        
+       
         // x axis label data
         xLabels = stockInfoForCandleStickChart.enumerated().map {
             (index, day) in
             String(day[0])
         }
-        // y data
-        candleStickEntry = stockInfoForCandleStickChart.enumerated().map({ (index, day) in
+
+        combinedChartView.xAxis.valueFormatter = IndexAxisValueFormatter(values: xLabels)
+        combinedChartView.xAxis.labelPosition = XAxis.LabelPosition.bottom
+        combinedChartView.xAxis.labelRotationAngle = -25
+        combinedChartView.legend.enabled = false
+        combinedChartView.setScaleEnabled(false)
+        combinedChartView.dragEnabled = true
+//        candleStickChartView.extraBottomOffset = 50
+        combinedChartView.xAxis.drawGridLinesEnabled = false
+        combinedChartView.drawBordersEnabled = true
+//        candleStickChartView.borderLineWidth = 0.5
+        combinedChartView.rightAxis.enabled = true
+        combinedChartView.backgroundColor = .systemBackground
+        combinedChartView.drawOrder = [CombinedChartView.DrawOrder.bar.rawValue, CombinedChartView.DrawOrder.candle.rawValue]
+        
+        let rightYaxis = combinedChartView.rightAxis
+        rightYaxis.valueFormatter = LargeValueFormatter() as! IAxisValueFormatter
+
+        rightYaxis.spaceTop = 5 // space height from top of max value to total height
+        rightYaxis.drawGridLinesEnabled = false
+        
+        let combinedData = CombinedChartData()
+        combinedData.highlightEnabled = true
+        combinedData.candleData = generateCandleData()
+        combinedData.barData = generateBarData()
+        combinedData.candleData.highlightEnabled = true
+        combinedData.barData.highlightEnabled = false
+        combinedChartView.data = combinedData
+        combinedChartView.notifyDataSetChanged()
+    
+
+    }
+    private func generateCandleData() -> CandleChartData {
+        let candleStickEntries = stockInfoForCandleStickChart.enumerated().map({ (index, day) in
             return CandleChartDataEntry.init(x: Double(index), shadowH: Double(day[4])!, shadowL: Double(day[5])!, open: Double(day[3])!, close: Double(day[6])!)
         })
         
        
         
         
-        candleDataSet = CandleChartDataSet(entries: candleStickEntry, label: "0050")
+        let candleDataSet = CandleChartDataSet(entries: candleStickEntries, label: stockNo)
         
         candleDataSet.shadowColor = .black
         candleDataSet.decreasingColor = .systemGreen
@@ -156,26 +182,31 @@ class StockViewController: UIViewController {
         candleDataSet.increasingFilled = true
         candleDataSet.neutralColor = .black
         candleDataSet.drawValuesEnabled = false
-        
-        let data = CandleChartData(dataSet: candleDataSet)
-        candleStickChartView.data = data
-        
-        
-        candleStickChartView.xAxis.valueFormatter = IndexAxisValueFormatter(values: xLabels)
-        candleStickChartView.xAxis.labelPosition = XAxis.LabelPosition.bottom
-        candleStickChartView.xAxis.labelRotationAngle = -25
-        candleStickChartView.legend.enabled = false
-        candleStickChartView.setScaleEnabled(false)
-        candleStickChartView.dragEnabled = true
-        candleStickChartView.extraBottomOffset = 50
-        candleStickChartView.xAxis.drawGridLinesEnabled = false
-        candleStickChartView.drawBordersEnabled = true
-        candleStickChartView.borderLineWidth = 0.5
-        candleStickChartView.rightAxis.enabled = false
-        candleStickChartView.backgroundColor = .systemBackground
+        candleDataSet.axisDependency = YAxis.AxisDependency.left
+        candleDataSet.showCandleBar = true
+
+        candleDataSet.highlightColor = NSUIColor.systemYellow
+        let candleData = CandleChartData(dataSet: candleDataSet)
+        return candleData
     }
-    
-    
+    private func generateBarData() -> BarChartData {
+        let barEntries = stockInfoForCandleStickChart.enumerated().map({ (index, day) -> BarChartDataEntry in
+            let formatter = NumberFormatter()
+            formatter.numberStyle = .decimal
+            let number = formatter.number(from: day[2])
+            
+            return BarChartDataEntry(x: Double(index), y: Double(truncating: number!))
+            
+        })
+        let barDataSet = BarChartDataSet(entries: barEntries, label: "volume")
+        barDataSet.drawValuesEnabled = false
+        barDataSet.axisDependency = YAxis.AxisDependency.right
+        barDataSet.setColor(NSUIColor.lightGray)
+        
+        let barData = BarChartData(dataSet: barDataSet)
+        
+        return barData
+    }
 }
 
 
@@ -189,7 +220,9 @@ extension StockViewController: ChartViewDelegate {
         closePriceView.text = "收盤：\(stockInfoForCandleStickChart[index][6])"
         highPriceView.text = "最高：\(stockInfoForCandleStickChart[index][4])"
         lowPriceView.text = "最低：\(stockInfoForCandleStickChart[index][5])"
+        
     }
+
 }
 
 
@@ -209,6 +242,8 @@ extension StockViewController: UITableViewDataSource, UITableViewDelegate {
 
         return cell
     }
+    
+    // MARK: click table cell to highlight on chart
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
       
 
@@ -233,8 +268,8 @@ extension StockViewController: UITableViewDataSource, UITableViewDelegate {
                     // find the index of date in stockInfoForCandleStickChart
                     if candleData[0] == targetDateString {
 
-                        candleStickChartView.highlightValue(x: Double(index), dataSetIndex: 0, dataIndex: -1)
-                        candleStickChartView.layoutIfNeeded()
+                        combinedChartView.highlightValue(x: Double(index), dataSetIndex: 0, dataIndex: 1)
+                        combinedChartView.layoutIfNeeded()
                     }
                 }
                 

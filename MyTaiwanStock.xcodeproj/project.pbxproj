@@ -29,13 +29,19 @@
 		DF14417C2785A5630038D05D /* StatisticViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF14417B2785A5630038D05D /* StatisticViewController.swift */; };
 		DF14417E27868B240038D05D /* StatisticTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF14417D27868B240038D05D /* StatisticTableViewCell.swift */; };
 		DF14418027869C200038D05D /* StockStatistic.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF14417F27869C200038D05D /* StockStatistic.swift */; };
+		DF1A6B6427F954D8007631C0 /* CommonStockInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF1A6B6327F954D8007631C0 /* CommonStockInfo.swift */; };
+		DF1A6B6527F954DB007631C0 /* CommonStockInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF1A6B6327F954D8007631C0 /* CommonStockInfo.swift */; };
 		DF3873A227ECC8DC000E2EAF /* LargeValueFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF3873A127ECC8DC000E2EAF /* LargeValueFormatter.swift */; };
 		DF793AD727DF8C36007C9442 /* AddStockNoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF793AD627DF8C36007C9442 /* AddStockNoViewController.swift */; };
 		DF793AD927DF8E29007C9442 /* StockNoList.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF793AD827DF8E29007C9442 /* StockNoList.swift */; };
 		DF793ADB27E03258007C9442 /* AddStockTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF793ADA27E03258007C9442 /* AddStockTableViewCell.swift */; };
-		DFA9FBDB27ED90C300632127 /* Charts.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DFA9FBD827ED90AE00632127 /* Charts.framework */; platformFilter = ios; };
-		DFA9FBDC27ED90C300632127 /* Charts.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = DFA9FBD827ED90AE00632127 /* Charts.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		DFD239DD270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DFD239DB270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodeld */; };
+		DFFB336E27F858830018F3A4 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DFFB336D27F858830018F3A4 /* WidgetKit.framework */; };
+		DFFB337027F858830018F3A4 /* SwiftUI.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DFFB336F27F858830018F3A4 /* SwiftUI.framework */; };
+		DFFB337327F858830018F3A4 /* StockWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFFB337227F858830018F3A4 /* StockWidget.swift */; };
+		DFFB337527F858850018F3A4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DFFB337427F858850018F3A4 /* Assets.xcassets */; };
+		DFFB337927F858850018F3A4 /* StockWidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = DFFB336C27F858830018F3A4 /* StockWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		DFFB338027F85A160018F3A4 /* Charts in Frameworks */ = {isa = PBXBuildFile; productRef = DFFB337F27F85A160018F3A4 /* Charts */; };
 		DFFEB03E27E1CE3B00C85A53 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = DFFEB03D27E1CE3B00C85A53 /* GoogleService-Info.plist */; };
 		DFFEB04127E1D00700C85A53 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = DFFEB04027E1D00700C85A53 /* FirebaseAuth */; };
 		DFFEB04327E1D00700C85A53 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = DFFEB04227E1D00700C85A53 /* FirebaseFirestore */; };
@@ -48,19 +54,12 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		DFA9FBD727ED90AE00632127 /* PBXContainerItemProxy */ = {
+		DFFB337727F858850018F3A4 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
-			containerPortal = DFA9FBD227ED90AE00632127 /* Charts.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 65AD9E95D9ED4DC0BD73A743;
-			remoteInfo = Charts;
-		};
-		DFA9FBD927ED90AE00632127 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DFA9FBD227ED90AE00632127 /* Charts.xcodeproj */;
-			proxyType = 2;
-			remoteGlobalIDString = 1CBBC58C6CE1EBEE9852CE41;
-			remoteInfo = ChartsTests;
+			containerPortal = DF06F2EF27097F2C0031D6FE /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = DFFB336B27F858830018F3A4;
+			remoteInfo = StockWidgetExtension;
 		};
 /* End PBXContainerItemProxy section */
 
@@ -71,9 +70,19 @@
 			dstPath = "";
 			dstSubfolderSpec = 10;
 			files = (
-				DFA9FBDC27ED90C300632127 /* Charts.framework in Embed Frameworks */,
 			);
 			name = "Embed Frameworks";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DFFB337A27F858850018F3A4 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+				DFFB337927F858850018F3A4 /* StockWidgetExtension.appex in Embed App Extensions */,
+			);
+			name = "Embed App Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
@@ -102,12 +111,20 @@
 		DF14417B2785A5630038D05D /* StatisticViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticViewController.swift; sourceTree = "<group>"; };
 		DF14417D27868B240038D05D /* StatisticTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticTableViewCell.swift; sourceTree = "<group>"; };
 		DF14417F27869C200038D05D /* StockStatistic.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockStatistic.swift; sourceTree = "<group>"; };
+		DF1A6B6327F954D8007631C0 /* CommonStockInfo.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CommonStockInfo.swift; sourceTree = "<group>"; };
 		DF3873A127ECC8DC000E2EAF /* LargeValueFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LargeValueFormatter.swift; sourceTree = "<group>"; };
 		DF793AD627DF8C36007C9442 /* AddStockNoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddStockNoViewController.swift; sourceTree = "<group>"; };
 		DF793AD827DF8E29007C9442 /* StockNoList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockNoList.swift; sourceTree = "<group>"; };
 		DF793ADA27E03258007C9442 /* AddStockTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddStockTableViewCell.swift; sourceTree = "<group>"; };
-		DFA9FBD227ED90AE00632127 /* Charts.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = Charts.xcodeproj; path = "../../../Downloads/Charts-3.6.0/Charts.xcodeproj"; sourceTree = "<group>"; };
 		DFD239DC270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MyTaiwanStock.xcdatamodel; sourceTree = "<group>"; };
+		DFFB336C27F858830018F3A4 /* StockWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = StockWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
+		DFFB336D27F858830018F3A4 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
+		DFFB336F27F858830018F3A4 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
+		DFFB337227F858830018F3A4 /* StockWidget.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockWidget.swift; sourceTree = "<group>"; };
+		DFFB337427F858850018F3A4 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		DFFB337627F858850018F3A4 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		DFFB338127F94B5A0018F3A4 /* MyTaiwanStock.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = MyTaiwanStock.entitlements; sourceTree = "<group>"; };
+		DFFB338227F94B740018F3A4 /* StockWidgetExtension.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = StockWidgetExtension.entitlements; sourceTree = "<group>"; };
 		DFFEB03D27E1CE3B00C85A53 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		DFFEB04927E1D45000C85A53 /* ChatViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewController.swift; sourceTree = "<group>"; };
 		DFFEB04B27E1D68C00C85A53 /* Sender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sender.swift; sourceTree = "<group>"; };
@@ -122,10 +139,19 @@
 			files = (
 				A197396227154CEB009D5917 /* Kingfisher in Frameworks */,
 				DFFEB04327E1D00700C85A53 /* FirebaseFirestore in Frameworks */,
+				DFFB338027F85A160018F3A4 /* Charts in Frameworks */,
 				DFFEB04527E1D00700C85A53 /* FirebaseFirestoreSwift-Beta in Frameworks */,
-				DFA9FBDB27ED90C300632127 /* Charts.framework in Frameworks */,
 				DFFEB04827E1D3BC00C85A53 /* MessageKit in Frameworks */,
 				DFFEB04127E1D00700C85A53 /* FirebaseAuth in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DFFB336927F858830018F3A4 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DFFB337027F858830018F3A4 /* SwiftUI.framework in Frameworks */,
+				DFFB336E27F858830018F3A4 /* WidgetKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -135,8 +161,9 @@
 		DF06F2EE27097F2C0031D6FE = {
 			isa = PBXGroup;
 			children = (
-				DFA9FBD227ED90AE00632127 /* Charts.xcodeproj */,
+				DFFB338227F94B740018F3A4 /* StockWidgetExtension.entitlements */,
 				DF06F2F927097F2C0031D6FE /* MyTaiwanStock */,
+				DFFB337127F858830018F3A4 /* StockWidget */,
 				DF06F2F827097F2C0031D6FE /* Products */,
 				DF8691F227ECC463003FF990 /* Frameworks */,
 			);
@@ -146,6 +173,7 @@
 			isa = PBXGroup;
 			children = (
 				DF06F2F727097F2C0031D6FE /* MyTaiwanStock.app */,
+				DFFB336C27F858830018F3A4 /* StockWidgetExtension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -153,6 +181,7 @@
 		DF06F2F927097F2C0031D6FE /* MyTaiwanStock */ = {
 			isa = PBXGroup;
 			children = (
+				DFFB338127F94B5A0018F3A4 /* MyTaiwanStock.entitlements */,
 				DF3873A327ECC930000E2EAF /* Util */,
 				DF06F315270A00DF0031D6FE /* View */,
 				DF06F311270984FE0031D6FE /* View Controller */,
@@ -182,6 +211,7 @@
 				DFFEB04B27E1D68C00C85A53 /* Sender.swift */,
 				DFFEB04D27E1D6C400C85A53 /* Message.swift */,
 				DFFEB04F27E1E37D00C85A53 /* Channel.swift */,
+				DF1A6B6327F954D8007631C0 /* CommonStockInfo.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -224,17 +254,20 @@
 		DF8691F227ECC463003FF990 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				DFFB336D27F858830018F3A4 /* WidgetKit.framework */,
+				DFFB336F27F858830018F3A4 /* SwiftUI.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		DFA9FBD327ED90AE00632127 /* Products */ = {
+		DFFB337127F858830018F3A4 /* StockWidget */ = {
 			isa = PBXGroup;
 			children = (
-				DFA9FBD827ED90AE00632127 /* Charts.framework */,
-				DFA9FBDA27ED90AE00632127 /* ChartsTests.xctest */,
+				DFFB337227F858830018F3A4 /* StockWidget.swift */,
+				DFFB337427F858850018F3A4 /* Assets.xcassets */,
+				DFFB337627F858850018F3A4 /* Info.plist */,
 			);
-			name = Products;
+			path = StockWidget;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -248,10 +281,12 @@
 				DF06F2F427097F2C0031D6FE /* Frameworks */,
 				DF06F2F527097F2C0031D6FE /* Resources */,
 				DFA9FBDD27ED90C300632127 /* Embed Frameworks */,
+				DFFB337A27F858850018F3A4 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
 			dependencies = (
+				DFFB337827F858850018F3A4 /* PBXTargetDependency */,
 			);
 			name = MyTaiwanStock;
 			packageProductDependencies = (
@@ -260,10 +295,28 @@
 				DFFEB04227E1D00700C85A53 /* FirebaseFirestore */,
 				DFFEB04427E1D00700C85A53 /* FirebaseFirestoreSwift-Beta */,
 				DFFEB04727E1D3BC00C85A53 /* MessageKit */,
+				DFFB337F27F85A160018F3A4 /* Charts */,
 			);
 			productName = MyTaiwanStock;
 			productReference = DF06F2F727097F2C0031D6FE /* MyTaiwanStock.app */;
 			productType = "com.apple.product-type.application";
+		};
+		DFFB336B27F858830018F3A4 /* StockWidgetExtension */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = DFFB337D27F858850018F3A4 /* Build configuration list for PBXNativeTarget "StockWidgetExtension" */;
+			buildPhases = (
+				DFFB336827F858830018F3A4 /* Sources */,
+				DFFB336927F858830018F3A4 /* Frameworks */,
+				DFFB336A27F858830018F3A4 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = StockWidgetExtension;
+			productName = StockWidgetExtension;
+			productReference = DFFB336C27F858830018F3A4 /* StockWidgetExtension.appex */;
+			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
 
@@ -271,11 +324,14 @@
 		DF06F2EF27097F2C0031D6FE /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1250;
+				LastSwiftUpdateCheck = 1320;
 				LastUpgradeCheck = 1250;
 				TargetAttributes = {
 					DF06F2F627097F2C0031D6FE = {
 						CreatedOnToolsVersion = 12.5.1;
+					};
+					DFFB336B27F858830018F3A4 = {
+						CreatedOnToolsVersion = 13.2.1;
 					};
 				};
 			};
@@ -292,38 +348,17 @@
 				A197396027154CEB009D5917 /* XCRemoteSwiftPackageReference "Kingfisher" */,
 				DFFEB03F27E1D00700C85A53 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
 				DFFEB04627E1D3BC00C85A53 /* XCRemoteSwiftPackageReference "MessageKit" */,
+				DFFB337E27F85A160018F3A4 /* XCRemoteSwiftPackageReference "Charts" */,
 			);
 			productRefGroup = DF06F2F827097F2C0031D6FE /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = DFA9FBD327ED90AE00632127 /* Products */;
-					ProjectRef = DFA9FBD227ED90AE00632127 /* Charts.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				DF06F2F627097F2C0031D6FE /* MyTaiwanStock */,
+				DFFB336B27F858830018F3A4 /* StockWidgetExtension */,
 			);
 		};
 /* End PBXProject section */
-
-/* Begin PBXReferenceProxy section */
-		DFA9FBD827ED90AE00632127 /* Charts.framework */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.framework;
-			path = Charts.framework;
-			remoteRef = DFA9FBD727ED90AE00632127 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-		DFA9FBDA27ED90AE00632127 /* ChartsTests.xctest */ = {
-			isa = PBXReferenceProxy;
-			fileType = wrapper.cfbundle;
-			path = ChartsTests.xctest;
-			remoteRef = DFA9FBD927ED90AE00632127 /* PBXContainerItemProxy */;
-			sourceTree = BUILT_PRODUCTS_DIR;
-		};
-/* End PBXReferenceProxy section */
 
 /* Begin PBXResourcesBuildPhase section */
 		DF06F2F527097F2C0031D6FE /* Resources */ = {
@@ -334,6 +369,14 @@
 				DFFEB03E27E1CE3B00C85A53 /* GoogleService-Info.plist in Resources */,
 				DF06F30427097F2E0031D6FE /* Assets.xcassets in Resources */,
 				DF06F30227097F2C0031D6FE /* Main.storyboard in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		DFFB336A27F858830018F3A4 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DFFB337527F858850018F3A4 /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -361,6 +404,7 @@
 				DF793AD727DF8C36007C9442 /* AddStockNoViewController.swift in Sources */,
 				DF06F3102709805E0031D6FE /* StockInfo.swift in Sources */,
 				DFFEB04C27E1D68C00C85A53 /* Sender.swift in Sources */,
+				DF1A6B6427F954D8007631C0 /* CommonStockInfo.swift in Sources */,
 				DF06F2FD27097F2C0031D6FE /* SceneDelegate.swift in Sources */,
 				DF14418027869C200038D05D /* StockStatistic.swift in Sources */,
 				DF06F317270A01220031D6FE /* StockTableViewCell.swift in Sources */,
@@ -374,7 +418,24 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		DFFB336827F858830018F3A4 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				DFFB337327F858830018F3A4 /* StockWidget.swift in Sources */,
+				DF1A6B6527F954DB007631C0 /* CommonStockInfo.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		DFFB337827F858850018F3A4 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = DFFB336B27F858830018F3A4 /* StockWidgetExtension */;
+			targetProxy = DFFB337727F858850018F3A4 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXVariantGroup section */
 		DF06F30027097F2C0031D6FE /* Main.storyboard */ = {
@@ -515,8 +576,10 @@
 		DF06F30C27097F2E0031D6FE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MyTaiwanStock/MyTaiwanStock.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 5L8228KGK3;
 				INFOPLIST_FILE = MyTaiwanStock/Info.plist;
@@ -534,8 +597,10 @@
 		DF06F30D27097F2E0031D6FE /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_ENTITLEMENTS = MyTaiwanStock/MyTaiwanStock.entitlements;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 5L8228KGK3;
 				INFOPLIST_FILE = MyTaiwanStock/Info.plist;
@@ -545,6 +610,66 @@
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = com.albertkingdom.MyTaiwanStock;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Release;
+		};
+		DFFB337B27F858850018F3A4 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_ENTITLEMENTS = StockWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 5L8228KGK3;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = StockWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = StockWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.7;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.albertkingdom.MyTaiwanStock.StockWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+			};
+			name = Debug;
+		};
+		DFFB337C27F858850018F3A4 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				ASSETCATALOG_COMPILER_WIDGET_BACKGROUND_COLOR_NAME = WidgetBackground;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_ENTITLEMENTS = StockWidgetExtension.entitlements;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = 5L8228KGK3;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = StockWidget/Info.plist;
+				INFOPLIST_KEY_CFBundleDisplayName = StockWidget;
+				INFOPLIST_KEY_NSHumanReadableCopyright = "";
+				IPHONEOS_DEPLOYMENT_TARGET = 14.7;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.albertkingdom.MyTaiwanStock.StockWidget;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -571,6 +696,15 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
+		DFFB337D27F858850018F3A4 /* Build configuration list for PBXNativeTarget "StockWidgetExtension" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				DFFB337B27F858850018F3A4 /* Debug */,
+				DFFB337C27F858850018F3A4 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
@@ -580,6 +714,14 @@
 			requirement = {
 				kind = upToNextMajorVersion;
 				minimumVersion = 7.0.0;
+			};
+		};
+		DFFB337E27F85A160018F3A4 /* XCRemoteSwiftPackageReference "Charts" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/danielgindi/Charts";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 3.0.0;
 			};
 		};
 		DFFEB03F27E1D00700C85A53 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
@@ -605,6 +747,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = A197396027154CEB009D5917 /* XCRemoteSwiftPackageReference "Kingfisher" */;
 			productName = Kingfisher;
+		};
+		DFFB337F27F85A160018F3A4 /* Charts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DFFB337E27F85A160018F3A4 /* XCRemoteSwiftPackageReference "Charts" */;
+			productName = Charts;
 		};
 		DFFEB04027E1D00700C85A53 /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;

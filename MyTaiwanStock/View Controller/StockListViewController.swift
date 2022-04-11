@@ -4,7 +4,7 @@
 //
 //  Created by Albert Lin on 2021/10/3.
 //
-
+import WidgetKit
 import UIKit
 import CoreData
 
@@ -104,7 +104,22 @@ class StockListViewController: UIViewController {
                 DispatchQueue.main.async {
                     self.tableView.reloadData()
                 }
-                //self.userDefault.set(self.onedayStockInfo, forKey: "stockPrice")
+                
+                // convert coCommonStockInfo struct type and save to userDefault
+                let userDefault = UserDefaults(suiteName: "group.com.albertkingdom.mytaiwanstock.test")
+                let encoder = JSONEncoder()
+                let stockListForWidget = self.onedayStockInfo.map { item in
+                    return CommonStockInfo(stockNo: item.stockNo, current: item.current, shortName: item.shortName, yesterDayPrice: item.yesterDayPrice)
+                }
+                do {
+                    let stockListForWidgetEncode = try encoder.encode(stockListForWidget)
+                    userDefault?.setValue(stockListForWidgetEncode, forKey: "stockList")
+                    WidgetCenter.shared.reloadAllTimelines()
+                } catch let error{
+                    print(error)
+                }
+                
+                
                 
             case .failure(let error):
                 print("failure: \(error)")

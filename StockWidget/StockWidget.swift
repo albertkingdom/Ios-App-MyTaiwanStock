@@ -44,7 +44,10 @@ func getStockList() -> [CommonStockInfo] {
     do{
         let decoder = JSONDecoder()
         let stockList = try decoder.decode([CommonStockInfo].self, from: stockListData)
-        return Array(stockList[0...2])
+        if stockList.count > 3 {
+            return Array(stockList[0...2])
+        }
+        return Array(stockList)
     }catch let err{
         print(err)
         return []

@@ -133,6 +133,7 @@ extension ChatViewController: InputBarAccessoryViewDelegate {
         guard let currentUser = currentUser else { return }
         let message = Message(user: currentUser,content: text)
         save(message)
+        inputBar.inputTextView.text = ""
     }
     
     private func save(_ message: Message) {

@@ -10,6 +10,7 @@ import Charts
 import FirebaseFirestore
 
 class StockViewController: UIViewController {
+    var chartService: ChartService!
     var context: NSManagedObjectContext?
     lazy var fetchedResultsController: NSFetchedResultsController<InvestHistory> = {
     
@@ -63,6 +64,7 @@ class StockViewController: UIViewController {
       
     }
     @IBOutlet weak var historyContainerView: UIView!
+
     override func viewDidLoad() {
         super.viewDidLoad()
         combinedChartView.delegate = self
@@ -111,7 +113,9 @@ class StockViewController: UIViewController {
             DispatchQueue.main.async {
                 
                 if self.stockInfoForCandleStickChart != nil{
-                    self.prepareForChart()
+//                    self.prepareForChart()
+                    self.chartService = ChartService(candleStickData: self.stockInfoForCandleStickChart, stockNo: self.stockNo)
+                    self.chartService.prepareForCombinedChart(combinedChartView: self.combinedChartView)
                 }
             }
         }
@@ -124,89 +128,8 @@ class StockViewController: UIViewController {
         }
     }
     
+   
     
-    func prepareForChart() {
-        var xLabels: [String] = []
-       
-        // x axis label data
-        xLabels = stockInfoForCandleStickChart.enumerated().map {
-            (index, day) in
-            String(day[0])
-        }
-
-        combinedChartView.xAxis.valueFormatter = IndexAxisValueFormatter(values: xLabels)
-        combinedChartView.xAxis.labelPosition = XAxis.LabelPosition.bottom
-        combinedChartView.xAxis.labelRotationAngle = -25
-        combinedChartView.legend.enabled = false
-        combinedChartView.setScaleEnabled(false)
-        combinedChartView.dragEnabled = true
-//        candleStickChartView.extraBottomOffset = 50
-        combinedChartView.xAxis.drawGridLinesEnabled = false
-        combinedChartView.drawBordersEnabled = true
-//        candleStickChartView.borderLineWidth = 0.5
-        combinedChartView.rightAxis.enabled = true
-        combinedChartView.backgroundColor = .systemBackground
-        combinedChartView.drawOrder = [CombinedChartView.DrawOrder.bar.rawValue, CombinedChartView.DrawOrder.candle.rawValue]
-        
-        let rightYaxis = combinedChartView.rightAxis
-        rightYaxis.valueFormatter = LargeValueFormatter() as! IAxisValueFormatter
-
-        rightYaxis.spaceTop = 5 // space height from top of max value to total height
-        rightYaxis.drawGridLinesEnabled = false
-        
-        let combinedData = CombinedChartData()
-        combinedData.highlightEnabled = true
-        combinedData.candleData = generateCandleData()
-        combinedData.barData = generateBarData()
-        combinedData.candleData.highlightEnabled = true
-        combinedData.barData.highlightEnabled = false
-        combinedChartView.data = combinedData
-        combinedChartView.notifyDataSetChanged()
-    
-
-    }
-    private func generateCandleData() -> CandleChartData {
-        let candleStickEntries = stockInfoForCandleStickChart.enumerated().map({ (index, day) in
-            return CandleChartDataEntry.init(x: Double(index), shadowH: Double(day[4])!, shadowL: Double(day[5])!, open: Double(day[3])!, close: Double(day[6])!)
-        })
-        
-       
-        
-        
-        let candleDataSet = CandleChartDataSet(entries: candleStickEntries, label: stockNo)
-        
-        candleDataSet.shadowColor = .black
-        candleDataSet.decreasingColor = .systemGreen
-        candleDataSet.decreasingFilled = true
-        candleDataSet.increasingColor = .red
-        candleDataSet.increasingFilled = true
-        candleDataSet.neutralColor = .black
-        candleDataSet.drawValuesEnabled = false
-        candleDataSet.axisDependency = YAxis.AxisDependency.left
-        candleDataSet.showCandleBar = true
-
-        candleDataSet.highlightColor = NSUIColor.systemYellow
-        let candleData = CandleChartData(dataSet: candleDataSet)
-        return candleData
-    }
-    private func generateBarData() -> BarChartData {
-        let barEntries = stockInfoForCandleStickChart.enumerated().map({ (index, day) -> BarChartDataEntry in
-            let formatter = NumberFormatter()
-            formatter.numberStyle = .decimal
-            let number = formatter.number(from: day[2])
-            
-            return BarChartDataEntry(x: Double(index), y: Double(truncating: number!))
-            
-        })
-        let barDataSet = BarChartDataSet(entries: barEntries, label: "volume")
-        barDataSet.drawValuesEnabled = false
-        barDataSet.axisDependency = YAxis.AxisDependency.right
-        barDataSet.setColor(NSUIColor.lightGray)
-        
-        let barData = BarChartData(dataSet: barDataSet)
-        
-        return barData
-    }
 }
 
 
@@ -330,6 +253,7 @@ extension StockViewController: NSFetchedResultsControllerDelegate {
     }
 }
 
+// MARK: chat room channel
 extension StockViewController {
 
     private var channelReference: CollectionReference {

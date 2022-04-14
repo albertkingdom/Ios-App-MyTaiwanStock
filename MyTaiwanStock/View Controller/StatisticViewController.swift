@@ -9,7 +9,7 @@ import Charts
 import UIKit
 
 class StatisticViewController: UIViewController {
-
+    var chartService: ChartService!
     var stockNoToAsset: [StockStatistic] = []
     @IBOutlet weak var pieChartView: PieChartView!
     @IBOutlet weak var tableView: UITableView!
@@ -50,7 +50,7 @@ class StatisticViewController: UIViewController {
                         stockNoToAmountList[history.stockNo!]! += Int(history.amount) * (history.status == 0 ? 1 : -1)
                     }
                 }
-                print("stockNoToAmountList...\(stockNoToAmountList)")
+                //print("stockNoToAmountList...\(stockNoToAmountList)")
                 
 
                 let savedStockPrice = OneDayStockInfo.priceList
@@ -58,12 +58,12 @@ class StatisticViewController: UIViewController {
                 savedStockPrice.map { stock in
                     stockNoToPriceList[stock.stockNo] = stock.current != "-" ? Double(stock.current) : Double(stock.yesterDayPrice)
                 }
-                print("stockNoToPriceList...\(stockNoToPriceList)")
+                //print("stockNoToPriceList...\(stockNoToPriceList)")
 
                 stockNoToAsset = stockNoToAmountList.map({ (key: String, value: Int) in
                     StockStatistic(stockNo: key, totalAssets: Double(value) * stockNoToPriceList[key]! )
                 })
-                
+                tableView.reloadData()
                 //print("stockNoToAsset...\(stockNoToAsset)")
                 
                 
@@ -71,80 +71,23 @@ class StatisticViewController: UIViewController {
             if stockNoToAsset.isEmpty {
                 self.showWarningPopup()
             }
-            prepareForPieChart(dataSource: stockNoToAsset, target: pieChartView)
+            // chart
+            self.chartService = ChartService(pieChartData: self.stockNoToAsset)
+            chartService.prepareForPieChart(pieChartView: pieChartView)
         } catch {
             fatalError("Invest history fetch error")
         }
     }
     func showWarningPopup() {
-        let popupView = UIView()
-        let UILabelView = UILabel()
-        popupView.backgroundColor = .lightGray
-        popupView.alpha = 0.7
-        popupView.layer.cornerRadius = 10
-        UILabelView.text = "Please add some invest history!"
-        UILabelView.font = UIFont.systemFont(ofSize: 20)
-        UILabelView.lineBreakMode = .byWordWrapping
-        UILabelView.numberOfLines = 3
-        UILabelView.textAlignment = .center
-        UILabelView.translatesAutoresizingMaskIntoConstraints = false
-        popupView.translatesAutoresizingMaskIntoConstraints = false
-        popupView.addSubview(UILabelView)
-        view.addSubview(popupView)
-        NSLayoutConstraint.activate([
-            UILabelView.centerXAnchor.constraint(equalTo: popupView.centerXAnchor),
-            UILabelView.centerYAnchor.constraint(equalTo: popupView.centerYAnchor),
-            UILabelView.widthAnchor.constraint(equalTo: popupView.widthAnchor, multiplier: 0.8)
-        ])
-        NSLayoutConstraint.activate([
-            popupView.centerXAnchor.constraint(equalTo: view.centerXAnchor),
-            popupView.centerYAnchor.constraint(equalTo: view.centerYAnchor),
-            popupView.widthAnchor.constraint(equalTo: view.widthAnchor, multiplier: 0.7),
-            popupView.heightAnchor.constraint(equalTo: view.heightAnchor, multiplier: 0.3)
-        ])
-        
-    }
-    func prepareForPieChart(dataSource: [StockStatistic], target: PieChartView) {
-        // entries -> pieDataset -> pieData -> pieChart
-        var colors: [UIColor] = []
-        var entries: [PieChartDataEntry] = []
 
-        let pieDataSet: PieChartDataSet
-        let pieData: PieChartData
-        
-        colors = dataSource.map { entry in
-
-            let randomColor = UIColor(red: CGFloat(Float.random(in: 0..<1)), green: CGFloat(Float.random(in: 0..<1)), blue: CGFloat(Float.random(in: 0..<1)), alpha: 1)
-            //print(randomColor)
-            return randomColor
+        let alertVC = UIAlertController(title: "Remind", message: "Please add some invest history!", preferredStyle: .alert)
+        let okAction = UIAlertAction(title: "Ok", style: .default) { _ in
+            self.tabBarController?.selectedIndex = 0
         }
-        let sumOfAsset = dataSource.map { entry in
-            entry.totalAssets
-        }.reduce(0) { partialResult, item in
-            partialResult + item
-        }
-        //print("sumOfAsset..\(sumOfAsset)")
-        entries = dataSource.map({
-            PieChartDataEntry(value: $0.totalAssets / sumOfAsset, label: $0.stockNo)
-        })
-        
-        pieDataSet = PieChartDataSet(entries: entries, label: "stockNo.")
-        pieDataSet.colors = colors
-        pieData = PieChartData(dataSet: pieDataSet)
-        pieData.setDrawValues(true)
-        
-        let valFormatter = NumberFormatter()
-        valFormatter.numberStyle = .percent
-        valFormatter.percentSymbol = "%"
-        valFormatter.multiplier = 1.0
-        valFormatter.maximumFractionDigits = 1
-        pieData.setValueFormatter(DefaultValueFormatter(formatter: valFormatter))
-        pieData.setValueFont(NSUIFont.systemFont(ofSize: 12))
-        
-        target.data = pieData
-        target.usePercentValuesEnabled = true
-        
+        alertVC.addAction(okAction)
+        self.present(alertVC, animated: true, completion: nil)
     }
+ 
 
 
 }

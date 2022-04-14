@@ -9,7 +9,7 @@ import UIKit
 import CoreData
 
 class StockListViewController: UIViewController {
-    let userDefault = UserDefaults.standard
+    var userDefault = UserDefaults(suiteName: "group.com.albertkingdom.mytaiwanstock.test")
     var context: NSManagedObjectContext?
     
     lazy var fetchedResultsController: NSFetchedResultsController<StockNo> = {
@@ -105,15 +105,15 @@ class StockListViewController: UIViewController {
                     self.tableView.reloadData()
                 }
                 
-                // convert coCommonStockInfo struct type and save to userDefault
-                let userDefault = UserDefaults(suiteName: "group.com.albertkingdom.mytaiwanstock.test")
+                // convert to CommonStockInfo struct type and save to userDefault
+
                 let encoder = JSONEncoder()
                 let stockListForWidget = self.onedayStockInfo.map { item in
                     return CommonStockInfo(stockNo: item.stockNo, current: item.current, shortName: item.shortName, yesterDayPrice: item.yesterDayPrice)
                 }
                 do {
                     let stockListForWidgetEncode = try encoder.encode(stockListForWidget)
-                    userDefault?.setValue(stockListForWidgetEncode, forKey: "stockList")
+                    self.userDefault?.setValue(stockListForWidgetEncode, forKey: "stockList")
                     WidgetCenter.shared.reloadAllTimelines()
                 } catch let error{
                     print(error)
@@ -248,14 +248,14 @@ extension StockListViewController: NSFetchedResultsControllerDelegate {
     }
 }
 
-extension StockListViewController: UIPickerViewDelegate, UIPickerViewDataSource {
-    func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        return 1
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return 5
-    }
-    
-    
-}
+//extension StockListViewController: UIPickerViewDelegate, UIPickerViewDataSource {
+//    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+//        return 1
+//    }
+//    
+//    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+//        return 5
+//    }
+//    
+//    
+//}

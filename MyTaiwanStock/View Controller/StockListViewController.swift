@@ -11,52 +11,75 @@ import CoreData
 class StockListViewController: UIViewController {
     var userDefault = UserDefaults(suiteName: "group.com.albertkingdom.mytaiwanstock.test")
     var context: NSManagedObjectContext?
-    
-    lazy var fetchedResultsController: NSFetchedResultsController<StockNo> = {
-        let fetchRequest: NSFetchRequest<StockNo> = StockNo.fetchRequest()
-        let sortDescriptor = NSSortDescriptor(key: "stockNo", ascending: false)
-        fetchRequest.sortDescriptors = [sortDescriptor]
+    var followingListObjectFromDB: [List] = []
+    var followingListSelectionMenu: [String] = [] {
+        didSet {
+            print("didset \(followingListSelectionMenu)")
+
+            var actions = self.followingListSelectionMenu.enumerated().map { index, str in
+                UIAction(title: str, state: .on, handler: { action in
+                    print("index \(index), str \(str)")
+                    self.currentMenuIndex = index
+                    
+                })
+            }
+            actions.append(
+                UIAction(title: "編輯", handler: { action in
+
+                    // go to addlistVC page
+                    let addListVC = self.storyboard?.instantiateViewController(withIdentifier: "addListVC") as! AddListViewController
+                    self.navigationController?.pushViewController(addListVC, animated: true)
+                }))
+            popUpButton.menu = UIMenu(children: actions)
+        }
+    }
+    var currentMenuIndex: Int = 0 {
+        didSet {
+            print("didset currentMenuIndex \(currentMenuIndex)")
+            stockNameStringSet.removeAll()
+            //self.fetchStockNoFromDB()
+            guard let setOfStockNoObjects = followingListObjectFromDB[currentMenuIndex].stockNo else { return }
+            let stockNoStringArray:[String] = setOfStockNoObjects.map { ele -> String in
+                guard let stockNo = (ele as? StockNo)?.stockNo else { return "" }
+                print("\(followingListObjectFromDB[currentMenuIndex].name)  \(stockNo)")
+                return stockNo
+            }
+            stockNameStringSet = Set(stockNoStringArray)
+        }
         
-        let frc = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: self.context!, sectionNameKeyPath: nil, cacheName: nil)
-        frc.delegate = self
-        return frc
-    }()
+    }
     
-    var onedayStockInfo: [OneDayStockInfoDetail] = []
-    var stockNoList: Set<String> = []
+
+    
+    var onedayStockInfo: [OneDayStockInfoDetail] = [] // stock price detail from api
+    var stockNameStringSet: Set<String> = [] {
+        didSet {
+            print("didset stockNoList \(stockNameStringSet)")
+            guard !stockNameStringSet.isEmpty else {
+                self.filteredItems.removeAll()
+                self.tableView.reloadData()
+                return
+                
+            }
+            repeatFetchOneDayStockInfoFromAPI()
+        }
+    }
     var filteredItems: [OneDayStockInfoDetail] = []
     var refreshControl: UIRefreshControl!
     private var timer: DispatchSourceTimer?
     @IBOutlet weak var searchBar: UISearchBar!
-    
     @IBOutlet weak var tableView: UITableView!
-    @IBAction func addStockNo(_ sender: Any) {
+    @IBOutlet weak var popUpButton: UIButton!
+    @IBAction func goToAddStockNoVC(_ sender: Any) {
 
         let addStockViewController = storyboard?.instantiateViewController(identifier: "addStockVC") as! AddStockNoViewController
-        addStockViewController.followingStockNoList = stockNoList
+        addStockViewController.followingStockNoList = stockNameStringSet
         addStockViewController.addNewStockToDB = saveNewStockNumberToDB(stockNumber:)
+        addStockViewController.list = followingListObjectFromDB[currentMenuIndex]
         navigationController?.pushViewController(addStockViewController, animated: true)
     }
-    func saveNewStockNumberToDB(stockNumber: String) {
-        print("saveNewStockNumberToDB...\(stockNumber)")
-        guard let context = self.context else { return }
-
-        // core data
-        if self.stockNoList.firstIndex(of: stockNumber) != nil { return }
-        let newStockNo = StockNo(context: context)
-        newStockNo.stockNo = stockNumber
-
-        do {
-            try context.save()
-            self.stockNoList.insert(stockNumber) //update set in vc
-            print("add item to stockNoList, \(self.stockNoList)")
-            //self.fetchOneDayStockInfo()
-        } catch {
-            print("error, \(error.localizedDescription)")
-        }
-
-        
-    }
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -67,35 +90,44 @@ class StockListViewController: UIViewController {
         tableView.tableFooterView = UIView()
         
         navigationItem.leftBarButtonItem = editButtonItem
-        navigationItem.title = "自選清單"
-
+        //navigationItem.title = "自選清單"
+        setupMenuSelector()
         
-        //core data
-        do {
-            try fetchedResultsController.performFetch()
-            fetchedResultsController.fetchedObjects?.forEach({
-                stockNoList.insert($0.stockNo!)
-            })
-            print("stockNoList, \(stockNoList)")
-        } catch {
-            fatalError("Core Data fetch error")
-        }
-        if let _ = fetchedResultsController.fetchedObjects {
-//            fetchOneDayStockInfo()
-            repeatFetchOneDayStockInfo()
-        }
-
         // pull refresh
         refreshControl = UIRefreshControl()
         tableView.addSubview(refreshControl)
         refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
     }
-   
-    
-    func fetchOneDayStockInfo() {
-        guard let stockNoList = fetchedResultsController.fetchedObjects else { return }
+    override func viewWillAppear(_ animated: Bool) {
+        let listObjectFromDB = fetchAllListFromDB()
         
-        OneDayStockInfo.fetchOneDayStockInfo(stockList: stockNoList ){ result in
+        if listObjectFromDB.isEmpty {
+            // if no existing following list in db, create a default one
+            guard let newList = saveNewListToDB(listName: "預設清單1") else { return }
+            self.followingListSelectionMenu.append(newList.name!)
+            self.followingListObjectFromDB.append(newList)
+            currentMenuIndex = 0
+        }
+        if !listObjectFromDB.isEmpty {
+            self.followingListSelectionMenu = listObjectFromDB.map({ list in
+                list.name!
+            })
+            self.followingListObjectFromDB = listObjectFromDB
+            
+            currentMenuIndex = 0
+        }
+        print("stocklist vc viewWillAppear")
+    }
+    override func viewWillDisappear(_ animated: Bool) {
+        timer?.cancel()
+        timer = nil
+    }
+    
+    
+    func fetchOneDayStockInfoFromAPI() {
+        //guard let stockNoList = fetchedResultsController.fetchedObjects else { return }
+        let stockNoListArray = Array(self.stockNameStringSet)
+        OneDayStockInfo.fetchOneDayStockInfo(stockList: stockNoListArray ){ result in
             switch result {
             case .success(let stockInfo):
                 //print("success: \(stockInfo)")
@@ -107,17 +139,7 @@ class StockListViewController: UIViewController {
                 
                 // convert to CommonStockInfo struct type and save to userDefault
 
-                let encoder = JSONEncoder()
-                let stockListForWidget = self.onedayStockInfo.map { item in
-                    return CommonStockInfo(stockNo: item.stockNo, current: item.current, shortName: item.shortName, yesterDayPrice: item.yesterDayPrice)
-                }
-                do {
-                    let stockListForWidgetEncode = try encoder.encode(stockListForWidget)
-                    self.userDefault?.setValue(stockListForWidgetEncode, forKey: "stockList")
-                    WidgetCenter.shared.reloadAllTimelines()
-                } catch let error{
-                    print(error)
-                }
+                self.saveListToUserDefault()
                 
                 
                 
@@ -126,24 +148,44 @@ class StockListViewController: UIViewController {
             }
         }
     }
-    func repeatFetchOneDayStockInfo() {
+    func repeatFetchOneDayStockInfoFromAPI() {
         timer = DispatchSource.makeTimerSource(queue: DispatchQueue.global())
         timer!.schedule(deadline: .now(), repeating: DispatchTimeInterval.seconds(60*1))
         timer!.setEventHandler { [weak self] in
 
-            self?.fetchOneDayStockInfo()
+            self?.fetchOneDayStockInfoFromAPI()
             
         }
         timer!.resume()
     }
+    func saveListToUserDefault() {
+        let encoder = JSONEncoder()
+        let stockListForWidget = self.onedayStockInfo.map { item in
+            return CommonStockInfo(stockNo: item.stockNo, current: item.current, shortName: item.shortName, yesterDayPrice: item.yesterDayPrice)
+        }
+        do {
+            let stockListForWidgetEncode = try encoder.encode(stockListForWidget)
+            self.userDefault?.setValue(stockListForWidgetEncode, forKey: "stockList")
+            WidgetCenter.shared.reloadAllTimelines()
+        } catch let error{
+            print(error)
+        }
+    }
     @objc func refreshData(){
         self.refreshControl.endRefreshing()
-        self.fetchOneDayStockInfo()
+        self.fetchOneDayStockInfoFromAPI()
     }
-    override func viewWillDisappear(_ animated: Bool) {
-        timer?.cancel()
-        timer = nil
+    
+    func setupMenuSelector() {
+        self.popUpButton.frame.size.width = 200
+        //self.menu = ["統一7-ELEVEn獅隊▼","中信兄弟隊"]
+
     }
+    
+    
+    
+  
+    
 }
 
 extension StockListViewController: UITableViewDataSource, UITableViewDelegate {
@@ -178,12 +220,17 @@ extension StockListViewController: UITableViewDataSource, UITableViewDelegate {
         let index = indexPath.row
         let itemToDelete = filteredItems[index]
         if editingStyle == .delete {
-
-            guard let objectToDel = fetchedResultsController.fetchedObjects?.filter({
-                $0.stockNo == itemToDelete.stockNo
-            })[0] else { return }
-            context?.delete(objectToDel)
-            try? context?.save()
+            
+            
+            // find the stockNo object to be deleted
+            guard let stockNoSet = followingListObjectFromDB[currentMenuIndex].stockNo else { return }
+            
+            let stockNoObjectArray = stockNoSet.map({ ele -> StockNo in
+                let stockNoObject = ele as! StockNo
+                return stockNoObject
+            })
+            let stockNoObjectToDel = stockNoObjectArray[indexPath.row]
+            deleteStockNumberInDB(stockNoObject: stockNoObjectToDel)
             
             self.onedayStockInfo = onedayStockInfo.filter({
                 $0.stockNo != itemToDelete.stockNo
@@ -193,7 +240,7 @@ extension StockListViewController: UITableViewDataSource, UITableViewDelegate {
             })
             tableView.deleteRows(at: [indexPath], with: .automatic)
   
-            self.stockNoList = self.stockNoList.filter { stockNo in
+            self.stockNameStringSet = self.stockNameStringSet.filter { stockNo in
                 itemToDelete.stockNo != stockNo
             } // edit current stockno list
         }
@@ -212,7 +259,61 @@ extension StockListViewController: UITableViewDataSource, UITableViewDelegate {
     
     
 }
+// MARK: core data CRUD
+extension StockListViewController {
+    func fetchAllListFromDB() -> [List]{
+        let fetchRequest: NSFetchRequest<List> = List.fetchRequest()
+        var lists: [List] = []
+        do {
+            guard let result = try context?.fetch(fetchRequest) else { return [List]() }
+            print("lists \(result)")
 
+            lists = result
+        } catch let error {
+            print(error.localizedDescription)
+        }
+        return lists
+    }
+    func saveNewListToDB(listName: String) -> List? {
+        
+        let newList = List(context: context!)
+        newList.name = listName
+        
+        do {
+            try context?.save()
+
+            return newList
+         
+        } catch {
+            print("error, \(error.localizedDescription)")
+            return nil
+        }
+        
+    }
+    func saveNewStockNumberToDB(stockNumber: String) {
+        print("saveNewStockNumberToDB...\(stockNumber)")
+        guard let context = self.context else { return }
+
+        if self.stockNameStringSet.firstIndex(of: stockNumber) != nil { return }
+        let newStockNo = StockNo(context: context)
+        newStockNo.stockNo = stockNumber
+        newStockNo.ofList = followingListObjectFromDB[currentMenuIndex] // set the relationship between list and stockNo
+        //lists[currentMenuIndex].stockNo = NSSet(array: [newStockNo])
+        do {
+            try context.save()
+        } catch {
+            print("error, \(error.localizedDescription)")
+        }
+ 
+    }
+    func deleteStockNumberInDB(stockNoObject: StockNo) {
+        context?.delete(stockNoObject)
+        
+        // TODO: show the UIAlert
+        try? context?.save()
+
+    }
+}
 extension StockListViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         let searchTerm = searchBar.text ?? ""
@@ -241,21 +342,4 @@ extension StockListViewController: UISearchBarDelegate {
     }
 }
 
-extension StockListViewController: NSFetchedResultsControllerDelegate {
-    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        fetchOneDayStockInfo()
-        
-    }
-}
 
-//extension StockListViewController: UIPickerViewDelegate, UIPickerViewDataSource {
-//    func numberOfComponents(in pickerView: UIPickerView) -> Int {
-//        return 1
-//    }
-//    
-//    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-//        return 5
-//    }
-//    
-//    
-//}

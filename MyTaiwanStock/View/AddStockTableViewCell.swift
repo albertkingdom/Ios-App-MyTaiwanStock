@@ -17,8 +17,10 @@ class AddStockTableViewCell: UITableViewCell {
         addNewStockToDB(stockNumberString)
 
         isInFollowingList = true
-
+        
+        
     }
+    var stockListNo: Int16!
     var isInFollowingList: Bool = false {
         didSet {
             

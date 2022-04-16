@@ -8,18 +8,20 @@
 import UIKit
 
 class AddStockNoViewController: UIViewController {
+    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
     var filteredItems: [String] = []
     var followingStockNoList: Set<String> = []
     var addNewStockToDB: ((String) -> ())!
+    var list: List!
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.delegate = self
         tableView.dataSource = self
         searchBar.delegate = self
         // Do any additional setup after loading the view.
-        navigationItem.title = "加入追蹤清單"
+        navigationItem.title = "加入 \(list.name!) 清單"
     }
     
 

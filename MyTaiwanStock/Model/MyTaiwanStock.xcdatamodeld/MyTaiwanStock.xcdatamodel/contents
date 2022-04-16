@@ -8,11 +8,17 @@
         <attribute name="status" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="stockNo" optional="YES" attributeType="String"/>
     </entity>
+    <entity name="List" representedClassName="List" syncable="YES" codeGenerationType="class">
+        <attribute name="name" attributeType="String"/>
+        <relationship name="stockNo" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="StockNo" inverseName="ofList" inverseEntity="StockNo"/>
+    </entity>
     <entity name="StockNo" representedClassName="StockNo" syncable="YES" codeGenerationType="class">
         <attribute name="stockNo" optional="YES" attributeType="String"/>
+        <relationship name="ofList" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="List" inverseName="stockNo" inverseEntity="List"/>
     </entity>
     <elements>
         <element name="InvestHistory" positionX="-54" positionY="0" width="128" height="119"/>
-        <element name="StockNo" positionX="-63" positionY="-18" width="128" height="44"/>
+        <element name="List" positionX="-122.3828125" positionY="163.3984375" width="128" height="59"/>
+        <element name="StockNo" positionX="92.18359375" positionY="232.70703125" width="128" height="59"/>
     </elements>
 </model>

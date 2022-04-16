@@ -35,11 +35,12 @@ struct OneDayStockInfoDetail: Codable {
 
 extension OneDayStockInfo {
     static var priceList: [OneDayStockInfoDetail] = []
-    static func fetchOneDayStockInfo(stockList: [StockNo],completion: @escaping (Result<OneDayStockInfo,Error>) -> Void) {
+    static func fetchOneDayStockInfo(stockList: [String],completion: @escaping (Result<OneDayStockInfo,Error>) -> Void) {
         var urlComponents = URLComponents(string: "https://mis.twse.com.tw/stock/api/getStockInfo.jsp")!
         
         
-        let stockListQuerys = stockList.map {"tse_\($0.stockNo!).tw"}.joined(separator: "|")
+//        let stockListQuerys = stockList.map {"tse_\($0.stockNo!).tw"}.joined(separator: "|")
+        let stockListQuerys = stockList.map {"tse_\($0).tw"}.joined(separator: "|")
         print("stockListQuerys, \(stockListQuerys)")
         // tse_2330.tw|tse_0050.tw
         urlComponents.queryItems = ["ex_ch":stockListQuerys,"json":"1"].map({ URLQueryItem(name: $0.key, value: $0.value)

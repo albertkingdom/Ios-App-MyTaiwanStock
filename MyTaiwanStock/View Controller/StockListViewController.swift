@@ -9,7 +9,7 @@ import UIKit
 import CoreData
 
 class StockListViewController: UIViewController {
-    var userDefault = UserDefaults(suiteName: "group.com.albertkingdom.mytaiwanstock.test")
+    var userDefault = UserDefaults(suiteName: "group.a2006mike.myTaiwanStock")
     var context: NSManagedObjectContext?
     var followingListObjectFromDB: [List] = []
     var followingListSelectionMenu: [String] = [] {

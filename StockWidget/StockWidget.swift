@@ -37,7 +37,7 @@ struct Provider: TimelineProvider {
     }
 }
 func getStockList() -> [CommonStockInfo] {
-    let userDefault = UserDefaults(suiteName: "group.com.albertkingdom.mytaiwanstock.test")
+    let userDefault = UserDefaults(suiteName: "group.a2006mike.myTaiwanStock")
     guard let stockListData = userDefault?.object(forKey: "stockList") as? Data else {
         return []
     }

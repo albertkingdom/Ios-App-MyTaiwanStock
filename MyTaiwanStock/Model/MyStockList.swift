@@ -26,7 +26,7 @@ class MyStockList {
         let propertyListDecoder = PropertyListDecoder()
         if let retrievedListData = try? Data(contentsOf: archiveURL), let decodedList = try? propertyListDecoder.decode([StockList].self, from: retrievedListData) {
             
-                print("loadFromDisk(): \(decodedList)")
+                //6print("loadFromDisk(): \(decodedList)")
             return decodedList
         } else {
             return defaultStockList()

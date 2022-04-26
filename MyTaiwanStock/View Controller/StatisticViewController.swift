@@ -10,7 +10,11 @@ import UIKit
 
 class StatisticViewController: UIViewController {
     var chartService: ChartService!
-    var stockNoToAsset: [StockStatistic] = []
+    var stockNoToAsset: [StockStatistic] = [] {
+        didSet {
+            tableView.reloadData()
+        }
+    }
     @IBOutlet weak var pieChartView: PieChartView!
     @IBOutlet weak var tableView: UITableView!
     var context: NSManagedObjectContext?
@@ -36,43 +40,23 @@ class StatisticViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         do {
             try fetchedResultsController.performFetch()
-     
-            // [[stockNo: 0050, amount: 100...],[stockNo: 0050, amount: 20...]] -> [0050: 120]
-            var stockNoToAmountList = [String: Int]()
-            var stockNoToPriceList = [String: Double]()
-            if let historyList = fetchedResultsController.fetchedObjects {
-                
-                historyList.map { history in
-                    //print("history...\(history)")
-                    if stockNoToAmountList[history.stockNo!] == nil {
-                        stockNoToAmountList[history.stockNo!] = Int(history.amount) * (history.status == 0 ? 1 : -1)
-                    } else {
-                        stockNoToAmountList[history.stockNo!]! += Int(history.amount) * (history.status == 0 ? 1 : -1)
-                    }
-                }
-                //print("stockNoToAmountList...\(stockNoToAmountList)")
-                
-
-                let savedStockPrice = OneDayStockInfo.priceList
-                //print("userDefault...stockPrice...\(savedStockPrice)")
-                savedStockPrice.map { stock in
-                    stockNoToPriceList[stock.stockNo] = stock.current != "-" ? Double(stock.current) : Double(stock.yesterDayPrice)
-                }
-                //print("stockNoToPriceList...\(stockNoToPriceList)")
-
-                stockNoToAsset = stockNoToAmountList.map({ (key: String, value: Int) in
-                    StockStatistic(stockNo: key, totalAssets: Double(value) * stockNoToPriceList[key]! )
-                })
-                tableView.reloadData()
-                //print("stockNoToAsset...\(stockNoToAsset)")
-                
-                
+    
+            guard let historyList = fetchedResultsController.fetchedObjects else {
+                showWarningPopup()
+                return
             }
+            let savedStockPrice = OneDayStockInfo.priceList
+            
+            self.chartService = ChartService(historyList: historyList, stockPriceList: savedStockPrice)
+            guard let stockNoToAsset = chartService.calculateStockNoToAsset() else {
+                self.showWarningPopup()
+                return
+            }
+            //print("stockNoToAsset \(stockNoToAsset)")
+            self.stockNoToAsset = stockNoToAsset
             if stockNoToAsset.isEmpty {
                 self.showWarningPopup()
             }
-            // chart
-            self.chartService = ChartService(pieChartData: self.stockNoToAsset)
             chartService.prepareForPieChart(pieChartView: pieChartView)
         } catch {
             fatalError("Invest history fetch error")
@@ -88,8 +72,7 @@ class StatisticViewController: UIViewController {
         self.present(alertVC, animated: true, completion: nil)
     }
  
-
-
+    
 }
 
 extension StatisticViewController: ChartViewDelegate {

@@ -106,7 +106,7 @@ class StockViewController: UIViewController {
     }
     override func viewWillAppear(_ animated: Bool) {
       
-        print("stockview viewwillappear")
+        //print("stockview viewwillappear")
     
         StockInfo.fetchTwoMonth(stockNo: stockNo) { data in
             self.stockInfoForCandleStickChart = data
@@ -287,7 +287,7 @@ extension StockViewController {
                 
             } else {
                 for document in snapshot!.documents {
-                    print("\(document.documentID) => \(document.data())")
+                    //print("\(document.documentID) => \(document.data())")
                     
                 }
                 

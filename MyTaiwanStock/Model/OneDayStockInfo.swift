@@ -41,7 +41,7 @@ extension OneDayStockInfo {
         
 //        let stockListQuerys = stockList.map {"tse_\($0.stockNo!).tw"}.joined(separator: "|")
         let stockListQuerys = stockList.map {"tse_\($0).tw"}.joined(separator: "|")
-        print("stockListQuerys, \(stockListQuerys)")
+        //print("stockListQuerys, \(stockListQuerys)")
         // tse_2330.tw|tse_0050.tw
         urlComponents.queryItems = ["ex_ch":stockListQuerys,"json":"1"].map({ URLQueryItem(name: $0.key, value: $0.value)
         })
@@ -51,7 +51,7 @@ extension OneDayStockInfo {
             if let data = data {
                 do{
                     let stockInfo = try jsonDecoder.decode(OneDayStockInfo.self, from: data)
-                    print("stockInfo, \(stockInfo)")
+                    //print("stockInfo, \(stockInfo)")
                     priceList = stockInfo.msgArray
                     completion(.success(stockInfo))
                     

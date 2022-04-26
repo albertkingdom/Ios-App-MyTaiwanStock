@@ -15,36 +15,28 @@ class StockListViewController: UIViewController {
     var followingListSelectionMenu: [String] = [] {
         didSet {
             print("didset \(followingListSelectionMenu)")
-
-            var actions = self.followingListSelectionMenu.enumerated().map { index, str in
-                UIAction(title: str, state: .on, handler: { action in
-                    print("index \(index), str \(str)")
-                    self.currentMenuIndex = index
-                    
-                })
-            }
-            actions.append(
-                UIAction(title: "編輯", handler: { action in
-
-                    // go to addlistVC page
-                    let addListVC = self.storyboard?.instantiateViewController(withIdentifier: "addListVC") as! AddListViewController
-                    self.navigationController?.pushViewController(addListVC, animated: true)
-                }))
-            popUpButton.menu = UIMenu(children: actions)
+            
+            generateMenu()
         }
     }
     var currentMenuIndex: Int = 0 {
         didSet {
-            print("didset currentMenuIndex \(currentMenuIndex)")
+            //print("didset currentMenuIndex \(currentMenuIndex)")
             stockNameStringSet.removeAll()
             //self.fetchStockNoFromDB()
             guard let setOfStockNoObjects = followingListObjectFromDB[currentMenuIndex].stockNo else { return }
             let stockNoStringArray:[String] = setOfStockNoObjects.map { ele -> String in
                 guard let stockNo = (ele as? StockNo)?.stockNo else { return "" }
-                print("\(followingListObjectFromDB[currentMenuIndex].name)  \(stockNo)")
+                //print("\(followingListObjectFromDB[currentMenuIndex].name)  \(stockNo)")
                 return stockNo
             }
             stockNameStringSet = Set(stockNoStringArray)
+            
+            if #available(iOS 15, *) {
+            } else {
+                generateMenu()
+            }
+            
         }
         
     }
@@ -54,7 +46,7 @@ class StockListViewController: UIViewController {
     var onedayStockInfo: [OneDayStockInfoDetail] = [] // stock price detail from api
     var stockNameStringSet: Set<String> = [] {
         didSet {
-            print("didset stockNoList \(stockNameStringSet)")
+            //print("didset stockNoList \(stockNameStringSet)")
             guard !stockNameStringSet.isEmpty else {
                 self.filteredItems.removeAll()
                 self.tableView.reloadData()
@@ -116,7 +108,7 @@ class StockListViewController: UIViewController {
             
             currentMenuIndex = 0
         }
-        print("stocklist vc viewWillAppear")
+        //print("stocklist vc viewWillAppear")
     }
     override func viewWillDisappear(_ animated: Bool) {
         timer?.cancel()
@@ -183,7 +175,31 @@ class StockListViewController: UIViewController {
     }
     
     
-    
+    func generateMenu() {
+        if #available(iOS 15, *) {
+        } else {
+            self.popUpButton.setTitle(followingListSelectionMenu[currentMenuIndex], for: .normal)
+        }
+        var actions = self.followingListSelectionMenu.enumerated().map { index, str in
+            UIAction(title: str, state: index == self.currentMenuIndex ? .on: .off, handler: { action in
+                // click the action item
+                //print("index \(index), str \(str)")
+                self.currentMenuIndex = index
+                if #available(iOS 15, *) {
+                } else {
+                    self.popUpButton.setTitle(str, for: .normal)
+                }
+            })
+        }
+        actions.append(
+            UIAction(title: "編輯", handler: { action in
+
+                // go to addlistVC page
+                let addListVC = self.storyboard?.instantiateViewController(withIdentifier: "addListVC") as! AddListViewController
+                self.navigationController?.pushViewController(addListVC, animated: true)
+            }))
+        popUpButton.menu = UIMenu(children: actions)
+    }
   
     
 }
@@ -230,6 +246,7 @@ extension StockListViewController: UITableViewDataSource, UITableViewDelegate {
                 return stockNoObject
             })
             let stockNoObjectToDel = stockNoObjectArray[indexPath.row]
+            // TODO: when delete stockNumberInDB, also delete related stockHistory 
             deleteStockNumberInDB(stockNoObject: stockNoObjectToDel)
             
             self.onedayStockInfo = onedayStockInfo.filter({
@@ -266,13 +283,28 @@ extension StockListViewController {
         var lists: [List] = []
         do {
             guard let result = try context?.fetch(fetchRequest) else { return [List]() }
-            print("lists \(result)")
+            //print("lists \(result)")
 
             lists = result
         } catch let error {
             print(error.localizedDescription)
         }
         return lists
+    }
+    func checkIfRemainingStockNoObject(with stockNo: String) -> Bool {
+        let fetchStockRequest: NSFetchRequest<StockNo> = StockNo.fetchRequest()
+        let predicate = NSPredicate(format: "stockNo == %@", stockNo)
+        fetchStockRequest.predicate = predicate
+        
+        if let stockNoObjects = try? context?.fetch(fetchStockRequest) {
+  
+            if stockNoObjects.isEmpty {
+                // there's no stockNo object with same stockNo
+                return false
+            }
+            
+        }
+        return true
     }
     func saveNewListToDB(listName: String) -> List? {
         
@@ -291,7 +323,7 @@ extension StockListViewController {
         
     }
     func saveNewStockNumberToDB(stockNumber: String) {
-        print("saveNewStockNumberToDB...\(stockNumber)")
+        //print("saveNewStockNumberToDB...\(stockNumber)")
         guard let context = self.context else { return }
 
         if self.stockNameStringSet.firstIndex(of: stockNumber) != nil { return }
@@ -309,9 +341,31 @@ extension StockListViewController {
     func deleteStockNumberInDB(stockNoObject: StockNo) {
         context?.delete(stockNoObject)
         
+        let result = checkIfRemainingStockNoObject(with: stockNoObject.stockNo!)
+        
+        if !result {
+            deleteHistory(with: stockNoObject.stockNo!)
+        }
         // TODO: show the UIAlert
         try? context?.save()
 
+    }
+    func deleteHistory(with stockNo: String) {
+        // fetch history with stockNo, then delete them
+        let fetchHistoryRequest: NSFetchRequest<InvestHistory> = InvestHistory.fetchRequest()
+        let predicate = NSPredicate(format: "stockNo == %@", stockNo)
+        fetchHistoryRequest.predicate = predicate
+        
+        if let historyObjects = try? context?.fetch(fetchHistoryRequest) {
+            //print("historyObjects \(historyObjects)")
+            
+            for history in historyObjects {
+                context?.delete(history)
+            }
+            try? context?.save()
+        }
+        
+       
     }
 }
 extension StockListViewController: UISearchBarDelegate {

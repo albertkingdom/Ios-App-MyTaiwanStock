@@ -38,7 +38,7 @@ extension NewsResult {
             if let data = data {
                 do {
                     let news = try jsonDecoder.decode(NewsResult.self, from: data)
-                    print("news, \(data)")
+                    //print("news, \(data)")
                     completion(.success(news))
                 } catch {
                     completion(.failure(error))

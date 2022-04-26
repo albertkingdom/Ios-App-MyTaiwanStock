@@ -38,7 +38,7 @@ class StockTableViewCell: UITableViewCell {
         if let currentPrice = Float(stockPriceDetail.current), let openPrice = Float(stockPriceDetail.open) {
             let diff = currentPrice - openPrice
             stockPriceDiff.text = String(format: "%.2f", diff)
-            stockPriceDiff.backgroundColor = diff >= 0 ? UIColor.systemRed : UIColor.systemGreen
+            stockPriceDiff.backgroundColor = diff > 0 ? UIColor.systemRed : UIColor.systemGreen
         } else {
             stockPriceDiff.text = "-"
         }

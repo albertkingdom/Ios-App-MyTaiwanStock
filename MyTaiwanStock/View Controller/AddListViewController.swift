@@ -19,7 +19,7 @@ class AddListViewController: UIViewController {
     }
     var listsNames:[String] = [] {
         didSet {
-            print("didset listsNames \(listsNames)")
+            //print("didset listsNames \(listsNames)")
             tableView.reloadData()
         }
     }
@@ -51,6 +51,7 @@ class AddListViewController: UIViewController {
         navigationItem.rightBarButtonItem = editButtonItem
         fetchAllListFromDB()
         //  fetch all list in db
+        addButton.layer.cornerRadius = 5
     }
     
     
@@ -75,7 +76,7 @@ extension AddListViewController {
         let fetchRequest: NSFetchRequest<List> = List.fetchRequest()
         do {
             self.coreDataItems = try context.fetch(fetchRequest)
-            print("lists \(self.coreDataItems)")
+            //print("lists \(self.coreDataItems)")
             
             
             

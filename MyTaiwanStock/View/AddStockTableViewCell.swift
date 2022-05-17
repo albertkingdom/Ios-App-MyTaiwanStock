@@ -34,7 +34,7 @@ class AddStockTableViewCell: UITableViewCell {
         }
     }
     var addNewStockToDB: ((String) -> ())!
-    var followingStockNoList: Set<String> = []
+
 
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -47,11 +47,9 @@ class AddStockTableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
 
-    func update(with stockNameAndNumber:String){
-        stockName.text = stockNameAndNumber
-        let stockNumberString = String(stockNameAndNumber.split(separator: " ")[0])
-        let isFollowing = followingStockNoList.contains(stockNumberString)
-        isInFollowingList = isFollowing
-        
+    
+    func configure(with stockViewModel: AddStockCellViewModel) {
+        stockName.text = stockViewModel.stockNumberAndName
+        isInFollowingList = stockViewModel.isFollowing
     }
 }

@@ -13,61 +13,50 @@ import InputBarAccessoryView
 
 class ChatViewController: MessagesViewController, MessagesDataSource, MessagesLayoutDelegate, MessagesDisplayDelegate {
     
-    
-    private var currentUser: User?
-    private let database = Firestore.firestore()
-    private var reference: CollectionReference?
-    private var messageListener: ListenerRegistration?
-    private var channelID: String!
-
-    var messages: [Message] = []
+    var viewModel:ChatViewModel!
     
 
-    init(channelName: String, channelId: String) {
+    init(stockNo: String) {
         super.init(nibName: nil, bundle: nil)
-        title = channelName
-        channelID = channelId
+        title = "\(stockNo) Chat Room"
+        viewModel = ChatViewModel(stockNo: stockNo)
+
     }
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-
         
-        reference = database.collection("channels/\(channelID!)/thread")
-        reference?.addSnapshotListener { querySnapshot, error in
-            guard let snapshot = querySnapshot else {
-                print("""
-        Error listening for channel updates: \
-        \(error?.localizedDescription ?? "No error")
-        """)
-                return
-            }
-            snapshot.documentChanges.forEach { change in
-                self.handleDocumentChange(change)
-
-            }
-            
-        }
-        /// signin anonymously at viewDidLoad(),
-        signIn()
+        // signin anonymously at viewDidLoad(),
+        viewModel.signIn()
         messagesCollectionView.messagesDataSource = self
         messagesCollectionView.messagesLayoutDelegate = self
         messagesCollectionView.messagesDisplayDelegate = self
         messageInputBar.delegate = self
         alignAvatarView()
+        
+        bindViewModel()
+    }
+
+    func bindViewModel() {
+        viewModel.messages.bind { [weak self] _ in
+            //print("list \(list)")
+            self?.messagesCollectionView.reloadData()
+            self?.messagesCollectionView.scrollToLastItem()
+        }
     }
     func currentSender() -> SenderType {
-        return Sender(senderId: currentUser?.uid ?? "", displayName: "Any One")
+        return Sender(senderId: viewModel.currentUser.value?.uid ?? "", displayName: "Any One")
     }
     
     func messageForItem(at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> MessageType {
+        guard let messages = viewModel.messages.value else { return Message(user: viewModel.currentUser.value!, content: "") }
         return messages[indexPath.section]
     }
     
     func numberOfSections(in messagesCollectionView: MessagesCollectionView) -> Int {
-        return messages.count
+        return viewModel.messages.value?.count ?? 0
     }
     func configureAvatarView(_ avatarView: AvatarView, for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) {
 
@@ -81,7 +70,9 @@ class ChatViewController: MessagesViewController, MessagesDataSource, MessagesLa
         dateformatter.locale = Locale(identifier: "zh_TW")
         dateformatter.dateStyle = .short
         dateformatter.timeStyle = .short
-        let sentTime = messages[indexPath.section].sentDate
+        guard let message = viewModel.messages.value?[indexPath.section] else { return  NSAttributedString() }
+        let sentTime = message.sentDate
+
         
         return NSAttributedString(string: dateformatter.string(from: sentTime), attributes: [
             .font: UIFont.preferredFont(forTextStyle: .caption1),
@@ -104,47 +95,16 @@ class ChatViewController: MessagesViewController, MessagesDataSource, MessagesLa
             layout.setMessageOutgoingAvatarPosition(.init(vertical: .cellTop))
         }
     }
-    func signIn() {
-        Auth.auth().signInAnonymously { authResult, error in
-            guard let user = authResult?.user else { return }
-          
-            self.currentUser = user
-        }
-    }
-    private func handleDocumentChange(_ change: DocumentChange){
-        switch change.type {
-        case .added:
-            let message = Message(document: change.document)
-            
-            messages.append(message)
-            messages.sort { (msg1, msg2) -> Bool in
-                msg1.sentDate < msg2.sentDate
-            }
-            messagesCollectionView.reloadData()
-        default:
-            break
-        }
-    }
+
 
 }
 // MARK: message input area
 extension ChatViewController: InputBarAccessoryViewDelegate {
     func inputBar(_ inputBar: InputBarAccessoryView, didPressSendButtonWith text: String) {
-        guard let currentUser = currentUser else { return }
+        guard let currentUser = viewModel.currentUser.value else { return }
         let message = Message(user: currentUser,content: text)
-        save(message)
+        viewModel.save(message)
         inputBar.inputTextView.text = ""
     }
     
-    private func save(_ message: Message) {
-        print("save message to firestore ")
-        reference?.addDocument(data: message.representation) { [weak self] error in
-        guard let self = self else { return }
-        if let error = error {
-          print("Error sending message: \(error.localizedDescription)")
-          return
-        }
-        self.messagesCollectionView.scrollToLastItem()
-      }
-    }
 }

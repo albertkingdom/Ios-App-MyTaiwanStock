@@ -8,52 +8,54 @@
 import UIKit
 
 class NewsListViewController: UIViewController {
-    
+    var viewModel: NewsListViewModel!
     var stockName: String?
     @IBOutlet weak var tableView: UITableView!
-    var newsList: [Article] = []
+    
+    
     override func viewDidLoad() {
         tableView.dataSource = self
         tableView.delegate = self
         guard let stockName = stockName else { return }
         title = "\(stockName)新聞"
-        NewsResult.fetchNews(queryTitle: stockName) { result in
-            switch result {
-            case .success(let news):
-                self.newsList = news.articles
-                
-                DispatchQueue.main.async {
-                    self.tableView.reloadData()
-                    
-                    if self.newsList.count == 0, let stockName = self.stockName {
-                        let alertC = UIAlertController(title: "新聞列表", message: "目前沒有\(String(describing: stockName))相關新聞!", preferredStyle: .alert)
-                        let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
-                        alertC.addAction(okAction)
-                        self.present(alertC, animated: true, completion: nil)
-                    }
-                }
-            case .failure(let error):
-                print("error, \(error.localizedDescription)")
-            default: return
-            }
-        }
+        
+        viewModel = NewsListViewModel(stockName: stockName)
+        
+        bindViewModel()
+        
+        
         //print("NewsListViewController stockName: \(stockName)")
+    }
+    
+    func bindViewModel() {
+        viewModel.newsList.bind { [weak self] _ in
+            self?.tableView.reloadData()
+        }
+        viewModel.isEmptyNews.bind { [weak self] _ in
+            let alertC = UIAlertController(title: "新聞列表", message: "目前沒有\( self?.stockName! ?? "")相關新聞!", preferredStyle: .alert)
+            let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+            alertC.addAction(okAction)
+            self?.present(alertC, animated: true, completion: nil)
+        }
     }
 }
 
 extension NewsListViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return newsList.count
+        return viewModel.newsList.value?.count ?? 0
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "newsCell", for: indexPath) as! NewsListTableViewCell
-        cell.update(with: newsList[indexPath.row])
+        guard let cellViewModel = viewModel.newsList.value?[indexPath.row] else { return UITableViewCell() }
+        
+        cell.configure(with: cellViewModel)
         cell.selectionStyle = .none
         return cell
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let wvc = storyboard?.instantiateViewController(withIdentifier: "webviewController") as! webViewController
-        wvc.url = newsList[indexPath.row].url
+        guard let cellViewModel = viewModel.newsList.value?[indexPath.row] else { return }
+        wvc.url = cellViewModel.publishedAt
         navigationController?.pushViewController(wvc, animated: true)
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

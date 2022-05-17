@@ -31,48 +31,23 @@ class HistoryTableViewCell: UITableViewCell {
 
         // Configure the view for the selected state
     }
-    
-    func update(with historyData: InvestHistory, stockPrice: String) {
-        
-        self.stockPrice = stockPrice
-        let revenue = calcRevenue(price: historyData.price)
-        statusLabel.text = historyData.status == 0 ? "買" : "賣"
-//        layer.borderColor = historyData.status == 0 ? UIColor.red.cgColor : UIColor.blue.cgColor
 
-//        layer.backgroundColor = UIColor.systemRed.cgColor
-        dateLabel.text = dateFormat(date: historyData.date!)
-        priceLabel.text = String(historyData.price)
-        amountLabel.text = String(historyData.amount)
-        revenueLabel.text = historyData.status == 0 ? "\(revenue) %" : "N/A"
+    
+    func configure(with viewModel: HistoryCellViewModel) {
         
-        if let revenueFloat = Float(revenue), historyData.status == 0 {
-          
-            if revenueFloat > 0 {
-                revenueLabel.textColor = .red
-            }else if revenueFloat < 0 {
-                revenueLabel.textColor = .green
-            }else {
-                revenueLabel.textColor = .black
-            }
+        statusLabel.text = viewModel.status == 0 ? "買" : "賣" //??
+        dateLabel.text = viewModel.dateString
+        priceLabel.text = viewModel.priceString
+        amountLabel.text = viewModel.amountString
+        revenueLabel.text = viewModel.revenueString
+        
+        if viewModel.revenueFloat > 0 && viewModel.status == 0 {
+            revenueLabel.textColor = .red
+        }else if viewModel.revenueFloat < 0 && viewModel.status == 0 {
+            revenueLabel.textColor = .green
+        }else {
+            revenueLabel.textColor = .black
         }
     }
-    func dateFormat(date: Date) -> String {
-        let dateFormatter = DateFormatter()
 
-        dateFormatter.dateFormat = "yyyy\nMM-dd"
-        let datestr = dateFormatter.string(from: date)
-        
-        return datestr
-    }
-    
-    func calcRevenue(price: Float) -> String {
-        var revenueStr: String! = "-"
-        if stockPrice != "-" {
-            if let StockPriceFloat = Float(stockPrice) {
-                let result = (StockPriceFloat - price) / price * 100
-                revenueStr = String(format:"%.2f", result)
-            }
-        }
-        return revenueStr
-    }
 }

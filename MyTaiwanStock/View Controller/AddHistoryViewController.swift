@@ -11,8 +11,11 @@ class AddHistoryViewController: UITableViewController {
     var context: NSManagedObjectContext?
 
     var stockNo: String!
-    var date: Date! = Date()
-    var buyOrSellStatus: Int! = 0
+    //var date: Date! = Date()
+    //var buyOrSellStatus: Int! = 0
+    
+    let viewModel = AddHistoryViewModel()
+    
     @IBOutlet weak var stockNoTextField: UITextField!
     @IBOutlet weak var priceTextField: UITextField!
     @IBOutlet weak var amountTextField: UITextField!
@@ -22,44 +25,35 @@ class AddHistoryViewController: UITableViewController {
 
         switch sender.selectedSegmentIndex {
         case 0:
-            buyOrSellStatus = 0
+            viewModel.buyOrSellStatus = 0
         case 1:
-            buyOrSellStatus = 1
+            viewModel.buyOrSellStatus = 1
         default:
-            buyOrSellStatus = 0
+            viewModel.buyOrSellStatus = 0
         }
     }
     @IBAction func datePickerChanged(_ sender: UIDatePicker) {
         
         //print(sender.date)
         
-        date = sender.date
+        viewModel.date = sender.date
     }
     
     @IBAction func saveNewRecord(_ sender: Any){
-
+        
         guard let stockNo = stockNoTextField.text,
-        let price = Float(priceTextField.text ?? "0"),
-        let amount = Int(amountTextField.text ?? "0"),
-        let date = date else { return }
+              let price = Float(priceTextField.text ?? "0"),
+              let amount = Int(amountTextField.text ?? "0")
+        else { return }
         let reason = reasonTextView.text ?? ""
         
-        /// core data
-        guard let context = self.context else { return }
-        let newInvestHistory = InvestHistory(context: context)
-        newInvestHistory.stockNo = stockNo
-        newInvestHistory.price = price
-        newInvestHistory.amount = Int16(amount)
-        newInvestHistory.date = date
-        newInvestHistory.status = Int16(buyOrSellStatus)
-        newInvestHistory.reason = reason
-        
-        do {
-            try context.save()
-        } catch {
-            fatalError("\(error.localizedDescription)")
-        }
 
+        viewModel.saveNewRecord(
+            stockNo: stockNo,
+            price: price,
+            amount: amount,
+            reason: reason
+        )
         navigationController?.popViewController(animated: true)
     }
     @IBAction func cancel(_ sender: Any) {
@@ -67,6 +61,8 @@ class AddHistoryViewController: UITableViewController {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
+        viewModel.context = context
+        
         stockNoTextField.text = stockNo
         stockNoTextField.keyboardType = .numberPad
         priceTextField.keyboardType = .decimalPad
@@ -81,14 +77,6 @@ class AddHistoryViewController: UITableViewController {
         reasonTextView.layer.cornerRadius = 5
     }
     
-    func dateFormat(date: Date) -> String {
-        let dateFormatter = DateFormatter()
-
-        dateFormatter.dateFormat = "yyyyMMdd"
-        let datestr = dateFormatter.string(from: date)
-        
-        return datestr
-    }
    
 
 }

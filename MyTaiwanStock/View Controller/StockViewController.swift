@@ -10,6 +10,8 @@ import Charts
 import FirebaseFirestore
 
 class StockViewController: UIViewController {
+    var viewModel: StockDetailViewModel!
+    
     var chartService: ChartService!
     var context: NSManagedObjectContext?
     lazy var fetchedResultsController: NSFetchedResultsController<InvestHistory> = {
@@ -31,7 +33,7 @@ class StockViewController: UIViewController {
     var stockName: String!
     var stockPrice: String!
     private let database = Firestore.firestore()
-    private var channelID: String?
+    //private var channelID: String?
     var isHideKplot: Bool = false {
         didSet {
             if !isHideKplot {
@@ -67,6 +69,7 @@ class StockViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
+        viewModel = StockDetailViewModel(stockNo: stockNo, currentStockPrice: stockPrice)
         combinedChartView.delegate = self
         tableView.delegate = self
         tableView.dataSource = self
@@ -80,8 +83,9 @@ class StockViewController: UIViewController {
         navigationItem.rightBarButtonItems = [addHistoryButton, newsButton, chatRoomButton]
         
         
-        checkIsExistingChannel()
-
+        //checkIsExistingChannel()
+        
+        bindViewModel()
 
     }
  
@@ -99,37 +103,38 @@ class StockViewController: UIViewController {
     }
     @objc func navigateToChatRoom() {
 
-        if let id = channelID {
-            let chatRoomVC = ChatViewController(channelName: "\(stockNo!) chat room", channelId: id)
-            navigationController?.pushViewController(chatRoomVC, animated: true)
-        }
+        //if let id = channelID {
+//            let chatRoomVC = ChatViewController(channelName: "\(stockNo!) chat room", channelId: id)
+         //   let chatRoomVC = ChatViewController(stockNo: stockNo)
+        //    navigationController?.pushViewController(chatRoomVC, animated: true)
+        //}
+        let chatRoomVC = ChatViewController(stockNo: stockNo)
+        navigationController?.pushViewController(chatRoomVC, animated: true)
     }
     override func viewWillAppear(_ animated: Bool) {
       
         //print("stockview viewwillappear")
     
-        StockInfo.fetchTwoMonth(stockNo: stockNo) { data in
-            self.stockInfoForCandleStickChart = data
-            DispatchQueue.main.async {
-                
-                if self.stockInfoForCandleStickChart != nil{
-//                    self.prepareForChart()
-                    self.chartService = ChartService(candleStickData: self.stockInfoForCandleStickChart, stockNo: self.stockNo)
-                    self.chartService.prepareForCombinedChart(combinedChartView: self.combinedChartView)
-                }
-            }
-        }
-        
+
+        viewModel.fetchRemoteData(to: combinedChartView)
         do {
             try fetchedResultsController.performFetch()
-            //tableView.reloadData()
+
+            viewModel.coreDataObjects = fetchedResultsController.fetchedObjects
         } catch {
             fatalError("Invest history fetch error")
         }
     }
     
    
-    
+    func bindViewModel() {
+        viewModel.stockInfoForCandleStickChart.bind { data in
+            self.stockInfoForCandleStickChart = data
+        }
+        viewModel.history.bind { [weak self] _ in
+            self?.tableView.reloadData()
+        }
+    }
 }
 
 
@@ -151,18 +156,17 @@ extension StockViewController: ChartViewDelegate {
 
 extension StockViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        //return history.count
-        guard let sectionInfo = fetchedResultsController.sections?[section] else { return 0 }
 
-        return sectionInfo.numberOfObjects
+        return viewModel.history.value?.count ?? 0
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "historyCell", for: indexPath) as! HistoryTableViewCell
-        let cellcontent = fetchedResultsController.object(at: indexPath)
-        
-        cell.update(with: cellcontent, stockPrice: stockPrice)
 
+        
+        guard let historyViewModel = viewModel.history.value?[indexPath.row] else { return UITableViewCell() }
+
+        cell.configure(with: historyViewModel)
         return cell
     }
     
@@ -215,7 +219,6 @@ extension StockViewController: UITableViewDataSource, UITableViewDelegate {
         if editingStyle == .delete {
             
             
-            
             let objectToDelete = fetchedResultsController.object(at: indexPath)
             context?.delete(objectToDelete)
             do {
@@ -253,54 +256,5 @@ extension StockViewController: NSFetchedResultsControllerDelegate {
     }
 }
 
-// MARK: chat room channel
-extension StockViewController {
 
-    private var channelReference: CollectionReference {
-      return database.collection("channels")
-    }
-    private func createChannel(){
-        guard
-            let channelName = stockNo
-        else {
-            return
-        }
-        
-        
-        let documentRef = channelReference.addDocument(data: ["name": channelName]) { error in
-            if let error = error {
-                print("Error saving channel: \(error.localizedDescription)")
-            }
-        }
-        channelID = documentRef.documentID
-        
-    }
-    func checkIsExistingChannel() {
-        var isExisting = false
-        guard let channelName = stockNo
-        else {
-            return
-        }
-        channelReference.whereField("name", isEqualTo: channelName).getDocuments { (snapshot, err) in
-            if let err = err {
-                print("Error getting documents: \(err)")
-                
-            } else {
-                for document in snapshot!.documents {
-                    //print("\(document.documentID) => \(document.data())")
-                    
-                }
-                
-          
-                if (snapshot!.documents.count > 0) {
-                    isExisting = true
-                    self.channelID = snapshot?.documents[0].documentID
-                    return
-                }
-                self.createChannel()
-            }
-        }
-        
-        
-    }
-}
+

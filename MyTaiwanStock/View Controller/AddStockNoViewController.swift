@@ -8,38 +8,50 @@
 import UIKit
 
 class AddStockNoViewController: UIViewController {
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+   
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var searchBar: UISearchBar!
-    var filteredItems: [String] = []
+    
+    let viewModel = AddStockNoViewModel()
+    
     var followingStockNoList: Set<String> = []
     var addNewStockToDB: ((String) -> ())!
-    var list: List!
+
+    var listName: String?
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.delegate = self
         tableView.dataSource = self
         searchBar.delegate = self
         // Do any additional setup after loading the view.
-        navigationItem.title = "加入 \(list.name!) 清單"
+        guard let listName = listName else { return }
+
+        navigationItem.title = "加入 \(listName) 清單"
+        
+        viewModel.followingStockNoList = followingStockNoList
+        bindViewModel()
     }
     
-
+    func bindViewModel() {
+        viewModel.filteredAddStockCellViewModels.bind { [weak self] _ in
+            self?.tableView.reloadData()
+        }
+    }
 
 
 }
 extension AddStockNoViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return self.filteredItems.count
+        return viewModel.filteredAddStockCellViewModels.value?.count ?? 0
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "stockNoSuggestion", for: indexPath) as! AddStockTableViewCell
       
-        let stockNameDetail = filteredItems[indexPath.row]
-        let stockNumberString = String(filteredItems[indexPath.row].split(separator: " ")[0])
+        guard let stockNameDetail = viewModel.filteredAddStockCellViewModels.value?[indexPath.row] else { return UITableViewCell() }
+        
 
-        cell.update(with: stockNameDetail)
-        cell.followingStockNoList = followingStockNoList
+        cell.configure(with: stockNameDetail)
         cell.addNewStockToDB = addNewStockToDB
 
         
@@ -56,8 +68,9 @@ extension AddStockNoViewController: UISearchBarDelegate {
         searchBar.resignFirstResponder()
     }
     func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-        filteredItems = []
-        tableView.reloadData()
+
+        viewModel.filteredAddStockCellViewModels.value = []
+
         searchBar.resignFirstResponder()
         searchBar.setShowsCancelButton(false, animated: true)
     }
@@ -71,13 +84,9 @@ extension AddStockNoViewController: UISearchBarDelegate {
     }
     func search(_ searchTerm: String) {
         if !searchTerm.isEmpty {
-            
-            filteredItems = stockNoList.filter({ string in
-                string.contains(searchTerm)
-            })
+            viewModel.searchStockNos(with: searchTerm)
         }
         
-        tableView.reloadData()
     }
     
 }

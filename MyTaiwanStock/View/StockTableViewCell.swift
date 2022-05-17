@@ -13,6 +13,8 @@ class StockTableViewCell: UITableViewCell {
     @IBOutlet weak var stockName: UILabel!
     @IBOutlet weak var stockPrice: UILabel!
     @IBOutlet weak var stockPriceDiff: UILabel!
+    
+   
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -25,23 +27,26 @@ class StockTableViewCell: UITableViewCell {
     }
     
     
-    func update(with stockPriceDetail:OneDayStockInfoDetail) {
-        stockNo.text = stockPriceDetail.stockNo
-        stockName.text = stockPriceDetail.shortName
-        if let currentPrice = Float(stockPriceDetail.current) {
-            stockPrice.text = String(format: "%.2f", currentPrice)
-        } else {
-            stockPrice.text = "-"
+
+    
+    func update(with stockViewModel: StockCellViewModel) {
+        stockNo.text = stockViewModel.stockNo
+        stockName.text = stockViewModel.stockShortName
+        stockPrice.text = stockViewModel.stockPrice
+        stockPriceDiff.text = stockViewModel.stockPriceDiff
+        stockPriceDiff.textColor = UIColor.label
+        stockPriceDiff.backgroundColor = nil
+        if let diff = Float(stockViewModel.stockPriceDiff) {
+            stockPriceDiff.textColor = UIColor.white
+            if diff > 0 {
+                stockPriceDiff.backgroundColor = UIColor.systemRed
+            }
+            
+            if diff < 0 {
+                stockPriceDiff.backgroundColor = UIColor.systemGreen
+            }
         }
-        
-        
-        if let currentPrice = Float(stockPriceDetail.current), let openPrice = Float(stockPriceDetail.open) {
-            let diff = currentPrice - openPrice
-            stockPriceDiff.text = String(format: "%.2f", diff)
-            stockPriceDiff.backgroundColor = diff > 0 ? UIColor.systemRed : UIColor.systemGreen
-        } else {
-            stockPriceDiff.text = "-"
-        }
+ 
     }
 
 }

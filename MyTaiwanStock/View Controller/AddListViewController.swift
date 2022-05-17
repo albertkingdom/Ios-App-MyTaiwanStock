@@ -10,19 +10,8 @@ import Charts
 
 class AddListViewController: UIViewController {
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-    var coreDataItems: [List]! {
-        didSet {
-            self.listsNames = coreDataItems.map({ list in
-                list.name!
-            })
-        }
-    }
-    var listsNames:[String] = [] {
-        didSet {
-            //print("didset listsNames \(listsNames)")
-            tableView.reloadData()
-        }
-    }
+    let viewModel = AddListViewModel()
+    
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var addButton: UIButton!
     @IBAction func clickAddButton() {
@@ -31,11 +20,11 @@ class AddListViewController: UIViewController {
             textField.placeholder = "清單名稱"
             textField.keyboardType = .default
         }
-        let okAction = UIAlertAction(title: "Save", style: .default) { _ in
+        let okAction = UIAlertAction(title: "Save", style: .default) { [weak self] _ in
             // save to core data
             guard let newListName = alertVC.textFields?[0].text else {return}
             
-            self.saveNewListToDB(listName: newListName)
+            self?.viewModel.saveNewListToDB(listName: newListName)
         }
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in
             // cancel
@@ -44,78 +33,45 @@ class AddListViewController: UIViewController {
         alertVC.addAction(cancelAction)
         self.present(alertVC, animated: true, completion: nil)
     }
+
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.dataSource = self
         tableView.delegate = self
         navigationItem.rightBarButtonItem = editButtonItem
-        fetchAllListFromDB()
+        
+        viewModel.context = context
+        
+        viewModel.fetchAllListFromDB()
         //  fetch all list in db
         addButton.layer.cornerRadius = 5
+        
+        bindViewModel()
     }
-    
+    func bindViewModel() {
+        viewModel.listNames.bind { [weak self] _ in
+            self?.tableView.reloadData()
+        }
+    }
     
     
 
 }
-extension AddListViewController {
-    func saveNewListToDB(listName: String) {
-        
-        let newList = List(context: context)
-        newList.name = listName
-        do {
-            try context.save()
-            self.fetchAllListFromDB()
-         
-        } catch {
-            print("error, \(error.localizedDescription)")
-        }
-        
-    }
-    func fetchAllListFromDB() {
-        let fetchRequest: NSFetchRequest<List> = List.fetchRequest()
-        do {
-            self.coreDataItems = try context.fetch(fetchRequest)
-            //print("lists \(self.coreDataItems)")
-            
-            
-            
-        } catch let error {
-            print(error.localizedDescription)
-        }
-    }
-    func deleteListFromDB(item: List) {
-        context.delete(item)
-        do {
-            try context.save()
-            
-        } catch {
-            print("error, \(error.localizedDescription)")
-        }
-    }
-    func updateList(item: List) {
-        
-        do {
-            try context.save()
-            fetchAllListFromDB()
-        } catch {
-            print("error, \(error.localizedDescription)")
-        }
-    }
-}
+
 
 extension AddListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "listNameCell", for: indexPath)
         var content = cell.defaultContentConfiguration()
-        content.text = listsNames[indexPath.row]
+        content.text = viewModel.listNames.value?[indexPath.row] ?? ""
         
         cell.contentConfiguration = content
         return cell
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return listsNames.count
+        return viewModel.listNames.value?.count ?? 0
     }
     
 }
@@ -130,11 +86,8 @@ extension AddListViewController: UITableViewDelegate {
         let index = indexPath.row
       
         if editingStyle == .delete {
-
-            let deleteItem = self.coreDataItems[indexPath.row]
-            deleteListFromDB(item: deleteItem)
-            self.coreDataItems.remove(at: indexPath.row)
-                        
+            
+            viewModel.deleteList(at: index)
         }
     }
     
@@ -144,8 +97,8 @@ extension AddListViewController: UITableViewDelegate {
     
     // update list name
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let listToBeUpdate = self.coreDataItems[indexPath.row]
-        let originalListName = self.listsNames[indexPath.row]
+
+        let originalListName = self.viewModel.listNames.value?[indexPath.row] ?? ""
         
         let alertVC = UIAlertController(title: "編輯清單名稱", message: nil, preferredStyle: .alert)
         alertVC.addTextField { textField in
@@ -156,8 +109,8 @@ extension AddListViewController: UITableViewDelegate {
         let okAction = UIAlertAction(title: "Save", style: .default) { _ in
             // save to core data
             guard let newListName = alertVC.textFields?[0].text else {return}
-            listToBeUpdate.name = newListName
-            self.updateList(item: listToBeUpdate)
+
+            self.viewModel.updateListName(at: indexPath.row, with: newListName)
         }
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in
             // cancel

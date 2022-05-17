@@ -3,9 +3,9 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>735156971903-i0gu6itqm3frijgnvtms8d4vbgo5h86r.apps.googleusercontent.com</string>
+	<string>735156971903-kel0eavqhjjoes85suedem729a107bb3.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.735156971903-i0gu6itqm3frijgnvtms8d4vbgo5h86r</string>
+	<string>com.googleusercontent.apps.735156971903-kel0eavqhjjoes85suedem729a107bb3</string>
 	<key>API_KEY</key>
 	<string>AIzaSyDJNgpPHRQOY4wVtHgVo9EJDVz-FL9l4Ts</string>
 	<key>GCM_SENDER_ID</key>
@@ -13,7 +13,7 @@
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.albertkingdom.MyTaiwanStock</string>
+	<string>com.a2006mike.MyTaiwanStock</string>
 	<key>PROJECT_ID</key>
 	<string>stock-app-chat-room</string>
 	<key>STORAGE_BUCKET</key>
@@ -29,6 +29,6 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:735156971903:ios:a5b9d6993962f1c3a4924a</string>
+	<string>1:735156971903:ios:01e8117a5695cbd4a4924a</string>
 </dict>
 </plist>

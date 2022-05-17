@@ -14,20 +14,16 @@ class NewsListTableViewCell: UITableViewCell {
     @IBOutlet weak var detail: UILabel!
     @IBOutlet weak var date: UILabel!
     
-    func update(with NewsContent: Article) {
-        title.text = NewsContent.title
-        detail.text = NewsContent.description
-        date.text = formatDate(NewsContent.publishedAt)
-        imagePreview.kf.setImage(with: URL(string: NewsContent.urlToImage))
+    
+    func configure(with data: NewsListCellViewModel) {
+        title.text = data.title
+        detail.text = data.detail
+        date.text = data.dateString
+        if let url = data.imageURL {
+            imagePreview.kf.setImage(with: url)
+        }
     }
 }
 
 
-func formatDate(_ dateStr: String) -> String {
-    let dateformatter = DateFormatter()
-    dateformatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
-    let date = dateformatter.date(from: dateStr)
 
-    dateformatter.dateFormat = "yyyy-MM-dd"
-    return dateformatter.string(from: date!)
-}

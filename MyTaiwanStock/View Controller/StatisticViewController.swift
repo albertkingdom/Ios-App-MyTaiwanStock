@@ -9,57 +9,35 @@ import Charts
 import UIKit
 
 class StatisticViewController: UIViewController {
-    var chartService: ChartService!
-    var stockNoToAsset: [StockStatistic] = [] {
-        didSet {
-            tableView.reloadData()
-        }
-    }
+    let viewModel = StatisticViewModel()
+
+
     @IBOutlet weak var pieChartView: PieChartView!
     @IBOutlet weak var tableView: UITableView!
     var context: NSManagedObjectContext?
-    lazy var fetchedResultsController: NSFetchedResultsController<InvestHistory> = {
-    
-        let fetchRequest: NSFetchRequest<InvestHistory> = InvestHistory.fetchRequest()
-        let sortDescriptor = NSSortDescriptor(key: "stockNo", ascending: false)
 
-        fetchRequest.sortDescriptors = [sortDescriptor]
-
-        let frc = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: context!, sectionNameKeyPath: nil, cacheName: nil)
-       
-        
-        return frc
-    }()
     override func viewDidLoad() {
         super.viewDidLoad()
         pieChartView.delegate = self
         tableView.dataSource = self
         tableView.delegate = self
 
+        viewModel.context = context
+        bindViewModel()
     }
-    override func viewWillAppear(_ animated: Bool) {
-        do {
-            try fetchedResultsController.performFetch()
     
-            guard let historyList = fetchedResultsController.fetchedObjects else {
-                showWarningPopup()
-                return
+    override func viewWillAppear(_ animated: Bool) {
+
+        viewModel.fetchData(to: pieChartView)
+    }
+    func bindViewModel() {
+        viewModel.stockNoToAsset.bind { [weak self] _ in
+            self?.tableView.reloadData()
+        }
+        viewModel.isEmptyData.bind { [weak self] isEmpty in
+            if let isEmpty = isEmpty, isEmpty {
+                self?.showWarningPopup()
             }
-            let savedStockPrice = OneDayStockInfo.priceList
-            
-            self.chartService = ChartService(historyList: historyList, stockPriceList: savedStockPrice)
-            guard let stockNoToAsset = chartService.calculateStockNoToAsset() else {
-                self.showWarningPopup()
-                return
-            }
-            //print("stockNoToAsset \(stockNoToAsset)")
-            self.stockNoToAsset = stockNoToAsset
-            if stockNoToAsset.isEmpty {
-                self.showWarningPopup()
-            }
-            chartService.prepareForPieChart(pieChartView: pieChartView)
-        } catch {
-            fatalError("Invest history fetch error")
         }
     }
     func showWarningPopup() {
@@ -81,12 +59,12 @@ extension StatisticViewController: ChartViewDelegate {
 
 extension StatisticViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return stockNoToAsset.count
+        return viewModel.stockNoToAsset.value?.count ?? 0
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "statisticCell", for: indexPath) as! StatisticTableViewCell
-        
-        cell.update(with: stockNoToAsset[indexPath.row])
+        guard let stockNoToAsset = viewModel.stockNoToAsset.value?[indexPath.row] else { return UITableViewCell() }
+        cell.update(with: stockNoToAsset)
         cell.selectionStyle = .none
         return cell
     }

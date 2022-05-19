@@ -16,12 +16,14 @@ struct NewsListCellViewModel {
     }
     
     let imageURL: URL?
+    let url: String
     
     init(article: Article) {
         self.title = article.title
         self.detail = article.description
         self.publishedAt = article.publishedAt
         self.imageURL = URL(string: article.urlToImage)
+        self.url = article.url
     }
     
     func formatDate(_ dateStr: String) -> String {

@@ -31,11 +31,13 @@ class NewsListViewController: UIViewController {
         viewModel.newsList.bind { [weak self] _ in
             self?.tableView.reloadData()
         }
-        viewModel.isEmptyNews.bind { [weak self] _ in
-            let alertC = UIAlertController(title: "新聞列表", message: "目前沒有\( self?.stockName! ?? "")相關新聞!", preferredStyle: .alert)
-            let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
-            alertC.addAction(okAction)
-            self?.present(alertC, animated: true, completion: nil)
+        viewModel.isEmptyNews.bind { [weak self] isEmpty in
+            if let isEmpty = isEmpty, isEmpty {
+                let alertC = UIAlertController(title: "新聞列表", message: "目前沒有\( self?.stockName! ?? "")相關新聞!", preferredStyle: .alert)
+                let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
+                alertC.addAction(okAction)
+                self?.present(alertC, animated: true, completion: nil)
+            }
         }
     }
 }
@@ -55,7 +57,7 @@ extension NewsListViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let wvc = storyboard?.instantiateViewController(withIdentifier: "webviewController") as! webViewController
         guard let cellViewModel = viewModel.newsList.value?[indexPath.row] else { return }
-        wvc.url = cellViewModel.publishedAt
+        wvc.url = cellViewModel.url
         navigationController?.pushViewController(wvc, animated: true)
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {

@@ -34,6 +34,7 @@ class NewsListViewModel {
                 
             case .failure(let error):
                 print("error, \(error.localizedDescription)")
+                self?.isEmptyNews.value = true
             default: return
             }
         }

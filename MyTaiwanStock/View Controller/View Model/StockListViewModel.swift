@@ -18,9 +18,13 @@ class StockListViewModel {
     var followingListObjectFromDB: [List] = []
     var currentFollowingList = Observable<List>(nil)
     var followingListSelectionMenu = Observable<[String]>([])
-    var onedayStockInfo: [OneDayStockInfoDetail] = []
+    var onedayStockInfo: [OneDayStockInfoDetail] = [] {
+        didSet {
+            transformForWidget()
+        }
+    }
     var stockCellDatas = Observable<[StockCellViewModel]>([])
-    
+    var dataForWidget = Observable<Data>(nil)
     
     func fetchAllListFromDB() -> [List]{
         let fetchRequest: NSFetchRequest<List> = List.fetchRequest()
@@ -239,6 +243,19 @@ class StockListViewModel {
             })
         }
         
+    }
+    
+    func transformForWidget() {
+        let encoder = JSONEncoder()
+        let stockListForWidget = onedayStockInfo.map { item in
+            return CommonStockInfo(stockNo: item.stockNo, current: item.current, shortName: item.shortName, yesterDayPrice: item.yesterDayPrice)
+        }
+        do {
+            let stockListForWidgetEncode = try encoder.encode(stockListForWidget)
+            dataForWidget.value = stockListForWidgetEncode
+        } catch let error{
+            print(error)
+        }
     }
 }
 

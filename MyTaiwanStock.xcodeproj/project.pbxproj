@@ -26,6 +26,8 @@
 		A168E0A22714822D00C75064 /* NewsListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A168E0A12714822D00C75064 /* NewsListTableViewCell.swift */; };
 		A168E0A427148D1600C75064 /* webViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A168E0A327148D1600C75064 /* webViewController.swift */; };
 		A197396227154CEB009D5917 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = A197396127154CEB009D5917 /* Kingfisher */; };
+		A1C9DADE2833A66B00ADDEDB /* CoreDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C9DADD2833A66B00ADDEDB /* CoreDataService.swift */; };
+		A1C9DAE02834F9DA00ADDEDB /* UIButton+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C9DADF2834F9DA00ADDEDB /* UIButton+Extension.swift */; };
 		DF0203642812743500543E54 /* MyTaiwanStock.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DFD239DB270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodeld */; };
 		DF06F2FB27097F2C0031D6FE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F2FA27097F2C0031D6FE /* AppDelegate.swift */; };
 		DF06F2FD27097F2C0031D6FE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F2FC27097F2C0031D6FE /* SceneDelegate.swift */; };
@@ -139,6 +141,8 @@
 		A168E09F27147C9800C75064 /* NewsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsListViewController.swift; sourceTree = "<group>"; };
 		A168E0A12714822D00C75064 /* NewsListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsListTableViewCell.swift; sourceTree = "<group>"; };
 		A168E0A327148D1600C75064 /* webViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = webViewController.swift; sourceTree = "<group>"; };
+		A1C9DADD2833A66B00ADDEDB /* CoreDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataService.swift; sourceTree = "<group>"; };
+		A1C9DADF2834F9DA00ADDEDB /* UIButton+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+Extension.swift"; sourceTree = "<group>"; };
 		DF06F2F727097F2C0031D6FE /* MyTaiwanStock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyTaiwanStock.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DF06F2FA27097F2C0031D6FE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DF06F2FC27097F2C0031D6FE /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -341,6 +345,8 @@
 				DF3873A127ECC8DC000E2EAF /* LargeValueFormatter.swift */,
 				DF944EE82807DB04005157A9 /* ChartService.swift */,
 				A12705152830BCE500ED92F2 /* Observable.swift */,
+				A1C9DADD2833A66B00ADDEDB /* CoreDataService.swift */,
+				A1C9DADF2834F9DA00ADDEDB /* UIButton+Extension.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -566,6 +572,7 @@
 				DF06F326270D50000031D6FE /* History.swift in Sources */,
 				A1270524283212FE00ED92F2 /* StatisticViewModel.swift in Sources */,
 				DF06F2FF27097F2C0031D6FE /* StockListViewController.swift in Sources */,
+				A1C9DADE2833A66B00ADDEDB /* CoreDataService.swift in Sources */,
 				DF715D722809140300DD92F4 /* AddListViewController.swift in Sources */,
 				A168E0A027147C9800C75064 /* NewsListViewController.swift in Sources */,
 				DF3873A227ECC8DC000E2EAF /* LargeValueFormatter.swift in Sources */,
@@ -580,6 +587,7 @@
 				DF793AD727DF8C36007C9442 /* AddStockNoViewController.swift in Sources */,
 				DF06F3102709805E0031D6FE /* StockInfo.swift in Sources */,
 				DFFEB04C27E1D68C00C85A53 /* Sender.swift in Sources */,
+				A1C9DAE02834F9DA00ADDEDB /* UIButton+Extension.swift in Sources */,
 				DF1A6B6427F954D8007631C0 /* CommonStockInfo.swift in Sources */,
 				DF944EE92807DB04005157A9 /* ChartService.swift in Sources */,
 				DF06F2FD27097F2C0031D6FE /* SceneDelegate.swift in Sources */,

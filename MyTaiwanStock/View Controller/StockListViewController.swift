@@ -82,7 +82,11 @@ class StockListViewController: UIViewController {
         }
         viewModel.stockCellDatas.bind { [weak self] _ in
             self?.tableView.reloadData()
-            self?.saveListToUserDefault()
+            
+        }
+        viewModel.dataForWidget.bind { [weak self] data in
+            guard let data = data else { return }
+            self?.saveListToUserDefault(data: data)
         }
     }
     
@@ -97,24 +101,16 @@ class StockListViewController: UIViewController {
         timer!.resume()
     }
     
-    func saveListToUserDefault() {
-        let encoder = JSONEncoder()
-        let stockListForWidget = viewModel.onedayStockInfo.map { item in
-            return CommonStockInfo(stockNo: item.stockNo, current: item.current, shortName: item.shortName, yesterDayPrice: item.yesterDayPrice)
-        }
-        do {
-            let stockListForWidgetEncode = try encoder.encode(stockListForWidget)
-            self.userDefault?.setValue(stockListForWidgetEncode, forKey: "stockList")
-            WidgetCenter.shared.reloadAllTimelines()
-        } catch let error{
-            print(error)
-        }
+    func saveListToUserDefault(data: Data) {
+
+        self.userDefault?.setValue(data, forKey: "stockList")
+        WidgetCenter.shared.reloadAllTimelines()
     }
     @objc func refreshData(){
         self.refreshControl.endRefreshing()
         timer?.cancel()
         self.repeatFetchOneDayStockInfoFromAPI()
-//        viewModel.fetchOneDayStockInfoFromAPI()
+
     }
     
     func setupMenuButton() {
@@ -122,7 +118,7 @@ class StockListViewController: UIViewController {
         self.popUpButton.frame = CGRect(x: 0, y: 0, width: 120, height: 40)
         self.popUpButton.backgroundColor = UIColor.lightGray
         self.popUpButton.layer.cornerRadius = self.popUpButton.frame.height / 2
-
+        
     }
     
     func configureMenu(actionList: [UIAction]?) {

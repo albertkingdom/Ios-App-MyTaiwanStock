@@ -4,18 +4,21 @@
 //
 //  Created by Albert Lin on 2022/4/15.
 //
+import Combine
 import CoreData
 import UIKit
 import Charts
 
 class AddListViewController: UIViewController {
+    var subscription = Set<AnyCancellable>()
+
     let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
-    let viewModel = AddListViewModel()
+    var viewModel: AddListViewModel!
     
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var addButton: UIButton!
     @IBAction func clickAddButton() {
-        let alertVC = UIAlertController(title: "編輯收藏清單", message: nil, preferredStyle: .alert)
+        let alertVC = UIAlertController(title: "新增收藏清單", message: nil, preferredStyle: .alert)
         alertVC.addTextField { textField in
             textField.placeholder = "清單名稱"
             textField.keyboardType = .default
@@ -40,19 +43,20 @@ class AddListViewController: UIViewController {
         tableView.dataSource = self
         tableView.delegate = self
         navigationItem.rightBarButtonItem = editButtonItem
-        
-        viewModel.context = context
-        
-        viewModel.fetchAllListFromDB()
-        //  fetch all list in db
+        viewModel = AddListViewModel(context: context)
+
         addButton.layer.cornerRadius = 5
         
         bindViewModel()
     }
     func bindViewModel() {
-        viewModel.listNames.bind { [weak self] _ in
-            self?.tableView.reloadData()
-        }
+        
+        
+        viewModel.listNamesCombine
+            .sink { [weak self] _ in
+                self?.tableView.reloadData()
+            }
+            .store(in: &subscription)
     }
     
     
@@ -64,14 +68,14 @@ extension AddListViewController: UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "listNameCell", for: indexPath)
         var content = cell.defaultContentConfiguration()
-        content.text = viewModel.listNames.value?[indexPath.row] ?? ""
+        content.text = viewModel.listNamesCombine.value[indexPath.row]
         
         cell.contentConfiguration = content
         return cell
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.listNames.value?.count ?? 0
+        return viewModel.listNamesCombine.value.count
     }
     
 }
@@ -98,7 +102,7 @@ extension AddListViewController: UITableViewDelegate {
     // update list name
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
 
-        let originalListName = self.viewModel.listNames.value?[indexPath.row] ?? ""
+        let originalListName = self.viewModel.listNamesCombine.value[indexPath.row]
         
         let alertVC = UIAlertController(title: "編輯清單名稱", message: nil, preferredStyle: .alert)
         alertVC.addTextField { textField in

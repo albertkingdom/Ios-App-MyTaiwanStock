@@ -10,9 +10,10 @@ import Firebase
 import FirebaseAuth
 import MessageKit
 import InputBarAccessoryView
+import Combine
 
 class ChatViewController: MessagesViewController, MessagesDataSource, MessagesLayoutDelegate, MessagesDisplayDelegate {
-    
+    var subscription = Set<AnyCancellable>()
     var viewModel:ChatViewModel!
     
 
@@ -40,23 +41,32 @@ class ChatViewController: MessagesViewController, MessagesDataSource, MessagesLa
     }
 
     func bindViewModel() {
-        viewModel.messages.bind { [weak self] _ in
+//        viewModel.messages.bind { [weak self] _ in
+//            //print("list \(list)")
+//            self?.messagesCollectionView.reloadData()
+//            self?.messagesCollectionView.scrollToLastItem()
+//        }
+        
+        viewModel.$messagesCombine.sink { [weak self] _ in
             //print("list \(list)")
             self?.messagesCollectionView.reloadData()
             self?.messagesCollectionView.scrollToLastItem()
-        }
+        }.store(in: &subscription)
     }
     func currentSender() -> SenderType {
         return Sender(senderId: viewModel.currentUser.value?.uid ?? "", displayName: "Any One")
     }
     
     func messageForItem(at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) -> MessageType {
-        guard let messages = viewModel.messages.value else { return Message(user: viewModel.currentUser.value!, content: "") }
+//        guard let messages = viewModel.messages.value else { return Message(user: viewModel.currentUser.value!, content: "") }
+        let messages = viewModel.messagesCombine
+        
         return messages[indexPath.section]
     }
     
     func numberOfSections(in messagesCollectionView: MessagesCollectionView) -> Int {
-        return viewModel.messages.value?.count ?? 0
+//        return viewModel.messages.value?.count ?? 0
+        return viewModel.messagesCombine.count
     }
     func configureAvatarView(_ avatarView: AvatarView, for message: MessageType, at indexPath: IndexPath, in messagesCollectionView: MessagesCollectionView) {
 
@@ -70,7 +80,8 @@ class ChatViewController: MessagesViewController, MessagesDataSource, MessagesLa
         dateformatter.locale = Locale(identifier: "zh_TW")
         dateformatter.dateStyle = .short
         dateformatter.timeStyle = .short
-        guard let message = viewModel.messages.value?[indexPath.section] else { return  NSAttributedString() }
+        //guard let message = viewModel.messages.value?[indexPath.section] else { return  NSAttributedString() }
+        let message = viewModel.messagesCombine[indexPath.section]
         let sentTime = message.sentDate
 
         

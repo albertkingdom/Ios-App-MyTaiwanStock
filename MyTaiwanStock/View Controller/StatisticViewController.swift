@@ -7,10 +7,11 @@
 import CoreData
 import Charts
 import UIKit
+import Combine
 
 class StatisticViewController: UIViewController {
     let viewModel = StatisticViewModel()
-
+    var subscription = Set<AnyCancellable>()
 
     @IBOutlet weak var pieChartView: PieChartView!
     @IBOutlet weak var tableView: UITableView!
@@ -31,14 +32,20 @@ class StatisticViewController: UIViewController {
         viewModel.fetchData(to: pieChartView)
     }
     func bindViewModel() {
-        viewModel.stockNoToAsset.bind { [weak self] _ in
-            self?.tableView.reloadData()
-        }
-        viewModel.isEmptyData.bind { [weak self] isEmpty in
-            if let isEmpty = isEmpty, isEmpty {
-                self?.showWarningPopup()
-            }
-        }
+
+        viewModel.stockNoToAssetCombine
+            .combineLatest(viewModel.isLoading)
+            .sink(receiveValue: { [weak self] (data, isLoading) in
+                
+                print("data \(data) isLoading \(isLoading)")
+                self?.tableView.reloadData()
+                if data.isEmpty && !isLoading {
+                    self?.showWarningPopup()
+                }
+            })
+            .store(in: &subscription)
+        
+
     }
     func showWarningPopup() {
 
@@ -59,11 +66,13 @@ extension StatisticViewController: ChartViewDelegate {
 
 extension StatisticViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.stockNoToAsset.value?.count ?? 0
+
+        return viewModel.stockNoToAssetCombine.value.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "statisticCell", for: indexPath) as! StatisticTableViewCell
-        guard let stockNoToAsset = viewModel.stockNoToAsset.value?[indexPath.row] else { return UITableViewCell() }
+
+        let stockNoToAsset = viewModel.stockNoToAssetCombine.value[indexPath.row]
         cell.update(with: stockNoToAsset)
         cell.selectionStyle = .none
         return cell

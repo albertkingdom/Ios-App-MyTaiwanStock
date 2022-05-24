@@ -4,7 +4,7 @@
 //
 //  Created by Albert Lin on 2022/3/14.
 //
-
+import Combine
 import UIKit
 
 class AddStockNoViewController: UIViewController {
@@ -19,11 +19,13 @@ class AddStockNoViewController: UIViewController {
 
     var listName: String?
     
+    var subscription = Set<AnyCancellable>()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         tableView.delegate = self
         tableView.dataSource = self
-        searchBar.delegate = self
+
         // Do any additional setup after loading the view.
         guard let listName = listName else { return }
 
@@ -31,25 +33,41 @@ class AddStockNoViewController: UIViewController {
         
         viewModel.followingStockNoList = followingStockNoList
         bindViewModel()
+        
+        setupSearchBarListener()
     }
     
     func bindViewModel() {
-        viewModel.filteredAddStockCellViewModels.bind { [weak self] _ in
-            self?.tableView.reloadData()
-        }
+
+        viewModel.filteredAddStockCellViewModelsCombine
+            .sink { [weak self] data in
+                
+                self?.tableView.reloadData()
+            }.store(in: &subscription)
     }
 
+    func setupSearchBarListener() {
+        let publisher = NotificationCenter.default.publisher(for: UISearchTextField.textDidChangeNotification, object: searchBar.searchTextField)
+        
+        publisher
+            .compactMap { notification in
+                (notification.object as? UITextField)?.text
+            }
+            .sink { [weak self] str in
+                self?.viewModel.searchText.send(str)
+            }
+            .store(in: &subscription)
+    }
 
 }
 extension AddStockNoViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.filteredAddStockCellViewModels.value?.count ?? 0
+        return viewModel.filteredAddStockCellViewModelsCombine.value.count
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "stockNoSuggestion", for: indexPath) as! AddStockTableViewCell
       
-        guard let stockNameDetail = viewModel.filteredAddStockCellViewModels.value?[indexPath.row] else { return UITableViewCell() }
-        
+        let stockNameDetail = viewModel.filteredAddStockCellViewModelsCombine.value[indexPath.row]
 
         cell.configure(with: stockNameDetail)
         cell.addNewStockToDB = addNewStockToDB
@@ -61,32 +79,4 @@ extension AddStockNoViewController: UITableViewDataSource, UITableViewDelegate {
     
 }
 
-extension AddStockNoViewController: UISearchBarDelegate {
-    func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        let searchTerm = searchBar.text ?? ""
-        search(searchTerm)
-        searchBar.resignFirstResponder()
-    }
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
 
-        viewModel.filteredAddStockCellViewModels.value = []
-
-        searchBar.resignFirstResponder()
-        searchBar.setShowsCancelButton(false, animated: true)
-    }
-    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        searchBar.setShowsCancelButton(true, animated: true)
-    }
-  
-    func searchBar(_ searchBar: UISearchBar, textDidChange searchText: String) {
-        
-        search(searchText)
-    }
-    func search(_ searchTerm: String) {
-        if !searchTerm.isEmpty {
-            viewModel.searchStockNos(with: searchTerm)
-        }
-        
-    }
-    
-}

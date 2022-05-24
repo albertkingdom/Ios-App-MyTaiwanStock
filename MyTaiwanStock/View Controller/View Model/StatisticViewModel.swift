@@ -4,6 +4,7 @@
 //
 //  Created by 林煜凱 on 5/16/22.
 //
+import Combine
 import CoreData
 import Foundation
 import Charts
@@ -11,7 +12,7 @@ import Charts
 class StatisticViewModel {
     var context: NSManagedObjectContext?
     var chartService: ChartService!
-    var stockNoToAsset = Observable<[StockStatistic]>([])
+    var stockNoToAssetCombine = CurrentValueSubject<[StockStatistic],Never>([])
     
     lazy var fetchedResultsController: NSFetchedResultsController<InvestHistory> = {
     
@@ -25,34 +26,28 @@ class StatisticViewModel {
         
         return frc
     }()
-    var isEmptyData = Observable<Bool>(nil)
+    var isLoading = PassthroughSubject<Bool, Never>()
     
-    init() {
-        //let savedStockPrice = OneDayStockInfo.priceList
-        //self.chartService = ChartService()
-    }
     
     func fetchData(to chart: PieChartView) {
         do {
             try fetchedResultsController.performFetch()
     
             guard let historyList = fetchedResultsController.fetchedObjects else {
-                isEmptyData.value = true
+                isLoading.send(true)
                 return
             }
             let savedStockPrice = OneDayStockInfo.priceList
             
             self.chartService = ChartService(historyList: historyList, stockPriceList: savedStockPrice)
             guard let stockNoToAsset = chartService.calculateStockNoToAsset() else {
-                isEmptyData.value = true
+                isLoading.send(true)
                 return
             }
-            //print("stockNoToAsset \(stockNoToAsset)")
-            self.stockNoToAsset.value = stockNoToAsset
+            //print("stockNoToAsset \(stockNoToAsset)"
+            self.stockNoToAssetCombine.send(stockNoToAsset)
             
-            if stockNoToAsset.isEmpty {
-                isEmptyData.value = true
-            }
+            isLoading.send(false)
             prepareChart(with: chart)
         } catch {
             fatalError("Invest history fetch error")

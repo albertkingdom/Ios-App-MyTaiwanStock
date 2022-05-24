@@ -4,27 +4,29 @@
 //
 //  Created by Albert Lin on 2021/10/4.
 //
+import Combine
 import CoreData
 import UIKit
 import Charts
 import FirebaseFirestore
 
 class StockViewController: UIViewController {
+    var subscription = Set<AnyCancellable>()
     var viewModel: StockDetailViewModel!
     
     var chartService: ChartService!
     var context: NSManagedObjectContext?
-    lazy var fetchedResultsController: NSFetchedResultsController<InvestHistory> = {
-    
-        let fetchRequest: NSFetchRequest<InvestHistory> = InvestHistory.fetchRequest()
-        let sortDescriptor = NSSortDescriptor(key: "stockNo", ascending: false)
-        let predicate = NSPredicate(format: "stockNo == %@", self.stockNo!)
-        fetchRequest.sortDescriptors = [sortDescriptor]
-        fetchRequest.predicate = predicate
-        let frc = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: context!, sectionNameKeyPath: nil, cacheName: nil)
-        frc.delegate = self
-        return frc
-    }()
+//    lazy var fetchedResultsController: NSFetchedResultsController<InvestHistory> = {
+//
+//        let fetchRequest: NSFetchRequest<InvestHistory> = InvestHistory.fetchRequest()
+//        let sortDescriptor = NSSortDescriptor(key: "stockNo", ascending: false)
+//        let predicate = NSPredicate(format: "stockNo == %@", self.stockNo!)
+//        fetchRequest.sortDescriptors = [sortDescriptor]
+//        fetchRequest.predicate = predicate
+//        let frc = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: context!, sectionNameKeyPath: nil, cacheName: nil)
+//        frc.delegate = self
+//        return frc
+//    }()
     
 
     @IBOutlet weak var combinedChartView: CombinedChartView!
@@ -69,7 +71,8 @@ class StockViewController: UIViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel = StockDetailViewModel(stockNo: stockNo, currentStockPrice: stockPrice)
+        viewModel = StockDetailViewModel(stockNo: stockNo, currentStockPrice: stockPrice, context: context)
+
         combinedChartView.delegate = self
         tableView.delegate = self
         tableView.dataSource = self
@@ -115,15 +118,18 @@ class StockViewController: UIViewController {
       
         //print("stockview viewwillappear")
     
-
+        
         viewModel.fetchRemoteData(to: combinedChartView)
-        do {
-            try fetchedResultsController.performFetch()
-
-            viewModel.coreDataObjects = fetchedResultsController.fetchedObjects
-        } catch {
-            fatalError("Invest history fetch error")
-        }
+//        do {
+//            try fetchedResultsController.performFetch()
+//
+//            //viewModel.coreDataObjects = fetchedResultsController.fetchedObjects
+//            viewModel.coreDataObjectsCombine = fetchedResultsController.fetchedObjects ?? []
+//        } catch {
+//            fatalError("Invest history fetch error")
+//        }
+        
+        viewModel.fetchDB()
     }
     
    
@@ -131,9 +137,19 @@ class StockViewController: UIViewController {
         viewModel.stockInfoForCandleStickChart.bind { data in
             self.stockInfoForCandleStickChart = data
         }
-        viewModel.history.bind { [weak self] _ in
+//        viewModel.history.bind { [weak self] _ in
+//            self?.tableView.reloadData()
+//        }
+        viewModel.historyCombine.sink {  [weak self] history in
+            print("history \(history.count)")
             self?.tableView.reloadData()
+        }.store(in: &subscription)
+        
+        viewModel.$highlightChartIndex.sink { [weak self] index in
+            self?.combinedChartView.highlightValue(x: Double(index), dataSetIndex: 0, dataIndex: 1)
+            self?.combinedChartView.layoutIfNeeded()
         }
+        .store(in: &subscription)
     }
 }
 
@@ -157,52 +173,54 @@ extension StockViewController: ChartViewDelegate {
 extension StockViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 
-        return viewModel.history.value?.count ?? 0
+//        return viewModel.history.value?.count ?? 0
+        return viewModel.historyCombine.value.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "historyCell", for: indexPath) as! HistoryTableViewCell
 
         
-        guard let historyViewModel = viewModel.history.value?[indexPath.row] else { return UITableViewCell() }
-
+        //guard let historyViewModel = viewModel.history.value?[indexPath.row] else { return UITableViewCell() }
+        let historyViewModel = viewModel.historyCombine.value[indexPath.row]
         cell.configure(with: historyViewModel)
         return cell
     }
     
     // MARK: click table cell to highlight on chart
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-      
+
 
         // click record to highlight corresponding value on candlestick chart
         // get date of click record
-        if let date = fetchedResultsController.object(at: indexPath).date {
-          
-            let dateFormatter = DateFormatter()
-            dateFormatter.locale = Locale(identifier: "zh_TW")
-            dateFormatter.setLocalizedDateFormatFromTemplate("yyyy/MM/dd")
-           
-            let calendar = Calendar(identifier: .gregorian)
-            let components = calendar.dateComponents([.year, .month, .day], from: date)
-
-            if var year = components.year, let month = components.month, let day = components.day {
-                // convert date to following format like:  111/03/18
-                year = year - 1911
-                let fullMonth = month > 9 ? "month" : "0\(month)"
-                let targetDateString = "\(year)/\(fullMonth)/\(day)"
-
-                stockInfoForCandleStickChart.enumerated().forEach { index, candleData in
-                    // find the index of date in stockInfoForCandleStickChart
-                    if candleData[0] == targetDateString {
-
-                        combinedChartView.highlightValue(x: Double(index), dataSetIndex: 0, dataIndex: 1)
-                        combinedChartView.layoutIfNeeded()
-                    }
-                }
-                
-            }
-        }
+//        if let date = fetchedResultsController.object(at: indexPath).date {
+//
+//            let dateFormatter = DateFormatter()
+//            dateFormatter.locale = Locale(identifier: "zh_TW")
+//            dateFormatter.setLocalizedDateFormatFromTemplate("yyyy/MM/dd")
+//
+//            let calendar = Calendar(identifier: .gregorian)
+//            let components = calendar.dateComponents([.year, .month, .day], from: date)
+//
+//            if var year = components.year, let month = components.month, let day = components.day {
+//                // convert date to following format like:  111/03/18
+//                year = year - 1911
+//                let fullMonth = month > 9 ? "month" : "0\(month)"
+//                let targetDateString = "\(year)/\(fullMonth)/\(day)"
+//
+//                stockInfoForCandleStickChart.enumerated().forEach { index, candleData in
+//                    // find the index of date in stockInfoForCandleStickChart
+//                    if candleData[0] == targetDateString {
+//
+//                        combinedChartView.highlightValue(x: Double(index), dataSetIndex: 0, dataIndex: 1)
+//                        combinedChartView.layoutIfNeeded()
+//                    }
+//                }
+//
+//            }
+//        }
         
+        viewModel.findClickHistoryDate(index: indexPath.row)
        
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
@@ -219,42 +237,46 @@ extension StockViewController: UITableViewDataSource, UITableViewDelegate {
         if editingStyle == .delete {
             
             
-            let objectToDelete = fetchedResultsController.object(at: indexPath)
-            context?.delete(objectToDelete)
-            do {
-                try context?.save()
-            } catch {
-                fatalError("\(error.localizedDescription)")
-            }
+//            let objectToDelete = fetchedResultsController.object(at: indexPath)
+//
+//            context?.delete(objectToDelete)
+//            do {
+//                try context?.save()
+//            } catch {
+//                fatalError("\(error.localizedDescription)")
+//            }
+
+            viewModel.deleteHistory(at: indexPath.row)
+            
         }
     }
 }
 
-extension StockViewController: NSFetchedResultsControllerDelegate {
-    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        tableView.beginUpdates()
-    }
-    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
-        guard let _ = anObject as? InvestHistory else {
-            return
-        }
-        
-        switch type {
-        case .insert:
-            guard let newIndexPath = newIndexPath else { return }
-            tableView.insertRows(at: [newIndexPath], with: .automatic)
-        case .delete:
-            guard let indexPathToDel = indexPath else { return }
-            tableView.deleteRows(at: [indexPathToDel], with: .automatic)
-        default:
-            return
-        }
-    }
-    
-    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
-        tableView.endUpdates()
-    }
-}
+//extension StockViewController: NSFetchedResultsControllerDelegate {
+//    func controllerWillChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+//        tableView.beginUpdates()
+//    }
+//    func controller(_ controller: NSFetchedResultsController<NSFetchRequestResult>, didChange anObject: Any, at indexPath: IndexPath?, for type: NSFetchedResultsChangeType, newIndexPath: IndexPath?) {
+//        guard let _ = anObject as? InvestHistory else {
+//            return
+//        }
+//
+//        switch type {
+//        case .insert:
+//            guard let newIndexPath = newIndexPath else { return }
+//            tableView.insertRows(at: [newIndexPath], with: .automatic)
+//        case .delete:
+//            guard let indexPathToDel = indexPath else { return }
+//            tableView.deleteRows(at: [indexPathToDel], with: .automatic)
+//        default:
+//            return
+//        }
+//    }
+//
+//    func controllerDidChangeContent(_ controller: NSFetchedResultsController<NSFetchRequestResult>) {
+//        tableView.endUpdates()
+//    }
+//}
 
 
 

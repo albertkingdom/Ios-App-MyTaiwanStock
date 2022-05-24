@@ -7,32 +7,53 @@
 import Firebase
 import FirebaseAuth
 import Foundation
+import Combine
 
 class ChatViewModel {
+    var subscription = Set<AnyCancellable>()
     var stockNo: String!
-    var channelID: String! {
-        didSet {
-            fetchRemoteData()
-        }
-    }
+//    var channelID: String! {
+//        didSet {
+//            fetchRemoteData()
+//        }
+//    }
+    var channelIDCombine = CurrentValueSubject<String, Never>("")
     private let database = Firestore.firestore()
-    var messages = Observable<[Message]>([])
+    //var messages = Observable<[Message]>([])
+    @Published var messagesCombine:[Message] = []
     var currentUser = Observable<User>(nil)
+    @Published var currentUserCombine: User!
     var reference: CollectionReference?
     private var channelReference: CollectionReference {
       return database.collection("channels")
     }
-    var messageListener: ListenerRegistration!
+    var messageListener: ListenerRegistration?
     
     init(stockNo: String) {
         
         self.stockNo = stockNo
-        checkIsExistingChannel()
+        //checkIsExistingChannel()
+        setup()
     }
     deinit {
        
         removeListener()
     }
+    
+    func setup() {
+        channelIDCombine.sink { id in
+            print("observe id \(id)")
+            if id.isEmpty {
+                print("id is empty")
+                self.checkIsExistingChannel()
+            } else {
+               
+                self.fetchRemoteData()
+            }
+        }
+        .store(in: &subscription)
+    }
+    
     func createChannel(){
         
         
@@ -41,13 +62,13 @@ class ChatViewModel {
                 print("Error saving channel: \(error.localizedDescription)")
             }
         }
-        channelID = documentRef.documentID
-        
+//        channelID = documentRef.documentID
+        channelIDCombine.send(documentRef.documentID)
     }
     func checkIsExistingChannel() {
-        var isExisting = false
         
-        channelReference.whereField("name", isEqualTo: stockNo).getDocuments { (snapshot, err) in
+        
+        channelReference.whereField("name", isEqualTo: stockNo ?? "").getDocuments { (snapshot, err) in
             if let err = err {
                 print("Error getting documents: \(err)")
                 
@@ -59,8 +80,9 @@ class ChatViewModel {
                 
           
                 if (snapshot!.documents.count > 0) {
-                    isExisting = true
-                    self.channelID = snapshot?.documents[0].documentID
+                    guard let id = snapshot?.documents[0].documentID else { return }
+                    //self.channelID = snapshot?.documents[0].documentID
+                    self.channelIDCombine.send(id)
                     return
                 }
                 self.createChannel()
@@ -78,7 +100,9 @@ class ChatViewModel {
     }
     
     func fetchRemoteData() {
-        reference = database.collection("channels/\(channelID!)/thread")
+
+//        reference = database.collection("channels/\(channelID!)/thread")
+        reference = database.collection("channels/\(channelIDCombine.value)/thread")
         messageListener = reference?.addSnapshotListener { [weak self] querySnapshot, error in
             guard let snapshot = querySnapshot else {
                 print("""
@@ -100,8 +124,13 @@ class ChatViewModel {
         case .added:
             let message = Message(document: change.document)
             //print("message \(message)")
-            messages.value?.append(message)
-            messages.value?.sort { (msg1, msg2) -> Bool in
+            //messages.value?.append(message)
+//            messages.value?.sort { (msg1, msg2) -> Bool in
+//                msg1.sentDate < msg2.sentDate
+//            }
+            messagesCombine.append(message)
+            
+            messagesCombine.sort{ (msg1, msg2) -> Bool in
                 msg1.sentDate < msg2.sentDate
             }
 
@@ -123,6 +152,6 @@ class ChatViewModel {
     }
     
     func removeListener() {
-        messageListener.remove()
+        messageListener?.remove()
     }
 }

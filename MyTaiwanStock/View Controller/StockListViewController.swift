@@ -7,26 +7,27 @@
 import WidgetKit
 import UIKit
 import CoreData
+import Combine
 
 class StockListViewController: UIViewController {
-    
+    var subscription = Set<AnyCancellable>()
     
     var userDefault = UserDefaults(suiteName: "group.a2006mike.myTaiwanStock")
     var context: NSManagedObjectContext?
     let viewModel: StockListViewModel = StockListViewModel()
     
     var refreshControl: UIRefreshControl!
-    private var timer: DispatchSourceTimer?
+
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
     @IBOutlet weak var popUpButton: UIButton!
     @IBAction func goToAddStockNoVC(_ sender: Any) {
 
         let addStockViewController = storyboard?.instantiateViewController(identifier: "addStockVC") as! AddStockNoViewController
-        addStockViewController.followingStockNoList = viewModel.stockNameStringSet.value ?? []
+        addStockViewController.followingStockNoList = viewModel.stockNameStringSetCombine.value
         addStockViewController.addNewStockToDB = saveNewStockNumberToDB(stockNumber:)
 
-        addStockViewController.listName = viewModel.menuTitle.value
+        addStockViewController.listName = viewModel.menuTitleCombine
         navigationController?.pushViewController(addStockViewController, animated: true)
     }
     
@@ -36,9 +37,11 @@ class StockListViewController: UIViewController {
         viewModel.context = self.context
         tableView.delegate = self
         tableView.dataSource = self
-        searchBar.delegate = self
+
         
         tableView.tableFooterView = UIView()
+        
+        searchBar.delegate = self
         
         navigationItem.leftBarButtonItem = editButtonItem
 
@@ -56,51 +59,45 @@ class StockListViewController: UIViewController {
         
         bindViewModel()
         
+        setupSearchBarListener()
     }
     override func viewWillDisappear(_ animated: Bool) {
-        timer?.cancel()
-        timer = nil
+
+        viewModel.cancelTimer()
+        
     }
     
     func bindViewModel() {
-        viewModel.stockNameStringSet.bind { [weak self] set in
-            //print("set \(set)")
-            if let count = set?.count, count > 0 {
-                self?.timer?.cancel()
-                self?.repeatFetchOneDayStockInfoFromAPI()
-            } else {
-                self?.viewModel.stockCellDatas.value = []
-            }
-            
-        }
-        
-        viewModel.menuActions.bind { [weak self] actionList in
+
+        viewModel.menuActionsCombine
+            .sink { [weak self] actionList in
             self?.configureMenu(actionList: actionList)
         }
-        viewModel.menuTitle.bind { [weak self] title in
-            self?.popUpButton.setTitle(title, for: .normal)
-        }
-        viewModel.stockCellDatas.bind { [weak self] _ in
-            self?.tableView.reloadData()
-            
-        }
-        viewModel.dataForWidget.bind { [weak self] data in
-            guard let data = data else { return }
-            self?.saveListToUserDefault(data: data)
-        }
-    }
-    
-    func repeatFetchOneDayStockInfoFromAPI() {
-        timer = DispatchSource.makeTimerSource(queue: DispatchQueue.global())
-        timer!.schedule(deadline: .now(), repeating: DispatchTimeInterval.seconds(60*1))
-        timer!.setEventHandler { [weak self] in
+        .store(in: &subscription)
+        
 
-            self?.viewModel.fetchOneDayStockInfoFromAPI()
-            
-        }
-        timer!.resume()
+        viewModel.$menuTitleCombine.sink { [weak self] title in
+            self?.popUpButton.setTitle(title, for: .normal)
+        }.store(in: &subscription)
+        
+        viewModel.filteredStockCellDatasCombine
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] viewmodels in
+                print("viewmodels \(viewmodels)")
+                self?.tableView.reloadData()
+            }
+            .store(in: &subscription)
+        
+       
+        viewModel.dataForWidget
+            .sink { [weak self] data in
+                
+                self?.saveListToUserDefault(data: data)
+            }
+            .store(in: &subscription)
     }
     
+
     func saveListToUserDefault(data: Data) {
 
         self.userDefault?.setValue(data, forKey: "stockList")
@@ -108,8 +105,9 @@ class StockListViewController: UIViewController {
     }
     @objc func refreshData(){
         self.refreshControl.endRefreshing()
-        timer?.cancel()
-        self.repeatFetchOneDayStockInfoFromAPI()
+    
+        viewModel.repeatFetch(stockNos: viewModel.stockNoStringCombine.value)
+
 
     }
     
@@ -138,7 +136,18 @@ class StockListViewController: UIViewController {
     }
 
 
-       
+    func setupSearchBarListener() {
+        let publisher = NotificationCenter.default.publisher(for: UISearchTextField.textDidChangeNotification, object: searchBar.searchTextField)
+        
+        publisher
+            .compactMap { notification in
+                (notification.object as? UITextField)?.text
+            }
+            .sink { [weak self] str in
+                self?.viewModel.searchText.send(str)
+            }
+            .store(in: &subscription)
+    }
     
   
     
@@ -147,20 +156,23 @@ class StockListViewController: UIViewController {
 extension StockListViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 
-        return viewModel.stockCellDatas.value?.count ?? 0
+
+        return viewModel.filteredStockCellDatasCombine.value.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "stockPriceInfoCell", for: indexPath) as! StockTableViewCell
 
-        guard let cellViewModel = viewModel.stockCellDatas.value?[indexPath.row] else { return UITableViewCell() }
+
+        let cellViewModel = viewModel.filteredStockCellDatasCombine.value[indexPath.row]
         cell.update(with: cellViewModel)
         cell.selectionStyle = .none
         return cell
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let stockViewController = storyboard?.instantiateViewController(identifier: "stockViewController") as! StockViewController
-        guard let cellViewModel = viewModel.stockCellDatas.value?[indexPath.row] else { return }
+
+        let cellViewModel = viewModel.filteredStockCellDatasCombine.value[indexPath.row]
         
         stockViewController.stockNo = cellViewModel.stockNo
         stockViewController.stockPrice = cellViewModel.stockPrice
@@ -212,25 +224,13 @@ extension StockListViewController {
     
     
 }
-// MARK: search bar
+
 extension StockListViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
-        let searchTerm = searchBar.text ?? ""
-        viewModel.search(searchTerm)
-        searchBar.resignFirstResponder()
-    }
-    func searchBarCancelButtonClicked(_ searchBar: UISearchBar) {
-      
-        viewModel.stockCellDatas.value = viewModel.onedayStockInfo.map({ item in
-            StockCellViewModel(stock: item)
-        })
-        searchBar.resignFirstResponder()
-        searchBar.setShowsCancelButton(false, animated: true)
-    }
-    func searchBarTextDidBeginEditing(_ searchBar: UISearchBar) {
-        searchBar.setShowsCancelButton(true, animated: true)
+        self.searchBar.endEditing(true)
     }
     
 }
+
 
 

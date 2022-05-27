@@ -760,48 +760,46 @@
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="newsCell" id="rvN-rk-0s8" customClass="NewsListTableViewCell" customModule="MyTaiwanStock" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="44.666666030883789" width="414" height="158.66667175292969"/>
+                                        <rect key="frame" x="0.0" y="44.666666030883789" width="414" height="182"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="rvN-rk-0s8" id="rL8-z7-O53">
-                                            <rect key="frame" x="0.0" y="0.0" width="414" height="158.66667175292969"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="414" height="182"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <stackView opaque="NO" contentMode="scaleToFill" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="Sa0-Pd-IT3">
-                                                    <rect key="frame" x="0.0" y="0.0" width="414" height="158.66666666666666"/>
+                                                    <rect key="frame" x="5" y="5" width="404" height="172"/>
                                                     <subviews>
                                                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="iiA-RP-30k">
-                                                            <rect key="frame" x="0.0" y="0.0" width="80" height="158.66666666666666"/>
+                                                            <rect key="frame" x="0.0" y="0.0" width="80" height="172"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="width" constant="80" id="Cry-KH-IEH"/>
                                                             </constraints>
                                                         </imageView>
                                                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="5nJ-BK-23T">
-                                                            <rect key="frame" x="85" y="0.0" width="329" height="158.66666666666666"/>
+                                                            <rect key="frame" x="85" y="0.0" width="319" height="172"/>
                                                             <subviews>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="News Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fh5-No-eWi">
-                                                                    <rect key="frame" x="0.0" y="0.0" width="329" height="20.333333333333332"/>
+                                                                    <rect key="frame" x="0.0" y="0.0" width="319" height="20.333333333333332"/>
                                                                     <fontDescription key="fontDescription" type="system" pointSize="17"/>
-                                                                    <nil key="textColor"/>
+                                                                    <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                     <nil key="highlightedColor"/>
                                                                 </label>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" text="detail" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1Er-nv-s7J" userLabel="Detail">
-                                                                    <rect key="frame" x="0.0" y="20.333333333333329" width="329" height="123.99999999999999"/>
+                                                                    <rect key="frame" x="0.0" y="20.333333333333329" width="319" height="137.33333333333337"/>
                                                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
-                                                                    <nil key="textColor"/>
+                                                                    <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                     <nil key="highlightedColor"/>
                                                                 </label>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="News date" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7jc-nc-AXH">
-                                                                    <rect key="frame" x="0.0" y="144.33333333333334" width="329" height="14.333333333333343"/>
+                                                                    <rect key="frame" x="0.0" y="157.66666666666666" width="319" height="14.333333333333343"/>
                                                                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                                                     <color key="textColor" systemColor="systemGray2Color"/>
                                                                     <nil key="highlightedColor"/>
                                                                 </label>
                                                             </subviews>
-                                                            <constraints>
-                                                                <constraint firstItem="fh5-No-eWi" firstAttribute="top" secondItem="5nJ-BK-23T" secondAttribute="top" id="rhr-wZ-lKi"/>
-                                                            </constraints>
                                                         </stackView>
                                                     </subviews>
+                                                    <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                     <constraints>
                                                         <constraint firstItem="iiA-RP-30k" firstAttribute="leading" secondItem="Sa0-Pd-IT3" secondAttribute="leading" id="ETW-pt-6vj"/>
                                                         <constraint firstAttribute="bottom" secondItem="iiA-RP-30k" secondAttribute="bottom" id="IAf-z8-x1a"/>
@@ -812,16 +810,17 @@
                                                 </stackView>
                                             </subviews>
                                             <constraints>
-                                                <constraint firstAttribute="bottom" secondItem="Sa0-Pd-IT3" secondAttribute="bottom" id="FTE-R1-0FV"/>
-                                                <constraint firstAttribute="trailing" secondItem="Sa0-Pd-IT3" secondAttribute="trailing" id="SEi-eh-zM0"/>
-                                                <constraint firstItem="Sa0-Pd-IT3" firstAttribute="leading" secondItem="rL8-z7-O53" secondAttribute="leading" id="pRU-gp-em8"/>
-                                                <constraint firstItem="Sa0-Pd-IT3" firstAttribute="top" secondItem="rL8-z7-O53" secondAttribute="top" id="z0A-If-R85"/>
+                                                <constraint firstAttribute="bottom" secondItem="Sa0-Pd-IT3" secondAttribute="bottom" constant="5" id="FTE-R1-0FV"/>
+                                                <constraint firstAttribute="trailing" secondItem="Sa0-Pd-IT3" secondAttribute="trailing" constant="5" id="SEi-eh-zM0"/>
+                                                <constraint firstItem="Sa0-Pd-IT3" firstAttribute="leading" secondItem="rL8-z7-O53" secondAttribute="leading" constant="5" id="pRU-gp-em8"/>
+                                                <constraint firstItem="Sa0-Pd-IT3" firstAttribute="top" secondItem="rL8-z7-O53" secondAttribute="top" constant="5" id="z0A-If-R85"/>
                                             </constraints>
                                         </tableViewCellContentView>
                                         <connections>
                                             <outlet property="date" destination="7jc-nc-AXH" id="WVf-wH-zzl"/>
                                             <outlet property="detail" destination="1Er-nv-s7J" id="GrM-Ug-duf"/>
                                             <outlet property="imagePreview" destination="iiA-RP-30k" id="5ux-1M-Gyg"/>
+                                            <outlet property="stackView" destination="Sa0-Pd-IT3" id="jUV-KM-aKj"/>
                                             <outlet property="title" destination="fh5-No-eWi" id="gFj-6o-CdR"/>
                                         </connections>
                                     </tableViewCell>

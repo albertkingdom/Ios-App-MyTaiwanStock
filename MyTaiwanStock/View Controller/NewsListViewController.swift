@@ -17,6 +17,8 @@ class NewsListViewController: UIViewController {
     override func viewDidLoad() {
         tableView.dataSource = self
         tableView.delegate = self
+        tableView.backgroundColor = UIColor(red: 211/256, green: 211/256, blue: 211/256, alpha: 1)
+        tableView.separatorStyle = .none
         guard let stockName = stockName else { return }
         title = "\(stockName)新聞"
         
@@ -29,17 +31,7 @@ class NewsListViewController: UIViewController {
     }
     
     func bindViewModel() {
-//        viewModel.newsList.bind { [weak self] _ in
-//            self?.tableView.reloadData()
-//        }
-//        viewModel.isEmptyNews.bind { [weak self] isEmpty in
-//            if let isEmpty = isEmpty, isEmpty {
-//                let alertC = UIAlertController(title: "新聞列表", message: "目前沒有\( self?.stockName! ?? "")相關新聞!", preferredStyle: .alert)
-//                let okAction = UIAlertAction(title: "OK", style: .default, handler: nil)
-//                alertC.addAction(okAction)
-//                self?.present(alertC, animated: true, completion: nil)
-//            }
-//        }
+
         
         // 
         viewModel.newsList

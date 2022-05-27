@@ -154,37 +154,25 @@ class StockListViewModel {
             .store(in: &subscription)
     }
     func generateMenu() {
-//        if #available(iOS 15, *) {
-        //        } else {
-        //            menuTitle.value = self.followingListSelectionMenu.value?[currentMenuIndex.value!]
-        //        }
-        //menuTitle.value = self.followingListSelectionMenu.value?[currentMenuIndex]
-       
 
-        currentMenuIndexCombine.sink { [weak self] index in
-            self?.menuTitleCombine = self?.followingListSelectionMenuCombine.value[index] ?? ""
-        }.store(in: &subscription)
         
-        followingListSelectionMenuCombine.sink { [weak self] listNames in
-            print("listNames \(listNames)")
-            let actions = listNames.enumerated().map { index, str in
-                UIAction(title: str, state: index == self?.currentMenuIndexCombine.value ? .on: .off, handler: { action in
-                    
-                    //self?.currentMenuIndex = index
-                    self?.currentMenuIndexCombine.send(index)
-                    self?.setupStockNameStringSet()
-                    //self?.timer?.invalidate()
-//                    self?.timer?.cancel()
-                    //                if #available(iOS 15, *) {
-                    //                } else {
-                    //                    self.menuTitle.value = str
-                    //                }
-                    //self?.menuTitle.value = str
-                })
-            }
-            self?.menuActionsCombine.send(actions)
-           
-        }.store(in: &subscription)
+        followingListSelectionMenuCombine
+            .combineLatest(currentMenuIndexCombine)
+            .sink(receiveValue: { [weak self] listNames, index in
+                self?.menuTitleCombine = self?.followingListSelectionMenuCombine.value[index] ?? ""
+                let actions = listNames.enumerated().map { index, str in
+                    UIAction(title: str, state: index == self?.currentMenuIndexCombine.value ? .on: .off, handler: { action in
+                        
+                        self?.currentMenuIndexCombine.send(index)
+                        self?.setupStockNameStringSet()
+                        
+                    })
+                }
+                self?.menuActionsCombine.send(actions)
+                
+            })
+            .store(in: &subscription)
+        
     }
     func repeatFetch(stockNos: [String]) {
         //print("repeatFetch \(stockNos)")
@@ -210,7 +198,7 @@ class StockListViewModel {
                 }
             } receiveValue: { [weak self] data in
                 print("data \(data)")
-
+                self?.onedayStockInfo = data.msgArray
                 let cellVMs = data.msgArray.map { item in
                     StockCellViewModel(stock: item)
                 }
@@ -276,6 +264,10 @@ class StockListViewModel {
         stockNameStringSetCombine.value = stockNameStringSetCombine.value.filter { stockNo in
             itemToDelete.stockNo != stockNo
         }// edit current stockno list
+        
+        stockNoStringCombine.value = stockNoStringCombine.value.filter({ stockNo in
+            itemToDelete.stockNo != stockNo
+        })
     }
     // MARK: Core Data - delete
     func deleteStockNumberInDB(stockNoObject: StockNo) {

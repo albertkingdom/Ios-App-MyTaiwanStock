@@ -95,6 +95,14 @@ class StockListViewController: UIViewController {
                 self?.saveListToUserDefault(data: data)
             }
             .store(in: &subscription)
+        
+        viewModel.stockNoStringCombine
+            .sink { [weak self] stockNoStrings in
+                //print("stockNoStrings \(stockNoStrings)")
+                self?.userDefault?.setValue(stockNoStrings, forKey: "stockNos")
+                WidgetCenter.shared.reloadAllTimelines()
+            }
+            .store(in: &subscription)
     }
     
 

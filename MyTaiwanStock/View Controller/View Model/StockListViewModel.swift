@@ -31,17 +31,14 @@ class StockListViewModel {
 
     var followingListSelectionMenuCombine = CurrentValueSubject<[String], Never>([])
     
-    var onedayStockInfo: [OneDayStockInfoDetail] = [] {
-        didSet {
-            transformForWidget()
-        }
-    }
+    var onedayStockInfo: [OneDayStockInfoDetail] = []
     
     var stockCellDatasCombine = CurrentValueSubject<[StockCellViewModel], Never>([])
     
     let filteredStockCellDatasCombine = CurrentValueSubject<[StockCellViewModel], Never>([])
 
     var dataForWidget = PassthroughSubject<Data, Never>()
+    
     
     var searchText = CurrentValueSubject<String, Never>("")
     
@@ -334,20 +331,6 @@ class StockListViewModel {
     }
     
 
-    func transformForWidget() {
-        let encoder = JSONEncoder()
-        let stockListForWidget = onedayStockInfo.map { item in
-            return CommonStockInfo(stockNo: item.stockNo, current: item.current, shortName: item.shortName, yesterDayPrice: item.yesterDayPrice)
-        }
-        do {
-            let stockListForWidgetEncode = try encoder.encode(stockListForWidget)
-            
-            dataForWidget.send(stockListForWidgetEncode)
-        } catch let error{
-            print(error)
-        }
-    }
-    
     func cancelTimer() {
 //        timer?.cancel()
 //        timer = nil

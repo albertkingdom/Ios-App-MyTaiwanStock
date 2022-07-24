@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A1202125288BB8DD00C8746A /* NewsListTableViewCell2.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1202124288BB8DD00C8746A /* NewsListTableViewCell2.swift */; };
 		A12705122830AE9900ED92F2 /* StockListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12705112830AE9900ED92F2 /* StockListViewModel.swift */; };
 		A12705142830B36700ED92F2 /* StockCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12705132830B36700ED92F2 /* StockCellViewModel.swift */; };
 		A12705162830BCE500ED92F2 /* Observable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12705152830BCE500ED92F2 /* Observable.swift */; };
@@ -125,6 +126,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		A1202124288BB8DD00C8746A /* NewsListTableViewCell2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsListTableViewCell2.swift; sourceTree = "<group>"; };
 		A12705112830AE9900ED92F2 /* StockListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockListViewModel.swift; sourceTree = "<group>"; };
 		A12705132830B36700ED92F2 /* StockCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockCellViewModel.swift; sourceTree = "<group>"; };
 		A12705152830BCE500ED92F2 /* Observable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Observable.swift; sourceTree = "<group>"; };
@@ -334,6 +336,7 @@
 				A127052528321DB000ED92F2 /* HistoryCellViewModel.swift */,
 				DF06F327270D61AC0031D6FE /* HistoryTableViewCell.swift */,
 				A168E0A12714822D00C75064 /* NewsListTableViewCell.swift */,
+				A1202124288BB8DD00C8746A /* NewsListTableViewCell2.swift */,
 				A127052B2833604400ED92F2 /* NewsListCellViewModel.swift */,
 				DF14417D27868B240038D05D /* StatisticTableViewCell.swift */,
 				DF793ADA27E03258007C9442 /* AddStockTableViewCell.swift */,
@@ -620,6 +623,7 @@
 				DF944EE92807DB04005157A9 /* ChartService.swift in Sources */,
 				DF06F2FD27097F2C0031D6FE /* SceneDelegate.swift in Sources */,
 				A12705162830BCE500ED92F2 /* Observable.swift in Sources */,
+				A1202125288BB8DD00C8746A /* NewsListTableViewCell2.swift in Sources */,
 				DF14418027869C200038D05D /* StockStatistic.swift in Sources */,
 				A127052C2833604400ED92F2 /* NewsListCellViewModel.swift in Sources */,
 				DF06F317270A01220031D6FE /* StockTableViewCell.swift in Sources */,

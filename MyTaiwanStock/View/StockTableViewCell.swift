@@ -18,6 +18,8 @@ class StockTableViewCell: UITableViewCell {
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        stockPriceDiff.layer.cornerRadius = 5
+        stockPriceDiff.layer.masksToBounds = true
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

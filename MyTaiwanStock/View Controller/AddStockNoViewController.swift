@@ -35,6 +35,9 @@ class AddStockNoViewController: UIViewController {
         bindViewModel()
         
         setupSearchBarListener()
+        
+        searchBar.becomeFirstResponder()
+        searchBar.placeholder = "請搜尋股票代號 e.g. 0050"
     }
     
     func bindViewModel() {

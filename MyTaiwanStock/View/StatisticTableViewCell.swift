@@ -8,12 +8,17 @@
 import UIKit
 
 class StatisticTableViewCell: UITableViewCell {
+    @IBOutlet weak var container: UIStackView!
     @IBOutlet weak var stockNoLabel: UILabel!
     @IBOutlet weak var assetLabel: UILabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
+        backgroundColor = .clear
+        container.backgroundColor = .systemBackground
+        container.layer.cornerRadius = 5
+        container.clipsToBounds = true
     }
 
     override func setSelected(_ selected: Bool, animated: Bool) {

@@ -76,7 +76,7 @@ class StockViewController: UIViewController {
         combinedChartView.delegate = self
         tableView.delegate = self
         tableView.dataSource = self
-        tableView.tableFooterView = UIView() // remove unused separator
+        tableView.separatorStyle = .none// remove unused separator
 
         navigationItem.title = stockNo
        
@@ -90,6 +90,7 @@ class StockViewController: UIViewController {
         
         bindViewModel()
 
+        tableView.backgroundColor = .secondarySystemBackground
     }
  
     @objc func navigateToAddRecord() {

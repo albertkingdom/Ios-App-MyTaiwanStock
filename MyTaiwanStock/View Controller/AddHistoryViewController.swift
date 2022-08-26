@@ -44,7 +44,10 @@ class AddHistoryViewController: UITableViewController {
         guard let stockNo = stockNoTextField.text,
               let price = Float(priceTextField.text ?? "0"),
               let amount = Int(amountTextField.text ?? "0")
-        else { return }
+        else {
+            showToast(message: "請確實填入各項資訊")
+            return
+        }
         let reason = reasonTextView.text ?? ""
         
 
@@ -54,6 +57,7 @@ class AddHistoryViewController: UITableViewController {
             amount: amount,
             reason: reason
         )
+        showToast(message: "成功新增一筆投資紀錄")
         navigationController?.popViewController(animated: true)
     }
     @IBAction func cancel(_ sender: Any) {
@@ -75,6 +79,9 @@ class AddHistoryViewController: UITableViewController {
         reasonTextView.layer.borderColor = UIColor.lightGray.cgColor
         reasonTextView.layer.borderWidth = 2
         reasonTextView.layer.cornerRadius = 5
+        
+        //view.backgroundColor = .systemBackground
+        //tableView.backgroundColor = .secondarySystemBackground
     }
     
    

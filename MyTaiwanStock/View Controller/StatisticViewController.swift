@@ -25,6 +25,8 @@ class StatisticViewController: UIViewController {
 
         viewModel.context = context
         bindViewModel()
+        
+        tableView.backgroundColor = .secondarySystemBackground
     }
     
     override func viewWillAppear(_ animated: Bool) {

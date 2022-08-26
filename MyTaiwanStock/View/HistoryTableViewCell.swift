@@ -21,6 +21,7 @@ class HistoryTableViewCell: UITableViewCell {
         // Initialization code
         stackView.layer.borderWidth = 1
         stackView.layer.cornerRadius = 5
+        stackView.backgroundColor = .systemBackground
     }
     override func layoutSubviews() {
         super.layoutSubviews()
@@ -46,7 +47,7 @@ class HistoryTableViewCell: UITableViewCell {
         }else if viewModel.revenueFloat < 0 && viewModel.status == 0 {
             revenueLabel.textColor = .green
         }else {
-            revenueLabel.textColor = .black
+            revenueLabel.textColor = .label
         }
     }
 

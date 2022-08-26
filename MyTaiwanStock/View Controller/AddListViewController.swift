@@ -48,6 +48,9 @@ class AddListViewController: UIViewController {
         addButton.layer.cornerRadius = 5
         
         bindViewModel()
+        
+        initView()
+        
     }
     func bindViewModel() {
         
@@ -59,7 +62,10 @@ class AddListViewController: UIViewController {
             .store(in: &subscription)
     }
     
-    
+    func initView() {
+        tableView.separatorStyle = .none
+        tableView.backgroundColor = .secondarySystemBackground
+    }
 
 }
 
@@ -71,6 +77,7 @@ extension AddListViewController: UITableViewDataSource {
         content.text = viewModel.listNamesCombine.value[indexPath.row]
         
         cell.contentConfiguration = content
+        cell.backgroundColor = .systemBackground
         return cell
     }
     

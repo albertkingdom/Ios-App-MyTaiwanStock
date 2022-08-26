@@ -51,6 +51,7 @@ class StockListViewController: UIViewController {
         refreshControl = UIRefreshControl()
         tableView.addSubview(refreshControl)
         refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
+        initView()
     }
     override func viewWillAppear(_ animated: Bool) {
 
@@ -60,6 +61,8 @@ class StockListViewController: UIViewController {
         bindViewModel()
         
         setupSearchBarListener()
+        
+        
     }
     override func viewWillDisappear(_ animated: Bool) {
 
@@ -157,7 +160,11 @@ class StockListViewController: UIViewController {
             .store(in: &subscription)
     }
     
-  
+    func initView() {
+        tableView.backgroundColor = .secondarySystemBackground
+        tableView.separatorStyle = .none
+        
+    }
     
 }
 
@@ -191,7 +198,9 @@ extension StockListViewController: UITableViewDataSource, UITableViewDelegate {
         navigationController?.pushViewController(stockViewController, animated: true)
 
     }
-    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 100
+    }
     // MARK: delete row
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
         

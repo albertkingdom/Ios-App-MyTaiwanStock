@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		A10CD2D028B9D1BB00B37AA4 /* CustomTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10CD2CF28B9D1BB00B37AA4 /* CustomTabBarViewController.swift */; };
 		A1202125288BB8DD00C8746A /* NewsListTableViewCell2.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1202124288BB8DD00C8746A /* NewsListTableViewCell2.swift */; };
 		A12705122830AE9900ED92F2 /* StockListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12705112830AE9900ED92F2 /* StockListViewModel.swift */; };
 		A12705142830B36700ED92F2 /* StockCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12705132830B36700ED92F2 /* StockCellViewModel.swift */; };
@@ -118,6 +119,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		A10CD2CF28B9D1BB00B37AA4 /* CustomTabBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBarViewController.swift; sourceTree = "<group>"; };
 		A1202124288BB8DD00C8746A /* NewsListTableViewCell2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsListTableViewCell2.swift; sourceTree = "<group>"; };
 		A12705112830AE9900ED92F2 /* StockListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockListViewModel.swift; sourceTree = "<group>"; };
 		A12705132830B36700ED92F2 /* StockCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockCellViewModel.swift; sourceTree = "<group>"; };
@@ -314,6 +316,7 @@
 				DFFEB04927E1D45000C85A53 /* ChatViewController.swift */,
 				DF715D712809140300DD92F4 /* AddListViewController.swift */,
 				DF793AD627DF8C36007C9442 /* AddStockNoViewController.swift */,
+				A10CD2CF28B9D1BB00B37AA4 /* CustomTabBarViewController.swift */,
 			);
 			path = "View Controller";
 			sourceTree = "<group>";
@@ -551,6 +554,7 @@
 			files = (
 				DFD239DD270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodeld in Sources */,
 				A127051C2831F98100ED92F2 /* AddStockNoViewModel.swift in Sources */,
+				A10CD2D028B9D1BB00B37AA4 /* CustomTabBarViewController.swift in Sources */,
 				A168E0A22714822D00C75064 /* NewsListTableViewCell.swift in Sources */,
 				A181943B28B87895009475E9 /* ValidInputService.swift in Sources */,
 				DF793ADB27E03258007C9442 /* AddStockTableViewCell.swift in Sources */,

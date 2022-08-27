@@ -28,14 +28,14 @@
 		A168E0A027147C9800C75064 /* NewsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A168E09F27147C9800C75064 /* NewsListViewController.swift */; };
 		A168E0A22714822D00C75064 /* NewsListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A168E0A12714822D00C75064 /* NewsListTableViewCell.swift */; };
 		A168E0A427148D1600C75064 /* webViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A168E0A327148D1600C75064 /* webViewController.swift */; };
+		A181943B28B87895009475E9 /* ValidInputService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A181943A28B87895009475E9 /* ValidInputService.swift */; };
+		A181945928B88209009475E9 /* ValidInputServiceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A181945828B88209009475E9 /* ValidInputServiceTest.swift */; };
 		A197396227154CEB009D5917 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = A197396127154CEB009D5917 /* Kingfisher */; };
 		A1A1CE8B28407EEA00786864 /* FirebaseAnalyticsSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = A1A1CE8A28407EEA00786864 /* FirebaseAnalyticsSwift-Beta */; };
 		A1A1CE8D28407EEA00786864 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = A1A1CE8C28407EEA00786864 /* FirebaseCrashlytics */; };
-		A1A6D19328B667BD00E4E21C /* customFabButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1A6D19228B667BD00E4E21C /* customFabButton.swift */; };
 		A1C2E5E728B71F55009D8D9B /* ViewController+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C2E5E628B71F55009D8D9B /* ViewController+extension.swift */; };
 		A1C9DADE2833A66B00ADDEDB /* CoreDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C9DADD2833A66B00ADDEDB /* CoreDataService.swift */; };
 		A1C9DAE02834F9DA00ADDEDB /* UIButton+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C9DADF2834F9DA00ADDEDB /* UIButton+Extension.swift */; };
-		DF0203642812743500543E54 /* MyTaiwanStock.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DFD239DB270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodeld */; };
 		DF06F2FB27097F2C0031D6FE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F2FA27097F2C0031D6FE /* AppDelegate.swift */; };
 		DF06F2FD27097F2C0031D6FE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F2FC27097F2C0031D6FE /* SceneDelegate.swift */; };
 		DF06F2FF27097F2C0031D6FE /* StockListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F2FE27097F2C0031D6FE /* StockListViewController.swift */; };
@@ -58,8 +58,6 @@
 		DF793AD727DF8C36007C9442 /* AddStockNoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF793AD627DF8C36007C9442 /* AddStockNoViewController.swift */; };
 		DF793AD927DF8E29007C9442 /* StockNoList.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF793AD827DF8E29007C9442 /* StockNoList.swift */; };
 		DF793ADB27E03258007C9442 /* AddStockTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF793ADA27E03258007C9442 /* AddStockTableViewCell.swift */; };
-		DF944ED22806BC8D005157A9 /* MyTaiwanStockSlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF944ED12806BC8D005157A9 /* MyTaiwanStockSlowTests.swift */; };
-		DF944EE62806C39D005157A9 /* MyTaiwanStockMockTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF944EE52806C39D005157A9 /* MyTaiwanStockMockTests.swift */; };
 		DF944EE92807DB04005157A9 /* ChartService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF944EE82807DB04005157A9 /* ChartService.swift */; };
 		DFD239DD270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DFD239DB270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodeld */; };
 		DFFB336E27F858830018F3A4 /* WidgetKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = DFFB336D27F858830018F3A4 /* WidgetKit.framework */; };
@@ -79,14 +77,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
-		DF944ED32806BC8D005157A9 /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = DF06F2EF27097F2C0031D6FE /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = DF06F2F627097F2C0031D6FE;
-			remoteInfo = MyTaiwanStock;
-		};
-		DF944EE02806C377005157A9 /* PBXContainerItemProxy */ = {
+		A181945328B881B5009475E9 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = DF06F2EF27097F2C0031D6FE /* Project object */;
 			proxyType = 1;
@@ -147,7 +138,9 @@
 		A168E09F27147C9800C75064 /* NewsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsListViewController.swift; sourceTree = "<group>"; };
 		A168E0A12714822D00C75064 /* NewsListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsListTableViewCell.swift; sourceTree = "<group>"; };
 		A168E0A327148D1600C75064 /* webViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = webViewController.swift; sourceTree = "<group>"; };
-		A1A6D19228B667BD00E4E21C /* customFabButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = customFabButton.swift; sourceTree = "<group>"; };
+		A181943A28B87895009475E9 /* ValidInputService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidInputService.swift; sourceTree = "<group>"; };
+		A181944F28B881B5009475E9 /* MyTaiwanStockTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyTaiwanStockTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		A181945828B88209009475E9 /* ValidInputServiceTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidInputServiceTest.swift; sourceTree = "<group>"; };
 		A1C2E5E628B71F55009D8D9B /* ViewController+extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController+extension.swift"; sourceTree = "<group>"; };
 		A1C9DADD2833A66B00ADDEDB /* CoreDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataService.swift; sourceTree = "<group>"; };
 		A1C9DADF2834F9DA00ADDEDB /* UIButton+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+Extension.swift"; sourceTree = "<group>"; };
@@ -175,10 +168,6 @@
 		DF793AD627DF8C36007C9442 /* AddStockNoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddStockNoViewController.swift; sourceTree = "<group>"; };
 		DF793AD827DF8E29007C9442 /* StockNoList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockNoList.swift; sourceTree = "<group>"; };
 		DF793ADA27E03258007C9442 /* AddStockTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddStockTableViewCell.swift; sourceTree = "<group>"; };
-		DF944ECF2806BC8D005157A9 /* MyTaiwanStockSlowTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyTaiwanStockSlowTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		DF944ED12806BC8D005157A9 /* MyTaiwanStockSlowTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyTaiwanStockSlowTests.swift; sourceTree = "<group>"; };
-		DF944EDC2806C377005157A9 /* MyTaiwanStockTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyTaiwanStockTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
-		DF944EE52806C39D005157A9 /* MyTaiwanStockMockTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyTaiwanStockMockTests.swift; sourceTree = "<group>"; };
 		DF944EE82807DB04005157A9 /* ChartService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartService.swift; sourceTree = "<group>"; };
 		DFD239DC270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MyTaiwanStock.xcdatamodel; sourceTree = "<group>"; };
 		DFFB336C27F858830018F3A4 /* StockWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = StockWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -196,6 +185,13 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
+		A181944C28B881B5009475E9 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		DF06F2F427097F2C0031D6FE /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
@@ -208,20 +204,6 @@
 				A1A1CE8D28407EEA00786864 /* FirebaseCrashlytics in Frameworks */,
 				DFFEB04827E1D3BC00C85A53 /* MessageKit in Frameworks */,
 				DFFEB04127E1D00700C85A53 /* FirebaseAuth in Frameworks */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		DF944ECC2806BC8D005157A9 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		DF944ED92806C377005157A9 /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -252,14 +234,21 @@
 			path = "View Model";
 			sourceTree = "<group>";
 		};
+		A181945028B881B5009475E9 /* MyTaiwanStockTests */ = {
+			isa = PBXGroup;
+			children = (
+				A181945828B88209009475E9 /* ValidInputServiceTest.swift */,
+			);
+			path = MyTaiwanStockTests;
+			sourceTree = "<group>";
+		};
 		DF06F2EE27097F2C0031D6FE = {
 			isa = PBXGroup;
 			children = (
 				DFFB338227F94B740018F3A4 /* StockWidgetExtension.entitlements */,
 				DF06F2F927097F2C0031D6FE /* MyTaiwanStock */,
 				DFFB337127F858830018F3A4 /* StockWidget */,
-				DF944ED02806BC8D005157A9 /* MyTaiwanStockSlowTests */,
-				DF944EDD2806C377005157A9 /* MyTaiwanStockTests */,
+				A181945028B881B5009475E9 /* MyTaiwanStockTests */,
 				DF06F2F827097F2C0031D6FE /* Products */,
 				DF8691F227ECC463003FF990 /* Frameworks */,
 			);
@@ -270,8 +259,7 @@
 			children = (
 				DF06F2F727097F2C0031D6FE /* MyTaiwanStock.app */,
 				DFFB336C27F858830018F3A4 /* StockWidgetExtension.appex */,
-				DF944ECF2806BC8D005157A9 /* MyTaiwanStockSlowTests.xctest */,
-				DF944EDC2806C377005157A9 /* MyTaiwanStockTests.xctest */,
+				A181944F28B881B5009475E9 /* MyTaiwanStockTests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -324,8 +312,8 @@
 				A168E0A327148D1600C75064 /* webViewController.swift */,
 				DF14417B2785A5630038D05D /* StatisticViewController.swift */,
 				DFFEB04927E1D45000C85A53 /* ChatViewController.swift */,
-				DF793AD627DF8C36007C9442 /* AddStockNoViewController.swift */,
 				DF715D712809140300DD92F4 /* AddListViewController.swift */,
+				DF793AD627DF8C36007C9442 /* AddStockNoViewController.swift */,
 			);
 			path = "View Controller";
 			sourceTree = "<group>";
@@ -343,7 +331,6 @@
 				DF14417D27868B240038D05D /* StatisticTableViewCell.swift */,
 				DF793ADA27E03258007C9442 /* AddStockTableViewCell.swift */,
 				A127051928314D6900ED92F2 /* AddStockCellViewModel.swift */,
-				A1A6D19228B667BD00E4E21C /* customFabButton.swift */,
 				A1C2E5E628B71F55009D8D9B /* ViewController+extension.swift */,
 			);
 			path = View;
@@ -357,6 +344,7 @@
 				A12705152830BCE500ED92F2 /* Observable.swift */,
 				A1C9DADD2833A66B00ADDEDB /* CoreDataService.swift */,
 				A1C9DADF2834F9DA00ADDEDB /* UIButton+Extension.swift */,
+				A181943A28B87895009475E9 /* ValidInputService.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -368,22 +356,6 @@
 				DFFB336F27F858830018F3A4 /* SwiftUI.framework */,
 			);
 			name = Frameworks;
-			sourceTree = "<group>";
-		};
-		DF944ED02806BC8D005157A9 /* MyTaiwanStockSlowTests */ = {
-			isa = PBXGroup;
-			children = (
-				DF944ED12806BC8D005157A9 /* MyTaiwanStockSlowTests.swift */,
-			);
-			path = MyTaiwanStockSlowTests;
-			sourceTree = "<group>";
-		};
-		DF944EDD2806C377005157A9 /* MyTaiwanStockTests */ = {
-			isa = PBXGroup;
-			children = (
-				DF944EE52806C39D005157A9 /* MyTaiwanStockMockTests.swift */,
-			);
-			path = MyTaiwanStockTests;
 			sourceTree = "<group>";
 		};
 		DFFB337127F858830018F3A4 /* StockWidget */ = {
@@ -400,6 +372,24 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
+		A181944E28B881B5009475E9 /* MyTaiwanStockTests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A181945728B881B5009475E9 /* Build configuration list for PBXNativeTarget "MyTaiwanStockTests" */;
+			buildPhases = (
+				A181944B28B881B5009475E9 /* Sources */,
+				A181944C28B881B5009475E9 /* Frameworks */,
+				A181944D28B881B5009475E9 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A181945428B881B5009475E9 /* PBXTargetDependency */,
+			);
+			name = MyTaiwanStockTests;
+			productName = MyTaiwanStockTests;
+			productReference = A181944F28B881B5009475E9 /* MyTaiwanStockTests.xctest */;
+			productType = "com.apple.product-type.bundle.unit-test";
+		};
 		DF06F2F627097F2C0031D6FE /* MyTaiwanStock */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = DF06F30B27097F2E0031D6FE /* Build configuration list for PBXNativeTarget "MyTaiwanStock" */;
@@ -431,42 +421,6 @@
 			productReference = DF06F2F727097F2C0031D6FE /* MyTaiwanStock.app */;
 			productType = "com.apple.product-type.application";
 		};
-		DF944ECE2806BC8D005157A9 /* MyTaiwanStockSlowTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = DF944ED72806BC8D005157A9 /* Build configuration list for PBXNativeTarget "MyTaiwanStockSlowTests" */;
-			buildPhases = (
-				DF944ECB2806BC8D005157A9 /* Sources */,
-				DF944ECC2806BC8D005157A9 /* Frameworks */,
-				DF944ECD2806BC8D005157A9 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				DF944ED42806BC8D005157A9 /* PBXTargetDependency */,
-			);
-			name = MyTaiwanStockSlowTests;
-			productName = MyTaiwanStockSlowTests;
-			productReference = DF944ECF2806BC8D005157A9 /* MyTaiwanStockSlowTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
-		DF944EDB2806C377005157A9 /* MyTaiwanStockTests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = DF944EE22806C377005157A9 /* Build configuration list for PBXNativeTarget "MyTaiwanStockTests" */;
-			buildPhases = (
-				DF944ED82806C377005157A9 /* Sources */,
-				DF944ED92806C377005157A9 /* Frameworks */,
-				DF944EDA2806C377005157A9 /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				DF944EE12806C377005157A9 /* PBXTargetDependency */,
-			);
-			name = MyTaiwanStockTests;
-			productName = MyTaiwanStockTests;
-			productReference = DF944EDC2806C377005157A9 /* MyTaiwanStockTests.xctest */;
-			productType = "com.apple.product-type.bundle.unit-test";
-		};
 		DFFB336B27F858830018F3A4 /* StockWidgetExtension */ = {
 			isa = PBXNativeTarget;
 			buildConfigurationList = DFFB337D27F858850018F3A4 /* Build configuration list for PBXNativeTarget "StockWidgetExtension" */;
@@ -493,16 +447,12 @@
 				LastSwiftUpdateCheck = 1320;
 				LastUpgradeCheck = 1250;
 				TargetAttributes = {
+					A181944E28B881B5009475E9 = {
+						CreatedOnToolsVersion = 13.2.1;
+						TestTargetID = DF06F2F627097F2C0031D6FE;
+					};
 					DF06F2F627097F2C0031D6FE = {
 						CreatedOnToolsVersion = 12.5.1;
-					};
-					DF944ECE2806BC8D005157A9 = {
-						CreatedOnToolsVersion = 13.2.1;
-						TestTargetID = DF06F2F627097F2C0031D6FE;
-					};
-					DF944EDB2806C377005157A9 = {
-						CreatedOnToolsVersion = 13.2.1;
-						TestTargetID = DF06F2F627097F2C0031D6FE;
 					};
 					DFFB336B27F858830018F3A4 = {
 						CreatedOnToolsVersion = 13.2.1;
@@ -530,13 +480,19 @@
 			targets = (
 				DF06F2F627097F2C0031D6FE /* MyTaiwanStock */,
 				DFFB336B27F858830018F3A4 /* StockWidgetExtension */,
-				DF944ECE2806BC8D005157A9 /* MyTaiwanStockSlowTests */,
-				DF944EDB2806C377005157A9 /* MyTaiwanStockTests */,
+				A181944E28B881B5009475E9 /* MyTaiwanStockTests */,
 			);
 		};
 /* End PBXProject section */
 
 /* Begin PBXResourcesBuildPhase section */
+		A181944D28B881B5009475E9 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		DF06F2F527097F2C0031D6FE /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -545,20 +501,6 @@
 				DF06F30427097F2E0031D6FE /* Assets.xcassets in Resources */,
 				DF06F30227097F2C0031D6FE /* Main.storyboard in Resources */,
 				A12705182830F4AB00ED92F2 /* GoogleService-Info.plist in Resources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		DF944ECD2806BC8D005157A9 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		DF944EDA2806C377005157A9 /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -595,6 +537,14 @@
 /* End PBXShellScriptBuildPhase section */
 
 /* Begin PBXSourcesBuildPhase section */
+		A181944B28B881B5009475E9 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A181945928B88209009475E9 /* ValidInputServiceTest.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 		DF06F2F327097F2C0031D6FE /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
@@ -602,6 +552,7 @@
 				DFD239DD270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodeld in Sources */,
 				A127051C2831F98100ED92F2 /* AddStockNoViewModel.swift in Sources */,
 				A168E0A22714822D00C75064 /* NewsListTableViewCell.swift in Sources */,
+				A181943B28B87895009475E9 /* ValidInputService.swift in Sources */,
 				DF793ADB27E03258007C9442 /* AddStockTableViewCell.swift in Sources */,
 				DFFEB05027E1E37D00C85A53 /* Channel.swift in Sources */,
 				DF06F326270D50000031D6FE /* History.swift in Sources */,
@@ -644,25 +595,7 @@
 				A127051A28314D6900ED92F2 /* AddStockCellViewModel.swift in Sources */,
 				A168E0A427148D1600C75064 /* webViewController.swift in Sources */,
 				A1270528283241D700ED92F2 /* ChatViewModel.swift in Sources */,
-				A1A6D19328B667BD00E4E21C /* customFabButton.swift in Sources */,
 				A12705142830B36700ED92F2 /* StockCellViewModel.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		DF944ECB2806BC8D005157A9 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				DF944ED22806BC8D005157A9 /* MyTaiwanStockSlowTests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		DF944ED82806C377005157A9 /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				DF0203642812743500543E54 /* MyTaiwanStock.xcdatamodeld in Sources */,
-				DF944EE62806C39D005157A9 /* MyTaiwanStockMockTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -679,15 +612,10 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
-		DF944ED42806BC8D005157A9 /* PBXTargetDependency */ = {
+		A181945428B881B5009475E9 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			target = DF06F2F627097F2C0031D6FE /* MyTaiwanStock */;
-			targetProxy = DF944ED32806BC8D005157A9 /* PBXContainerItemProxy */;
-		};
-		DF944EE12806C377005157A9 /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = DF06F2F627097F2C0031D6FE /* MyTaiwanStock */;
-			targetProxy = DF944EE02806C377005157A9 /* PBXContainerItemProxy */;
+			targetProxy = A181945328B881B5009475E9 /* PBXContainerItemProxy */;
 		};
 		DFFB337827F858850018F3A4 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
@@ -716,6 +644,46 @@
 /* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
+		A181945528B881B5009475E9 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = UZ2Z639589;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.a2006mike.MyTaiwanStockTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MyTaiwanStock.app/MyTaiwanStock";
+			};
+			name = Debug;
+		};
+		A181945628B881B5009475E9 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				BUNDLE_LOADER = "$(TEST_HOST)";
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = UZ2Z639589;
+				GENERATE_INFOPLIST_FILE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.a2006mike.MyTaiwanStockTests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = "1,2";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MyTaiwanStock.app/MyTaiwanStock";
+			};
+			name = Release;
+		};
 		DF06F30927097F2E0031D6FE /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -877,86 +845,6 @@
 			};
 			name = Release;
 		};
-		DF944ED52806BC8D005157A9 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 5L8228KGK3;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.albertkingdom.MyTaiwanStockSlowTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MyTaiwanStock.app/MyTaiwanStock";
-			};
-			name = Debug;
-		};
-		DF944ED62806BC8D005157A9 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 5L8228KGK3;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.albertkingdom.MyTaiwanStockSlowTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MyTaiwanStock.app/MyTaiwanStock";
-			};
-			name = Release;
-		};
-		DF944EE32806C377005157A9 /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = UZ2Z639589;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.albertkingdom.MyTaiwanStockTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MyTaiwanStock.app/MyTaiwanStock";
-			};
-			name = Debug;
-		};
-		DF944EE42806C377005157A9 /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				BUNDLE_LOADER = "$(TEST_HOST)";
-				CLANG_CXX_LANGUAGE_STANDARD = "gnu++17";
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = UZ2Z639589;
-				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = com.albertkingdom.MyTaiwanStockTests;
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MyTaiwanStock.app/MyTaiwanStock";
-			};
-			name = Release;
-		};
 		DFFB337B27F858850018F3A4 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
@@ -1020,6 +908,15 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
+		A181945728B881B5009475E9 /* Build configuration list for PBXNativeTarget "MyTaiwanStockTests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A181945528B881B5009475E9 /* Debug */,
+				A181945628B881B5009475E9 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
 		DF06F2F227097F2C0031D6FE /* Build configuration list for PBXProject "MyTaiwanStock" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
@@ -1034,24 +931,6 @@
 			buildConfigurations = (
 				DF06F30C27097F2E0031D6FE /* Debug */,
 				DF06F30D27097F2E0031D6FE /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		DF944ED72806BC8D005157A9 /* Build configuration list for PBXNativeTarget "MyTaiwanStockSlowTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				DF944ED52806BC8D005157A9 /* Debug */,
-				DF944ED62806BC8D005157A9 /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		DF944EE22806C377005157A9 /* Build configuration list for PBXNativeTarget "MyTaiwanStockTests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				DF944EE32806C377005157A9 /* Debug */,
-				DF944EE42806C377005157A9 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;

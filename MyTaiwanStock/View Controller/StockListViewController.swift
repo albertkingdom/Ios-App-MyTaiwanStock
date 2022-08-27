@@ -30,7 +30,19 @@ class StockListViewController: UIViewController {
         addStockViewController.listName = viewModel.menuTitleCombine
         navigationController?.pushViewController(addStockViewController, animated: true)
     }
-    
+    // button at center of navigation bar
+    lazy var navCenterButton: UIButton = {
+        guard let rightIcon = UIImage(systemName: "chevron.down") else { return UIButton() }
+        let button = UIButton(frame: CGRect(x: 0, y: 0, width: 200, height: 40))
+        button.rightIcon(with: rightIcon)
+        button.setTitleColor(.label, for: .normal)
+        button.widthAnchor.constraint(equalToConstant: 150).isActive = true
+        button.translatesAutoresizingMaskIntoConstraints = false
+        self.navigationItem.titleView = button
+        button.showsMenuAsPrimaryAction = true //to show menu on tap button
+        
+        return button
+    }()
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -45,7 +57,7 @@ class StockListViewController: UIViewController {
         
         navigationItem.leftBarButtonItem = editButtonItem
 
-        setupMenuButton()
+        //setupMenuButton()
         
         // pull refresh
         refreshControl = UIRefreshControl()
@@ -80,7 +92,7 @@ class StockListViewController: UIViewController {
         
 
         viewModel.$menuTitleCombine.sink { [weak self] title in
-            self?.popUpButton.setTitle(title, for: .normal)
+            self?.navCenterButton.setTitle(title, for: .normal)
         }.store(in: &subscription)
         
         viewModel.filteredStockCellDatasCombine
@@ -122,13 +134,6 @@ class StockListViewController: UIViewController {
 
     }
     
-    func setupMenuButton() {
-
-        self.popUpButton.frame = CGRect(x: 0, y: 0, width: 120, height: 40)
-        self.popUpButton.backgroundColor = UIColor.lightGray
-        self.popUpButton.layer.cornerRadius = self.popUpButton.frame.height / 2
-        
-    }
     
     func configureMenu(actionList: [UIAction]?) {
         guard var actionList = actionList else {
@@ -143,7 +148,7 @@ class StockListViewController: UIViewController {
                 self.navigationController?.pushViewController(addListVC, animated: true)
             }))
         
-        self.popUpButton.menu = UIMenu(children: actionList)
+        self.navCenterButton.menu = UIMenu(children: actionList)
     }
 
 
@@ -164,6 +169,7 @@ class StockListViewController: UIViewController {
         tableView.backgroundColor = .secondarySystemBackground
         tableView.separatorStyle = .none
         
+        navigationItem.titleView?.tintColor = .systemBlue
     }
     
 }

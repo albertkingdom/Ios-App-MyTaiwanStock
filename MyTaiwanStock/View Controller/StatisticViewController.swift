@@ -26,12 +26,17 @@ class StatisticViewController: UIViewController {
         viewModel.context = context
         bindViewModel()
         
-        tableView.backgroundColor = .secondarySystemBackground
+        initView()
     }
     
     override func viewWillAppear(_ animated: Bool) {
 
         viewModel.fetchData(to: pieChartView)
+        
+    }
+    func initView() {
+        tableView.backgroundColor = .secondarySystemBackground
+        tableView.separatorStyle = .none
     }
     func bindViewModel() {
 

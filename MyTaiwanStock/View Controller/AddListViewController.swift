@@ -16,8 +16,45 @@ class AddListViewController: UIViewController {
     var viewModel: AddListViewModel!
     
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var addButton: UIButton!
-    @IBAction func clickAddButton() {
+    @IBOutlet weak var fabButton: UIButton!
+
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        tableView.dataSource = self
+        tableView.delegate = self
+        navigationItem.title = "編輯收藏清單"
+        navigationItem.rightBarButtonItem = editButtonItem
+        viewModel = AddListViewModel(context: context)
+        
+        bindViewModel()
+        
+        initView()
+    }
+
+    func bindViewModel() {
+        
+        
+        viewModel.listNamesCombine
+            .sink { [weak self] _ in
+                self?.tableView.reloadData()
+            }
+            .store(in: &subscription)
+    }
+    
+    func initView() {
+        //tableView.separatorStyle = .none
+
+        fabButton.backgroundColor = .systemBlue
+        fabButton.tintColor = .white
+        fabButton.layer.cornerRadius = 15
+        fabButton.clipsToBounds = true
+        fabButton.setTitle(nil, for: .normal)
+        fabButton.addTarget(self, action: #selector(tapFabButton), for: .touchUpInside)
+        
+    }
+
+    @objc func tapFabButton() {
         let alertVC = UIAlertController(title: "新增收藏清單", message: nil, preferredStyle: .alert)
         alertVC.addTextField { textField in
             textField.placeholder = "清單名稱"
@@ -36,41 +73,13 @@ class AddListViewController: UIViewController {
         alertVC.addAction(cancelAction)
         self.present(alertVC, animated: true, completion: nil)
     }
-
-    
-    override func viewDidLoad() {
-        super.viewDidLoad()
-        tableView.dataSource = self
-        tableView.delegate = self
-        navigationItem.rightBarButtonItem = editButtonItem
-        viewModel = AddListViewModel(context: context)
-
-        addButton.layer.cornerRadius = 5
-        
-        bindViewModel()
-        
-        initView()
-        
-    }
-    func bindViewModel() {
-        
-        
-        viewModel.listNamesCombine
-            .sink { [weak self] _ in
-                self?.tableView.reloadData()
-            }
-            .store(in: &subscription)
-    }
-    
-    func initView() {
-        tableView.separatorStyle = .none
-        tableView.backgroundColor = .secondarySystemBackground
-    }
-
 }
 
 
 extension AddListViewController: UITableViewDataSource {
+    func numberOfSections(in tableView: UITableView) -> Int {
+        return 1
+    }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "listNameCell", for: indexPath)
         var content = cell.defaultContentConfiguration()

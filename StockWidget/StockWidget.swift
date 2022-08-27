@@ -12,11 +12,17 @@ import SwiftUI
 struct Provider: TimelineProvider {
     // fake data showed before real data
     func placeholder(in context: Context) -> SimpleEntry {
-        SimpleEntry(date: Date(), stockList: [WidgetStockData(stockNo: "0050", current: "130", shortName: "台50", yesterDayPrice: "1.0")])
+        SimpleEntry(date: Date(), stockList: [WidgetStockData(stockNo: "0050",
+                                                              current: "130",
+                                                              shortName: "台50",
+                                                              yesterDayPrice: "1.0")])
     }
     // preview when picking widget
     func getSnapshot(in context: Context, completion: @escaping (SimpleEntry) -> ()) {
-        let entry = SimpleEntry(date: Date(), stockList: [WidgetStockData(stockNo: "0050", current: "130", shortName: "台50", yesterDayPrice: "1.0")])
+        let entry = SimpleEntry(date: Date(), stockList: [WidgetStockData(stockNo: "0050",
+                                                                          current: "130",
+                                                                          shortName: "台50",
+                                                                          yesterDayPrice: "1.0")])
         completion(entry)
     }
 
@@ -32,7 +38,10 @@ struct Provider: TimelineProvider {
             case .success(let data):
                 //print("success \(data)")
                 var stockDatas = data.msgArray.map { priceData in
-                    WidgetStockData(stockNo: priceData.stockNo, current: priceData.current, shortName: priceData.shortName, yesterDayPrice: priceData.yesterDayPrice)
+                    WidgetStockData(stockNo: priceData.stockNo,
+                                    current: priceData.current,
+                                    shortName: priceData.shortName,
+                                    yesterDayPrice: priceData.yesterDayPrice)
                 }
                 if stockDatas.count > 3 {
                     stockDatas = Array(stockDatas[0...2])

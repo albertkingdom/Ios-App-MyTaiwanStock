@@ -9,10 +9,8 @@ import UIKit
 
 class AddHistoryViewController: UITableViewController {
     var context: NSManagedObjectContext?
-
+    let validationService = ValidInputService()
     var stockNo: String!
-    //var date: Date! = Date()
-    //var buyOrSellStatus: Int! = 0
     
     let viewModel = AddHistoryViewModel()
     
@@ -41,24 +39,23 @@ class AddHistoryViewController: UITableViewController {
     
     @IBAction func saveNewRecord(_ sender: Any){
         
-        guard let stockNo = stockNoTextField.text,
-              let price = Float(priceTextField.text ?? "0"),
-              let amount = Int(amountTextField.text ?? "0")
-        else {
-            showToast(message: "請確實填入各項資訊")
-            return
+        do {
+            let stockNo = try validationService.validStockNo(stockNoTextField.text)
+            let price = try validationService.validStockPriceInput(priceTextField.text)
+            let amount = try validationService.validStockAmountInput(amountTextField.text)
+            let reason = reasonTextView.text ?? ""
+            viewModel.saveNewRecord(
+                stockNo: stockNo,
+                price: price,
+                amount: amount,
+                reason: reason
+            )
+            showToast(message: "成功新增一筆投資紀錄")
+            navigationController?.popViewController(animated: true)
+        } catch {
+            showToast(message: error.localizedDescription)
         }
-        let reason = reasonTextView.text ?? ""
-        
 
-        viewModel.saveNewRecord(
-            stockNo: stockNo,
-            price: price,
-            amount: amount,
-            reason: reason
-        )
-        showToast(message: "成功新增一筆投資紀錄")
-        navigationController?.popViewController(animated: true)
     }
     @IBAction func cancel(_ sender: Any) {
         navigationController?.popViewController(animated: true)
@@ -79,9 +76,6 @@ class AddHistoryViewController: UITableViewController {
         reasonTextView.layer.borderColor = UIColor.lightGray.cgColor
         reasonTextView.layer.borderWidth = 2
         reasonTextView.layer.cornerRadius = 5
-        
-        //view.backgroundColor = .systemBackground
-        //tableView.backgroundColor = .secondarySystemBackground
     }
     
    

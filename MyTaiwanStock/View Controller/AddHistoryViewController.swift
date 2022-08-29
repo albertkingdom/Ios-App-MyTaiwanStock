@@ -14,7 +14,7 @@ class AddHistoryViewController: UITableViewController {
     
     let viewModel = AddHistoryViewModel()
     
-    @IBOutlet weak var stockNoTextField: UITextField!
+    @IBOutlet weak var stockNoLabel: UILabel!
     @IBOutlet weak var priceTextField: UITextField!
     @IBOutlet weak var amountTextField: UITextField!
     @IBOutlet weak var reasonTextView: UITextView!
@@ -38,9 +38,10 @@ class AddHistoryViewController: UITableViewController {
     }
     
     @IBAction func saveNewRecord(_ sender: Any){
-        
+        dismissKeyboard()
+
         do {
-            let stockNo = try validationService.validStockNo(stockNoTextField.text)
+            
             let price = try validationService.validStockPriceInput(priceTextField.text)
             let amount = try validationService.validStockAmountInput(amountTextField.text)
             let reason = reasonTextView.text ?? ""
@@ -51,8 +52,19 @@ class AddHistoryViewController: UITableViewController {
                 reason: reason
             )
             showToast(message: "成功新增一筆投資紀錄")
-            navigationController?.popViewController(animated: true)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                self.navigationController?.popViewController(animated: true)
+            }
         } catch {
+            switch error {
+            case ValidationError.invalidAmount:
+                amountTextField.textColor = .red
+            case ValidationError.invalidPrice:
+                priceTextField.textColor = .red
+            
+            default:
+                return
+            }
             showToast(message: error.localizedDescription)
         }
 
@@ -64,18 +76,20 @@ class AddHistoryViewController: UITableViewController {
         super.viewDidLoad()
         viewModel.context = context
         
-        stockNoTextField.text = stockNo
-        stockNoTextField.keyboardType = .numberPad
+        stockNoLabel.text = stockNo
         priceTextField.keyboardType = .decimalPad
         amountTextField.keyboardType = .numberPad
        
-        stockNoTextField.inputAccessoryView = toolBar()
+
         priceTextField.inputAccessoryView = toolBar()
         amountTextField.inputAccessoryView = toolBar()
         navigationItem.title = "新增一筆"
         reasonTextView.layer.borderColor = UIColor.lightGray.cgColor
         reasonTextView.layer.borderWidth = 2
         reasonTextView.layer.cornerRadius = 5
+        
+        priceTextField.delegate = self
+        amountTextField.delegate = self
     }
     
    
@@ -97,5 +111,12 @@ extension UIViewController {
     }
     @objc func dismissKeyboard() {
         view.endEditing(true)
+    }
+}
+
+extension AddHistoryViewController: UITextFieldDelegate {
+    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+        textField.textColor = .label
+        return true
     }
 }

@@ -36,6 +36,7 @@
 		A1A1CE8D28407EEA00786864 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = A1A1CE8C28407EEA00786864 /* FirebaseCrashlytics */; };
 		A1C2E5E728B71F55009D8D9B /* ViewController+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C2E5E628B71F55009D8D9B /* ViewController+extension.swift */; };
 		A1C9DAE02834F9DA00ADDEDB /* UIButton+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C9DADF2834F9DA00ADDEDB /* UIButton+Extension.swift */; };
+		A1CF660A28BEFB88005F6189 /* MessageKit in Frameworks */ = {isa = PBXBuildFile; productRef = A1CF660928BEFB88005F6189 /* MessageKit */; };
 		DF06F2FB27097F2C0031D6FE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F2FA27097F2C0031D6FE /* AppDelegate.swift */; };
 		DF06F2FD27097F2C0031D6FE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F2FC27097F2C0031D6FE /* SceneDelegate.swift */; };
 		DF06F2FF27097F2C0031D6FE /* StockListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F2FE27097F2C0031D6FE /* StockListViewController.swift */; };
@@ -69,7 +70,6 @@
 		DFFEB04127E1D00700C85A53 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = DFFEB04027E1D00700C85A53 /* FirebaseAuth */; };
 		DFFEB04327E1D00700C85A53 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = DFFEB04227E1D00700C85A53 /* FirebaseFirestore */; };
 		DFFEB04527E1D00700C85A53 /* FirebaseFirestoreSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = DFFEB04427E1D00700C85A53 /* FirebaseFirestoreSwift-Beta */; };
-		DFFEB04827E1D3BC00C85A53 /* MessageKit in Frameworks */ = {isa = PBXBuildFile; productRef = DFFEB04727E1D3BC00C85A53 /* MessageKit */; };
 		DFFEB04A27E1D45000C85A53 /* ChatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFFEB04927E1D45000C85A53 /* ChatViewController.swift */; };
 		DFFEB04C27E1D68C00C85A53 /* Sender.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFFEB04B27E1D68C00C85A53 /* Sender.swift */; };
 		DFFEB04E27E1D6C400C85A53 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFFEB04D27E1D6C400C85A53 /* Message.swift */; };
@@ -202,8 +202,8 @@
 				DFFEB04527E1D00700C85A53 /* FirebaseFirestoreSwift-Beta in Frameworks */,
 				A1A1CE8B28407EEA00786864 /* FirebaseAnalyticsSwift-Beta in Frameworks */,
 				A1A1CE8D28407EEA00786864 /* FirebaseCrashlytics in Frameworks */,
-				DFFEB04827E1D3BC00C85A53 /* MessageKit in Frameworks */,
 				DFFEB04127E1D00700C85A53 /* FirebaseAuth in Frameworks */,
+				A1CF660A28BEFB88005F6189 /* MessageKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -412,10 +412,10 @@
 				DFFEB04027E1D00700C85A53 /* FirebaseAuth */,
 				DFFEB04227E1D00700C85A53 /* FirebaseFirestore */,
 				DFFEB04427E1D00700C85A53 /* FirebaseFirestoreSwift-Beta */,
-				DFFEB04727E1D3BC00C85A53 /* MessageKit */,
 				DFFB337F27F85A160018F3A4 /* Charts */,
 				A1A1CE8A28407EEA00786864 /* FirebaseAnalyticsSwift-Beta */,
 				A1A1CE8C28407EEA00786864 /* FirebaseCrashlytics */,
+				A1CF660928BEFB88005F6189 /* MessageKit */,
 			);
 			productName = MyTaiwanStock;
 			productReference = DF06F2F727097F2C0031D6FE /* MyTaiwanStock.app */;
@@ -997,6 +997,11 @@
 			package = DFFEB03F27E1D00700C85A53 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = FirebaseCrashlytics;
 		};
+		A1CF660928BEFB88005F6189 /* MessageKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DFFEB04627E1D3BC00C85A53 /* XCRemoteSwiftPackageReference "MessageKit" */;
+			productName = MessageKit;
+		};
 		DFFB337F27F85A160018F3A4 /* Charts */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = DFFB337E27F85A160018F3A4 /* XCRemoteSwiftPackageReference "Charts" */;
@@ -1016,11 +1021,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = DFFEB03F27E1D00700C85A53 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = "FirebaseFirestoreSwift-Beta";
-		};
-		DFFEB04727E1D3BC00C85A53 /* MessageKit */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = DFFEB04627E1D3BC00C85A53 /* XCRemoteSwiftPackageReference "MessageKit" */;
-			productName = MessageKit;
 		};
 /* End XCSwiftPackageProductDependency section */
 

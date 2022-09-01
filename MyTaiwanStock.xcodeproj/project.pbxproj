@@ -32,6 +32,9 @@
 		A181943B28B87895009475E9 /* ValidInputService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A181943A28B87895009475E9 /* ValidInputService.swift */; };
 		A181945928B88209009475E9 /* ValidInputServiceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A181945828B88209009475E9 /* ValidInputServiceTest.swift */; };
 		A197396227154CEB009D5917 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = A197396127154CEB009D5917 /* Kingfisher */; };
+		A199DC3228BF1B70003FBC61 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A199DC3128BF1B70003FBC61 /* SettingViewController.swift */; };
+		A199DC3428BF400D003FBC61 /* EditFeeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A199DC3328BF400D003FBC61 /* EditFeeViewController.swift */; };
+		A199DC3828BFA048003FBC61 /* UserDefault+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A199DC3728BFA048003FBC61 /* UserDefault+Extension.swift */; };
 		A1A1CE8B28407EEA00786864 /* FirebaseAnalyticsSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = A1A1CE8A28407EEA00786864 /* FirebaseAnalyticsSwift-Beta */; };
 		A1A1CE8D28407EEA00786864 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = A1A1CE8C28407EEA00786864 /* FirebaseCrashlytics */; };
 		A1C2E5E728B71F55009D8D9B /* ViewController+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C2E5E628B71F55009D8D9B /* ViewController+extension.swift */; };
@@ -142,6 +145,9 @@
 		A181943A28B87895009475E9 /* ValidInputService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidInputService.swift; sourceTree = "<group>"; };
 		A181944F28B881B5009475E9 /* MyTaiwanStockTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyTaiwanStockTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A181945828B88209009475E9 /* ValidInputServiceTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidInputServiceTest.swift; sourceTree = "<group>"; };
+		A199DC3128BF1B70003FBC61 /* SettingViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingViewController.swift; sourceTree = "<group>"; };
+		A199DC3328BF400D003FBC61 /* EditFeeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditFeeViewController.swift; sourceTree = "<group>"; };
+		A199DC3728BFA048003FBC61 /* UserDefault+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefault+Extension.swift"; sourceTree = "<group>"; };
 		A1C2E5E628B71F55009D8D9B /* ViewController+extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController+extension.swift"; sourceTree = "<group>"; };
 		A1C9DADF2834F9DA00ADDEDB /* UIButton+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+Extension.swift"; sourceTree = "<group>"; };
 		DF06F2F727097F2C0031D6FE /* MyTaiwanStock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyTaiwanStock.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -315,6 +321,8 @@
 				DF715D712809140300DD92F4 /* AddListViewController.swift */,
 				DF793AD627DF8C36007C9442 /* AddStockNoViewController.swift */,
 				A10CD2CF28B9D1BB00B37AA4 /* CustomTabBarViewController.swift */,
+				A199DC3128BF1B70003FBC61 /* SettingViewController.swift */,
+				A199DC3328BF400D003FBC61 /* EditFeeViewController.swift */,
 			);
 			path = "View Controller";
 			sourceTree = "<group>";
@@ -345,6 +353,7 @@
 				A12705152830BCE500ED92F2 /* Observable.swift */,
 				A1C9DADF2834F9DA00ADDEDB /* UIButton+Extension.swift */,
 				A181943A28B87895009475E9 /* ValidInputService.swift */,
+				A199DC3728BFA048003FBC61 /* UserDefault+Extension.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -557,6 +566,7 @@
 				DF793ADB27E03258007C9442 /* AddStockTableViewCell.swift in Sources */,
 				DFFEB05027E1E37D00C85A53 /* Channel.swift in Sources */,
 				DF06F326270D50000031D6FE /* History.swift in Sources */,
+				A199DC3828BFA048003FBC61 /* UserDefault+Extension.swift in Sources */,
 				A1270524283212FE00ED92F2 /* StatisticViewModel.swift in Sources */,
 				DF06F2FF27097F2C0031D6FE /* StockListViewController.swift in Sources */,
 				DF715D722809140300DD92F4 /* AddListViewController.swift in Sources */,
@@ -584,7 +594,9 @@
 				DFFEB04A27E1D45000C85A53 /* ChatViewController.swift in Sources */,
 				A127052A28335E6C00ED92F2 /* NewsListViewModel.swift in Sources */,
 				A127052228320B2200ED92F2 /* AddHistoryViewModel.swift in Sources */,
+				A199DC3228BF1B70003FBC61 /* SettingViewController.swift in Sources */,
 				DF06F3132709A3190031D6FE /* OneDayStockInfo.swift in Sources */,
+				A199DC3428BF400D003FBC61 /* EditFeeViewController.swift in Sources */,
 				DF14417E27868B240038D05D /* StatisticTableViewCell.swift in Sources */,
 				DF14417C2785A5630038D05D /* StatisticViewController.swift in Sources */,
 				A127051E283201D700ED92F2 /* AddListViewModel.swift in Sources */,

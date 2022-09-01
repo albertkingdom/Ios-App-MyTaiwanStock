@@ -22,6 +22,7 @@ class AddHistoryViewController: UITableViewController {
         }
     }
     var fee: Fee!
+    var userDefinedFee: Double = 0 // 從userdefault取使用者預設值
     @IBOutlet weak var stockNoLabel: UILabel!
     @IBOutlet weak var priceTextField: UITextField!
     @IBOutlet weak var amountTextField: UITextField!
@@ -59,30 +60,31 @@ class AddHistoryViewController: UITableViewController {
             case .Percent(let percent):
                 print("fee percent \(percent)")
             case .userDefined:
-                guard let str = feeTextField.text, let userDefinedFee = Int(str) else { return }
-                print("userDefinedFee \(userDefinedFee)")
+                let feeInt = try validationService.validUserDefinedFee(feeTextField.text)
+                print("userDefinedFee \(feeInt)")
             case .OneDollar:
                 print("1")
             default:break
             }
             
-//            viewModel.saveNewRecord(
-//                stockNo: stockNo,
-//                price: price,
-//                amount: amount,
-//                reason: reason
-//            )
-//            showToast(message: "成功新增一筆投資紀錄")
-//            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-//                self.navigationController?.popViewController(animated: true)
-//            }
+            viewModel.saveNewRecord(
+                stockNo: stockNo,
+                price: price,
+                amount: amount,
+                reason: reason
+            )
+            showToast(message: "成功新增一筆投資紀錄")
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
+                self.navigationController?.popViewController(animated: true)
+            }
         } catch {
             switch error {
             case ValidationError.invalidAmount:
                 amountTextField.textColor = .red
             case ValidationError.invalidPrice:
                 priceTextField.textColor = .red
-            
+            case ValidationError.invalidUserDefinedFee:
+                print("ValidationError.invalidUserDefinedFee")
             default:
                 return
             }
@@ -117,6 +119,8 @@ class AddHistoryViewController: UITableViewController {
         feePicker.selectRow(9, inComponent: 1, animated: true)
         
         feeTextField.delegate = self
+        
+        userDefinedFee = UserDefaults.standard.double(forKey: UserDefaults.userDefinedFeeInDollarsKey)
     }
     
    
@@ -220,7 +224,7 @@ extension AddHistoryViewController: UIPickerViewDelegate, UIPickerViewDataSource
         case 2:
             feeTextField.isEnabled = true
             feeTextField.placeholder = "輸入手續費"
-            feeTextField.text = ""
+            feeTextField.text = "\(userDefinedFee)"
             fee = Fee.userDefined
         default: break
         }

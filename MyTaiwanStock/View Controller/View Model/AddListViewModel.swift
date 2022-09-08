@@ -7,6 +7,9 @@
 import Combine
 import Foundation
 import CoreData
+import FirebaseFirestore
+import FirebaseFirestoreSwift
+import FirebaseAuth
 
 class AddListViewModel {
     var subscription = Set<AnyCancellable>()
@@ -21,6 +24,7 @@ class AddListViewModel {
 //    }
     var coreDataItemsCombine = CurrentValueSubject<[List],Never>([])
     var context: NSManagedObjectContext!
+    var onlineDBService: OnlineDBService?
     
     init(context: NSManagedObjectContext) {
         
@@ -38,14 +42,18 @@ class AddListViewModel {
         }
         .store(in: &subscription)
         
+        onlineDBService = OnlineDBService()
         
     }
    
     //
     func deleteList(at index:Int) {
         let deleteItem = self.coreDataItemsCombine.value[index]
+        let listNameToDelete = listNamesCombine.value[index]
         deleteListFromDB(item: deleteItem)
         self.coreDataItemsCombine.value.remove(at: index)
+        // delete list from online
+        deleteListFromOnlineDB(listName: listNameToDelete)
     }
     //
     func updateListName(at index: Int, with newName: String) {
@@ -100,5 +108,17 @@ class AddListViewModel {
         } catch {
             print("error, \(error.localizedDescription)")
         }
+    }
+    func getLoginAccountEmail() -> String? {
+        guard let email = Auth.auth().currentUser?.email else {return nil}
+        return email
+    }
+    // upload new list
+    func uploadListToOnlineDB(listName: String) {
+        onlineDBService?.uploadListToOnlineDB(listName: listName)
+    }
+    
+    func deleteListFromOnlineDB(listName: String) {
+        onlineDBService?.deleteListFromOnlineDB(listName: listName)
     }
 }

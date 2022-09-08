@@ -38,6 +38,9 @@
 		A199DC3B28C79AB3003FBC61 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = A199DC3A28C79AB3003FBC61 /* GoogleSignIn */; };
 		A199DC3D28C79AB3003FBC61 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = A199DC3C28C79AB3003FBC61 /* GoogleSignInSwift */; };
 		A199DC3F28C79CAE003FBC61 /* AccountViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A199DC3E28C79CAE003FBC61 /* AccountViewController.swift */; };
+		A199DC4428C843BD003FBC61 /* FavList.swift in Sources */ = {isa = PBXBuildFile; fileRef = A199DC4328C843BD003FBC61 /* FavList.swift */; };
+		A199DC4628C84C54003FBC61 /* OnlineDBService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A199DC4528C84C54003FBC61 /* OnlineDBService.swift */; };
+		A199DC4828C88924003FBC61 /* HistoryOnline.swift in Sources */ = {isa = PBXBuildFile; fileRef = A199DC4728C88923003FBC61 /* HistoryOnline.swift */; };
 		A1A1CE8B28407EEA00786864 /* FirebaseAnalyticsSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = A1A1CE8A28407EEA00786864 /* FirebaseAnalyticsSwift-Beta */; };
 		A1A1CE8D28407EEA00786864 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = A1A1CE8C28407EEA00786864 /* FirebaseCrashlytics */; };
 		A1C2E5E728B71F55009D8D9B /* ViewController+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C2E5E628B71F55009D8D9B /* ViewController+extension.swift */; };
@@ -152,6 +155,9 @@
 		A199DC3328BF400D003FBC61 /* EditFeeViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditFeeViewController.swift; sourceTree = "<group>"; };
 		A199DC3728BFA048003FBC61 /* UserDefault+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UserDefault+Extension.swift"; sourceTree = "<group>"; };
 		A199DC3E28C79CAE003FBC61 /* AccountViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AccountViewController.swift; sourceTree = "<group>"; };
+		A199DC4328C843BD003FBC61 /* FavList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavList.swift; sourceTree = "<group>"; };
+		A199DC4528C84C54003FBC61 /* OnlineDBService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnlineDBService.swift; sourceTree = "<group>"; };
+		A199DC4728C88923003FBC61 /* HistoryOnline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryOnline.swift; sourceTree = "<group>"; };
 		A1C2E5E628B71F55009D8D9B /* ViewController+extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController+extension.swift"; sourceTree = "<group>"; };
 		A1C9DADF2834F9DA00ADDEDB /* UIButton+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+Extension.swift"; sourceTree = "<group>"; };
 		DF06F2F727097F2C0031D6FE /* MyTaiwanStock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyTaiwanStock.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -254,6 +260,15 @@
 			path = MyTaiwanStockTests;
 			sourceTree = "<group>";
 		};
+		A199DC4228C843A0003FBC61 /* OnlineDB */ = {
+			isa = PBXGroup;
+			children = (
+				A199DC4328C843BD003FBC61 /* FavList.swift */,
+				A199DC4728C88923003FBC61 /* HistoryOnline.swift */,
+			);
+			path = OnlineDB;
+			sourceTree = "<group>";
+		};
 		DF06F2EE27097F2C0031D6FE = {
 			isa = PBXGroup;
 			children = (
@@ -298,6 +313,7 @@
 		DF06F30E27097F360031D6FE /* Model */ = {
 			isa = PBXGroup;
 			children = (
+				A199DC4228C843A0003FBC61 /* OnlineDB */,
 				DF06F30F2709805E0031D6FE /* StockInfo.swift */,
 				DF06F3122709A3190031D6FE /* OneDayStockInfo.swift */,
 				A168E09D27146EF600C75064 /* NewsAPI.swift */,
@@ -361,6 +377,7 @@
 				A1C9DADF2834F9DA00ADDEDB /* UIButton+Extension.swift */,
 				A181943A28B87895009475E9 /* ValidInputService.swift */,
 				A199DC3728BFA048003FBC61 /* UserDefault+Extension.swift */,
+				A199DC4528C84C54003FBC61 /* OnlineDBService.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -582,6 +599,7 @@
 				DF06F2FF27097F2C0031D6FE /* StockListViewController.swift in Sources */,
 				DF715D722809140300DD92F4 /* AddListViewController.swift in Sources */,
 				A168E0A027147C9800C75064 /* NewsListViewController.swift in Sources */,
+				A199DC4828C88924003FBC61 /* HistoryOnline.swift in Sources */,
 				DF3873A227ECC8DC000E2EAF /* LargeValueFormatter.swift in Sources */,
 				A127052628321DB000ED92F2 /* HistoryCellViewModel.swift in Sources */,
 				DF06F32A270DEA1A0031D6FE /* AddHistoryViewController.swift in Sources */,
@@ -605,6 +623,7 @@
 				DFFEB04A27E1D45000C85A53 /* ChatViewController.swift in Sources */,
 				A127052A28335E6C00ED92F2 /* NewsListViewModel.swift in Sources */,
 				A127052228320B2200ED92F2 /* AddHistoryViewModel.swift in Sources */,
+				A199DC4428C843BD003FBC61 /* FavList.swift in Sources */,
 				A199DC3228BF1B70003FBC61 /* SettingViewController.swift in Sources */,
 				DF06F3132709A3190031D6FE /* OneDayStockInfo.swift in Sources */,
 				A199DC3428BF400D003FBC61 /* EditFeeViewController.swift in Sources */,
@@ -618,6 +637,7 @@
 				A127051A28314D6900ED92F2 /* AddStockCellViewModel.swift in Sources */,
 				A168E0A427148D1600C75064 /* webViewController.swift in Sources */,
 				A1270528283241D700ED92F2 /* ChatViewModel.swift in Sources */,
+				A199DC4628C84C54003FBC61 /* OnlineDBService.swift in Sources */,
 				A12705142830B36700ED92F2 /* StockCellViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

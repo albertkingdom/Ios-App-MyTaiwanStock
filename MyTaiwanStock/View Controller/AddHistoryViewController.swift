@@ -73,6 +73,7 @@ class AddHistoryViewController: UITableViewController {
                 amount: amount,
                 reason: reason
             )
+            viewModel.uploadHistoryToOnlineDB(stockNo: stockNo, price: price, amount: amount)
             showToast(message: "成功新增一筆投資紀錄")
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                 self.navigationController?.popViewController(animated: true)

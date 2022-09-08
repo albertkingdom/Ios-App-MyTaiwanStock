@@ -63,4 +63,45 @@ extension UIViewController {
         })
   
     }
+    
+    func showAlert(title: String, message: String, positiveAction: (() -> Void)?, negativeAction:(()->Void)?) {
+        let alertVC = UIAlertController(title: title, message: message, preferredStyle: .alert)
+        let positiveAction = UIAlertAction(title: "OK", style: .default) { _ in
+            positiveAction?()
+        }
+        let negativeAction =  UIAlertAction(title: "Cancel", style: .cancel) { _ in
+            negativeAction?()
+        }
+        alertVC.addAction(positiveAction)
+        alertVC.addAction(negativeAction)
+        present(alertVC, animated: true, completion: nil)
+    }
+    func showLoadingIcon() -> UIView {
+        let container = UIView()
+        let loadingView = UIActivityIndicatorView()
+        loadingView.startAnimating()
+        
+        container.backgroundColor = .systemGray.withAlphaComponent(0.6)
+        container.layer.cornerRadius = 15
+
+        view.addSubview(container)
+        container.addSubview(loadingView)
+        
+        loadingView.translatesAutoresizingMaskIntoConstraints = false
+        container.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            loadingView.centerXAnchor.constraint(equalTo: container.centerXAnchor),
+            loadingView.centerYAnchor.constraint(equalTo: container.centerYAnchor),
+            loadingView.widthAnchor.constraint(equalToConstant: 50),
+            loadingView.heightAnchor.constraint(equalToConstant: 50)
+        ])
+        NSLayoutConstraint.activate([
+            container.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            container.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            container.widthAnchor.constraint(equalToConstant: 100),
+            container.heightAnchor.constraint(equalToConstant: 100)
+        ])
+        
+       return container
+    }
 }

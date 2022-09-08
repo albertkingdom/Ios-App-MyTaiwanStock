@@ -44,9 +44,21 @@ class StockListViewModel {
     
     var subscription = Set<AnyCancellable>()
     
-    init(){
+    var onlineDBService: OnlineDBService?
+    
+    @Published var isLoading = false {
+        didSet {
+            print("isLoading \(isLoading)")
+        }
+    }
+    
+    init() {
         setupFetchStockInfo()
-
+    }
+    init(context: NSManagedObjectContext){
+        setupFetchStockInfo()
+        self.context = context
+        onlineDBService = OnlineDBService(context: context)
     }
     
     func fetchAllListFromDB() -> [List]{
@@ -248,6 +260,10 @@ class StockListViewModel {
         let stockNoObjectToDel = stockNoObjectArray[index]
         
         deleteStockNumberInDB(stockNoObject: stockNoObjectToDel)
+        // delete stockNo from online DB
+        print("delete stockNo string \(itemToDelete.stockNo)")
+        deleteStockNoFromOnlineDB(stockNo: itemToDelete.stockNo)
+        
         
         onedayStockInfo = onedayStockInfo.filter({
             $0.stockNo != itemToDelete.stockNo
@@ -330,7 +346,18 @@ class StockListViewModel {
         
     }
     
-
+    //MARK: online DB
+    func uploadNewStockNoToOnlineDB(stockNumber: String) {
+        onlineDBService?.uploadNewStockNoToOnlineDB(stockNumber: stockNumber, listName: menuTitleCombine)
+    }
+    func deleteStockNoFromOnlineDB(stockNo: String) {
+        onlineDBService?.deleteStockNoFromOnlineDB(stockNo: stockNo, listName: menuTitleCombine)
+    }
+    func getOnlineDBDataAndInsertLocal(completion: (() -> Void)?) {
+        print("onlineDBService \(onlineDBService)")
+        onlineDBService?.getAllListAndStocksFromOnlineDBAndSaveToLocal(completion: completion)
+        onlineDBService?.getAllHistoryFromOnlineDBAndSaveToLocal()
+    }
     func cancelTimer() {
 //        timer?.cancel()
 //        timer = nil

@@ -46,7 +46,9 @@ class StockListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
+
         viewModel.context = self.context
+        viewModel.onlineDBService = OnlineDBService(context: context)
         tableView.delegate = self
         tableView.dataSource = self
 
@@ -66,14 +68,25 @@ class StockListViewController: UIViewController {
         initView()
     }
     override func viewWillAppear(_ animated: Bool) {
-
-        //print("stocklist vc viewWillAppear")
-        viewModel.handleFetchListFromDB()
         
         bindViewModel()
         
         setupSearchBarListener()
         
+        let isFirstTimeAfterSignIn = UserDefaults.standard.bool(forKey: UserDefaults.isFirstTimeAfterSignIn)
+       
+
+        if isFirstTimeAfterSignIn {
+            // after downloading online data to local database, retrieve all local database at once
+            showAlert(title: "下載雲端資料", message: "您剛才登入，將下載雲端資料？") { [weak self] in
+                self?.viewModel.getOnlineDBDataAndInsertLocal(completion: self?.viewModel.handleFetchListFromDB)
+            } negativeAction: { [weak self] in
+                self?.viewModel.handleFetchListFromDB()
+            }
+            UserDefaults.standard.set(false, forKey: UserDefaults.isFirstTimeAfterSignIn)
+        } else {
+            viewModel.handleFetchListFromDB()
+        }
         
     }
     override func viewWillDisappear(_ animated: Bool) {
@@ -240,6 +253,7 @@ extension StockListViewController {
     
     func saveNewStockNumberToDB(stockNumber: String) {
         viewModel.saveNewStockNumberToDB(stockNumber: stockNumber)
+        viewModel.uploadNewStockNoToOnlineDB(stockNumber: stockNumber)
     }
     func deleteStockNumber(at index: Int) {
         viewModel.deleteStockNumber(at: index)

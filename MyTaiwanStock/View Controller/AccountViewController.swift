@@ -62,6 +62,8 @@ class AccountViewController: UIViewController {
                     print("authentication error \(error.localizedDescription)")
                     return
                 }
+                // successfully google sign in
+                UserDefaults.standard.set(true, forKey: UserDefaults.isFirstTimeAfterSignIn)
                 print(authResult ?? "none")
                 self?.updateUI()
             }

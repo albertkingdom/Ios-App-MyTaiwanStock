@@ -78,7 +78,7 @@ class StockListViewController: UIViewController {
 
         if isFirstTimeAfterSignIn {
             // after downloading online data to local database, retrieve all local database at once
-            showAlert(title: "下載雲端資料", message: "您剛才登入，將下載雲端資料？") { [weak self] in
+            showAlert(title: "下載雲端資料", message: "您剛才登入，將下載雲端資料，是否同意？") { [weak self] in
                 self?.viewModel.getOnlineDBDataAndInsertLocal(completion: self?.viewModel.handleFetchListFromDB)
             } negativeAction: { [weak self] in
                 self?.viewModel.handleFetchListFromDB()

@@ -139,7 +139,27 @@ class OnlineDBService {
             print("upload history to db \(error)")
         }
     }
-
+    func getLocalListByListNameOrNull(listName: String) -> List? {
+        let lists = fetchAllListFromDB()
+        if let list = lists.first(where: { $0.name == listName }) {
+            return list
+        }
+        return nil
+    }
+    func isStockNumberInLocalList(stockNumber: String, list: List) -> Bool {
+        if let setOfStockNoObjects = list.stockNo {
+            let stockNoStringArray:[String] = setOfStockNoObjects.map { ele -> String in
+                guard let stockNo = (ele as? StockNo)?.stockNo else { return "" }
+                //print(" \(stockNo)")
+                return stockNo
+            }
+            if stockNoStringArray.contains(stockNumber) {
+                return true
+            }
+            
+        }
+        return false
+    }
     func getAllListAndStocksFromOnlineDBAndSaveToLocal(completion: (() -> Void)?) {
         guard let email = getLoginAccountEmail() else {return}
         db.collection(followingList)
@@ -154,7 +174,21 @@ class OnlineDBService {
                         do {
                             let favList = try document.data(as: FavList.self)
                             print("getAllListAndStocksFromOnlineDBAndSaveToLocal favList \(favList)")
-                            // write lists and stocks to core data
+                            // list name existed in local
+                            if let localList = self.getLocalListByListNameOrNull(listName: favList.name),
+                               let stockNos = favList.stocks {
+                                print("list name existed in local")
+                                for stockNo in stockNos {
+                                    if self.isStockNumberInLocalList(stockNumber: stockNo, list: localList) {
+                                        return
+                                    }
+                                    // save new stockNo to local DB
+                                    self.saveNewStockNumberToDB(stockNumber: stockNo, list: localList)
+                                }
+                                return
+                            }
+                            
+                            // list name not existed in local, write lists and stocks to core data
                             self.saveOnlineDataToLocalDB(listName: favList.name, stockNoStrings: favList.stocks)
                             completion?()
                         } catch let error {
@@ -229,5 +263,35 @@ class OnlineDBService {
             fatalError("\(error.localizedDescription)")
         }
 
+    }
+    
+    func fetchAllListFromDB() -> [List]{
+        let fetchRequest: NSFetchRequest<List> = List.fetchRequest()
+        var lists: [List] = []
+        do {
+            guard let result = try context?.fetch(fetchRequest) else { return [List]() }
+            //print("lists \(result)")
+
+            lists = result
+        } catch let error {
+            print(error.localizedDescription)
+        }
+        return lists
+    }
+    
+    func saveNewStockNumberToDB(stockNumber: String, list: List) {
+        //print("saveNewStockNumberToDB...\(stockNumber)")
+        guard let context = self.context else { return }
+
+        
+        let newStockNo = StockNo(context: context)
+        newStockNo.stockNo = stockNumber
+        newStockNo.ofList = list // set the relationship between list and stockNo
+        do {
+            try context.save()
+        } catch {
+            print("error, \(error.localizedDescription)")
+        }
+ 
     }
 }

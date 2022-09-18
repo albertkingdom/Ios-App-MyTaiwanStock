@@ -1,0 +1,99 @@
+//
+//  SettingViewController.swift
+//  MyTaiwanStock
+//
+//  Created by YKLin on 8/31/22.
+//
+
+import UIKit
+
+class SettingViewController: UITableViewController {
+
+    
+    @IBOutlet weak var userDefinedFeeLabel: UILabel! // 自訂fee數字
+    @IBOutlet weak var feeDiscountTextfield: UITextField!
+
+    var pickerView = UIPickerView()
+
+    var discount = (1...10).map { value -> String in
+        if value == 10 {
+            return "無折扣"
+        }
+        return "\(value) 折"
+    }
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        initView()
+        
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        let feeInDollars = UserDefaults.standard.double(forKey: UserDefaults.userDefinedFeeInDollarsKey)
+        let feeDiscountIndex = UserDefaults.standard.integer(forKey: UserDefaults.userDefinedFeeDiscountKey)
+        print("viewDidAppear feeInDollars \(feeInDollars)")
+        userDefinedFeeLabel.text = "\(feeInDollars) 元"
+        feeDiscountTextfield.text = discount[feeDiscountIndex]
+    }
+    func initView() {
+        navigationController?.navigationItem.title = "設定"
+        
+        tableView.backgroundColor = .secondarySystemBackground
+        tableView.separatorStyle = .none
+        
+        feeDiscountTextfield.inputView = pickerView
+        feeDiscountTextfield.borderStyle = .none
+        feeDiscountTextfield.delegate = self
+        feeDiscountTextfield.tintColor = .clear
+        
+        pickerView.delegate = self
+        pickerView.dataSource = self
+        
+        
+    }
+
+    
+    override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        if section == 0 {
+            return "手續費"
+        }
+        return nil
+    }
+    
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.row == 0 {
+            print("tableView on tap label")
+            let vc = self.storyboard?.instantiateViewController(withIdentifier: "editFeeVC") as! EditFeeViewController
+            
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
+    }
+   
+
+
+}
+
+extension SettingViewController: UITextFieldDelegate {
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        print("textFieldDidEndEditing \(textField.text)")
+    }
+
+}
+
+extension SettingViewController: UIPickerViewDataSource, UIPickerViewDelegate {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return discount.count
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return discount[row]
+    }
+    
+    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
+        feeDiscountTextfield.text = discount[row]
+        
+        UserDefaults.standard.set(row, forKey: UserDefaults.userDefinedFeeDiscountKey)
+        feeDiscountTextfield.resignFirstResponder()
+    }
+}

@@ -65,6 +65,7 @@ class AddListViewController: UIViewController {
             guard let newListName = alertVC.textFields?[0].text else {return}
             
             self?.viewModel.saveNewListToDB(listName: newListName)
+            self?.viewModel.uploadListToOnlineDB(listName: newListName)
         }
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in
             // cancel

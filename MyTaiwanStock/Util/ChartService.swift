@@ -190,12 +190,17 @@ class ChartService {
         }
         //print("stockNoToPriceList...\(stockNoToPriceList)")
         
-        let stockNoToAsset = stockNoToAmountList.map({ (key: String, value: Int) in
-            StockStatistic(stockNo: key, totalAssets: Double(value) * stockNoToPriceList[key]! )
+        let stockNoToAsset = stockNoToAmountList.map({ (key: String, value: Int) -> StockStatistic in
+            
+            return StockStatistic(stockNo: key, totalAssets: Double(value) * (stockNoToPriceList[key] ?? 0))
+            
         })
         //print("chartsevice stockNoToAsset..\(stockNoToAsset)")
         pieChartData = stockNoToAsset
-        return stockNoToAsset
+        let filteredNonzeroTotalAsset = stockNoToAsset.filter {
+            $0.totalAssets > 0
+        }
+        return filteredNonzeroTotalAsset
     }
 
 }

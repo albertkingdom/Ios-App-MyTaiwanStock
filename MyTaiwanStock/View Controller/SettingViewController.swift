@@ -14,13 +14,8 @@ class SettingViewController: UITableViewController {
     @IBOutlet weak var feeDiscountTextfield: UITextField!
 
     var pickerView = UIPickerView()
+    var fee: Fee = Fee()
 
-    var discount = (1...10).map { value -> String in
-        if value == 10 {
-            return "無折扣"
-        }
-        return "\(value) 折"
-    }
     override func viewDidLoad() {
         super.viewDidLoad()
         initView()
@@ -31,10 +26,10 @@ class SettingViewController: UITableViewController {
         let feeDiscountIndex = UserDefaults.standard.integer(forKey: UserDefaults.userDefinedFeeDiscountKey)
         print("viewDidAppear feeInDollars \(feeInDollars)")
         userDefinedFeeLabel.text = "\(feeInDollars) 元"
-        feeDiscountTextfield.text = discount[feeDiscountIndex]
+        feeDiscountTextfield.text = fee.feePercentValues[feeDiscountIndex]
     }
     func initView() {
-        navigationController?.navigationItem.title = "設定"
+        navigationItem.title = "設定"
         
         tableView.backgroundColor = .secondarySystemBackground
         tableView.separatorStyle = .none
@@ -83,15 +78,15 @@ extension SettingViewController: UIPickerViewDataSource, UIPickerViewDelegate {
         return 1
     }
     func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return discount.count
+        return fee.feePercentValues.count
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return discount[row]
+        return fee.feePercentValues[row]
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        feeDiscountTextfield.text = discount[row]
+        feeDiscountTextfield.text = fee.feePercentValues[row]
         
         UserDefaults.standard.set(row, forKey: UserDefaults.userDefinedFeeDiscountKey)
         feeDiscountTextfield.resignFirstResponder()

@@ -18,12 +18,12 @@ class AccountViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
         initView()
         updateUI()
     }
     
     func initView() {
+        navigationItem.title = "帳戶"
         googleSignInButton.addTarget(self, action: #selector(tapGoogleSignInButton), for: .touchUpInside)
         signOutButton.addTarget(self, action: #selector(tapSignOutButton), for: .touchUpInside)
     }
@@ -35,27 +35,27 @@ class AccountViewController: UIViewController {
     }
     func googleSignIn() {
         guard let clientID = FirebaseApp.app()?.options.clientID else { return }
-
+        
         // Create Google Sign In configuration object.
         let config = GIDConfiguration(clientID: clientID)
-
+        
         // Start the sign in flow!
         GIDSignIn.sharedInstance.signIn(with: config, presenting: (UIApplication.shared.windows.first?.rootViewController)!) { user, error in
-
+            
             if let error = error {
                 print(error.localizedDescription)
                 return
             }
-
-          guard
-            let authentication = user?.authentication,
-            let idToken = authentication.idToken
-          else {
-            return
-          }
-
-          let credential = GoogleAuthProvider.credential(withIDToken: idToken,
-                                                         accessToken: authentication.accessToken)
+            
+            guard
+                let authentication = user?.authentication,
+                let idToken = authentication.idToken
+            else {
+                return
+            }
+            
+            let credential = GoogleAuthProvider.credential(withIDToken: idToken,
+                                                           accessToken: authentication.accessToken)
             // send credential to firebase
             Auth.auth().signIn(with: credential) { [weak self] authResult, error in
                 if let error = error {

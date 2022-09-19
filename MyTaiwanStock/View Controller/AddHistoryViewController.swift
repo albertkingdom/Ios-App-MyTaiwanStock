@@ -13,16 +13,12 @@ class AddHistoryViewController: UITableViewController {
     var stockNo: String!
     
     let viewModel = AddHistoryViewModel()
-    let feeCategory = ["折數","盤中零股", "自訂(元)"]
-    let feePercent = (1...10).map{ int -> String in
-        if int < 10 {
-            return "\(int)折"
-        } else {
-            return "無折扣"
-        }
-    }
-    var fee: Fee!
+
+    var feeType: FeeType!
+    var fee: Fee = Fee()
     var userDefinedFee: Double = 0 // 從userdefault取使用者預設值
+    var userDefinedDiscount: Int = 0 // 從userdefault取使用者預設折數
+
     @IBOutlet weak var stockNoLabel: UILabel!
     @IBOutlet weak var priceTextField: UITextField!
     @IBOutlet weak var amountTextField: UITextField!
@@ -56,7 +52,7 @@ class AddHistoryViewController: UITableViewController {
             let price = try validationService.validStockPriceInput(priceTextField.text)
             let amount = try validationService.validStockAmountInput(amountTextField.text)
             let reason = reasonTextView.text ?? ""
-            switch fee {
+            switch feeType {
             case .Percent(let percent):
                 print("fee percent \(percent)")
             case .userDefined:
@@ -117,11 +113,13 @@ class AddHistoryViewController: UITableViewController {
         
         feePicker.dataSource = self
         feePicker.delegate = self
-        feePicker.selectRow(9, inComponent: 1, animated: true)
         
         feeTextField.delegate = self
         
         userDefinedFee = UserDefaults.standard.double(forKey: UserDefaults.userDefinedFeeInDollarsKey)
+        userDefinedDiscount = UserDefaults.standard.integer(forKey: UserDefaults.userDefinedFeeDiscountKey)
+        feePicker.selectRow(userDefinedDiscount, inComponent: 1, animated: true)
+        feeTextField.text = fee.feePercentValues[userDefinedDiscount]
     }
     
    
@@ -182,12 +180,12 @@ extension AddHistoryViewController: UIPickerViewDelegate, UIPickerViewDataSource
         if pickerView.selectedRow(inComponent: 0) == 2 {
             return 1
         }
-        return feePercent.count
+        return fee.feePercentValues.count
     }
     
     func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         if component == 0 {
-            return feeCategory[row]
+            return fee.feeCategory[row]
         }
         if pickerView.selectedRow(inComponent: 0) == 1 {
             return "1元"
@@ -196,7 +194,7 @@ extension AddHistoryViewController: UIPickerViewDelegate, UIPickerViewDataSource
             return "自訂"
         }
         
-        return feePercent[row]
+        return fee.feePercentValues[row]
     }
     
     func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
@@ -206,40 +204,29 @@ extension AddHistoryViewController: UIPickerViewDelegate, UIPickerViewDataSource
         switch pickerView.selectedRow(inComponent: 0) {
         case 0:
             // 折數
-            feeTextField.text = feePercent[row]
+            feeTextField.text = fee.feePercentValues[row]
+            
             guard let priceStr = priceTextField.text,
                   let amountStr = amountTextField.text,
                   let priceFloat = Float(priceStr),
                   let amountFloat = Float(amountStr)
             else {return}
             let multiplier = Float(row+1)*0.1
-            let calculatedFee = calFee(price: priceFloat, amount: amountFloat, multiplier: multiplier)
+            let calculatedFee = fee.calFee(price: priceFloat, amount: amountFloat, multiplier: multiplier)
             feeTextField.text = "\(calculatedFee) 元"
             feeTextField.isEnabled = false
-            fee = Fee.Percent(multiplier)
+            feeType = FeeType.Percent(multiplier)
         case 1:
             // 1元
             feeTextField.text = "1元"
             feeTextField.isEnabled = false
-            fee = Fee.OneDollar
+            feeType = FeeType.OneDollar
         case 2:
             feeTextField.isEnabled = true
             feeTextField.placeholder = "輸入手續費"
             feeTextField.text = "\(userDefinedFee)"
-            fee = Fee.userDefined
+            feeType = FeeType.userDefined
         default: break
         }
     }
-    
-    func calFee(price: Float, amount: Float, multiplier: Float) -> Float{
-        let total = price*amount*multiplier*0.001425
-        return total<20 ? 20 : total
-    }
-}
-
-enum Fee {
-    case Percent(Float)
-    case userDefined
-    case OneDollar
-    
 }

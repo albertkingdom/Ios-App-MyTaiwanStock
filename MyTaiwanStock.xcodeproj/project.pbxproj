@@ -29,6 +29,8 @@
 		A168E0A027147C9800C75064 /* NewsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A168E09F27147C9800C75064 /* NewsListViewController.swift */; };
 		A168E0A22714822D00C75064 /* NewsListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A168E0A12714822D00C75064 /* NewsListTableViewCell.swift */; };
 		A168E0A427148D1600C75064 /* webViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A168E0A327148D1600C75064 /* webViewController.swift */; };
+		A17C2A7928D80C99007508D0 /* FeeType.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17C2A7828D80C99007508D0 /* FeeType.swift */; };
+		A17C2A7B28D81303007508D0 /* Fee.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17C2A7A28D81303007508D0 /* Fee.swift */; };
 		A181943B28B87895009475E9 /* ValidInputService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A181943A28B87895009475E9 /* ValidInputService.swift */; };
 		A181945928B88209009475E9 /* ValidInputServiceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A181945828B88209009475E9 /* ValidInputServiceTest.swift */; };
 		A197396227154CEB009D5917 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = A197396127154CEB009D5917 /* Kingfisher */; };
@@ -148,6 +150,8 @@
 		A168E09F27147C9800C75064 /* NewsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsListViewController.swift; sourceTree = "<group>"; };
 		A168E0A12714822D00C75064 /* NewsListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsListTableViewCell.swift; sourceTree = "<group>"; };
 		A168E0A327148D1600C75064 /* webViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = webViewController.swift; sourceTree = "<group>"; };
+		A17C2A7828D80C99007508D0 /* FeeType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeType.swift; sourceTree = "<group>"; };
+		A17C2A7A28D81303007508D0 /* Fee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fee.swift; sourceTree = "<group>"; };
 		A181943A28B87895009475E9 /* ValidInputService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidInputService.swift; sourceTree = "<group>"; };
 		A181944F28B881B5009475E9 /* MyTaiwanStockTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyTaiwanStockTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A181945828B88209009475E9 /* ValidInputServiceTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidInputServiceTest.swift; sourceTree = "<group>"; };
@@ -325,6 +329,8 @@
 				DFFEB04B27E1D68C00C85A53 /* Sender.swift */,
 				DFFEB04D27E1D6C400C85A53 /* Message.swift */,
 				DFFEB04F27E1E37D00C85A53 /* Channel.swift */,
+				A17C2A7828D80C99007508D0 /* FeeType.swift */,
+				A17C2A7A28D81303007508D0 /* Fee.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -607,6 +613,7 @@
 				A12705122830AE9900ED92F2 /* StockListViewModel.swift in Sources */,
 				DF06F31C270AA43A0031D6FE /* StockViewController.swift in Sources */,
 				DF06F324270B1A4F0031D6FE /* MyStockList.swift in Sources */,
+				A17C2A7928D80C99007508D0 /* FeeType.swift in Sources */,
 				DF06F328270D61AC0031D6FE /* HistoryTableViewCell.swift in Sources */,
 				DF06F2FB27097F2C0031D6FE /* AppDelegate.swift in Sources */,
 				DF793AD727DF8C36007C9442 /* AddStockNoViewController.swift in Sources */,
@@ -620,6 +627,7 @@
 				DF14418027869C200038D05D /* StockStatistic.swift in Sources */,
 				A127052C2833604400ED92F2 /* NewsListCellViewModel.swift in Sources */,
 				DF06F317270A01220031D6FE /* StockTableViewCell.swift in Sources */,
+				A17C2A7B28D81303007508D0 /* Fee.swift in Sources */,
 				DFFEB04A27E1D45000C85A53 /* ChatViewController.swift in Sources */,
 				A127052A28335E6C00ED92F2 /* NewsListViewModel.swift in Sources */,
 				A127052228320B2200ED92F2 /* AddHistoryViewModel.swift in Sources */,

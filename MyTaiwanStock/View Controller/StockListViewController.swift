@@ -14,13 +14,13 @@ class StockListViewController: UIViewController {
     
     var userDefault = UserDefaults(suiteName: "group.a2006mike.myTaiwanStock")
     var context: NSManagedObjectContext?
-    let viewModel: StockListViewModel = StockListViewModel()
-    
+    var viewModel: StockListViewModel!
+    var cellDatas: [StockCellViewModel] = []
     var refreshControl: UIRefreshControl!
 
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var popUpButton: UIButton!
+
     @IBAction func goToAddStockNoVC(_ sender: Any) {
 
         let addStockViewController = storyboard?.instantiateViewController(identifier: "addStockVC") as! AddStockNoViewController
@@ -46,9 +46,12 @@ class StockListViewController: UIViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        print("list vc viewDidLoad")
+        viewModel = StockListViewModel()
         viewModel.context = self.context
         viewModel.onlineDBService = OnlineDBService(context: context)
+        viewModel.localDB = LocalDBService(context: context)
+        
         tableView.delegate = self
         tableView.dataSource = self
 
@@ -66,12 +69,14 @@ class StockListViewController: UIViewController {
         tableView.addSubview(refreshControl)
         refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
         initView()
+        bindViewModel()
     }
     override func viewWillAppear(_ animated: Bool) {
         
-        bindViewModel()
-        
         setupSearchBarListener()
+        
+        // re trigger timer
+        viewModel.repeatFetch(stockNos: viewModel.stockNoStringCombine.value)
         
         let isFirstTimeAfterSignIn = UserDefaults.standard.bool(forKey: UserDefaults.isFirstTimeAfterSignIn)
        
@@ -90,7 +95,7 @@ class StockListViewController: UIViewController {
         
     }
     override func viewWillDisappear(_ animated: Bool) {
-
+        print("list VC viewWillDisappear, cancel timer")
         viewModel.cancelTimer()
         
     }
@@ -108,10 +113,11 @@ class StockListViewController: UIViewController {
             self?.navCenterButton.setTitle(title, for: .normal)
         }.store(in: &subscription)
         
-        viewModel.filteredStockCellDatasCombine
+        viewModel.$filteredStockCellDatasCombine
             .receive(on: DispatchQueue.main)
-            .sink { [weak self] viewmodels in
-                print("viewmodels \(viewmodels)")
+            .sink { [weak self] cellViewmodels in
+                print("cellViewmodels \(cellViewmodels)")
+                self?.cellDatas = cellViewmodels
                 self?.tableView.reloadData()
             }
             .store(in: &subscription)
@@ -131,6 +137,7 @@ class StockListViewController: UIViewController {
                 WidgetCenter.shared.reloadAllTimelines()
             }
             .store(in: &subscription)
+        
     }
     
 
@@ -190,15 +197,14 @@ class StockListViewController: UIViewController {
 extension StockListViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 
-
-        return viewModel.filteredStockCellDatasCombine.value.count
+        return cellDatas.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "stockPriceInfoCell", for: indexPath) as! StockTableViewCell
 
 
-        let cellViewModel = viewModel.filteredStockCellDatasCombine.value[indexPath.row]
+        let cellViewModel = cellDatas[indexPath.row]
         cell.update(with: cellViewModel)
         cell.selectionStyle = .none
         return cell
@@ -206,7 +212,7 @@ extension StockListViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let stockViewController = storyboard?.instantiateViewController(identifier: "stockViewController") as! StockViewController
 
-        let cellViewModel = viewModel.filteredStockCellDatasCombine.value[indexPath.row]
+        let cellViewModel = cellDatas[indexPath.row]
         
         stockViewController.stockNo = cellViewModel.stockNo
         stockViewController.stockPrice = cellViewModel.stockPrice
@@ -227,9 +233,9 @@ extension StockListViewController: UITableViewDataSource, UITableViewDelegate {
         if editingStyle == .delete {
             
             deleteStockNumber(at: indexPath.row)
-            
+            cellDatas.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: .automatic)
-  
+            
         }
     }
     
@@ -246,7 +252,7 @@ extension StockListViewController: UITableViewDataSource, UITableViewDelegate {
     
     
 }
-// MARK: core data CRUD
+
 extension StockListViewController {
     
     

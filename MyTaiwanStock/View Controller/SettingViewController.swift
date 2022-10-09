@@ -47,16 +47,21 @@ class SettingViewController: UITableViewController {
 
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
-        if section == 0 {
-            return "手續費"
+        switch section {
+        case 0: return ""
+        case 1: return "手續費"
+        default: return nil
         }
-        return nil
     }
     
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.row == 0 {
-            print("tableView on tap label")
+        if indexPath.section == 1 && indexPath.row == 0 {
             let vc = self.storyboard?.instantiateViewController(withIdentifier: "editFeeVC") as! EditFeeViewController
+            
+            self.navigationController?.pushViewController(vc, animated: true)
+        }
+        if indexPath.section == 0 && indexPath.row == 0 {
+            let vc = self.storyboard?.instantiateViewController(withIdentifier: "accountVC") as! AccountViewController
             
             self.navigationController?.pushViewController(vc, animated: true)
         }

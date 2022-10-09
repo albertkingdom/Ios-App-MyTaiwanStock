@@ -45,6 +45,7 @@
 		A199DC4828C88924003FBC61 /* HistoryOnline.swift in Sources */ = {isa = PBXBuildFile; fileRef = A199DC4728C88923003FBC61 /* HistoryOnline.swift */; };
 		A1A1CE8B28407EEA00786864 /* FirebaseAnalyticsSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = A1A1CE8A28407EEA00786864 /* FirebaseAnalyticsSwift-Beta */; };
 		A1A1CE8D28407EEA00786864 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = A1A1CE8C28407EEA00786864 /* FirebaseCrashlytics */; };
+		A1C03DD428F1452D007098D2 /* LocalDBService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C03DD328F1452D007098D2 /* LocalDBService.swift */; };
 		A1C2E5E728B71F55009D8D9B /* ViewController+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C2E5E628B71F55009D8D9B /* ViewController+extension.swift */; };
 		A1C9DAE02834F9DA00ADDEDB /* UIButton+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C9DADF2834F9DA00ADDEDB /* UIButton+Extension.swift */; };
 		A1CF660A28BEFB88005F6189 /* MessageKit in Frameworks */ = {isa = PBXBuildFile; productRef = A1CF660928BEFB88005F6189 /* MessageKit */; };
@@ -162,6 +163,7 @@
 		A199DC4328C843BD003FBC61 /* FavList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavList.swift; sourceTree = "<group>"; };
 		A199DC4528C84C54003FBC61 /* OnlineDBService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnlineDBService.swift; sourceTree = "<group>"; };
 		A199DC4728C88923003FBC61 /* HistoryOnline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryOnline.swift; sourceTree = "<group>"; };
+		A1C03DD328F1452D007098D2 /* LocalDBService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalDBService.swift; sourceTree = "<group>"; };
 		A1C2E5E628B71F55009D8D9B /* ViewController+extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController+extension.swift"; sourceTree = "<group>"; };
 		A1C9DADF2834F9DA00ADDEDB /* UIButton+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+Extension.swift"; sourceTree = "<group>"; };
 		DF06F2F727097F2C0031D6FE /* MyTaiwanStock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyTaiwanStock.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -384,6 +386,7 @@
 				A181943A28B87895009475E9 /* ValidInputService.swift */,
 				A199DC3728BFA048003FBC61 /* UserDefault+Extension.swift */,
 				A199DC4528C84C54003FBC61 /* OnlineDBService.swift */,
+				A1C03DD328F1452D007098D2 /* LocalDBService.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -620,6 +623,7 @@
 				DF06F3102709805E0031D6FE /* StockInfo.swift in Sources */,
 				DFFEB04C27E1D68C00C85A53 /* Sender.swift in Sources */,
 				A1C9DAE02834F9DA00ADDEDB /* UIButton+Extension.swift in Sources */,
+				A1C03DD428F1452D007098D2 /* LocalDBService.swift in Sources */,
 				DF944EE92807DB04005157A9 /* ChartService.swift in Sources */,
 				DF06F2FD27097F2C0031D6FE /* SceneDelegate.swift in Sources */,
 				A12705162830BCE500ED92F2 /* Observable.swift in Sources */,

@@ -7,11 +7,17 @@
 
 import Foundation
 import CoreData
+import UIKit
 
 class LocalDBService {
+    
     var context: NSManagedObjectContext?
     init(context: NSManagedObjectContext?) {
         self.context = context
+    }
+    init() {
+        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+        self.context = appDelegate.persistentContainer.viewContext
     }
     // MARK: Core Data - fetch list
     func fetchAllListFromDB() -> [List]{
@@ -29,7 +35,7 @@ class LocalDBService {
     }
     
     // MARK: Core Data - fetch history
-    func fetchDB(stockNo: String) -> [InvestHistory]{
+    func fetchHistoryFromDB(with stockNo: String) -> [InvestHistory]{
        
         let fetchRequest: NSFetchRequest<InvestHistory> = InvestHistory.fetchRequest()
         fetchRequest.predicate = NSPredicate(format: "stockNo == %@", stockNo)
@@ -45,13 +51,55 @@ class LocalDBService {
         }
         return lists
     }
+    
+    /// update currentPrice property of stockNo
+    func updateStockNoInDBwithPrice(stockNos: [String], cellViewModels: [StockCellViewModel]) {
+
+        let fetchRequest: NSFetchRequest<StockNo> = StockNo.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "stockNo IN %@", stockNos)
+        do {
+            guard let stocks = try context?.fetch(fetchRequest) else {return}
+            
+            print("updateStockNoFromDBwithPrice stocks \(stocks), stocks count \(stocks.count)")
+            
+            for stock in stocks {
+                if let price = cellViewModels.first(where: {$0.stockNo==stock.stockNo})?.stockPrice,
+                let priceDouble = Double(price) {
+                    
+                    stock.currentPrice = priceDouble
+                }
+                
+            }
+            saveContext()
+        
+        } catch let error {
+            print(error.localizedDescription)
+        }
+        
+    }
+    
+    func fetchStockPriceFromDB(with stockNos: [String]) -> [StockNo]{
+        let fetchRequest: NSFetchRequest<StockNo> = StockNo.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "stockNo IN %@", stockNos)
+        do {
+            guard let stocks = try context?.fetch(fetchRequest) else {return []}
+            
+            print("fetchStockPriceFromDB stocks \(stocks), stocks count \(stocks.count)")
+            
+            return stocks
+        
+        } catch let error {
+            print(error.localizedDescription)
+        }
+        return []
+    }
     // MARK: Core Data - save list
     func saveNewListToDB(listName: String) -> List? {
         
         let newList = List(context: context!)
         newList.name = listName
         
-        save()
+        saveContext()
         return newList
     }
     // MARK: Core Data - save stockNo
@@ -63,7 +111,7 @@ class LocalDBService {
         newStockNo.stockNo = stockNumber
         newStockNo.ofList = currentFollowingList // set the relationship between list and stockNo
 
-        save()
+        saveContext()
     }
     // MARK: Core Data - save new record
     func saveNewRecord(stockNo: String, price: Float, amount: Int, reason: String, buyOrSellStatus: Int, date: Date) {
@@ -77,7 +125,7 @@ class LocalDBService {
         newInvestHistory.status = Int16(buyOrSellStatus)
         newInvestHistory.reason = reason
         
-        save()
+        saveContext()
 
     }
 
@@ -91,12 +139,12 @@ class LocalDBService {
             deleteHistory(with: stockNoObject.stockNo!)
         }
         // TODO: show the UIAlert
-        save()
+        saveContext()
 
     }
     func deleteHistoryInDB(historyObject: InvestHistory) {
         context?.delete(historyObject)
-        save()
+        saveContext()
     }
     private func checkIfRemainingStockNoObject(with stockNo: String) -> Bool {
         let fetchStockRequest: NSFetchRequest<StockNo> = StockNo.fetchRequest()
@@ -125,12 +173,12 @@ class LocalDBService {
             for history in historyObjects {
                 context?.delete(history)
             }
-            save()
+            saveContext()
         }
     }
     func deleteListFromDB(list: List) {
         context?.delete(list)
-        save()
+        saveContext()
     }
     
     func save() {
@@ -139,5 +187,21 @@ class LocalDBService {
         } catch {
             print("error, \(error.localizedDescription)")
         }
+    }
+    func saveContext() {
+        guard let context = context else {
+            return
+        }
+        guard context.hasChanges else { return }
+        do {
+            try context.save()
+        } catch let error as NSError {
+            print("Error: \(error), \(error.userInfo)")
+        }
+    }
+    
+    struct StockNoToPrice {
+        let stockNo: String
+        let price: Double
     }
 }

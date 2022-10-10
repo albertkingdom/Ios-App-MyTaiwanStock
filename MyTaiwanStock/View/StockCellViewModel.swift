@@ -22,7 +22,7 @@ struct StockCellViewModel {
         if let currentPrice = Float(stock.current) {
             stockPrice = String(format: "%.2f", currentPrice)
         } else {
-            stockPrice = "-"
+            stockPrice = String(format: "%.2f", stock.yesterDayPrice)
         }
         
         

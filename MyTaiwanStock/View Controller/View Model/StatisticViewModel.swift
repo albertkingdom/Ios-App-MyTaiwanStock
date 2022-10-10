@@ -27,7 +27,12 @@ class StatisticViewModel {
         return frc
     }()
     var isLoading = PassthroughSubject<Bool, Never>()
+    var localDB: LocalDBService!
     
+    init(context: NSManagedObjectContext?) {
+        self.context = context
+        self.localDB = LocalDBService(context: context)
+    }
     
     func fetchData(to chart: PieChartView) {
         do {
@@ -37,10 +42,14 @@ class StatisticViewModel {
                 isLoading.send(true)
                 return
             }
-            let savedStockPrice = OneDayStockInfo.priceList
+            let stockNos = historyList.map({$0.stockNo ?? ""})
+            print("stockNOs \(stockNos)")
             
-            self.chartService = ChartService(historyList: historyList, stockPriceList: savedStockPrice)
-            guard let stockNoToAsset = chartService.calculateStockNoToAsset() else {
+            let stockNoObjects = localDB.fetchStockPriceFromDB(with: stockNos)
+            print("stockNoObjects \(stockNoObjects)")
+            
+            self.chartService = ChartService(historyList: historyList, stockNoObjects: stockNoObjects)
+            guard let stockNoToAsset = chartService.calculateStockNoToAsset2() else {
                 isLoading.send(true)
                 return
             }

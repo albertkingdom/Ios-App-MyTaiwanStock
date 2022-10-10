@@ -10,7 +10,7 @@ import UIKit
 import Combine
 
 class StatisticViewController: UIViewController {
-    let viewModel = StatisticViewModel()
+    var viewModel:StatisticViewModel!
     var subscription = Set<AnyCancellable>()
 
     @IBOutlet weak var pieChartView: PieChartView!
@@ -23,7 +23,8 @@ class StatisticViewController: UIViewController {
         tableView.dataSource = self
         tableView.delegate = self
 
-        viewModel.context = context
+        //viewModel.context = context
+        viewModel = StatisticViewModel(context: context)
         bindViewModel()
         
         initView()

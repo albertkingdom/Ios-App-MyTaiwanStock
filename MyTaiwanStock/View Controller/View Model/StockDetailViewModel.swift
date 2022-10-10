@@ -65,7 +65,7 @@ class StockDetailViewModel {
     }
     func fetchDB(){
        
-        coreDataObjectsCombine = localDB.fetchDB(stockNo: stockNo)
+        coreDataObjectsCombine = localDB.fetchHistoryFromDB(with: stockNo)
     }
     
     func deleteHistory(at index: Int) {

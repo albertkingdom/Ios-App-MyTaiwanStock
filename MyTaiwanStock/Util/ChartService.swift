@@ -11,6 +11,7 @@ import Charts
 class ChartService {
     var stockInfoForCandleStickChart: [[String]]?
     var stockNo: String?
+    var stockNoObjects: [StockNo]?
     var pieChartData: [StockStatistic]?
     var historyList: [InvestHistory]?
     var stockPriceList: [OneDayStockInfoDetail]?
@@ -24,11 +25,11 @@ class ChartService {
     init(pieChartData: [StockStatistic]) {
         self.pieChartData = pieChartData
     }
-    init(historyList: [InvestHistory], stockPriceList: [OneDayStockInfoDetail]) {
+
+    init(historyList: [InvestHistory], stockNoObjects: [StockNo]) {
         self.historyList = historyList
-        self.stockPriceList = stockPriceList
+        self.stockNoObjects = stockNoObjects
     }
-    
     func generateCandleData(stockInfoForCandleStickChart: [[String]], stockNo: String) -> CandleChartData {
         let candleStickEntries = stockInfoForCandleStickChart.enumerated().map({ (index, day) in
             return CandleChartDataEntry.init(x: Double(index), shadowH: Double(day[4])!, shadowL: Double(day[5])!, open: Double(day[3])!, close: Double(day[6])!)
@@ -202,5 +203,50 @@ class ChartService {
         }
         return filteredNonzeroTotalAsset
     }
+    
+    func calculateStockNoToAsset2() -> [StockStatistic]? {
+        guard let historyList = historyList else {
+            return nil
+        }
+        guard let stockPriceList = stockNoObjects else {
+            return nil
+        }
 
+        
+        var stockNoToAmountList = [String: Int]()
+        var stockNoToPriceList = [String: Double]()
+        
+        
+        let _ = historyList.map { history in
+            //print("history...\(history)")
+            if stockNoToAmountList[history.stockNo!] == nil {
+                stockNoToAmountList[history.stockNo!] = Int(history.amount) * (history.status == 0 ? 1 : -1)
+            } else {
+                stockNoToAmountList[history.stockNo!]! += Int(history.amount) * (history.status == 0 ? 1 : -1)
+            }
+        }
+        //print("stockNoToAmountList...\(stockNoToAmountList)")
+
+        let _ = stockPriceList.map { stock in
+            guard let stockNoString = stock.stockNo else {
+                return
+            }
+            let currentPrice = stock.currentPrice
+
+            stockNoToPriceList[stockNoString] = currentPrice
+        }
+        //print("stockNoToPriceList...\(stockNoToPriceList)")
+        
+        let stockNoToAsset = stockNoToAmountList.map({ (key: String, value: Int) -> StockStatistic in
+            
+            return StockStatistic(stockNo: key, totalAssets: Double(value) * (stockNoToPriceList[key] ?? 0))
+            
+        })
+        //print("chartsevice stockNoToAsset..\(stockNoToAsset)")
+        pieChartData = stockNoToAsset
+        let filteredNonzeroTotalAsset = stockNoToAsset.filter {
+            $0.totalAssets > 0
+        }
+        return filteredNonzeroTotalAsset
+    }
 }

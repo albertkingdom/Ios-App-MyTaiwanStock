@@ -202,6 +202,7 @@ class StockListViewModel {
                     StockCellViewModel(stock: item)
                 }
                 self?.stockCellDatasCombine.send(cellVMs)
+                self?.localDB.updateStockNoInDBwithPrice(stockNos: stockNos, cellViewModels: cellVMs)
             }
             .store(in: &self.subscription)
     }

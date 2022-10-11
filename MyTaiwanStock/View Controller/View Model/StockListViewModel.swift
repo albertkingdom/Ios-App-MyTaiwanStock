@@ -11,10 +11,9 @@ import Combine
 
 class StockListViewModel {
     var context: NSManagedObjectContext?
-    
-//    private var timer: DispatchSourceTimer?
-    var timer: Timer?
-    
+    var localDB: LocalDBService!
+    private var timer: Timer?
+    private var lastTimeMenuIndex = 0
     var stockNoStringCombine = CurrentValueSubject<[String], Never>([])
 
     var stockNameStringSetCombine = CurrentValueSubject<Set<String>,Never>([])
@@ -25,24 +24,25 @@ class StockListViewModel {
 
     var menuActionsCombine = CurrentValueSubject<[UIAction], Never>([])
     
-    var followingListObjectFromDB: [List] = []
+    private var followingListObjectFromDB: [List] = []
 
-    var currentFollowingListCombine = CurrentValueSubject<List?, Never>(nil)
+    private var currentFollowingListCombine = CurrentValueSubject<List?, Never>(nil)
 
-    var followingListSelectionMenuCombine = CurrentValueSubject<[String], Never>([])
+    private var followingListSelectionMenuCombine = CurrentValueSubject<[String], Never>([])
     
-    var onedayStockInfo: [OneDayStockInfoDetail] = []
+    private var onedayStockInfo: [OneDayStockInfoDetail] = []
     
-    var stockCellDatasCombine = CurrentValueSubject<[StockCellViewModel], Never>([])
+    private var stockCellDatasCombine = CurrentValueSubject<[StockCellViewModel], Never>([])
     
-    let filteredStockCellDatasCombine = CurrentValueSubject<[StockCellViewModel], Never>([])
-
+//    let filteredStockCellDatasCombine = CurrentValueSubject<[StockCellViewModel], Never>([])
+    @Published var filteredStockCellDatasCombine: [StockCellViewModel] = []
+    
     var dataForWidget = PassthroughSubject<Data, Never>()
     
     
     var searchText = CurrentValueSubject<String, Never>("")
     
-    var subscription = Set<AnyCancellable>()
+    private var subscription = Set<AnyCancellable>()
     
     var onlineDBService: OnlineDBService?
     
@@ -61,26 +61,13 @@ class StockListViewModel {
         onlineDBService = OnlineDBService(context: context)
     }
     
-    func fetchAllListFromDB() -> [List]{
-        let fetchRequest: NSFetchRequest<List> = List.fetchRequest()
-        var lists: [List] = []
-        do {
-            guard let result = try context?.fetch(fetchRequest) else { return [List]() }
-            //print("lists \(result)")
-
-            lists = result
-        } catch let error {
-            print(error.localizedDescription)
-        }
-        return lists
-    }
     
-    func handleFetchListFromDB() {
-        let listObjectFromDB = fetchAllListFromDB()
-        //print("listObjectFromDB \(listObjectFromDB)")
+    func handleFetchListFromDB() -> Void {
+        let listObjectFromDB = localDB.fetchAllListFromDB()
+
         if listObjectFromDB.isEmpty {
             // if no existing following list in db, create a default one
-            guard let newList = saveNewListToDB(listName: "預設清單1") else { return }
+            guard let newList = localDB.saveNewListToDB(listName: "預設清單1") else { return }
 
             self.followingListSelectionMenuCombine.send([newList.name!])
             self.followingListObjectFromDB.append(newList)
@@ -97,15 +84,15 @@ class StockListViewModel {
             
             
         }
-        self.currentMenuIndexCombine.send(0)
+        self.currentMenuIndexCombine.send(lastTimeMenuIndex)
         setupStockNameStringSet()
         generateMenu()
     }
     
-    func setupFetchStockInfo() {
+    private func setupFetchStockInfo() {
+
         currentMenuIndexCombine
             .sink { [unowned self] index in
-                //print("index \(index)")
                 guard self.followingListObjectFromDB.count > 0 else { return }
                 let list = self.followingListObjectFromDB[index]
    
@@ -143,7 +130,7 @@ class StockListViewModel {
         
         stockCellDatasCombine
             .combineLatest(searchText)
-            .map({ (cellDatas, text) in
+            .map({ (cellDatas: [StockCellViewModel], text:String) -> [StockCellViewModel] in
                 print("celldatas \(cellDatas) text \(text)")
                 var output: [StockCellViewModel]
                 if text.count > 0 {
@@ -157,12 +144,13 @@ class StockListViewModel {
                 return output
 
             })
-            .sink(receiveValue: { [weak self] cellDatas in
-                self?.filteredStockCellDatasCombine.send(cellDatas)
-            })
-            .store(in: &subscription)
+            .assign(to: &$filteredStockCellDatasCombine)
+//            .sink(receiveValue: { [weak self] cellDatas in
+//                self?.filteredStockCellDatasCombine.send(cellDatas)
+//            })
+//            .store(in: &subscription)
     }
-    func generateMenu() {
+    private func generateMenu() {
 
         
         followingListSelectionMenuCombine
@@ -170,7 +158,9 @@ class StockListViewModel {
             .sink(receiveValue: { [weak self] listNames, index in
                 self?.menuTitleCombine = self?.followingListSelectionMenuCombine.value[index] ?? ""
                 let actions = listNames.enumerated().map { index, str in
-                    UIAction(title: str, state: index == self?.currentMenuIndexCombine.value ? .on: .off, handler: { action in
+                    UIAction(title: str,
+                             state: index == self?.currentMenuIndexCombine.value ? .on: .off,
+                             handler: { action in
                         
                         self?.currentMenuIndexCombine.send(index)
                         self?.setupStockNameStringSet()
@@ -192,7 +182,7 @@ class StockListViewModel {
             self?.fetchStockInfo(stockNos: stockNos)
         })
     }
-    func fetchStockInfo(stockNos: [String]) {
+    private func fetchStockInfo(stockNos: [String]) {
         OneDayStockInfo.fetchOneDayStockInfoCombine(stockList: stockNos)
         
             .sink { completion in
@@ -212,12 +202,13 @@ class StockListViewModel {
                     StockCellViewModel(stock: item)
                 }
                 self?.stockCellDatasCombine.send(cellVMs)
+                self?.localDB.updateStockNoInDBwithPrice(stockNos: stockNos, cellViewModels: cellVMs)
             }
             .store(in: &self.subscription)
     }
 
     
-    func setupStockNameStringSet() {
+    private func setupStockNameStringSet() {
         stockNameStringSetCombine.value.removeAll()
         currentFollowingListCombine.value = followingListObjectFromDB[currentMenuIndexCombine.value]
         //self.fetchStockNoFromDB()
@@ -230,22 +221,10 @@ class StockListViewModel {
         //print("stockNoStringArray \(stockNoStringArray)")
         stockNameStringSetCombine.send(Set(stockNoStringArray))
     }
-    // MARK: Core Data - save
-    func saveNewStockNumberToDB(stockNumber: String) {
-        //print("saveNewStockNumberToDB...\(stockNumber)")
-        guard let context = self.context else { return }
-
-        if stockNameStringSetCombine.value.firstIndex(of: stockNumber) != nil { return }
-        let newStockNo = StockNo(context: context)
-        newStockNo.stockNo = stockNumber
-        newStockNo.ofList = currentFollowingListCombine.value // set the relationship between list and stockNo
-        //lists[currentMenuIndex].stockNo = NSSet(array: [newStockNo])
-        do {
-            try context.save()
-        } catch {
-            print("error, \(error.localizedDescription)")
-        }
  
+    func saveNewStockNumberToDB(stockNumber: String){
+        if stockNameStringSetCombine.value.firstIndex(of: stockNumber) != nil { return }
+        localDB.saveNewStockNumberToDB(stockNumber: stockNumber, currentFollowingList: currentFollowingListCombine.value!)
     }
     
     func deleteStockNumber(at index: Int) {
@@ -259,7 +238,7 @@ class StockListViewModel {
         })
         let stockNoObjectToDel = stockNoObjectArray[index]
         
-        deleteStockNumberInDB(stockNoObject: stockNoObjectToDel)
+        localDB.deleteStockNumberInDB(stockNoObject: stockNoObjectToDel)
         // delete stockNo from online DB
         print("delete stockNo string \(itemToDelete.stockNo)")
         deleteStockNoFromOnlineDB(stockNo: itemToDelete.stockNo)
@@ -282,69 +261,7 @@ class StockListViewModel {
             itemToDelete.stockNo != stockNo
         })
     }
-    // MARK: Core Data - delete
-    func deleteStockNumberInDB(stockNoObject: StockNo) {
-        context?.delete(stockNoObject)
-        
-        let result = checkIfRemainingStockNoObject(with: stockNoObject.stockNo!)
-        
-        if !result {
-            deleteHistory(with: stockNoObject.stockNo!)
-        }
-        // TODO: show the UIAlert
-        try? context?.save()
 
-    }
-    func checkIfRemainingStockNoObject(with stockNo: String) -> Bool {
-        let fetchStockRequest: NSFetchRequest<StockNo> = StockNo.fetchRequest()
-        let predicate = NSPredicate(format: "stockNo == %@", stockNo)
-        fetchStockRequest.predicate = predicate
-        
-        if let stockNoObjects = try? context?.fetch(fetchStockRequest) {
-  
-            if stockNoObjects.isEmpty {
-                // there's no stockNo object with same stockNo
-                return false
-            }
-            
-        }
-        return true
-    }
-    
-    func deleteHistory(with stockNo: String) {
-        // fetch history with stockNo, then delete them
-        let fetchHistoryRequest: NSFetchRequest<InvestHistory> = InvestHistory.fetchRequest()
-        let predicate = NSPredicate(format: "stockNo == %@", stockNo)
-        fetchHistoryRequest.predicate = predicate
-        
-        if let historyObjects = try? context?.fetch(fetchHistoryRequest) {
-            //print("historyObjects \(historyObjects)")
-            
-            for history in historyObjects {
-                context?.delete(history)
-            }
-            try? context?.save()
-        }
-        
-       
-    }
-    
-    func saveNewListToDB(listName: String) -> List? {
-        
-        let newList = List(context: context!)
-        newList.name = listName
-        
-        do {
-            try context?.save()
-
-            return newList
-         
-        } catch {
-            print("error, \(error.localizedDescription)")
-            return nil
-        }
-        
-    }
     
     //MARK: online DB
     func uploadNewStockNoToOnlineDB(stockNumber: String) {
@@ -354,14 +271,15 @@ class StockListViewModel {
         onlineDBService?.deleteStockNoFromOnlineDB(stockNo: stockNo, listName: menuTitleCombine)
     }
     func getOnlineDBDataAndInsertLocal(completion: (() -> Void)?) {
-        print("onlineDBService \(onlineDBService)")
+      
         onlineDBService?.getAllListAndStocksFromOnlineDBAndSaveToLocal(completion: completion)
         onlineDBService?.getAllHistoryFromOnlineDBAndSaveToLocal()
     }
     func cancelTimer() {
-//        timer?.cancel()
-//        timer = nil
         timer?.invalidate()
+    }
+    func setInitialMenuIndex(to index: Int) {
+        lastTimeMenuIndex = index
     }
 }
 

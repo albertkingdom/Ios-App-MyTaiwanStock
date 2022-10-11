@@ -17,14 +17,17 @@ struct StockCellViewModel {
         self.stockNo = stock.stockNo
         self.stockShortName = stock.shortName
        
+        var price = ""
         
-       
-        if let currentPrice = Float(stock.current) {
-            stockPrice = String(format: "%.2f", currentPrice)
+        if let currentPrice = Float(stock.current){
+            price = String(format: "%.2f", currentPrice)
         } else {
-            stockPrice = "-"
+            if let yesterDayPrice = Float(stock.yesterDayPrice) {
+                price = String(format: "%.2f", yesterDayPrice)
+            }
         }
-        
+        stockPrice = price
+
         
         if let currentPrice = Float(stock.current), let openPrice = Float(stock.open) {
             let diff = currentPrice - openPrice

@@ -13,23 +13,20 @@ import FirebaseAuth
 
 class AddListViewModel {
     var subscription = Set<AnyCancellable>()
-    //var listNames = Observable<[String]>([])
+
     var listNamesCombine = CurrentValueSubject<[String],Never>([])
-//    var coreDataItems: [List]! {
-//        didSet {
-//            self.listNames.value = coreDataItems.map({ list in
-//                list.name!
-//            })
-//        }
-//    }
+
     var coreDataItemsCombine = CurrentValueSubject<[List],Never>([])
     var context: NSManagedObjectContext!
+    var localDB: LocalDBService!
     var onlineDBService: OnlineDBService?
     
     init(context: NSManagedObjectContext) {
         
         self.context = context
-        let coreDataItems = fetchAllListFromDB()
+        localDB = LocalDBService(context: context)
+        
+        let coreDataItems = localDB.fetchAllListFromDB()
         coreDataItemsCombine.send(coreDataItems)
         
         
@@ -59,56 +56,26 @@ class AddListViewModel {
     func updateListName(at index: Int, with newName: String) {
         let listToBeUpdate = self.coreDataItemsCombine.value[index]
         listToBeUpdate.name = newName
-        self.updateList(item: listToBeUpdate)
+
+        
+        localDB.save()
+        let lists = localDB.fetchAllListFromDB()
+        coreDataItemsCombine.send(lists)
     }
-    // MARK: CORE DATA
+
     func saveNewListToDB(listName: String) {
         
-        let newList = List(context: context)
-        newList.name = listName
-        do {
-            try context.save()
-            let lists = self.fetchAllListFromDB()
-            coreDataItemsCombine.send(lists)
-         
-        } catch {
-            print("error, \(error.localizedDescription)")
-        }
+        localDB.saveNewListToDB(listName: listName)
         
+        let lists = localDB.fetchAllListFromDB()
+        coreDataItemsCombine.send(lists)
     }
-    func fetchAllListFromDB() -> [List] {
-        let fetchRequest: NSFetchRequest<List> = List.fetchRequest()
-        var allLists: [List] = []
-        do {
-//            self.coreDataItems = try context.fetch(fetchRequest)
-            //print("lists \(self.coreDataItems)")
-            allLists = try context.fetch(fetchRequest)
-            
-        } catch let error {
-            print(error.localizedDescription)
-        }
-        
-        return allLists
-    }
+
     func deleteListFromDB(item: List) {
-        context.delete(item)
-        do {
-            try context.save()
-            
-        } catch {
-            print("error, \(error.localizedDescription)")
-        }
+
+        localDB.deleteListFromDB(list: item)
     }
-    func updateList(item: List) {
-        
-        do {
-            try context.save()
-            let lists = fetchAllListFromDB()
-            coreDataItemsCombine.send(lists)
-        } catch {
-            print("error, \(error.localizedDescription)")
-        }
-    }
+
     func getLoginAccountEmail() -> String? {
         guard let email = Auth.auth().currentUser?.email else {return nil}
         return email

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="19574" systemVersion="20G527" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="19574" systemVersion="21G115" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
     <entity name="InvestHistory" representedClassName="InvestHistory" syncable="YES" codeGenerationType="class">
         <attribute name="amount" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
         <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
@@ -13,12 +13,13 @@
         <relationship name="stockNo" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="StockNo" inverseName="ofList" inverseEntity="StockNo"/>
     </entity>
     <entity name="StockNo" representedClassName="StockNo" syncable="YES" codeGenerationType="class">
+        <attribute name="currentPrice" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
         <attribute name="stockNo" optional="YES" attributeType="String"/>
         <relationship name="ofList" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="List" inverseName="stockNo" inverseEntity="List"/>
     </entity>
     <elements>
         <element name="InvestHistory" positionX="-54" positionY="0" width="128" height="119"/>
-        <element name="List" positionX="-122.3828125" positionY="163.3984375" width="128" height="59"/>
-        <element name="StockNo" positionX="92.18359375" positionY="232.70703125" width="128" height="59"/>
+        <element name="List" positionX="-122.3828125" positionY="163.3984375" width="128" height="73"/>
+        <element name="StockNo" positionX="92.18359375" positionY="232.70703125" width="128" height="88"/>
     </elements>
 </model>

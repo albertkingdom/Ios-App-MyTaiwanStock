@@ -15,28 +15,21 @@ class StockDetailViewModel {
     var stockNo: String
     var currentStockPriceString: String
     var chartService: ChartService!
-//    var history = Observable<[HistoryCellViewModel]>([])
+
     var historyCombine = CurrentValueSubject<[HistoryCellViewModel],Never>([])
-//    var coreDataObjects: [InvestHistory]? = [] {
-//        didSet {
-//
-//            guard let investHistoryList = coreDataObjects else { return }
-//            self.history.value = investHistoryList.map { investHostory in
-//                HistoryCellViewModel(historyData: investHostory, currentStockPrice: currentStockPriceString)
-//            }
-//        }
-//    }
+
     @Published var coreDataObjectsCombine: [InvestHistory] = []
     @Published var highlightChartIndex: Int = -1
     var subscription = Set<AnyCancellable>()
+    var localDB: LocalDBService!
     
     init(stockNo: String, currentStockPrice: String, context: NSManagedObjectContext?) {
         self.stockNo = stockNo
         self.currentStockPriceString = currentStockPrice
         self.context = context
         setupHistoryData()
-        //fetchDB()
-        
+  
+        self.localDB = LocalDBService(context: context)
         
         print("stock vm init")
     }
@@ -72,43 +65,19 @@ class StockDetailViewModel {
     }
     func fetchDB(){
        
-        let fetchRequest: NSFetchRequest<InvestHistory> = InvestHistory.fetchRequest()
-        fetchRequest.predicate = NSPredicate(format: "stockNo == %@", self.stockNo)
-        var lists: [InvestHistory] = []
-        do {
-            guard let result = try context?.fetch(fetchRequest) else { return }
-            //print("lists \(result)")
-            
-            lists = result
-        } catch let error {
-            print(error.localizedDescription)
-        }
-        
-        coreDataObjectsCombine = lists
-       
-        
+        coreDataObjectsCombine = localDB.fetchHistoryFromDB(with: stockNo)
     }
     
     func deleteHistory(at index: Int) {
         let itemToDelete = coreDataObjectsCombine[index]
-       
-        
-        
-        deleteHistoryInDB(historyObject: itemToDelete)
+    
+        localDB.deleteHistoryInDB(historyObject: itemToDelete)
         
         coreDataObjectsCombine = coreDataObjectsCombine.filter({ object in
             object != itemToDelete
         })
     }
-    // MARK: Core Data - delete
-    func deleteHistoryInDB(historyObject: InvestHistory) {
-        context?.delete(historyObject)
-        
-       
-        // TODO: show the UIAlert
-        try? context?.save()
 
-    }
     
     func findClickHistoryDate(index: Int) {
         if let date = coreDataObjectsCombine[index].date {

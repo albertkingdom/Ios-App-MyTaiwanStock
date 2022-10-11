@@ -12,7 +12,7 @@ class AddHistoryViewController: UITableViewController {
     let validationService = ValidInputService()
     var stockNo: String!
     
-    let viewModel = AddHistoryViewModel()
+    var viewModel: AddHistoryViewModel!
 
     var feeType: FeeType!
     var fee: Fee = Fee()
@@ -94,7 +94,8 @@ class AddHistoryViewController: UITableViewController {
     }
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel.context = context
+
+        viewModel = AddHistoryViewModel(context: context)
         
         stockNoLabel.text = stockNo
         priceTextField.keyboardType = .decimalPad

@@ -64,16 +64,24 @@ extension UIViewController {
   
     }
     
-    func showAlert(title: String, message: String, positiveAction: (() -> Void)?, negativeAction:(()->Void)?) {
+    func showAlert(title: String, message: String, positiveAction: (() -> Void)?, negativeAction:(()->Void)?) -> Void{
         let alertVC = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        let positiveAction = UIAlertAction(title: "OK", style: .default) { _ in
-            positiveAction?()
+        if let positiveAction = positiveAction {
+            let positiveAction = UIAlertAction(title: "OK", style: .default) { _ -> Void in
+                positiveAction()
+                
+            }
+            alertVC.addAction(positiveAction)
         }
-        let negativeAction =  UIAlertAction(title: "Cancel", style: .cancel) { _ in
-            negativeAction?()
+        if let negativeAction = negativeAction {
+            let negativeAction = UIAlertAction(title: "Cancel", style: .cancel) { _ -> Void in
+                negativeAction()
+            }
+            alertVC.addAction(negativeAction)
         }
-        alertVC.addAction(positiveAction)
-        alertVC.addAction(negativeAction)
+       
+       
+        
         present(alertVC, animated: true, completion: nil)
     }
     func showLoadingIcon() -> UIView {

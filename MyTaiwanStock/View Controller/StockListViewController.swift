@@ -43,6 +43,7 @@ class StockListViewController: UIViewController {
         
         return button
     }()
+    var currentMenuIndex: Int = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -79,7 +80,8 @@ class StockListViewController: UIViewController {
         viewModel.repeatFetch(stockNos: viewModel.stockNoStringCombine.value)
         
         let isFirstTimeAfterSignIn = UserDefaults.standard.bool(forKey: UserDefaults.isFirstTimeAfterSignIn)
-       
+        let savedMenuIndex = getSavedListIndex()
+        viewModel.setInitialMenuIndex(to: savedMenuIndex)
 
         if isFirstTimeAfterSignIn {
             // after downloading online data to local database, retrieve all local database at once
@@ -95,9 +97,8 @@ class StockListViewController: UIViewController {
         
     }
     override func viewWillDisappear(_ animated: Bool) {
-        print("list VC viewWillDisappear, cancel timer")
         viewModel.cancelTimer()
-        
+        saveCurrentListIndex()
     }
     
     func bindViewModel() {
@@ -136,6 +137,12 @@ class StockListViewController: UIViewController {
                 self?.userDefault?.setValue(stockNoStrings, forKey: "stockNos")
                 WidgetCenter.shared.reloadAllTimelines()
             }
+            .store(in: &subscription)
+        
+        viewModel.currentMenuIndexCombine
+            .sink(receiveValue: {[weak self] index in
+                self?.currentMenuIndex = index
+            })
             .store(in: &subscription)
         
     }
@@ -265,6 +272,12 @@ extension StockListViewController {
         viewModel.deleteStockNumber(at: index)
     }
     
+    func saveCurrentListIndex() {
+        UserDefaults.standard.set(currentMenuIndex, forKey: UserDefaults.menuIndex)
+    }
+    func getSavedListIndex() -> Int {
+        return UserDefaults.standard.integer(forKey: UserDefaults.menuIndex)
+    }
     
 }
 

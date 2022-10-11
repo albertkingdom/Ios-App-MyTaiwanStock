@@ -13,12 +13,12 @@ class StockListViewModel {
     var context: NSManagedObjectContext?
     var localDB: LocalDBService!
     private var timer: Timer?
-    
+    private var lastTimeMenuIndex = 0
     var stockNoStringCombine = CurrentValueSubject<[String], Never>([])
 
     var stockNameStringSetCombine = CurrentValueSubject<Set<String>,Never>([])
 
-    private var currentMenuIndexCombine = CurrentValueSubject<Int, Never>(0)
+    var currentMenuIndexCombine = CurrentValueSubject<Int, Never>(0)
     
     @Published var menuTitleCombine: String = ""
 
@@ -62,7 +62,7 @@ class StockListViewModel {
     }
     
     
-    func handleFetchListFromDB() {
+    func handleFetchListFromDB() -> Void {
         let listObjectFromDB = localDB.fetchAllListFromDB()
 
         if listObjectFromDB.isEmpty {
@@ -84,7 +84,7 @@ class StockListViewModel {
             
             
         }
-        self.currentMenuIndexCombine.send(0)
+        self.currentMenuIndexCombine.send(lastTimeMenuIndex)
         setupStockNameStringSet()
         generateMenu()
     }
@@ -277,6 +277,9 @@ class StockListViewModel {
     }
     func cancelTimer() {
         timer?.invalidate()
+    }
+    func setInitialMenuIndex(to index: Int) {
+        lastTimeMenuIndex = index
     }
 }
 

@@ -104,6 +104,8 @@ class StockViewController: UIViewController {
         viewModel.fetchRemoteData(to: combinedChartView)
 
         viewModel.fetchDB()
+        
+        navigationItem.largeTitleDisplayMode = .always
     }
     
    

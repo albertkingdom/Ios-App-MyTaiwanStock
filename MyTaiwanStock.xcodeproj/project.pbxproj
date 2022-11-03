@@ -33,6 +33,7 @@
 		A17C2A7B28D81303007508D0 /* Fee.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17C2A7A28D81303007508D0 /* Fee.swift */; };
 		A181943B28B87895009475E9 /* ValidInputService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A181943A28B87895009475E9 /* ValidInputService.swift */; };
 		A181945928B88209009475E9 /* ValidInputServiceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A181945828B88209009475E9 /* ValidInputServiceTest.swift */; };
+		A18A2AC4291229D700791FE0 /* SkeletonView in Frameworks */ = {isa = PBXBuildFile; productRef = A18A2AC3291229D700791FE0 /* SkeletonView */; };
 		A197396227154CEB009D5917 /* Kingfisher in Frameworks */ = {isa = PBXBuildFile; productRef = A197396127154CEB009D5917 /* Kingfisher */; };
 		A199DC3228BF1B70003FBC61 /* SettingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A199DC3128BF1B70003FBC61 /* SettingViewController.swift */; };
 		A199DC3428BF400D003FBC61 /* EditFeeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A199DC3328BF400D003FBC61 /* EditFeeViewController.swift */; };
@@ -218,6 +219,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A18A2AC4291229D700791FE0 /* SkeletonView in Frameworks */,
 				A197396227154CEB009D5917 /* Kingfisher in Frameworks */,
 				DFFEB04327E1D00700C85A53 /* FirebaseFirestore in Frameworks */,
 				DFFB338027F85A160018F3A4 /* Charts in Frameworks */,
@@ -460,6 +462,7 @@
 				A1CF660928BEFB88005F6189 /* MessageKit */,
 				A199DC3A28C79AB3003FBC61 /* GoogleSignIn */,
 				A199DC3C28C79AB3003FBC61 /* GoogleSignInSwift */,
+				A18A2AC3291229D700791FE0 /* SkeletonView */,
 			);
 			productName = MyTaiwanStock;
 			productReference = DF06F2F727097F2C0031D6FE /* MyTaiwanStock.app */;
@@ -518,6 +521,7 @@
 				DFFEB04627E1D3BC00C85A53 /* XCRemoteSwiftPackageReference "MessageKit" */,
 				DFFB337E27F85A160018F3A4 /* XCRemoteSwiftPackageReference "Charts" */,
 				A199DC3928C79AB3003FBC61 /* XCRemoteSwiftPackageReference "GoogleSignIn-iOS" */,
+				A18A2AC2291229D700791FE0 /* XCRemoteSwiftPackageReference "SkeletonView" */,
 			);
 			productRefGroup = DF06F2F827097F2C0031D6FE /* Products */;
 			projectDirPath = "";
@@ -1002,6 +1006,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		A18A2AC2291229D700791FE0 /* XCRemoteSwiftPackageReference "SkeletonView" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/Juanpe/SkeletonView";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 		A197396027154CEB009D5917 /* XCRemoteSwiftPackageReference "Kingfisher" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/onevcat/Kingfisher.git";
@@ -1045,6 +1057,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		A18A2AC3291229D700791FE0 /* SkeletonView */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A18A2AC2291229D700791FE0 /* XCRemoteSwiftPackageReference "SkeletonView" */;
+			productName = SkeletonView;
+		};
 		A197396127154CEB009D5917 /* Kingfisher */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = A197396027154CEB009D5917 /* XCRemoteSwiftPackageReference "Kingfisher" */;

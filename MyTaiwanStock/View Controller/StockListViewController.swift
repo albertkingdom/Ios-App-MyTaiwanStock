@@ -8,6 +8,7 @@ import WidgetKit
 import UIKit
 import CoreData
 import Combine
+import SkeletonView
 
 class StockListViewController: UIViewController {
     var subscription = Set<AnyCancellable>()
@@ -21,15 +22,6 @@ class StockListViewController: UIViewController {
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
 
-    @IBAction func goToAddStockNoVC(_ sender: Any) {
-
-        let addStockViewController = storyboard?.instantiateViewController(identifier: "addStockVC") as! AddStockNoViewController
-        addStockViewController.followingStockNoList = viewModel.stockNameStringSetCombine.value
-        addStockViewController.addNewStockToDB = saveNewStockNumberToDB(stockNumber:)
-
-        addStockViewController.listName = viewModel.menuTitleCombine
-        navigationController?.pushViewController(addStockViewController, animated: true)
-    }
     // button at center of navigation bar
     lazy var navCenterButton: UIButton = {
         guard let rightIcon = UIImage(systemName: "chevron.down") else { return UIButton() }
@@ -41,6 +33,22 @@ class StockListViewController: UIViewController {
         self.navigationItem.titleView = button
         button.showsMenuAsPrimaryAction = true //to show menu on tap button
         
+        return button
+    }()
+    let floatingButton: UIButton = {
+       let button = UIButton()
+        button.setImage(UIImage(systemName: "plus",
+                                withConfiguration: UIImage.SymbolConfiguration(pointSize: 20, weight: .medium)),
+                        for: .normal)
+        button.backgroundColor = .black
+        button.tintColor = .white
+        button.layer.cornerRadius = 25
+        button.layer.shadowColor = UIColor.label.cgColor
+        button.layer.shadowOpacity = 0.5
+        button.layer.shadowOffset = CGSize(width: 5, height: 5)
+        button.layer.shadowRadius = 10
+        button.setTitle(nil, for: .normal)
+        button.addTarget(self, action: #selector(goToAddStockNoVC), for: .touchUpInside)
         return button
     }()
     var currentMenuIndex: Int = 0
@@ -94,7 +102,15 @@ class StockListViewController: UIViewController {
         } else {
             viewModel.handleFetchListFromDB()
         }
-        
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.largeTitleDisplayMode = .never
+    }
+    override func viewDidLayoutSubviews() {
+        tableView.showAnimatedSkeleton()
+        view.addSubview(floatingButton)
+        floatingButton.frame = CGRect(x: view.frame.width - 80,
+                                      y: view.frame.height - 80 - view.safeAreaInsets.bottom,
+                                      width: 50, height: 50)
     }
     override func viewWillDisappear(_ animated: Bool) {
         viewModel.cancelTimer()
@@ -120,6 +136,9 @@ class StockListViewController: UIViewController {
                 print("cellViewmodels \(cellViewmodels)")
                 self?.cellDatas = cellViewmodels
                 self?.tableView.reloadData()
+                DispatchQueue.main.asyncAfter(deadline: .now()+1, execute: {
+                    self?.tableView.hideSkeleton()
+                })
             }
             .store(in: &subscription)
         
@@ -161,7 +180,15 @@ class StockListViewController: UIViewController {
 
     }
     
-    
+    @objc private func goToAddStockNoVC() {
+        print("tapFloatingButton")
+        let addStockViewController = storyboard?.instantiateViewController(identifier: "addStockVC") as! AddStockNoViewController
+        addStockViewController.followingStockNoList = viewModel.stockNameStringSetCombine.value
+        addStockViewController.addNewStockToDB = saveNewStockNumberToDB(stockNumber:)
+
+        addStockViewController.listName = viewModel.menuTitleCombine
+        navigationController?.pushViewController(addStockViewController, animated: true)
+    }
     func configureMenu(actionList: [UIAction]?) {
         guard var actionList = actionList else {
             return
@@ -195,13 +222,16 @@ class StockListViewController: UIViewController {
     func initView() {
         tableView.backgroundColor = .secondarySystemBackground
         tableView.separatorStyle = .none
-        
+        tableView.estimatedRowHeight = 50 // for skeleton view to calculate height
         navigationItem.titleView?.tintColor = .systemBlue
     }
     
 }
 
-extension StockListViewController: UITableViewDataSource, UITableViewDelegate {
+extension StockListViewController: SkeletonTableViewDataSource, UITableViewDelegate {
+    func collectionSkeletonView(_ skeletonView: UITableView, cellIdentifierForRowAt indexPath: IndexPath) -> ReusableCellIdentifier {
+       return "stockPriceInfoCell"
+    }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
 
         return cellDatas.count

@@ -19,7 +19,8 @@ class SettingViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         initView()
-        
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.largeTitleDisplayMode = .always
     }
     override func viewDidAppear(_ animated: Bool) {
         let feeInDollars = UserDefaults.standard.double(forKey: UserDefaults.userDefinedFeeInDollarsKey)
@@ -48,7 +49,7 @@ class SettingViewController: UITableViewController {
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch section {
-        case 0: return ""
+        case 0: return "帳號"
         case 1: return "手續費"
         default: return nil
         }

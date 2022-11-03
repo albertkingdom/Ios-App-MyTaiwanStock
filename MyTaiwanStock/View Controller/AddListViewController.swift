@@ -16,7 +16,23 @@ class AddListViewController: UIViewController {
     var viewModel: AddListViewModel!
     
     @IBOutlet weak var tableView: UITableView!
-    @IBOutlet weak var fabButton: UIButton!
+
+    let floatingButton: UIButton = {
+       let button = UIButton()
+        button.setImage(UIImage(systemName: "plus",
+                                withConfiguration: UIImage.SymbolConfiguration(pointSize: 20, weight: .medium)),
+                        for: .normal)
+        button.backgroundColor = .black
+        button.tintColor = .white
+        button.layer.cornerRadius = 25
+        button.layer.shadowColor = UIColor.label.cgColor
+        button.layer.shadowOpacity = 0.5
+        button.layer.shadowOffset = CGSize(width: 5, height: 5)
+        button.layer.shadowRadius = 10
+        button.setTitle(nil, for: .normal)
+        button.addTarget(self, action: #selector(tapFabButton), for: .touchUpInside)
+        return button
+    }()
 
     
     override func viewDidLoad() {
@@ -43,15 +59,14 @@ class AddListViewController: UIViewController {
     }
     
     func initView() {
-        //tableView.separatorStyle = .none
-
-        fabButton.backgroundColor = .systemBlue
-        fabButton.tintColor = .white
-        fabButton.layer.cornerRadius = 15
-        fabButton.clipsToBounds = true
-        fabButton.setTitle(nil, for: .normal)
-        fabButton.addTarget(self, action: #selector(tapFabButton), for: .touchUpInside)
-        
+        view.addSubview(floatingButton)
+        floatingButton.addTarget(self, action: #selector(tapFabButton), for: .touchUpInside)
+    }
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        floatingButton.frame = CGRect(x: view.frame.width - 80,
+                                      y: view.frame.height - 80 - view.safeAreaInsets.bottom,
+                                      width: 50, height: 50)
     }
 
     @objc func tapFabButton() {

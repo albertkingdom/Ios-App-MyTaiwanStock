@@ -820,23 +820,23 @@
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <prototypes>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="newsCell" id="rvN-rk-0s8" customClass="NewsListTableViewCell" customModule="MyTaiwanStock" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="44.666666030883789" width="414" height="268"/>
+                                        <rect key="frame" x="0.0" y="44.666666030883789" width="414" height="270.66665649414062"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="rvN-rk-0s8" id="rL8-z7-O53">
-                                            <rect key="frame" x="0.0" y="0.0" width="414" height="268"/>
+                                            <rect key="frame" x="0.0" y="0.0" width="414" height="270.66665649414062"/>
                                             <autoresizingMask key="autoresizingMask"/>
                                             <subviews>
                                                 <stackView opaque="NO" contentMode="scaleToFill" spacing="5" translatesAutoresizingMaskIntoConstraints="NO" id="Sa0-Pd-IT3">
-                                                    <rect key="frame" x="5" y="5" width="404" height="258"/>
+                                                    <rect key="frame" x="5" y="5" width="404" height="260.66666666666669"/>
                                                     <subviews>
                                                         <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" translatesAutoresizingMaskIntoConstraints="NO" id="iiA-RP-30k">
-                                                            <rect key="frame" x="0.0" y="0.0" width="80" height="258"/>
+                                                            <rect key="frame" x="0.0" y="0.0" width="80" height="260.66666666666669"/>
                                                             <constraints>
                                                                 <constraint firstAttribute="width" constant="80" id="Cry-KH-IEH"/>
                                                             </constraints>
                                                         </imageView>
                                                         <stackView opaque="NO" contentMode="scaleToFill" axis="vertical" translatesAutoresizingMaskIntoConstraints="NO" id="5nJ-BK-23T">
-                                                            <rect key="frame" x="85" y="0.0" width="319" height="258"/>
+                                                            <rect key="frame" x="85" y="0.0" width="319" height="260.66666666666669"/>
                                                             <subviews>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="News Title" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fh5-No-eWi">
                                                                     <rect key="frame" x="0.0" y="0.0" width="319" height="20.333333333333332"/>
@@ -845,13 +845,13 @@
                                                                     <nil key="highlightedColor"/>
                                                                 </label>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" text="detail" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="1Er-nv-s7J" userLabel="Detail">
-                                                                    <rect key="frame" x="0.0" y="20.333333333333329" width="319" height="223.33333333333337"/>
+                                                                    <rect key="frame" x="0.0" y="20.333333333333343" width="319" height="226"/>
                                                                     <fontDescription key="fontDescription" type="system" pointSize="13"/>
                                                                     <color key="textColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                                                     <nil key="highlightedColor"/>
                                                                 </label>
                                                                 <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="News date" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="7jc-nc-AXH">
-                                                                    <rect key="frame" x="0.0" y="243.66666666666666" width="319" height="14.333333333333343"/>
+                                                                    <rect key="frame" x="0.0" y="246.33333333333334" width="319" height="14.333333333333343"/>
                                                                     <fontDescription key="fontDescription" type="system" pointSize="12"/>
                                                                     <color key="textColor" systemColor="systemGray2Color"/>
                                                                     <nil key="highlightedColor"/>
@@ -885,7 +885,7 @@
                                         </connections>
                                     </tableViewCell>
                                     <tableViewCell clipsSubviews="YES" contentMode="scaleToFill" preservesSuperviewLayoutMargins="YES" selectionStyle="default" indentationWidth="10" reuseIdentifier="newsCell2" rowHeight="221" id="d9R-5u-8nb" customClass="NewsListTableViewCell2" customModule="MyTaiwanStock" customModuleProvider="target">
-                                        <rect key="frame" x="0.0" y="312.66666603088379" width="414" height="221"/>
+                                        <rect key="frame" x="0.0" y="315.33332252502441" width="414" height="221"/>
                                         <autoresizingMask key="autoresizingMask"/>
                                         <tableViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" preservesSuperviewLayoutMargins="YES" insetsLayoutMarginsFromSafeArea="NO" tableViewCell="d9R-5u-8nb" id="fcn-cx-sCy">
                                             <rect key="frame" x="0.0" y="0.0" width="414" height="221"/>
@@ -1594,11 +1594,6 @@
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1Ba-m6-nTe">
-                                <rect key="frame" x="167" y="675" width="80" height="31"/>
-                                <state key="normal" title="Button"/>
-                                <buttonConfiguration key="configuration" style="plain" title="Sign Out"/>
-                            </button>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="cyt-YM-8jY" customClass="GIDSignInButton">
                                 <rect key="frame" x="20" y="465" width="374" height="30"/>
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -1610,8 +1605,6 @@
                         <viewLayoutGuide key="safeArea" id="LA3-sX-6Z3"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="1Ba-m6-nTe" firstAttribute="bottom" secondItem="LA3-sX-6Z3" secondAttribute="bottom" constant="-30" id="IK6-HI-WNr"/>
-                            <constraint firstItem="1Ba-m6-nTe" firstAttribute="centerX" secondItem="fop-Md-3kF" secondAttribute="centerX" id="Ma0-Yj-Lna"/>
                             <constraint firstItem="GSN-rh-AeI" firstAttribute="centerX" secondItem="fop-Md-3kF" secondAttribute="centerX" id="QFG-uK-JXe"/>
                             <constraint firstItem="cyt-YM-8jY" firstAttribute="leading" secondItem="LA3-sX-6Z3" secondAttribute="leading" constant="20" id="Yea-gn-FIL"/>
                             <constraint firstItem="cyt-YM-8jY" firstAttribute="centerX" secondItem="fop-Md-3kF" secondAttribute="centerX" id="bkD-si-fCa"/>
@@ -1626,7 +1619,6 @@
                     <connections>
                         <outlet property="emailLabel" destination="uKv-jR-DHA" id="Kdi-77-LBX"/>
                         <outlet property="googleSignInButton" destination="cyt-YM-8jY" id="7bC-sH-gGd"/>
-                        <outlet property="signOutButton" destination="1Ba-m6-nTe" id="7G7-Yv-Nqy"/>
                         <outlet property="userImageView" destination="GSN-rh-AeI" id="N85-wk-GSU"/>
                     </connections>
                 </viewController>

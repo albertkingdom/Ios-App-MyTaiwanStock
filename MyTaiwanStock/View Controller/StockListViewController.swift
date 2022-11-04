@@ -84,8 +84,6 @@ class StockListViewController: UIViewController {
         
         setupSearchBarListener()
         
-        // re trigger timer
-        viewModel.repeatFetch(stockNos: viewModel.stockNoStringCombine.value)
         
         let isFirstTimeAfterSignIn = UserDefaults.standard.bool(forKey: UserDefaults.isFirstTimeAfterSignIn)
         let savedMenuIndex = getSavedListIndex()

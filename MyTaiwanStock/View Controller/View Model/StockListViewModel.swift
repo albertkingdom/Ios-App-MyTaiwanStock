@@ -104,7 +104,6 @@ class StockListViewModel {
                 guard let setOfStockNoObjects = list?.stockNo else { return }
                 let stockNoStringArray:[String] = setOfStockNoObjects.map { ele -> String in
                     guard let stockNo = (ele as? StockNo)?.stockNo else { return "" }
-                    //print(" \(stockNo)")
                     return stockNo
                 }
                 self?.stockNoStringCombine.send(stockNoStringArray)
@@ -114,16 +113,13 @@ class StockListViewModel {
     
         
         stockNoStringCombine
-            .removeDuplicates()
+            //.removeDuplicates()
             .sink(receiveValue: { [unowned self] stockNos in
-                //print("stockNos \(stockNos)")
                 if stockNos.isEmpty {
                     self.stockCellDatasCombine.send([])
-                    return
+                } else {
+                    repeatFetch(stockNos: stockNos)
                 }
-                
-               repeatFetch(stockNos: stockNos)
-                
             })
             .store(in: &subscription)
         

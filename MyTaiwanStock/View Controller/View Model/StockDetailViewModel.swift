@@ -11,13 +11,16 @@ import Charts
 
 class StockDetailViewModel {
     var context: NSManagedObjectContext?
-    var stockInfoForCandleStickChart = Observable<[[String]]>(nil)
+    var stockInfoForCandleStickChartCombine = CurrentValueSubject<[[String]], Never>([])
     var stockNo: String
     var currentStockPriceString: String
     var chartService: ChartService!
 
     var historyCombine = CurrentValueSubject<[HistoryCellViewModel],Never>([])
-
+    var totalAmountCombine = CurrentValueSubject<Int, Never>(0) //持股數
+    var avgBuyPriceCombine = CurrentValueSubject<String, Never>("") // 買入均價
+    var avgSellPriceCombine = CurrentValueSubject<String, Never>("") //賣出均價
+    var totalAssetCombine = CurrentValueSubject<String, Never>("") //市值
     @Published var coreDataObjectsCombine: [InvestHistory] = []
     @Published var highlightChartIndex: Int = -1
     var subscription = Set<AnyCancellable>()
@@ -31,7 +34,7 @@ class StockDetailViewModel {
   
         self.localDB = LocalDBService(context: context)
         
-        print("stock vm init")
+
     }
     
     func setupHistoryData() {
@@ -46,20 +49,20 @@ class StockDetailViewModel {
             .sink { [weak self] cellViewModels in
                 print("cellViewModels count \(cellViewModels.count)")
                 self?.historyCombine.send(cellViewModels)
+                self?.calTotalAmount(with: cellViewModels)
             }
             .store(in: &subscription)
     }
     
     func fetchRemoteData(to chart: CombinedChartView) {
         StockInfo.fetchTwoMonth(stockNo: stockNo) { data in
-            self.stockInfoForCandleStickChart.value = data
+            //self.stockInfoForCandleStickChart.value = data
+            self.stockInfoForCandleStickChartCombine.send(data)
+            
             DispatchQueue.main.async {
                 
-                if let data = self.stockInfoForCandleStickChart.value {
-
-                    self.chartService = ChartService(candleStickData: data, stockNo: self.stockNo)
-                    self.chartService.prepareForCombinedChart(combinedChartView: chart)
-                }
+                self.chartService = ChartService(candleStickData: data, stockNo: self.stockNo)
+                self.chartService.prepareForCombinedChart(combinedChartView: chart)
             }
         }
     }
@@ -90,10 +93,10 @@ class StockDetailViewModel {
             if var year = components.year, let month = components.month, let day = components.day {
                 // convert date to following format like:  111/03/18
                 year = year - 1911
-                let fullMonth = month > 9 ? "month" : "0\(month)"
+                let fullMonth = month > 9 ? "\(month)" : "0\(month)"
                 let targetDateString = "\(year)/\(fullMonth)/\(day)"
                 
-                stockInfoForCandleStickChart.value?.enumerated().forEach { index, candleData in
+                stockInfoForCandleStickChartCombine.value.enumerated().forEach { index, candleData in
                     // find the index of date in stockInfoForCandleStickChart
                     if candleData[0] == targetDateString {
                         
@@ -106,5 +109,50 @@ class StockDetailViewModel {
         }
         
     }
+    
+    func calTotalAmount(with historys: [HistoryCellViewModel]) {
+        let amount = historys.map {
+            guard let amountInt = Int($0.amountString) else { return 0 }
+            return amountInt
+        }.reduce(0) { partialResult, item in
+            partialResult+item
+        }
+        print("amount \(amount)")
+        totalAmountCombine.send(amount)
+        
+        let buyTotalValue = historys.filter {$0.status==0}.map { history -> Float in
+            guard let amountFloat = Float(history.amountString),
+                  let priceFloat = Float(history.priceString)
+            else { return Float(0) }
+            return amountFloat*priceFloat
+        }.reduce(0) {partialResult, item in
+            partialResult+item
+        }
+        let localAvgBuyPrice = buyTotalValue/Float(amount)
+        
+        let buyPriceString = String(format: "%.2f", localAvgBuyPrice)
+        avgBuyPriceCombine.send(buyPriceString)
+        let sellTotalValue = historys.filter {$0.status==1}.map { history -> Float in
+            guard let amountFloat = Float(history.amountString),
+                  let priceFloat = Float(history.priceString)
+            else { return Float(0) }
+            return amountFloat*priceFloat
+        }.reduce(0) {partialResult, item in
+            partialResult+item
+        }
+        let localAvgSellPrice = sellTotalValue/Float(amount)
+        let sellPriceString = String(format: "%.2f", localAvgSellPrice)
+
+        avgSellPriceCombine.send(sellPriceString)
+        
+        if let stockPriceFloat = Float(currentStockPriceString) {
+            let assetFloat = Float(amount)*stockPriceFloat
+            let assetString = String(format: "%.2f", assetFloat)
+
+            totalAssetCombine.send(assetString)
+        }
+        
+    }
+    
     
 }

@@ -1,14 +1,13 @@
 //
-//  HistoryTableViewCell.swift
+//  NewHistoryTableViewCell.swift
 //  MyTaiwanStock
 //
-//  Created by Albert Lin on 2021/10/6.
+//  Created by YKLin on 11/25/22.
 //
 
 import UIKit
 
-class HistoryTableViewCell: UITableViewCell {
-    var stockPrice: String!
+class NewHistoryTableViewCell: UITableViewCell {
     @IBOutlet weak var stackView: UIStackView!
     @IBOutlet weak var statusLabel: UILabel!
     @IBOutlet weak var dateLabel: UILabel!
@@ -16,24 +15,14 @@ class HistoryTableViewCell: UITableViewCell {
     @IBOutlet weak var amountLabel: UILabel!
     @IBOutlet weak var revenueLabel: UILabel!
     
+    static let identifier = "newHistoryCell"
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
-        stackView.layer.borderWidth = 1
-        stackView.layer.cornerRadius = 5
-        stackView.backgroundColor = .systemBackground
-    }
-    override func layoutSubviews() {
-        super.layoutSubviews()
-        contentView.frame = contentView.frame.inset(by: UIEdgeInsets(top: 10, left: 10, bottom: 10, right: 10))
-    }
-    override func setSelected(_ selected: Bool, animated: Bool) {
-        super.setSelected(selected, animated: animated)
-
-        // Configure the view for the selected state
     }
 
-    
+
     func configure(with viewModel: HistoryCellViewModel) {
         
         statusLabel.text = viewModel.status == 0 ? "買" : "賣" //??
@@ -50,5 +39,4 @@ class HistoryTableViewCell: UITableViewCell {
             revenueLabel.textColor = .label
         }
     }
-
 }

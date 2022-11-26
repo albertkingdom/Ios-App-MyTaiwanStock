@@ -12,6 +12,7 @@ struct StockCellViewModel {
     let stockShortName: String
     let stockPrice: String
     let stockPriceDiff: String
+    let time: String
     
     init(stock: OneDayStockInfoDetail) {
         self.stockNo = stock.stockNo
@@ -29,11 +30,13 @@ struct StockCellViewModel {
         stockPrice = price
 
         
-        if let currentPrice = Float(stock.current), let openPrice = Float(stock.open) {
-            let diff = currentPrice - openPrice
+        if let currentPrice = Float(stock.current), let yesterDayPrice = Float(stock.yesterDayPrice) {
+            let diff = currentPrice - yesterDayPrice
             stockPriceDiff = String(format: "%.2f", diff)
         } else {
             stockPriceDiff = "-"
         }
+        
+        self.time = stock.time
     }
 }

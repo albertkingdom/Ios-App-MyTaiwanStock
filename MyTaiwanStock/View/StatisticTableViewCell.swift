@@ -10,6 +10,7 @@ import UIKit
 class StatisticTableViewCell: UITableViewCell {
     @IBOutlet weak var container: UIStackView!
     @IBOutlet weak var stockNoLabel: UILabel!
+    @IBOutlet weak var stockAmountLabel: UILabel!
     @IBOutlet weak var assetLabel: UILabel!
     
     override func awakeFromNib() {
@@ -28,11 +29,12 @@ class StatisticTableViewCell: UITableViewCell {
     }
     func update(with statisticDetail:StockStatistic) {
         stockNoLabel.text = statisticDetail.stockNo
-//        assetLabel.text = String(format:"%.0f", statisticDetail.totalAssets)
+
         let formatter = NumberFormatter()
         formatter.locale = Locale(identifier: "zh_TW")
         formatter.maximumFractionDigits = 1
         formatter.numberStyle = .currencyISOCode
         assetLabel.text = formatter.string(from: NSNumber(value: statisticDetail.totalAssets))
+        stockAmountLabel.text = "\(statisticDetail.stockAmount)"
     }
 }

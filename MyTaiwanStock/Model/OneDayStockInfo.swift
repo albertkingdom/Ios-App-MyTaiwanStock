@@ -20,6 +20,7 @@ struct OneDayStockInfoDetail: Codable {
     var current: String //當盤成交價
     var shortName: String //公司簡稱
     var yesterDayPrice: String //昨日收盤
+    var time: String //報價時間
     
     enum CodingKeys: String, CodingKey {
         case stockNo = "c"
@@ -30,6 +31,7 @@ struct OneDayStockInfoDetail: Codable {
         case current = "z"
         case shortName = "n"
         case yesterDayPrice = "y"
+        case time = "t"
     }
 }
 

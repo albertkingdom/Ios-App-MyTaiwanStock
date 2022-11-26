@@ -162,47 +162,7 @@ class ChartService {
         
     }
     
-    
-    func calculateStockNoToAsset() -> [StockStatistic]? {
-        guard let historyList = historyList else {
-            return nil
-        }
-        guard let stockPriceList = stockPriceList else {
-            return nil
-        }
 
-        
-        var stockNoToAmountList = [String: Int]()
-        var stockNoToPriceList = [String: Double]()
-        
-        
-        let _ = historyList.map { history in
-            //print("history...\(history)")
-            if stockNoToAmountList[history.stockNo!] == nil {
-                stockNoToAmountList[history.stockNo!] = Int(history.amount) * (history.status == 0 ? 1 : -1)
-            } else {
-                stockNoToAmountList[history.stockNo!]! += Int(history.amount) * (history.status == 0 ? 1 : -1)
-            }
-        }
-        //print("stockNoToAmountList...\(stockNoToAmountList)")
-
-        let _ = stockPriceList.map { stock in
-            stockNoToPriceList[stock.stockNo] = stock.current != "-" ? Double(stock.current) : Double(stock.yesterDayPrice)
-        }
-        //print("stockNoToPriceList...\(stockNoToPriceList)")
-        
-        let stockNoToAsset = stockNoToAmountList.map({ (key: String, value: Int) -> StockStatistic in
-            
-            return StockStatistic(stockNo: key, totalAssets: Double(value) * (stockNoToPriceList[key] ?? 0))
-            
-        })
-        //print("chartsevice stockNoToAsset..\(stockNoToAsset)")
-        pieChartData = stockNoToAsset
-        let filteredNonzeroTotalAsset = stockNoToAsset.filter {
-            $0.totalAssets > 0
-        }
-        return filteredNonzeroTotalAsset
-    }
     
     func calculateStockNoToAsset2() -> [StockStatistic]? {
         guard let historyList = historyList else {
@@ -239,7 +199,9 @@ class ChartService {
         
         let stockNoToAsset = stockNoToAmountList.map({ (key: String, value: Int) -> StockStatistic in
             
-            return StockStatistic(stockNo: key, totalAssets: Double(value) * (stockNoToPriceList[key] ?? 0))
+            return StockStatistic(stockNo: key,
+                                  stockAmount: value,
+                                  totalAssets: Double(value) * (stockNoToPriceList[key] ?? 0))
             
         })
         //print("chartsevice stockNoToAsset..\(stockNoToAsset)")

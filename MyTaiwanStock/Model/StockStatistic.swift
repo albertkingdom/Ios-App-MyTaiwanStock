@@ -9,5 +9,6 @@ import Foundation
 
 struct StockStatistic {
     let stockNo: String
+    let stockAmount: Int
     let totalAssets: Double
 }

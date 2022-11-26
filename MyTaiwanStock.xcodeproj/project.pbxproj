@@ -46,6 +46,8 @@
 		A199DC4828C88924003FBC61 /* HistoryOnline.swift in Sources */ = {isa = PBXBuildFile; fileRef = A199DC4728C88923003FBC61 /* HistoryOnline.swift */; };
 		A1A1CE8B28407EEA00786864 /* FirebaseAnalyticsSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = A1A1CE8A28407EEA00786864 /* FirebaseAnalyticsSwift-Beta */; };
 		A1A1CE8D28407EEA00786864 /* FirebaseCrashlytics in Frameworks */ = {isa = PBXBuildFile; productRef = A1A1CE8C28407EEA00786864 /* FirebaseCrashlytics */; };
+		A1BB04D6293098F0002F983B /* NewHistoryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1BB04D4293098F0002F983B /* NewHistoryTableViewCell.swift */; };
+		A1BB04D7293098F0002F983B /* NewHistoryTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A1BB04D5293098F0002F983B /* NewHistoryTableViewCell.xib */; };
 		A1C03DD428F1452D007098D2 /* LocalDBService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C03DD328F1452D007098D2 /* LocalDBService.swift */; };
 		A1C2E5E728B71F55009D8D9B /* ViewController+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C2E5E628B71F55009D8D9B /* ViewController+extension.swift */; };
 		A1C9DAE02834F9DA00ADDEDB /* UIButton+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C9DADF2834F9DA00ADDEDB /* UIButton+Extension.swift */; };
@@ -62,7 +64,6 @@
 		DF06F31C270AA43A0031D6FE /* StockViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F31B270AA43A0031D6FE /* StockViewController.swift */; };
 		DF06F324270B1A4F0031D6FE /* MyStockList.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F323270B1A4F0031D6FE /* MyStockList.swift */; };
 		DF06F326270D50000031D6FE /* History.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F325270D50000031D6FE /* History.swift */; };
-		DF06F328270D61AC0031D6FE /* HistoryTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F327270D61AC0031D6FE /* HistoryTableViewCell.swift */; };
 		DF06F32A270DEA1A0031D6FE /* AddHistoryViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F329270DEA1A0031D6FE /* AddHistoryViewController.swift */; };
 		DF14417C2785A5630038D05D /* StatisticViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF14417B2785A5630038D05D /* StatisticViewController.swift */; };
 		DF14417E27868B240038D05D /* StatisticTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF14417D27868B240038D05D /* StatisticTableViewCell.swift */; };
@@ -164,6 +165,8 @@
 		A199DC4328C843BD003FBC61 /* FavList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FavList.swift; sourceTree = "<group>"; };
 		A199DC4528C84C54003FBC61 /* OnlineDBService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnlineDBService.swift; sourceTree = "<group>"; };
 		A199DC4728C88923003FBC61 /* HistoryOnline.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryOnline.swift; sourceTree = "<group>"; };
+		A1BB04D4293098F0002F983B /* NewHistoryTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewHistoryTableViewCell.swift; sourceTree = "<group>"; };
+		A1BB04D5293098F0002F983B /* NewHistoryTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = NewHistoryTableViewCell.xib; sourceTree = "<group>"; };
 		A1C03DD328F1452D007098D2 /* LocalDBService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalDBService.swift; sourceTree = "<group>"; };
 		A1C2E5E628B71F55009D8D9B /* ViewController+extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController+extension.swift"; sourceTree = "<group>"; };
 		A1C9DADF2834F9DA00ADDEDB /* UIButton+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+Extension.swift"; sourceTree = "<group>"; };
@@ -181,7 +184,6 @@
 		DF06F31B270AA43A0031D6FE /* StockViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockViewController.swift; sourceTree = "<group>"; };
 		DF06F323270B1A4F0031D6FE /* MyStockList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MyStockList.swift; sourceTree = "<group>"; };
 		DF06F325270D50000031D6FE /* History.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = History.swift; sourceTree = "<group>"; };
-		DF06F327270D61AC0031D6FE /* HistoryTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryTableViewCell.swift; sourceTree = "<group>"; };
 		DF06F329270DEA1A0031D6FE /* AddHistoryViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddHistoryViewController.swift; sourceTree = "<group>"; };
 		DF14417B2785A5630038D05D /* StatisticViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticViewController.swift; sourceTree = "<group>"; };
 		DF14417D27868B240038D05D /* StatisticTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticTableViewCell.swift; sourceTree = "<group>"; };
@@ -366,7 +368,6 @@
 				DF06F316270A01220031D6FE /* StockTableViewCell.swift */,
 				A12705132830B36700ED92F2 /* StockCellViewModel.swift */,
 				A127052528321DB000ED92F2 /* HistoryCellViewModel.swift */,
-				DF06F327270D61AC0031D6FE /* HistoryTableViewCell.swift */,
 				A168E0A12714822D00C75064 /* NewsListTableViewCell.swift */,
 				A1202124288BB8DD00C8746A /* NewsListTableViewCell2.swift */,
 				A127052B2833604400ED92F2 /* NewsListCellViewModel.swift */,
@@ -374,6 +375,8 @@
 				DF793ADA27E03258007C9442 /* AddStockTableViewCell.swift */,
 				A127051928314D6900ED92F2 /* AddStockCellViewModel.swift */,
 				A1C2E5E628B71F55009D8D9B /* ViewController+extension.swift */,
+				A1BB04D4293098F0002F983B /* NewHistoryTableViewCell.swift */,
+				A1BB04D5293098F0002F983B /* NewHistoryTableViewCell.xib */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -550,6 +553,7 @@
 				DF06F30427097F2E0031D6FE /* Assets.xcassets in Resources */,
 				DF06F30227097F2C0031D6FE /* Main.storyboard in Resources */,
 				A12705182830F4AB00ED92F2 /* GoogleService-Info.plist in Resources */,
+				A1BB04D7293098F0002F983B /* NewHistoryTableViewCell.xib in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -621,8 +625,8 @@
 				DF06F31C270AA43A0031D6FE /* StockViewController.swift in Sources */,
 				DF06F324270B1A4F0031D6FE /* MyStockList.swift in Sources */,
 				A17C2A7928D80C99007508D0 /* FeeType.swift in Sources */,
-				DF06F328270D61AC0031D6FE /* HistoryTableViewCell.swift in Sources */,
 				DF06F2FB27097F2C0031D6FE /* AppDelegate.swift in Sources */,
+				A1BB04D6293098F0002F983B /* NewHistoryTableViewCell.swift in Sources */,
 				DF793AD727DF8C36007C9442 /* AddStockNoViewController.swift in Sources */,
 				DF06F3102709805E0031D6FE /* StockInfo.swift in Sources */,
 				DFFEB04C27E1D68C00C85A53 /* Sender.swift in Sources */,

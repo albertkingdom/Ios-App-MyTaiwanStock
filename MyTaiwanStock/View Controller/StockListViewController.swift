@@ -252,6 +252,8 @@ extension StockListViewController: SkeletonTableViewDataSource, UITableViewDeleg
         stockViewController.stockNo = cellViewModel.stockNo
         stockViewController.stockPrice = cellViewModel.stockPrice
         stockViewController.stockName = cellViewModel.stockShortName
+        stockViewController.stockPriceDiff = cellViewModel.stockPriceDiff
+        stockViewController.timeString = cellViewModel.time
         stockViewController.context = self.context // TODO:
 
 

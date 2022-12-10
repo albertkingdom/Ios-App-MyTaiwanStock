@@ -8,21 +8,27 @@
 import Foundation
 import FirebaseAuth
 import FirebaseFirestore
+import FirebaseFirestoreSwift
 import CoreData
+
 
 class OnlineDBService {
     //static let shared = OnlineDBService()
     private let followingList = "followingList"
     private let history = "history"
     private let db = Firestore.firestore()
-    var context: NSManagedObjectContext?
+    var context: NSManagedObjectContext = LocalDBService.shared.context
     
     init(context: NSManagedObjectContext?) {
-        self.context = context
+//        self.context = context
     }
-    init() {}
+    init() {
+//        let appDelegate = UIApplication.shared.delegate as! AppDelegate
+//        self.context = appDelegate.persistentContainer.viewContext
+    }
     func getLoginAccountEmail() -> String? {
         guard let email = Auth.auth().currentUser?.email else {return nil}
+        print("getLoginAccountEmail \(email)")
         return email
     }
     // upload new list
@@ -130,9 +136,10 @@ class OnlineDBService {
                 }
             }
     }
-    func uploadHistoryToOnlineDB(stockNo: String, price: Float, amount: Int, time: UInt64, status: Int) {
+    func uploadHistoryToOnlineDB(stockNo: String, price: Float, amount: Int, date: Date, status: Int) {
         guard let email = getLoginAccountEmail() else {return}
-        let newHistory = HistoryOnline(price: Double(price), amount: amount, stockNo: stockNo, time: time, email: email, status: status)
+        let timeInMillis = UInt64(date.timeIntervalSince1970*1000)
+        let newHistory = HistoryOnline(price: Double(price), amount: amount, stockNo: stockNo, time: timeInMillis, email: email, status: status)
         do {
             try db.collection(history).document().setData(from: newHistory)
         } catch let error {
@@ -172,7 +179,7 @@ class OnlineDBService {
                     for document in querySnapshot!.documents {
                         print("\(document.documentID) => \(document.data())")
                         do {
-                            let favList = try document.data(as: FavList.self)
+                            let favList: FavList = try document.data(as: FavList.self)
                             print("getAllListAndStocksFromOnlineDBAndSaveToLocal favList \(favList)")
                             // list name existed in local
                             if let localList = self.getLocalListByListNameOrNull(listName: favList.name),
@@ -227,7 +234,7 @@ class OnlineDBService {
     }
     
     func saveOnlineDataToLocalDB(listName: String, stockNoStrings: [String]?) {
-        guard let context = context else { return }
+        //guard let context = context else { return }
         let newList = List(context: context)
         newList.name = listName
         if let stockNoStrings = stockNoStrings {
@@ -247,7 +254,7 @@ class OnlineDBService {
         
     }
     func saveOnlineHistoryToLocalDB(history: HistoryOnline) {
-        guard let context = context else { return }
+        //guard let context = context else { return }
 
         let newInvestHistory = InvestHistory(context: context)
         newInvestHistory.stockNo = history.stockNo
@@ -269,7 +276,7 @@ class OnlineDBService {
         let fetchRequest: NSFetchRequest<List> = List.fetchRequest()
         var lists: [List] = []
         do {
-            guard let result = try context?.fetch(fetchRequest) else { return [List]() }
+            let result = try context.fetch(fetchRequest)
             //print("lists \(result)")
 
             lists = result
@@ -281,7 +288,7 @@ class OnlineDBService {
     
     func saveNewStockNumberToDB(stockNumber: String, list: List) {
         //print("saveNewStockNumberToDB...\(stockNumber)")
-        guard let context = self.context else { return }
+        //guard let context = self.context else { return }
 
         
         let newStockNo = StockNo(context: context)
@@ -293,5 +300,34 @@ class OnlineDBService {
             print("error, \(error.localizedDescription)")
         }
  
+    }
+    
+    func deleteHistoryFromOnlineDB(where historyObject: InvestHistory) {
+        guard let email = getLoginAccountEmail(),
+              let date = historyObject.date
+        else {return}
+       
+        let timeInMillis = UInt64(date.timeIntervalSince1970*1000)
+        
+        db.collection(history)
+            .whereField("email", isEqualTo: email)
+            .whereField("time", isEqualTo: timeInMillis)
+            .getDocuments() { (querySnapshot, err) in
+                if let err = err {
+                    print("Error getting documents: \(err)")
+                } else {
+
+                    for document in querySnapshot!.documents {
+                        print("\(document.documentID) => \(document.data())")
+
+                    }
+                    if let documents = querySnapshot?.documents,
+                       !documents.isEmpty {
+                        let documentID = documents[0].documentID
+                        let ref = self.db.collection(self.history).document(documentID)
+                        ref.delete()
+                    }
+                }
+            }
     }
 }

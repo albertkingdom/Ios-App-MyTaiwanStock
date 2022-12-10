@@ -178,7 +178,6 @@ class StockViewController: UIViewController {
         combinedChartView.delegate = self
 
         navigationItem.title = "\(stockName ?? "") \(stockNo ?? "")"
-        
        
         let newsButton = UIBarButtonItem(title: "News", style: .plain, target: self, action: #selector(navigateToNews))
         let addHistoryButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(navigateToAddRecord))
@@ -235,7 +234,8 @@ class StockViewController: UIViewController {
                                       combinedChartView.leadingAnchor.constraint(equalTo: header.leadingAnchor),
                                       combinedChartView.trailingAnchor.constraint(equalTo: header.trailingAnchor),
                                       combinedChartView.topAnchor.constraint(equalTo: priceContainerView.bottomAnchor),
-                                      combinedChartView.heightAnchor.constraint(equalToConstant: 300),
+//                                      combinedChartView.heightAnchor.constraint(equalToConstant: 300),
+                                      combinedChartView.heightAnchor.constraint(equalTo: header.heightAnchor, multiplier: 0.7),
                                       plotInfo.topAnchor.constraint(equalTo: combinedChartView.bottomAnchor),
                                       plotInfo.leadingAnchor.constraint(equalTo: header.leadingAnchor),
                                       plotInfo.trailingAnchor.constraint(equalTo: header.trailingAnchor),
@@ -243,7 +243,9 @@ class StockViewController: UIViewController {
                                       overviewInfo.topAnchor.constraint(equalTo: plotInfo.bottomAnchor),
                                       overviewInfo.bottomAnchor.constraint(equalTo: header.bottomAnchor),
                                       overviewInfo.leadingAnchor.constraint(equalTo: header.leadingAnchor),
-                                      overviewInfo.trailingAnchor.constraint(equalTo: header.trailingAnchor)
+                                      overviewInfo.trailingAnchor.constraint(equalTo: header.trailingAnchor),
+                                      overviewInfo.heightAnchor.constraint(lessThanOrEqualTo: header.heightAnchor, multiplier: 0.2),
+                                      
                                     ])
         containerTableView.tableHeaderView = header
     }

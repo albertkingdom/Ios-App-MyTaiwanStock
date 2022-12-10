@@ -24,16 +24,14 @@ class StockDetailViewModel {
     @Published var coreDataObjectsCombine: [InvestHistory] = []
     @Published var highlightChartIndex: Int = -1
     var subscription = Set<AnyCancellable>()
-    var localDB: LocalDBService!
+    
+    let repository = RepositoryImpl()
     
     init(stockNo: String, currentStockPrice: String, context: NSManagedObjectContext?) {
         self.stockNo = stockNo
         self.currentStockPriceString = currentStockPrice
-        self.context = context
+
         setupHistoryData()
-  
-        self.localDB = LocalDBService(context: context)
-        
 
     }
     
@@ -67,15 +65,13 @@ class StockDetailViewModel {
         }
     }
     func fetchDB(){
-       
-        coreDataObjectsCombine = localDB.fetchHistoryFromDB(with: stockNo)
+        coreDataObjectsCombine = repository.historyList(with: stockNo)
     }
     
     func deleteHistory(at index: Int) {
         let itemToDelete = coreDataObjectsCombine[index]
     
-        localDB.deleteHistoryInDB(historyObject: itemToDelete)
-        
+        repository.deleteHistory(historyObject: itemToDelete)
         coreDataObjectsCombine = coreDataObjectsCombine.filter({ object in
             object != itemToDelete
         })

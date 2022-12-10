@@ -10,7 +10,7 @@ import Foundation
 import Charts
 
 class StatisticViewModel {
-    var context: NSManagedObjectContext?
+
     var chartService: ChartService!
     var stockNoToAssetCombine = CurrentValueSubject<[StockStatistic],Never>([])
     
@@ -21,18 +21,17 @@ class StatisticViewModel {
 
         fetchRequest.sortDescriptors = [sortDescriptor]
 
-        let frc = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: context!, sectionNameKeyPath: nil, cacheName: nil)
+        let frc = NSFetchedResultsController(fetchRequest: fetchRequest, managedObjectContext: LocalDBService.shared.context, sectionNameKeyPath: nil, cacheName: nil)
        
         
         return frc
     }()
     var isLoading = PassthroughSubject<Bool, Never>()
-    var localDB: LocalDBService!
+    let repository = RepositoryImpl()
     
     init(context: NSManagedObjectContext?) {
-        self.context = context
-        self.localDB = LocalDBService(context: context)
     }
+    init() {}
     
     func fetchData(to chart: PieChartView) {
         do {
@@ -45,7 +44,7 @@ class StatisticViewModel {
             let stockNos = historyList.map({$0.stockNo ?? ""})
             print("stockNOs \(stockNos)")
             
-            let stockNoObjects = localDB.fetchStockPriceFromDB(with: stockNos)
+            let stockNoObjects = repository.fetchStockPriceFromDB(with: stockNos)
             print("stockNoObjects \(stockNoObjects)")
             
             self.chartService = ChartService(historyList: historyList, stockNoObjects: stockNoObjects)

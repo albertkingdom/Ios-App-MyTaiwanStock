@@ -12,7 +12,6 @@ import Charts
 class AddListViewController: UIViewController {
     var subscription = Set<AnyCancellable>()
 
-    let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
     var viewModel: AddListViewModel!
     
     @IBOutlet weak var tableView: UITableView!
@@ -41,7 +40,7 @@ class AddListViewController: UIViewController {
         tableView.delegate = self
         navigationItem.title = "編輯收藏清單"
         navigationItem.rightBarButtonItem = editButtonItem
-        viewModel = AddListViewModel(context: context)
+        viewModel = AddListViewModel()
         
         bindViewModel()
         
@@ -79,8 +78,7 @@ class AddListViewController: UIViewController {
             // save to core data
             guard let newListName = alertVC.textFields?[0].text else {return}
             
-            self?.viewModel.saveNewListToDB(listName: newListName)
-            self?.viewModel.uploadListToOnlineDB(listName: newListName)
+            self?.viewModel.saveNewList(listName: newListName)
         }
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in
             // cancel

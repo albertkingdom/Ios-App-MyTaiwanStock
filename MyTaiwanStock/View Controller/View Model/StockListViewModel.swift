@@ -10,8 +10,7 @@ import UIKit
 import Combine
 
 class StockListViewModel {
-    var context: NSManagedObjectContext?
-    var localDB: LocalDBService!
+
     private var timer: Timer?
     private var lastTimeMenuIndex = 0
     var stockNoStringCombine = CurrentValueSubject<[String], Never>([])
@@ -38,13 +37,11 @@ class StockListViewModel {
     @Published var filteredStockCellDatasCombine: [StockCellViewModel] = []
     
     var dataForWidget = PassthroughSubject<Data, Never>()
-    
-    
+        
     var searchText = CurrentValueSubject<String, Never>("")
     
     private var subscription = Set<AnyCancellable>()
-    
-    var onlineDBService: OnlineDBService?
+
     
     @Published var isLoading = false {
         didSet {
@@ -52,28 +49,24 @@ class StockListViewModel {
         }
     }
     
+    let repository = RepositoryImpl()
+    
     init() {
         setupFetchStockInfo()
-    }
-    init(context: NSManagedObjectContext){
-        setupFetchStockInfo()
-        self.context = context
-        onlineDBService = OnlineDBService(context: context)
     }
     
     
     func handleFetchListFromDB() -> Void {
-        let listObjectFromDB = localDB.fetchAllListFromDB()
 
+        let listObjectFromDB = repository.stockList()
         if listObjectFromDB.isEmpty {
             // if no existing following list in db, create a default one
-            guard let newList = localDB.saveNewListToDB(listName: "預設清單1") else { return }
 
+            let newList = repository.saveList(with:"預設清單1")
             self.followingListSelectionMenuCombine.send([newList.name!])
             self.followingListObjectFromDB.append(newList)
-            
-            
         }
+        
         if !listObjectFromDB.isEmpty {
 
             let lists = listObjectFromDB.map({ list in
@@ -81,8 +74,6 @@ class StockListViewModel {
             })
             self.followingListSelectionMenuCombine.send(lists)
             self.followingListObjectFromDB = listObjectFromDB
-            
-            
         }
         self.currentMenuIndexCombine.send(lastTimeMenuIndex)
         setupStockNameStringSet()
@@ -179,8 +170,7 @@ class StockListViewModel {
         })
     }
     private func fetchStockInfo(stockNos: [String]) {
-        OneDayStockInfo.fetchOneDayStockInfoCombine(stockList: stockNos)
-        
+        repository.fetchOneDayStockInfoCombine(stockList: stockNos)
             .sink { completion in
                 switch completion {
                 case .failure(let error):
@@ -198,7 +188,7 @@ class StockListViewModel {
                     StockCellViewModel(stock: item)
                 }
                 self?.stockCellDatasCombine.send(cellVMs)
-                self?.localDB.updateStockNoInDBwithPrice(stockNos: stockNos, cellViewModels: cellVMs)
+                self?.repository.updateStockNoInDBwithPrice(stockNos: stockNos, cellViewModels: cellVMs)
             }
             .store(in: &self.subscription)
     }
@@ -218,10 +208,6 @@ class StockListViewModel {
         stockNameStringSetCombine.send(Set(stockNoStringArray))
     }
  
-    func saveNewStockNumberToDB(stockNumber: String){
-        if stockNameStringSetCombine.value.firstIndex(of: stockNumber) != nil { return }
-        localDB.saveNewStockNumberToDB(stockNumber: stockNumber, currentFollowingList: currentFollowingListCombine.value!)
-    }
     
     func deleteStockNumber(at index: Int) {
         let itemToDelete = stockCellDatasCombine.value[index]
@@ -234,11 +220,12 @@ class StockListViewModel {
         })
         let stockNoObjectToDel = stockNoObjectArray[index]
         
-        localDB.deleteStockNumberInDB(stockNoObject: stockNoObjectToDel)
+
         // delete stockNo from online DB
         print("delete stockNo string \(itemToDelete.stockNo)")
-        deleteStockNoFromOnlineDB(stockNo: itemToDelete.stockNo)
-        
+
+        repository.deleteStockNumber(stockNoObject: stockNoObjectToDel, listName: menuTitleCombine, stockNumber: itemToDelete.stockNo
+        )
         
         onedayStockInfo = onedayStockInfo.filter({
             $0.stockNo != itemToDelete.stockNo
@@ -259,17 +246,16 @@ class StockListViewModel {
     }
 
     
+    
+    func saveNewStockNo(stockNumber: String) {
+        if stockNameStringSetCombine.value.firstIndex(of: stockNumber) != nil { return }
+        repository.saveStockNumber(with: stockNumber, currentFollowingList: currentFollowingListCombine.value!)
+    }
+    
     //MARK: online DB
-    func uploadNewStockNoToOnlineDB(stockNumber: String) {
-        onlineDBService?.uploadNewStockNoToOnlineDB(stockNumber: stockNumber, listName: menuTitleCombine)
-    }
-    func deleteStockNoFromOnlineDB(stockNo: String) {
-        onlineDBService?.deleteStockNoFromOnlineDB(stockNo: stockNo, listName: menuTitleCombine)
-    }
     func getOnlineDBDataAndInsertLocal(completion: (() -> Void)?) {
-      
-        onlineDBService?.getAllListAndStocksFromOnlineDBAndSaveToLocal(completion: completion)
-        onlineDBService?.getAllHistoryFromOnlineDBAndSaveToLocal()
+        repository.getAllListAndStocksFromOnlineDBAndSaveToLocal(completion: completion)
+        repository.getAllHistoryFromOnlineDBAndSaveToLocal()
     }
     func cancelTimer() {
         timer?.invalidate()

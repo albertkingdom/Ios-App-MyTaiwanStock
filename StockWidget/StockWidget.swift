@@ -7,9 +7,11 @@
 
 import WidgetKit
 import SwiftUI
+import Firebase
 
 
 struct Provider: TimelineProvider {
+    let repository = RepositoryImpl()
     // fake data showed before real data
     func placeholder(in context: Context) -> SimpleEntry {
         SimpleEntry(date: Date(), stockList: [WidgetStockData(stockNo: "0050",
@@ -33,7 +35,7 @@ struct Provider: TimelineProvider {
         let currentDate = Date()
         let stockNos = retrieveStockNos()
         
-        OneDayStockInfo.fetchOneDayStockInfo(stockList: stockNos) { result in
+        repository.fetchOneDayStockInfo(stockList: stockNos) { result in
             switch result {
             case .success(let data):
                 //print("success \(data)")
@@ -188,7 +190,9 @@ struct StockWidgetEntryView : View {
 @main
 struct StockWidget: Widget {
     let kind: String = "StockWidget"
-
+    init() {
+        FirebaseApp.configure()
+    }
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
             StockWidgetEntryView(entry: entry)

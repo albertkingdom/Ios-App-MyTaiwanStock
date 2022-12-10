@@ -18,17 +18,13 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // This delegate does not imply the connecting scene or session are new (see `application:configurationForConnectingSceneSession` instead).
         guard let _ = (scene as? UIWindowScene) else { return }
         
-        guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else { return }
         
-//        let masterNavigationController = window?.rootViewController as! UINavigationController
-        let masterTabBarController = window?.rootViewController as! UITabBarController
-//        let controller = masterNavigationController.topViewController as! StockListViewController
-        let topNavController = masterTabBarController.viewControllers?.first as! UINavigationController
+        //let masterTabBarController = window?.rootViewController as! UITabBarController
+        //let topNavController = masterTabBarController.viewControllers?.first as! UINavigationController
         
-        let listController = topNavController.topViewController as! StockListViewController
-        let statisticController = masterTabBarController.viewControllers?[1] as! StatisticViewController
-        listController.context = appDelegate.persistentContainer.viewContext
-        statisticController.context = appDelegate.persistentContainer.viewContext
+        //let listController = topNavController.topViewController as! StockListViewController
+        //let statisticController = masterTabBarController.viewControllers?[1] as! StatisticViewController
+
     }
 
     func sceneDidDisconnect(_ scene: UIScene) {

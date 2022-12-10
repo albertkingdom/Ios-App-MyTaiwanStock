@@ -15,7 +15,6 @@ class StatisticViewController: UIViewController {
 
     @IBOutlet weak var pieChartView: PieChartView!
     @IBOutlet weak var tableView: UITableView!
-    var context: NSManagedObjectContext?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,8 +22,7 @@ class StatisticViewController: UIViewController {
         tableView.dataSource = self
         tableView.delegate = self
 
-        //viewModel.context = context
-        viewModel = StatisticViewModel(context: context)
+        viewModel = StatisticViewModel()
         bindViewModel()
         
         initView()

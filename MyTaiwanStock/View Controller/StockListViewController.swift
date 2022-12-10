@@ -57,9 +57,6 @@ class StockListViewController: UIViewController {
         super.viewDidLoad()
         print("list vc viewDidLoad")
         viewModel = StockListViewModel()
-        viewModel.context = self.context
-        viewModel.onlineDBService = OnlineDBService(context: context)
-        viewModel.localDB = LocalDBService(context: context)
         
         tableView.delegate = self
         tableView.dataSource = self
@@ -71,7 +68,6 @@ class StockListViewController: UIViewController {
         
         navigationItem.leftBarButtonItem = editButtonItem
 
-        //setupMenuButton()
         
         // pull refresh
         refreshControl = UIRefreshControl()
@@ -295,8 +291,7 @@ extension StockListViewController {
     
     
     func saveNewStockNumberToDB(stockNumber: String) {
-        viewModel.saveNewStockNumberToDB(stockNumber: stockNumber)
-        viewModel.uploadNewStockNoToOnlineDB(stockNumber: stockNumber)
+        viewModel.saveNewStockNo(stockNumber: stockNumber)
     }
     func deleteStockNumber(at index: Int) {
         viewModel.deleteStockNumber(at: index)

@@ -11,20 +11,24 @@ class AddHistoryViewModel {
     var context: NSManagedObjectContext?
     var buyOrSellStatus: Int! = 0
     var date: Date! = Date()
-    var localDB: LocalDBService!
+
     var onlineDBService: OnlineDBService?
+    let repository = RepositoryImpl()
+    
     init(context: NSManagedObjectContext?) {
         self.context = context
 
         self.onlineDBService = OnlineDBService(context: context)
-        localDB = LocalDBService(context: context)
-    }
-    func saveNewRecord(stockNo: String, price: Float, amount: Int, reason: String) {
 
-        localDB.saveNewRecord(stockNo: stockNo, price: price, amount: amount, reason: reason, buyOrSellStatus: buyOrSellStatus, date: date)
     }
-    func uploadHistoryToOnlineDB(stockNo: String, price: Float, amount: Int) {
-        let timeInMillis = UInt64(date.timeIntervalSince1970*1000)
-        onlineDBService?.uploadHistoryToOnlineDB(stockNo: stockNo, price: price, amount: amount, time: timeInMillis, status: buyOrSellStatus)
+
+    
+    func saveNewInvestRecord(stockNo: String, price: Float, amount: Int, reason: String) {
+        repository.saveNewRecord(stockNo: stockNo,
+                                 price: price,
+                                 amount: amount,
+                                 reason: reason,
+                                 buyOrSellStatus: buyOrSellStatus,
+                                 date: date)
     }
 }

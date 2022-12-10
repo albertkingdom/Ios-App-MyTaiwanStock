@@ -19,6 +19,7 @@ class AddHistoryViewController: UITableViewController {
     var userDefinedFee: Double = 0 // 從userdefault取使用者預設值
     var userDefinedDiscount: Int = 0 // 從userdefault取使用者預設折數
 
+    @IBOutlet weak var saveButton: UIBarButtonItem!
     @IBOutlet weak var stockNoLabel: UILabel!
     @IBOutlet weak var priceTextField: UITextField!
     @IBOutlet weak var amountTextField: UITextField!
@@ -46,7 +47,7 @@ class AddHistoryViewController: UITableViewController {
     
     @IBAction func saveNewRecord(_ sender: Any){
         dismissKeyboard()
-
+        
         do {
             
             let price = try validationService.validStockPriceInput(priceTextField.text)
@@ -63,14 +64,10 @@ class AddHistoryViewController: UITableViewController {
             default:break
             }
             
-            viewModel.saveNewRecord(
-                stockNo: stockNo,
-                price: price,
-                amount: amount,
-                reason: reason
-            )
-            viewModel.uploadHistoryToOnlineDB(stockNo: stockNo, price: price, amount: amount)
+
+            viewModel.saveNewInvestRecord(stockNo: stockNo, price: price, amount: amount, reason: reason)
             showToast(message: "成功新增一筆投資紀錄")
+            saveButton.isEnabled = false
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
                 self.navigationController?.popViewController(animated: true)
             }

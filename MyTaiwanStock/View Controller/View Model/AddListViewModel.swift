@@ -17,16 +17,12 @@ class AddListViewModel {
     var listNamesCombine = CurrentValueSubject<[String],Never>([])
 
     var coreDataItemsCombine = CurrentValueSubject<[List],Never>([])
-    var context: NSManagedObjectContext!
-    var localDB: LocalDBService!
-    var onlineDBService: OnlineDBService?
     
-    init(context: NSManagedObjectContext) {
+    let repository = RepositoryImpl()
+    
+    init() {
         
-        self.context = context
-        localDB = LocalDBService(context: context)
-        
-        let coreDataItems = localDB.fetchAllListFromDB()
+        let coreDataItems = repository.stockList()
         coreDataItemsCombine.send(coreDataItems)
         
         
@@ -38,54 +34,37 @@ class AddListViewModel {
             
         }
         .store(in: &subscription)
-        
-        onlineDBService = OnlineDBService()
-        
     }
    
     //
     func deleteList(at index:Int) {
         let deleteItem = self.coreDataItemsCombine.value[index]
-        let listNameToDelete = listNamesCombine.value[index]
-        deleteListFromDB(item: deleteItem)
+
         self.coreDataItemsCombine.value.remove(at: index)
-        // delete list from online
-        deleteListFromOnlineDB(listName: listNameToDelete)
+        
+        repository.deleteList(list: deleteItem)
     }
     //
     func updateListName(at index: Int, with newName: String) {
         let listToBeUpdate = self.coreDataItemsCombine.value[index]
         listToBeUpdate.name = newName
 
+        repository.localDBService.saveContext()
         
-        localDB.save()
-        let lists = localDB.fetchAllListFromDB()
+        let lists = repository.stockList()
+        coreDataItemsCombine.send(lists)
+    }
+    
+    func saveNewList(listName: String) {
+        let _ = repository.saveList(with: listName)
+        let lists = repository.stockList()
         coreDataItemsCombine.send(lists)
     }
 
-    func saveNewListToDB(listName: String) {
-        
-        localDB.saveNewListToDB(listName: listName)
-        
-        let lists = localDB.fetchAllListFromDB()
-        coreDataItemsCombine.send(lists)
-    }
-
-    func deleteListFromDB(item: List) {
-
-        localDB.deleteListFromDB(list: item)
-    }
 
     func getLoginAccountEmail() -> String? {
         guard let email = Auth.auth().currentUser?.email else {return nil}
         return email
     }
-    // upload new list
-    func uploadListToOnlineDB(listName: String) {
-        onlineDBService?.uploadListToOnlineDB(listName: listName)
-    }
-    
-    func deleteListFromOnlineDB(listName: String) {
-        onlineDBService?.deleteListFromOnlineDB(listName: listName)
-    }
+
 }

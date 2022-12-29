@@ -42,6 +42,15 @@
 		A14CBA0E2943882300DDA990 /* StockCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12705132830B36700ED92F2 /* StockCellViewModel.swift */; };
 		A14CBA10294389CB00DDA990 /* FirebaseFirestoreSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = A14CBA0F294389CB00DDA990 /* FirebaseFirestoreSwift-Beta */; };
 		A14CBA1229443D5200DDA990 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A12705172830F4AB00ED92F2 /* GoogleService-Info.plist */; };
+		A16321522954A5C50011F295 /* AddDividendViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A16321512954A5C50011F295 /* AddDividendViewController.swift */; };
+		A16321542954B05E0011F295 /* AddDividendViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A16321532954B05D0011F295 /* AddDividendViewModel.swift */; };
+		A16321672955A4BF0011F295 /* StatisticDividendTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A16321652955A4BF0011F295 /* StatisticDividendTableViewCell.swift */; };
+		A16321682955A4BF0011F295 /* StatisticDividendTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A16321662955A4BF0011F295 /* StatisticDividendTableViewCell.xib */; };
+		A163216B2955EF8F0011F295 /* StatisticStockTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A16321692955EF8F0011F295 /* StatisticStockTableViewCell.swift */; };
+		A163216C2955EF8F0011F295 /* StatisticStockTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A163216A2955EF8F0011F295 /* StatisticStockTableViewCell.xib */; };
+		A163216E2956A52F0011F295 /* DividendDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A163216D2956A52F0011F295 /* DividendDetailViewController.swift */; };
+		A16321712956A8CC0011F295 /* DividendDetailTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A163216F2956A8CC0011F295 /* DividendDetailTableViewCell.swift */; };
+		A16321722956A8CC0011F295 /* DividendDetailTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A16321702956A8CC0011F295 /* DividendDetailTableViewCell.xib */; };
 		A168E09E27146EF600C75064 /* NewsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A168E09D27146EF600C75064 /* NewsAPI.swift */; };
 		A168E0A027147C9800C75064 /* NewsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A168E09F27147C9800C75064 /* NewsListViewController.swift */; };
 		A168E0A22714822D00C75064 /* NewsListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A168E0A12714822D00C75064 /* NewsListTableViewCell.swift */; };
@@ -168,6 +177,15 @@
 		A128BB7E28524570007F7645 /* WidgetStockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetStockData.swift; sourceTree = "<group>"; };
 		A14CB9F62943259B00DDA990 /* Repository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repository.swift; sourceTree = "<group>"; };
 		A14CB9F829433ED600DDA990 /* RepositoryImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepositoryImpl.swift; sourceTree = "<group>"; };
+		A16321512954A5C50011F295 /* AddDividendViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDividendViewController.swift; sourceTree = "<group>"; };
+		A16321532954B05D0011F295 /* AddDividendViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDividendViewModel.swift; sourceTree = "<group>"; };
+		A16321652955A4BF0011F295 /* StatisticDividendTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticDividendTableViewCell.swift; sourceTree = "<group>"; };
+		A16321662955A4BF0011F295 /* StatisticDividendTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = StatisticDividendTableViewCell.xib; sourceTree = "<group>"; };
+		A16321692955EF8F0011F295 /* StatisticStockTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticStockTableViewCell.swift; sourceTree = "<group>"; };
+		A163216A2955EF8F0011F295 /* StatisticStockTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = StatisticStockTableViewCell.xib; sourceTree = "<group>"; };
+		A163216D2956A52F0011F295 /* DividendDetailViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DividendDetailViewController.swift; sourceTree = "<group>"; };
+		A163216F2956A8CC0011F295 /* DividendDetailTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DividendDetailTableViewCell.swift; sourceTree = "<group>"; };
+		A16321702956A8CC0011F295 /* DividendDetailTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DividendDetailTableViewCell.xib; sourceTree = "<group>"; };
 		A168E09D27146EF600C75064 /* NewsAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsAPI.swift; sourceTree = "<group>"; };
 		A168E09F27147C9800C75064 /* NewsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsListViewController.swift; sourceTree = "<group>"; };
 		A168E0A12714822D00C75064 /* NewsListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsListTableViewCell.swift; sourceTree = "<group>"; };
@@ -282,6 +300,7 @@
 				A1270523283212FE00ED92F2 /* StatisticViewModel.swift */,
 				A1270527283241D700ED92F2 /* ChatViewModel.swift */,
 				A127052928335E6C00ED92F2 /* NewsListViewModel.swift */,
+				A16321532954B05D0011F295 /* AddDividendViewModel.swift */,
 			);
 			path = "View Model";
 			sourceTree = "<group>";
@@ -392,6 +411,8 @@
 				A199DC3128BF1B70003FBC61 /* SettingViewController.swift */,
 				A199DC3328BF400D003FBC61 /* EditFeeViewController.swift */,
 				A199DC3E28C79CAE003FBC61 /* AccountViewController.swift */,
+				A16321512954A5C50011F295 /* AddDividendViewController.swift */,
+				A163216D2956A52F0011F295 /* DividendDetailViewController.swift */,
 			);
 			path = "View Controller";
 			sourceTree = "<group>";
@@ -411,6 +432,12 @@
 				A1C2E5E628B71F55009D8D9B /* ViewController+extension.swift */,
 				A1BB04D4293098F0002F983B /* NewHistoryTableViewCell.swift */,
 				A1BB04D5293098F0002F983B /* NewHistoryTableViewCell.xib */,
+				A16321652955A4BF0011F295 /* StatisticDividendTableViewCell.swift */,
+				A16321662955A4BF0011F295 /* StatisticDividendTableViewCell.xib */,
+				A16321692955EF8F0011F295 /* StatisticStockTableViewCell.swift */,
+				A163216A2955EF8F0011F295 /* StatisticStockTableViewCell.xib */,
+				A163216F2956A8CC0011F295 /* DividendDetailTableViewCell.swift */,
+				A16321702956A8CC0011F295 /* DividendDetailTableViewCell.xib */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -591,8 +618,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				DF06F30727097F2E0031D6FE /* LaunchScreen.storyboard in Resources */,
+				A16321682955A4BF0011F295 /* StatisticDividendTableViewCell.xib in Resources */,
 				DF06F30427097F2E0031D6FE /* Assets.xcassets in Resources */,
 				DF06F30227097F2C0031D6FE /* Main.storyboard in Resources */,
+				A163216C2955EF8F0011F295 /* StatisticStockTableViewCell.xib in Resources */,
+				A16321722956A8CC0011F295 /* DividendDetailTableViewCell.xib in Resources */,
 				A12705182830F4AB00ED92F2 /* GoogleService-Info.plist in Resources */,
 				A1BB04D7293098F0002F983B /* NewHistoryTableViewCell.xib in Resources */,
 			);
@@ -645,16 +675,20 @@
 			buildActionMask = 2147483647;
 			files = (
 				DFD239DD270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodeld in Sources */,
+				A16321542954B05E0011F295 /* AddDividendViewModel.swift in Sources */,
 				A127051C2831F98100ED92F2 /* AddStockNoViewModel.swift in Sources */,
 				A10CD2D028B9D1BB00B37AA4 /* CustomTabBarViewController.swift in Sources */,
+				A163216B2955EF8F0011F295 /* StatisticStockTableViewCell.swift in Sources */,
 				A168E0A22714822D00C75064 /* NewsListTableViewCell.swift in Sources */,
 				A181943B28B87895009475E9 /* ValidInputService.swift in Sources */,
+				A16321522954A5C50011F295 /* AddDividendViewController.swift in Sources */,
 				DF793ADB27E03258007C9442 /* AddStockTableViewCell.swift in Sources */,
 				DFFEB05027E1E37D00C85A53 /* Channel.swift in Sources */,
 				A14CB9F72943259C00DDA990 /* Repository.swift in Sources */,
 				DF06F326270D50000031D6FE /* History.swift in Sources */,
 				A199DC3F28C79CAE003FBC61 /* AccountViewController.swift in Sources */,
 				A199DC3828BFA048003FBC61 /* UserDefault+Extension.swift in Sources */,
+				A163216E2956A52F0011F295 /* DividendDetailViewController.swift in Sources */,
 				A1270524283212FE00ED92F2 /* StatisticViewModel.swift in Sources */,
 				DF06F2FF27097F2C0031D6FE /* StockListViewController.swift in Sources */,
 				DF715D722809140300DD92F4 /* AddListViewController.swift in Sources */,
@@ -671,12 +705,14 @@
 				A17C2A7928D80C99007508D0 /* FeeType.swift in Sources */,
 				DF06F2FB27097F2C0031D6FE /* AppDelegate.swift in Sources */,
 				A1BB04D6293098F0002F983B /* NewHistoryTableViewCell.swift in Sources */,
+				A16321672955A4BF0011F295 /* StatisticDividendTableViewCell.swift in Sources */,
 				DF793AD727DF8C36007C9442 /* AddStockNoViewController.swift in Sources */,
 				DF06F3102709805E0031D6FE /* StockInfo.swift in Sources */,
 				DFFEB04C27E1D68C00C85A53 /* Sender.swift in Sources */,
 				A1C9DAE02834F9DA00ADDEDB /* UIButton+Extension.swift in Sources */,
 				A1C03DD428F1452D007098D2 /* LocalDBService.swift in Sources */,
 				DF944EE92807DB04005157A9 /* ChartService.swift in Sources */,
+				A16321712956A8CC0011F295 /* DividendDetailTableViewCell.swift in Sources */,
 				DF06F2FD27097F2C0031D6FE /* SceneDelegate.swift in Sources */,
 				A12705162830BCE500ED92F2 /* Observable.swift in Sources */,
 				A1202125288BB8DD00C8746A /* NewsListTableViewCell2.swift in Sources */,

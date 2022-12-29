@@ -148,7 +148,19 @@ class RepositoryImpl: Repository {
     func fetchStockPriceFromDB(with stockNos: [String]) -> [StockNo] {
         return localDBService.fetchStockPriceFromDB(with: stockNos)
     }
-    
+
+    func fetchStockDividend() -> [StockDividend] {
+        return localDBService.fetchAllStockDividend()
+    }
+    func fetchStockDividend(with stockNo: String) -> [StockDividend] {
+        return localDBService.fetchAllStockDividend(with: stockNo)
+    }
+    func fetchCashDividend() -> [CashDividend] {
+        return localDBService.fetchAllCashDividend()
+    }
+    func fetchCashDividend(with stockNo: String) -> [CashDividend] {
+        return localDBService.fetchAllCashDividend(with: stockNo)
+    }
     func saveList(with listName: String) -> List {
         guard let list = localDBService.saveNewListToDB(listName: listName) else { fatalError("unable to create list in db") }
         let _ = onLineDBService.uploadListToOnlineDB(listName: listName)
@@ -167,6 +179,14 @@ class RepositoryImpl: Repository {
         localDBService.saveNewRecord(stockNo: stockNo, price: price, amount: amount, reason: reason, buyOrSellStatus: buyOrSellStatus, date: date)
         
         onLineDBService.uploadHistoryToOnlineDB(stockNo: stockNo, price: price, amount: amount, date: date, status: buyOrSellStatus)
+    }
+    
+    func saveStockDividend(stockNo: String, amount: Int, date: Date) {
+        localDBService.saveStockDividend(stockNo: stockNo, amount: amount, date: date)
+    }
+    
+    func saveCashDividend(stockNo: String, amount: Int, date: Date) {
+        localDBService.saveCashDividend(stockNo: stockNo, amount: amount, date: date)
     }
     
     func deleteStockNumber(stockNoObject: StockNo, listName: String, stockNumber: String) {

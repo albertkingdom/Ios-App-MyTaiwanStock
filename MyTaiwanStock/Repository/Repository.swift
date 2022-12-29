@@ -32,6 +32,16 @@ protocol Repository {
     // fetch saved stockPrice
     func fetchStockPriceFromDB(with stockNos: [String]) -> [StockNo]
     
+    // fetch saved stockDividend
+    func fetchStockDividend() -> [StockDividend]
+    
+    func fetchStockDividend(with stockNo: String) -> [StockDividend]
+    
+    // fetch saved cash Dividend
+    func fetchCashDividend() -> [CashDividend]
+    
+    func fetchCashDividend(with stockNo: String) -> [CashDividend]
+    
     // save new list
     func saveList(with listName: String) -> List
     
@@ -40,6 +50,12 @@ protocol Repository {
     
     // save new investing record
     func saveNewRecord(stockNo: String, price: Float, amount: Int, reason: String, buyOrSellStatus: Int, date: Date)
+    
+    // save 股票股利
+    func saveStockDividend(stockNo: String, amount: Int, date: Date)
+    
+    // save 現金股利
+    func saveCashDividend(stockNo: String, amount: Int, date: Date)
     
     // delete stock number
     func deleteStockNumber(stockNoObject: StockNo, listName: String, stockNumber: String)

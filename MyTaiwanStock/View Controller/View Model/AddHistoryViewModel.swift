@@ -19,9 +19,11 @@ class AddHistoryViewModel {
         self.context = context
 
         self.onlineDBService = OnlineDBService(context: context)
-
     }
-
+    
+    init() {
+        self.onlineDBService = OnlineDBService()
+    }
     
     func saveNewInvestRecord(stockNo: String, price: Float, amount: Int, reason: String) {
         repository.saveNewRecord(stockNo: stockNo,

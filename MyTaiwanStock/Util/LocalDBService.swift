@@ -79,6 +79,62 @@ class LocalDBService {
         return lists
     }
     
+    // MARK: fetch stock dividend
+    func fetchAllStockDividend() -> [StockDividend] {
+        
+        let fetchRequest: NSFetchRequest<StockDividend> = StockDividend.fetchRequest()
+        
+        var lists: [StockDividend] = []
+        do {
+            let result = try context.fetch(fetchRequest)
+            lists = result
+        } catch let error {
+            print(error.localizedDescription)
+        }
+        return lists
+    }
+    func fetchAllStockDividend(with stockNo: String) -> [StockDividend] {
+        
+        let fetchRequest: NSFetchRequest<StockDividend> = StockDividend.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "stockNo == %@", stockNo)
+        
+        var lists: [StockDividend] = []
+        do {
+            let result = try context.fetch(fetchRequest)
+            lists = result
+        } catch let error {
+            print(error.localizedDescription)
+        }
+        return lists
+    }
+    // MARK: fetch cash dividend
+    func fetchAllCashDividend() -> [CashDividend] {
+        
+        let fetchRequest: NSFetchRequest<CashDividend> = CashDividend.fetchRequest()
+        
+        var lists: [CashDividend] = []
+        do {
+            let result = try context.fetch(fetchRequest)
+            lists = result
+        } catch let error {
+            print(error.localizedDescription)
+        }
+        return lists
+    }
+    func fetchAllCashDividend(with stockNo: String) -> [CashDividend] {
+        
+        let fetchRequest: NSFetchRequest<CashDividend> = CashDividend.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "stockNo == %@", stockNo)
+        
+        var lists: [CashDividend] = []
+        do {
+            let result = try context.fetch(fetchRequest)
+            lists = result
+        } catch let error {
+            print(error.localizedDescription)
+        }
+        return lists
+    }
     // update currentPrice property of stockNo
     func updateStockNoInDBwithPrice(stockNos: [String], cellViewModels: [StockCellViewModel]) {
         
@@ -149,6 +205,25 @@ class LocalDBService {
         
         saveContext()
         
+    }
+    // MARK: Core Data - save new stock dividend record
+    func saveStockDividend(stockNo: String, amount: Int, date: Date) {
+        let new = StockDividend(context: context)
+        new.stockNo = stockNo
+        new.amount = Int16(amount)
+        new.date = date
+        
+        saveContext()
+    }
+    
+    // MARK: Core Data - save new cash dividend record
+    func saveCashDividend(stockNo: String, amount: Int, date: Date) {
+        let new = CashDividend(context: context)
+        new.stockNo = stockNo
+        new.amount = Int16(amount)
+        new.date = date
+        
+        saveContext()
     }
     
     // MARK: Core Data - delete

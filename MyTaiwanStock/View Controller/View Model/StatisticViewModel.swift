@@ -13,6 +13,8 @@ class StatisticViewModel {
 
     var chartService: ChartService!
     var stockNoToAssetCombine = CurrentValueSubject<[StockStatistic],Never>([])
+    var classifiedDividendCombine = CurrentValueSubject<[Dividend], Never>([])
+    var allDividendsCombine = CurrentValueSubject<[Dividend], Never>([])
     
     lazy var fetchedResultsController: NSFetchedResultsController<InvestHistory> = {
     
@@ -42,10 +44,8 @@ class StatisticViewModel {
                 return
             }
             let stockNos = historyList.map({$0.stockNo ?? ""})
-            print("stockNOs \(stockNos)")
             
             let stockNoObjects = repository.fetchStockPriceFromDB(with: stockNos)
-            print("stockNoObjects \(stockNoObjects)")
             
             self.chartService = ChartService(historyList: historyList, stockNoObjects: stockNoObjects)
             guard let stockNoToAsset = chartService.calculateStockNoToAsset2() else {
@@ -66,4 +66,63 @@ class StatisticViewModel {
         
         chartService.prepareForPieChart(pieChartView: chart)
     }
+    
+    func fetchDividend(with stockNo: String) {
+        let stockDividend = repository.fetchStockDividend(with: stockNo)
+        let cashDividend = repository.fetchCashDividend(with: stockNo)
+        
+        var all:[Dividend] = []
+        for s in stockDividend {
+            all.append(Dividend(stockNo: s.stockNo!, cash: 0, share: Int(s.amount), date: s.date))
+        }
+        for s in cashDividend {
+            all.append(Dividend(stockNo: s.stockNo!, cash: Int(s.amount), share: 0, date: s.date))
+        }
+        allDividendsCombine.send(all)
+    }
+    func fetchDividendAndClassify() {
+        let stockDividend = repository.fetchStockDividend()
+        let cashDividend = repository.fetchCashDividend()
+        var stockDividendMap:[String: Int] = [:]
+        var cashDividendMap:[String: Int] = [:]
+        var stockNos:[String] = []
+        var dividends:[Dividend] = []
+        
+
+        for s in stockDividend {
+            if let value = stockDividendMap[s.stockNo!] {
+                stockDividendMap[s.stockNo!] = value+Int(s.amount)
+            } else {
+                stockDividendMap[s.stockNo!] = Int(s.amount)
+            }
+            if !stockNos.contains(s.stockNo!) {
+                stockNos.append(s.stockNo!)
+            }
+        }
+        for s in cashDividend {
+            if let value = cashDividendMap[s.stockNo!] {
+                cashDividendMap[s.stockNo!] = value+Int(s.amount)
+            } else {
+                cashDividendMap[s.stockNo!] = Int(s.amount)
+            }
+            if !stockNos.contains(s.stockNo!) {
+                stockNos.append(s.stockNo!)
+            }
+        }
+        for stockNo in stockNos {
+            let cash = cashDividendMap.first(where: {$0.key==stockNo})?.value ?? 0
+            let share = stockDividendMap.first(where: {$0.key==stockNo})?.value ?? 0
+            let dividend = Dividend(stockNo: stockNo, cash: cash, share: share)
+            dividends.append(dividend)
+        }
+        
+        print(dividends)
+        self.classifiedDividendCombine.send(dividends)
+    }
+}
+struct Dividend {
+    let stockNo: String
+    let cash: Int
+    let share: Int
+    var date: Date? = nil
 }

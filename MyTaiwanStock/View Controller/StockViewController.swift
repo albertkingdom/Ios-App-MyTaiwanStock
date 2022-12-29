@@ -180,7 +180,7 @@ class StockViewController: UIViewController {
         navigationItem.title = "\(stockName ?? "") \(stockNo ?? "")"
        
         let newsButton = UIBarButtonItem(title: "News", style: .plain, target: self, action: #selector(navigateToNews))
-        let addHistoryButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(navigateToAddRecord))
+        let addHistoryButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(showAlertForDestination))
         let chatRoomButton = UIBarButtonItem(image: UIImage(systemName: "message"), style: .plain, target: self, action: #selector(navigateToChatRoom))
         navigationItem.rightBarButtonItems = [addHistoryButton, newsButton, chatRoomButton]
         
@@ -332,6 +332,26 @@ class StockViewController: UIViewController {
         destinationController.stockNo = self.stockNo
         destinationController.context = self.context
         navigationController?.pushViewController(destinationController, animated: true)
+    }
+    func navigateToDividendVC() {
+        let destinationController = storyboard?.instantiateViewController(withIdentifier: "dividendVC") as! AddDividendViewController
+        destinationController.stockNo = self.stockNo
+        navigationController?.pushViewController(destinationController, animated: true)
+    }
+    @objc func showAlertForDestination() {
+        let alertVC = UIAlertController()
+        let actionTrade = UIAlertAction(title: "買/賣", style: .default) { _ in
+            self.navigateToAddRecord()
+        }
+        let actionDividend = UIAlertAction(title: "股利", style: .default) { _ in
+            self.navigateToDividendVC()
+        }
+        let actionCancel = UIAlertAction(title: "取消", style: .cancel)
+        alertVC.addAction(actionTrade)
+        alertVC.addAction(actionDividend)
+        alertVC.addAction(actionCancel)
+        
+        present(alertVC, animated: false, completion: nil)
     }
     @objc func navigateToNews() {
         let destinationController = storyboard?.instantiateViewController(withIdentifier: "newsListVC") as! NewsListViewController

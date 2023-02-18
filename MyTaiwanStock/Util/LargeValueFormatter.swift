@@ -12,7 +12,7 @@ private let MAX_LENGTH = 5
 
 
 
-public class LargeValueFormatter: NSObject, IValueFormatter, IAxisValueFormatter {
+public class LargeValueFormatter: NSObject, ValueFormatter, AxisValueFormatter {
     
     /// Suffix to be appended after the values.
     ///

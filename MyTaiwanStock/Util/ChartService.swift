@@ -98,20 +98,20 @@ class ChartService {
         combinedChartView.drawOrder = [CombinedChartView.DrawOrder.bar.rawValue, CombinedChartView.DrawOrder.candle.rawValue]
         
         let rightYaxis = combinedChartView.rightAxis
-        rightYaxis.valueFormatter = LargeValueFormatter() as! IAxisValueFormatter
+        rightYaxis.valueFormatter = LargeValueFormatter()
         
         rightYaxis.spaceTop = 5 // space height from top of max value to total height
         rightYaxis.drawGridLinesEnabled = false
         
         let combinedData = CombinedChartData()
-        combinedData.highlightEnabled = true
+        combinedData.isHighlightEnabled = true
         
         guard let stockInfoForCandleStickChart = stockInfoForCandleStickChart, let stockNo = stockNo else {return}
         combinedData.candleData = self.generateCandleData(stockInfoForCandleStickChart: stockInfoForCandleStickChart, stockNo: stockNo)
         combinedData.barData = self.generateBarData(stockInfoForCandleStickChart: stockInfoForCandleStickChart)
         
-        combinedData.candleData.highlightEnabled = true
-        combinedData.barData.highlightEnabled = false
+        combinedData.candleData.isHighlightEnabled = true
+        combinedData.barData.isHighlightEnabled = false
         combinedChartView.data = combinedData
         combinedChartView.notifyDataSetChanged()
         

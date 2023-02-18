@@ -51,6 +51,7 @@
 		A163216E2956A52F0011F295 /* DividendDetailViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A163216D2956A52F0011F295 /* DividendDetailViewController.swift */; };
 		A16321712956A8CC0011F295 /* DividendDetailTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A163216F2956A8CC0011F295 /* DividendDetailTableViewCell.swift */; };
 		A16321722956A8CC0011F295 /* DividendDetailTableViewCell.xib in Resources */ = {isa = PBXBuildFile; fileRef = A16321702956A8CC0011F295 /* DividendDetailTableViewCell.xib */; };
+		A164DC9729A11A07001DDB15 /* Charts in Frameworks */ = {isa = PBXBuildFile; productRef = A164DC9629A11A07001DDB15 /* Charts */; };
 		A168E09E27146EF600C75064 /* NewsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A168E09D27146EF600C75064 /* NewsAPI.swift */; };
 		A168E0A027147C9800C75064 /* NewsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A168E09F27147C9800C75064 /* NewsListViewController.swift */; };
 		A168E0A22714822D00C75064 /* NewsListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A168E0A12714822D00C75064 /* NewsListTableViewCell.swift */; };
@@ -106,7 +107,6 @@
 		DFFB337327F858830018F3A4 /* StockWidget.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFFB337227F858830018F3A4 /* StockWidget.swift */; };
 		DFFB337527F858850018F3A4 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = DFFB337427F858850018F3A4 /* Assets.xcassets */; };
 		DFFB337927F858850018F3A4 /* StockWidgetExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = DFFB336C27F858830018F3A4 /* StockWidgetExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
-		DFFB338027F85A160018F3A4 /* Charts in Frameworks */ = {isa = PBXBuildFile; productRef = DFFB337F27F85A160018F3A4 /* Charts */; };
 		DFFEB04127E1D00700C85A53 /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = DFFEB04027E1D00700C85A53 /* FirebaseAuth */; };
 		DFFEB04327E1D00700C85A53 /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = DFFEB04227E1D00700C85A53 /* FirebaseFirestore */; };
 		DFFEB04527E1D00700C85A53 /* FirebaseFirestoreSwift-Beta in Frameworks */ = {isa = PBXBuildFile; productRef = DFFEB04427E1D00700C85A53 /* FirebaseFirestoreSwift-Beta */; };
@@ -261,9 +261,9 @@
 				A18A2AC4291229D700791FE0 /* SkeletonView in Frameworks */,
 				A197396227154CEB009D5917 /* Kingfisher in Frameworks */,
 				DFFEB04327E1D00700C85A53 /* FirebaseFirestore in Frameworks */,
-				DFFB338027F85A160018F3A4 /* Charts in Frameworks */,
 				DFFEB04527E1D00700C85A53 /* FirebaseFirestoreSwift-Beta in Frameworks */,
 				A1A1CE8B28407EEA00786864 /* FirebaseAnalyticsSwift-Beta in Frameworks */,
+				A164DC9729A11A07001DDB15 /* Charts in Frameworks */,
 				A199DC3D28C79AB3003FBC61 /* GoogleSignInSwift in Frameworks */,
 				A1A1CE8D28407EEA00786864 /* FirebaseCrashlytics in Frameworks */,
 				DFFEB04127E1D00700C85A53 /* FirebaseAuth in Frameworks */,
@@ -520,13 +520,13 @@
 				DFFEB04027E1D00700C85A53 /* FirebaseAuth */,
 				DFFEB04227E1D00700C85A53 /* FirebaseFirestore */,
 				DFFEB04427E1D00700C85A53 /* FirebaseFirestoreSwift-Beta */,
-				DFFB337F27F85A160018F3A4 /* Charts */,
 				A1A1CE8A28407EEA00786864 /* FirebaseAnalyticsSwift-Beta */,
 				A1A1CE8C28407EEA00786864 /* FirebaseCrashlytics */,
 				A1CF660928BEFB88005F6189 /* MessageKit */,
 				A199DC3A28C79AB3003FBC61 /* GoogleSignIn */,
 				A199DC3C28C79AB3003FBC61 /* GoogleSignInSwift */,
 				A18A2AC3291229D700791FE0 /* SkeletonView */,
+				A164DC9629A11A07001DDB15 /* Charts */,
 			);
 			productName = MyTaiwanStock;
 			productReference = DF06F2F727097F2C0031D6FE /* MyTaiwanStock.app */;
@@ -1128,7 +1128,7 @@
 			repositoryURL = "https://github.com/danielgindi/Charts";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 3.0.0;
+				minimumVersion = 4.0.0;
 			};
 		};
 		DFFEB03F27E1D00700C85A53 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
@@ -1175,6 +1175,11 @@
 			package = DFFEB03F27E1D00700C85A53 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
 			productName = "FirebaseFirestoreSwift-Beta";
 		};
+		A164DC9629A11A07001DDB15 /* Charts */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = DFFB337E27F85A160018F3A4 /* XCRemoteSwiftPackageReference "Charts" */;
+			productName = Charts;
+		};
 		A18A2AC3291229D700791FE0 /* SkeletonView */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = A18A2AC2291229D700791FE0 /* XCRemoteSwiftPackageReference "SkeletonView" */;
@@ -1209,11 +1214,6 @@
 			isa = XCSwiftPackageProductDependency;
 			package = DFFEB04627E1D3BC00C85A53 /* XCRemoteSwiftPackageReference "MessageKit" */;
 			productName = MessageKit;
-		};
-		DFFB337F27F85A160018F3A4 /* Charts */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = DFFB337E27F85A160018F3A4 /* XCRemoteSwiftPackageReference "Charts" */;
-			productName = Charts;
 		};
 		DFFEB04027E1D00700C85A53 /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;

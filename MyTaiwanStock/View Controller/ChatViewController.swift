@@ -35,9 +35,12 @@ class ChatViewController: MessagesViewController, MessagesDataSource, MessagesLa
         messagesCollectionView.messagesLayoutDelegate = self
         messagesCollectionView.messagesDisplayDelegate = self
         messageInputBar.delegate = self
+        messagesCollectionView.messageCellDelegate=self
         alignAvatarView()
         
         bindViewModel()
+        
+        self.navigationItem.largeTitleDisplayMode = .never
     }
 
     func bindViewModel() {
@@ -47,8 +50,8 @@ class ChatViewController: MessagesViewController, MessagesDataSource, MessagesLa
 //            self?.messagesCollectionView.scrollToLastItem()
 //        }
         
-        viewModel.$messagesCombine.sink { [weak self] _ in
-            //print("list \(list)")
+        viewModel.$messagesCombine.sink { [weak self] list in
+            print("list \(list)")
             self?.messagesCollectionView.reloadData()
             self?.messagesCollectionView.scrollToLastItem()
         }.store(in: &subscription)
@@ -117,5 +120,12 @@ extension ChatViewController: InputBarAccessoryViewDelegate {
         viewModel.save(message)
         inputBar.inputTextView.text = ""
     }
-    
+
 }
+
+extension ChatViewController: MessageCellDelegate {
+    func didTapBackground(in cell: MessageCollectionViewCell) {
+        self.messageInputBar.inputTextView.resignFirstResponder()
+    }
+}
+

@@ -71,9 +71,10 @@ class AccountViewController: UIViewController {
         
         // Create Google Sign In configuration object.
         let config = GIDConfiguration(clientID: clientID)
-        
+        GIDSignIn.sharedInstance.configuration = config
+
         // Start the sign in flow!
-        GIDSignIn.sharedInstance.signIn(with: config, presenting: (UIApplication.shared.windows.first?.rootViewController)!) { user, error in
+        GIDSignIn.sharedInstance.signIn(withPresenting: (UIApplication.shared.windows.first?.rootViewController)!) { authentication, error in
             
             if let error = error {
                 print(error.localizedDescription)
@@ -81,14 +82,14 @@ class AccountViewController: UIViewController {
             }
             
             guard
-                let authentication = user?.authentication,
-                let idToken = authentication.idToken
+                let user = authentication?.user,
+                let idToken = user.idToken?.tokenString
             else {
                 return
             }
             
             let credential = GoogleAuthProvider.credential(withIDToken: idToken,
-                                                           accessToken: authentication.accessToken)
+                                                           accessToken: user.accessToken.tokenString)
             
             self.firebaseSignIn(credential: credential)
         }

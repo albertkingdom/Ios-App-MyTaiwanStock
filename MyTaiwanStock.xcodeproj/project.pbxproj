@@ -80,6 +80,7 @@
 		A1F1682D2BDD512F0080F57E /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = A1F1682C2BDD512F0080F57E /* FirebaseAuth */; };
 		A1F1682F2BDD51E60080F57E /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = A1F1682E2BDD51E60080F57E /* FirebaseFirestoreSwift */; };
 		A1F168312BDD52550080F57E /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = A1F168302BDD52550080F57E /* FirebaseFirestoreSwift */; };
+		A1F168332BDE11400080F57E /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F168322BDE11400080F57E /* UIColor+Extension.swift */; };
 		DF06F2FB27097F2C0031D6FE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F2FA27097F2C0031D6FE /* AppDelegate.swift */; };
 		DF06F2FD27097F2C0031D6FE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F2FC27097F2C0031D6FE /* SceneDelegate.swift */; };
 		DF06F2FF27097F2C0031D6FE /* StockListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F2FE27097F2C0031D6FE /* StockListViewController.swift */; };
@@ -205,6 +206,7 @@
 		A1C03DD328F1452D007098D2 /* LocalDBService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalDBService.swift; sourceTree = "<group>"; };
 		A1C2E5E628B71F55009D8D9B /* ViewController+extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController+extension.swift"; sourceTree = "<group>"; };
 		A1C9DADF2834F9DA00ADDEDB /* UIButton+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+Extension.swift"; sourceTree = "<group>"; };
+		A1F168322BDE11400080F57E /* UIColor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
 		DF06F2F727097F2C0031D6FE /* MyTaiwanStock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyTaiwanStock.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DF06F2FA27097F2C0031D6FE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DF06F2FC27097F2C0031D6FE /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -449,6 +451,7 @@
 				A199DC3728BFA048003FBC61 /* UserDefault+Extension.swift */,
 				A199DC4528C84C54003FBC61 /* OnlineDBService.swift */,
 				A1C03DD328F1452D007098D2 /* LocalDBService.swift */,
+				A1F168322BDE11400080F57E /* UIColor+Extension.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -671,6 +674,7 @@
 				DFD239DD270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodeld in Sources */,
 				A16321542954B05E0011F295 /* AddDividendViewModel.swift in Sources */,
 				A127051C2831F98100ED92F2 /* AddStockNoViewModel.swift in Sources */,
+				A1F168332BDE11400080F57E /* UIColor+Extension.swift in Sources */,
 				A10CD2D028B9D1BB00B37AA4 /* CustomTabBarViewController.swift in Sources */,
 				A163216B2955EF8F0011F295 /* StatisticStockTableViewCell.swift in Sources */,
 				A168E0A22714822D00C75064 /* NewsListTableViewCell.swift in Sources */,

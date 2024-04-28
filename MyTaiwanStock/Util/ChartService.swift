@@ -55,6 +55,19 @@ class ChartService {
         return candleData
     }
     
+    private func calculateAverageEntries(candleEntries: [CandleChartDataEntry], windowSize: Int=5) -> [ChartDataEntry] {
+        var averageEntries = [ChartDataEntry]()
+
+        for i in (windowSize - 1)..<candleEntries.count {
+            let start = i - windowSize + 1
+            let end = i + 1
+            let sum = candleEntries[start..<end].reduce(0.0) { $0 + $1.close }
+            let average = sum / Double(windowSize)
+            averageEntries.append(ChartDataEntry(x: Double(Float(i)), y: Double(Float(average))))
+        }
+        
+        return averageEntries
+    }
     func generateBarData(stockInfoForCandleStickChart: [[String]]) -> BarChartData {
         let barEntries = stockInfoForCandleStickChart.enumerated().map({ (index, day) -> BarChartDataEntry in
             let formatter = NumberFormatter()
@@ -109,12 +122,38 @@ class ChartService {
         guard let stockInfoForCandleStickChart = stockInfoForCandleStickChart, let stockNo = stockNo else {return}
         combinedData.candleData = self.generateCandleData(stockInfoForCandleStickChart: stockInfoForCandleStickChart, stockNo: stockNo)
         combinedData.barData = self.generateBarData(stockInfoForCandleStickChart: stockInfoForCandleStickChart)
-        
+        let candleDatas: CandleChartData = self.generateCandleData(stockInfoForCandleStickChart: stockInfoForCandleStickChart, stockNo: stockNo)
+        if let candleData = combinedData.candleData {
+            if let dataSet = candleData.dataSets.first as? CandleChartDataSet {
+                // Get all candle entries
+                let candleEntries = dataSet.entries as! [CandleChartDataEntry]
+                let averageEntriesFiveDays = calculateAverageEntries(candleEntries: candleEntries)
+                let averageEntriesTenDays = calculateAverageEntries(candleEntries: candleEntries, windowSize: 10)
+                let averageDataSetFiveDays = LineChartDataSet(entries: averageEntriesFiveDays, label: "Average 5")
+                let averageDataSetTenDays = LineChartDataSet(entries: averageEntriesTenDays, label: "Average 10")
+                averageDataSetFiveDays.colors=[UIColor(hex:"#ffcc00")]
+                averageDataSetFiveDays.lineWidth=0.5
+                averageDataSetFiveDays.drawValuesEnabled = false
+                averageDataSetFiveDays.drawCirclesEnabled = false
+                averageDataSetTenDays.colors=[UIColor(hex:"#e238ec")]
+                averageDataSetTenDays.lineWidth=0.5
+                averageDataSetTenDays.drawValuesEnabled = false
+                averageDataSetTenDays.drawCirclesEnabled = false
+
+                let lineData = LineChartData(dataSets:  [averageDataSetFiveDays, averageDataSetTenDays])
+                combinedData.lineData=lineData
+
+            }
+        }
+        // draw order
+        combinedChartView.drawOrder = [CombinedChartView.DrawOrder.bar.rawValue,
+                                       CombinedChartView.DrawOrder.candle.rawValue,
+                                       CombinedChartView.DrawOrder.line.rawValue]
+
         combinedData.candleData.isHighlightEnabled = true
         combinedData.barData.isHighlightEnabled = false
         combinedChartView.data = combinedData
         combinedChartView.notifyDataSetChanged()
-        
         
     }
     

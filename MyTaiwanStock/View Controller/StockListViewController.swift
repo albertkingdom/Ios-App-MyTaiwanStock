@@ -18,7 +18,7 @@ class StockListViewController: UIViewController {
     var viewModel: StockListViewModel!
     var cellDatas: [StockCellViewModel] = []
     var refreshControl: UIRefreshControl!
-
+    var showPercentage = false
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
 
@@ -75,6 +75,9 @@ class StockListViewController: UIViewController {
         refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
         initView()
         bindViewModel()
+        // Listening to label tap notification
+        NotificationCenter.default.addObserver(self, selector: #selector(togglePercentage), name: NSNotification.Name("labelTapped"), object: nil)
+
     }
     override func viewWillAppear(_ animated: Bool) {
         
@@ -233,11 +236,13 @@ extension StockListViewController: SkeletonTableViewDataSource, UITableViewDeleg
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "stockPriceInfoCell", for: indexPath) as! StockTableViewCell
-
+        cell.viewController = self
 
         let cellViewModel = cellDatas[indexPath.row]
-        cell.update(with: cellViewModel)
+        cell.update(with: cellViewModel, isPercentFormat: showPercentage)
         cell.selectionStyle = .none
+        
+       
         return cell
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
@@ -251,7 +256,7 @@ extension StockListViewController: SkeletonTableViewDataSource, UITableViewDeleg
         stockViewController.stockPriceDiff = cellViewModel.stockPriceDiff
         stockViewController.timeString = cellViewModel.time
         stockViewController.context = self.context // TODO:
-
+        
 
         navigationController?.pushViewController(stockViewController, animated: true)
 
@@ -283,7 +288,10 @@ extension StockListViewController: SkeletonTableViewDataSource, UITableViewDeleg
         tableView.setEditing(editing, animated: true)
     }
     
-    
+    @objc func togglePercentage() {
+          showPercentage.toggle()
+          tableView.reloadData()
+      }
 }
 
 extension StockListViewController {

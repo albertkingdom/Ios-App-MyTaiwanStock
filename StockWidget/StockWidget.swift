@@ -162,6 +162,7 @@ struct StockWidgetEntryView : View {
                 
         }
         .frame(maxHeight: .infinity)
+        .widgetBackground(Color.black)
         .padding([.top,.bottom], 0)
         .padding([.horizontal], 10)
         
@@ -186,6 +187,7 @@ struct StockWidgetEntryView : View {
         }
     }
 }
+
 
 @main
 struct StockWidget: Widget {

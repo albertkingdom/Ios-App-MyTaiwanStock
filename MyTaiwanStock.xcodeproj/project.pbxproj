@@ -74,6 +74,7 @@
 		A1C2E5E728B71F55009D8D9B /* ViewController+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C2E5E628B71F55009D8D9B /* ViewController+extension.swift */; };
 		A1C9DAE02834F9DA00ADDEDB /* UIButton+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C9DADF2834F9DA00ADDEDB /* UIButton+Extension.swift */; };
 		A1CF660A28BEFB88005F6189 /* MessageKit in Frameworks */ = {isa = PBXBuildFile; productRef = A1CF660928BEFB88005F6189 /* MessageKit */; };
+		A1E1724A2BED087200ED5916 /* View+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E172492BED087200ED5916 /* View+Extension.swift */; };
 		A1F168272BDD4FF30080F57E /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = A1F168262BDD4FF30080F57E /* FirebaseAuth */; };
 		A1F168292BDD4FF30080F57E /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = A1F168282BDD4FF30080F57E /* FirebaseFirestore */; };
 		A1F1682B2BDD51170080F57E /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = A1F1682A2BDD51170080F57E /* FirebaseFirestore */; };
@@ -206,6 +207,7 @@
 		A1C03DD328F1452D007098D2 /* LocalDBService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalDBService.swift; sourceTree = "<group>"; };
 		A1C2E5E628B71F55009D8D9B /* ViewController+extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController+extension.swift"; sourceTree = "<group>"; };
 		A1C9DADF2834F9DA00ADDEDB /* UIButton+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+Extension.swift"; sourceTree = "<group>"; };
+		A1E172492BED087200ED5916 /* View+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extension.swift"; sourceTree = "<group>"; };
 		A1F168322BDE11400080F57E /* UIColor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
 		DF06F2F727097F2C0031D6FE /* MyTaiwanStock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyTaiwanStock.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DF06F2FA27097F2C0031D6FE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -472,6 +474,7 @@
 				DFFB337427F858850018F3A4 /* Assets.xcassets */,
 				DFFB337627F858850018F3A4 /* Info.plist */,
 				A128BB7E28524570007F7645 /* WidgetStockData.swift */,
+				A1E172492BED087200ED5916 /* View+Extension.swift */,
 			);
 			path = StockWidget;
 			sourceTree = "<group>";
@@ -754,6 +757,7 @@
 				A14CBA0C2943800B00DDA990 /* RepositoryImpl.swift in Sources */,
 				A14CB9FE2943762F00DDA990 /* Repository.swift in Sources */,
 				A14CBA0529437DD700DDA990 /* HistoryOnline.swift in Sources */,
+				A1E1724A2BED087200ED5916 /* View+Extension.swift in Sources */,
 				DFFB337327F858830018F3A4 /* StockWidget.swift in Sources */,
 				A128BB7F28524570007F7645 /* WidgetStockData.swift in Sources */,
 			);

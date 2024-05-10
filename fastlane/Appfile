@@ -1,0 +1,9 @@
+app_identifier("com.a2006mike.MyTaiwanStock") # The bundle identifier of your app
+apple_id("a2006mike@yahoo.com.tw") # Your Apple Developer Portal username
+
+itc_team_id("124915306") # App Store Connect Team ID
+team_id("UZ2Z639589") # Developer Portal Team ID
+
+# For more information about the Appfile, see:
+#     https://docs.fastlane.tools/advanced/#appfile
+

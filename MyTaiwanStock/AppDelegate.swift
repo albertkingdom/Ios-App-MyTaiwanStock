@@ -7,18 +7,57 @@
 
 import UIKit
 import Firebase
+import FirebaseMessaging
 import GoogleSignIn
 
 @main
-class AppDelegate: UIResponder, UIApplicationDelegate {
+class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
 
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         FirebaseApp.configure()
+        registerForPushNotifications()
+        Messaging.messaging().delegate = self
         return true
     }
-
+    func registerForPushNotifications() {
+        UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) { granted, error in
+            print("Permission granted: \(granted)")
+            guard granted else { return }
+            self.getNotificationSettings()
+        }
+    }
+    func getNotificationSettings() {
+        UNUserNotificationCenter.current().getNotificationSettings { settings in
+            guard settings.authorizationStatus == .authorized else { return }
+            DispatchQueue.main.async {
+                UIApplication.shared.registerForRemoteNotifications()
+            }
+        }
+    }
+    // Firebase Messaging
+    func messaging(_ messaging: Messaging, didReceiveRegistrationToken fcmToken: String?) {
+        messaging.token { fcmToken, error in
+            guard let token=fcmToken else {return}
+            if let error=error{
+                print("fcm error: \(error)")
+            }
+            print("fcm token \(token)")
+        }
+    }
+    // Apple Messaging
+    func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
+        let tokenParts = deviceToken.map { data -> String in
+            return String(format: "%02.2hhx", data)
+        }
+        let token = tokenParts.joined()
+        print("Device Token: \(token)")
+    }
+    
+    func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
+        print("Failed to register: \(error)")
+    }
     // MARK: UISceneSession Lifecycle
 
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {

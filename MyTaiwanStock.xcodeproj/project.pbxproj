@@ -74,6 +74,7 @@
 		A1C2E5E728B71F55009D8D9B /* ViewController+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C2E5E628B71F55009D8D9B /* ViewController+extension.swift */; };
 		A1C9DAE02834F9DA00ADDEDB /* UIButton+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C9DADF2834F9DA00ADDEDB /* UIButton+Extension.swift */; };
 		A1CF660A28BEFB88005F6189 /* MessageKit in Frameworks */ = {isa = PBXBuildFile; productRef = A1CF660928BEFB88005F6189 /* MessageKit */; };
+		A1D635F72BEF5A9800375D79 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = A1D635F62BEF5A9800375D79 /* FirebaseMessaging */; };
 		A1E1724A2BED087200ED5916 /* View+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E172492BED087200ED5916 /* View+Extension.swift */; };
 		A1F168272BDD4FF30080F57E /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = A1F168262BDD4FF30080F57E /* FirebaseAuth */; };
 		A1F168292BDD4FF30080F57E /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = A1F168282BDD4FF30080F57E /* FirebaseFirestore */; };
@@ -263,6 +264,7 @@
 			files = (
 				A18A2AC4291229D700791FE0 /* SkeletonView in Frameworks */,
 				A197396227154CEB009D5917 /* Kingfisher in Frameworks */,
+				A1D635F72BEF5A9800375D79 /* FirebaseMessaging in Frameworks */,
 				A164DC9729A11A07001DDB15 /* Charts in Frameworks */,
 				A199DC3D28C79AB3003FBC61 /* GoogleSignInSwift in Frameworks */,
 				A1CF660A28BEFB88005F6189 /* MessageKit in Frameworks */,
@@ -529,6 +531,7 @@
 				A1F168262BDD4FF30080F57E /* FirebaseAuth */,
 				A1F168282BDD4FF30080F57E /* FirebaseFirestore */,
 				A1F1682E2BDD51E60080F57E /* FirebaseFirestoreSwift */,
+				A1D635F62BEF5A9800375D79 /* FirebaseMessaging */,
 			);
 			productName = MyTaiwanStock;
 			productReference = DF06F2F727097F2C0031D6FE /* MyTaiwanStock.app */;
@@ -1199,6 +1202,11 @@
 			isa = XCSwiftPackageProductDependency;
 			package = DFFEB04627E1D3BC00C85A53 /* XCRemoteSwiftPackageReference "MessageKit" */;
 			productName = MessageKit;
+		};
+		A1D635F62BEF5A9800375D79 /* FirebaseMessaging */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = A1F168252BDD4FF30080F57E /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseMessaging;
 		};
 		A1F168262BDD4FF30080F57E /* FirebaseAuth */ = {
 			isa = XCSwiftPackageProductDependency;

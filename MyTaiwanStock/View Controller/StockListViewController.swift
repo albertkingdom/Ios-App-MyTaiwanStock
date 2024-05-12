@@ -77,6 +77,11 @@ class StockListViewController: UIViewController {
         bindViewModel()
         // Listening to label tap notification
         NotificationCenter.default.addObserver(self, selector: #selector(togglePercentage), name: NSNotification.Name("labelTapped"), object: nil)
+        
+        // 點空白處隱藏鍵盤
+        let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        tapGesture.cancelsTouchesInView = false  // 這確保了點擊其他控件（如按鈕）時，不會干擾它們的事件
+        view.addGestureRecognizer(tapGesture)
 
     }
     override func viewWillAppear(_ animated: Bool) {
@@ -169,6 +174,8 @@ class StockListViewController: UIViewController {
         self.userDefault?.setValue(data, forKey: "stockList")
         WidgetCenter.shared.reloadAllTimelines()
     }
+    
+    
     @objc func refreshData(){
         self.refreshControl.endRefreshing()
     

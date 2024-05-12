@@ -59,11 +59,25 @@ class StockViewController: UIViewController {
     var plotLowPriceTitleLabel = UILabel()
     lazy var plotInfo:UIStackView = {
 
-        let stackline1 = UIStackView()
+        let stacklineContainer = UIStackView()
+        let stacklineL = UIStackView()
+        let stacklineR = UIStackView()
+        let stacklineTop = UIStackView()
+        let stacklineBtm = UIStackView()
+        stacklineContainer.axis = .horizontal
+        stacklineContainer.distribution = .fillProportionally
+        stacklineContainer.spacing = 10
+        stacklineContainer.addArrangedSubview(stacklineL)
+        stacklineContainer.addArrangedSubview(stacklineR)
 
-        stackline1.axis = .horizontal
-        stackline1.distribution = .fillProportionally
-
+        stacklineR.addArrangedSubview(stacklineTop)
+        stacklineR.addArrangedSubview(stacklineBtm)
+        stacklineL.axis = .horizontal
+        stacklineR.axis = .vertical
+        stacklineTop.axis = .horizontal
+        stacklineTop.distribution = .fillEqually
+        stacklineBtm.axis = .horizontal
+        stacklineBtm.distribution = .fillEqually
         plotDateTitleLabel.text = "日期："
         plotOpenPriceTitleLabel.text = "開盤："
         plotClosePriceTitleLabel.text = "收盤："
@@ -80,19 +94,18 @@ class StockViewController: UIViewController {
         plotHighPriceLabel.font = UIFont.systemFont(ofSize: 14)
         plotLowPriceLabel.font = UIFont.systemFont(ofSize: 14)
 
+        stacklineL.addArrangedSubview(plotDateTitleLabel)
+        stacklineL.addArrangedSubview(plotDateLabel)
+        stacklineTop.addArrangedSubview(plotOpenPriceTitleLabel)
+        stacklineTop.addArrangedSubview(plotOpenPriceLabel)
+        stacklineTop.addArrangedSubview(plotClosePriceTitleLabel)
+        stacklineTop.addArrangedSubview(plotClosePriceLabel)
+        stacklineBtm.addArrangedSubview(plotHighPriceTitleLabel)
+        stacklineBtm.addArrangedSubview(plotHighPriceLabel)
+        stacklineBtm.addArrangedSubview(plotLowPriceTitleLabel)
+        stacklineBtm.addArrangedSubview(plotLowPriceLabel)
         
-        stackline1.addArrangedSubview(plotDateTitleLabel)
-        stackline1.addArrangedSubview(plotDateLabel)
-        stackline1.addArrangedSubview(plotOpenPriceTitleLabel)
-        stackline1.addArrangedSubview(plotOpenPriceLabel)
-        stackline1.addArrangedSubview(plotClosePriceTitleLabel)
-        stackline1.addArrangedSubview(plotClosePriceLabel)
-        stackline1.addArrangedSubview(plotHighPriceTitleLabel)
-        stackline1.addArrangedSubview(plotHighPriceLabel)
-        stackline1.addArrangedSubview(plotLowPriceTitleLabel)
-        stackline1.addArrangedSubview(plotLowPriceLabel)
-        
-        return stackline1
+        return stacklineContainer
     }()
  
 

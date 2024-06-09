@@ -25,7 +25,7 @@ class StockDetailViewModel {
     @Published var highlightChartIndex: Int = -1
     var subscription = Set<AnyCancellable>()
     
-    let repository = RepositoryImpl()
+    let repository = NetworkServiceImpl()
     
     init(stockNo: String, currentStockPrice: String, context: NSManagedObjectContext?) {
         self.stockNo = stockNo

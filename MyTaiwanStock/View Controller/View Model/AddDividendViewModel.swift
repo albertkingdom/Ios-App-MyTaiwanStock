@@ -8,7 +8,7 @@
 import Foundation
 
 class AddDividendViewModel {
-    let repository = RepositoryImpl()
+    let repository = NetworkServiceImpl()
     init() {
         
     }

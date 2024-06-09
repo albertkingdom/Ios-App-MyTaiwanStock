@@ -18,7 +18,7 @@ class AddListViewModel {
 
     var coreDataItemsCombine = CurrentValueSubject<[List],Never>([])
     
-    let repository = RepositoryImpl()
+    let repository = NetworkServiceImpl()
     
     init() {
         

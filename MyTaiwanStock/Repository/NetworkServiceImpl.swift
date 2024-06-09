@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-class RepositoryImpl: Repository {
+class NetworkServiceImpl: NetworkService {
 
 
     typealias StockData = OneDayStockInfo

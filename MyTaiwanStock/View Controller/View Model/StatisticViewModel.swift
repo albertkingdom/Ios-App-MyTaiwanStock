@@ -29,7 +29,7 @@ class StatisticViewModel {
         return frc
     }()
     var isLoading = PassthroughSubject<Bool, Never>()
-    let repository = RepositoryImpl()
+    let repository = NetworkServiceImpl()
     
     init(context: NSManagedObjectContext?) {
     }

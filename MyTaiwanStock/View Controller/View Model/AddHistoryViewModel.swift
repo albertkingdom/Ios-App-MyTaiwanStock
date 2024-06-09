@@ -13,7 +13,7 @@ class AddHistoryViewModel {
     var date: Date! = Date()
 
     var onlineDBService: OnlineDBService?
-    let repository = RepositoryImpl()
+    let repository = NetworkServiceImpl()
     
     init(context: NSManagedObjectContext?) {
         self.context = context

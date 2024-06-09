@@ -25,17 +25,17 @@
 		A127052C2833604400ED92F2 /* NewsListCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A127052B2833604400ED92F2 /* NewsListCellViewModel.swift */; };
 		A128BB7D285241E8007F7645 /* OneDayStockInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F3122709A3190031D6FE /* OneDayStockInfo.swift */; };
 		A128BB7F28524570007F7645 /* WidgetStockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A128BB7E28524570007F7645 /* WidgetStockData.swift */; };
-		A14CB9F72943259C00DDA990 /* Repository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A14CB9F62943259B00DDA990 /* Repository.swift */; };
-		A14CB9F929433ED600DDA990 /* RepositoryImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = A14CB9F829433ED600DDA990 /* RepositoryImpl.swift */; };
+		A14CB9F72943259C00DDA990 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A14CB9F62943259B00DDA990 /* NetworkService.swift */; };
+		A14CB9F929433ED600DDA990 /* NetworkServiceImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = A14CB9F829433ED600DDA990 /* NetworkServiceImpl.swift */; };
 		A14CB9FD2943761F00DDA990 /* StockInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F30F2709805E0031D6FE /* StockInfo.swift */; };
-		A14CB9FE2943762F00DDA990 /* Repository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A14CB9F62943259B00DDA990 /* Repository.swift */; };
+		A14CB9FE2943762F00DDA990 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A14CB9F62943259B00DDA990 /* NetworkService.swift */; };
 		A14CBA0329437DAA00DDA990 /* MyTaiwanStock.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DFD239DB270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodeld */; };
 		A14CBA0429437DB500DDA990 /* OnlineDBService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A199DC4528C84C54003FBC61 /* OnlineDBService.swift */; };
 		A14CBA0529437DD700DDA990 /* HistoryOnline.swift in Sources */ = {isa = PBXBuildFile; fileRef = A199DC4728C88923003FBC61 /* HistoryOnline.swift */; };
 		A14CBA0829437E5200DDA990 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = A14CBA0729437E5200DDA990 /* GoogleSignIn */; };
 		A14CBA0A29437E5200DDA990 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = A14CBA0929437E5200DDA990 /* GoogleSignInSwift */; };
 		A14CBA0B29437E8300DDA990 /* FavList.swift in Sources */ = {isa = PBXBuildFile; fileRef = A199DC4328C843BD003FBC61 /* FavList.swift */; };
-		A14CBA0C2943800B00DDA990 /* RepositoryImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = A14CB9F829433ED600DDA990 /* RepositoryImpl.swift */; };
+		A14CBA0C2943800B00DDA990 /* NetworkServiceImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = A14CB9F829433ED600DDA990 /* NetworkServiceImpl.swift */; };
 		A14CBA0D2943818D00DDA990 /* LocalDBService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C03DD328F1452D007098D2 /* LocalDBService.swift */; };
 		A14CBA0E2943882300DDA990 /* StockCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12705132830B36700ED92F2 /* StockCellViewModel.swift */; };
 		A14CBA1229443D5200DDA990 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A12705172830F4AB00ED92F2 /* GoogleService-Info.plist */; };
@@ -176,8 +176,8 @@
 		A127052928335E6C00ED92F2 /* NewsListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsListViewModel.swift; sourceTree = "<group>"; };
 		A127052B2833604400ED92F2 /* NewsListCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsListCellViewModel.swift; sourceTree = "<group>"; };
 		A128BB7E28524570007F7645 /* WidgetStockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetStockData.swift; sourceTree = "<group>"; };
-		A14CB9F62943259B00DDA990 /* Repository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repository.swift; sourceTree = "<group>"; };
-		A14CB9F829433ED600DDA990 /* RepositoryImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepositoryImpl.swift; sourceTree = "<group>"; };
+		A14CB9F62943259B00DDA990 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
+		A14CB9F829433ED600DDA990 /* NetworkServiceImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkServiceImpl.swift; sourceTree = "<group>"; };
 		A16321512954A5C50011F295 /* AddDividendViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDividendViewController.swift; sourceTree = "<group>"; };
 		A16321532954B05D0011F295 /* AddDividendViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDividendViewModel.swift; sourceTree = "<group>"; };
 		A16321652955A4BF0011F295 /* StatisticDividendTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticDividendTableViewCell.swift; sourceTree = "<group>"; };
@@ -311,8 +311,8 @@
 		A14CBA112944360600DDA990 /* Repository */ = {
 			isa = PBXGroup;
 			children = (
-				A14CB9F62943259B00DDA990 /* Repository.swift */,
-				A14CB9F829433ED600DDA990 /* RepositoryImpl.swift */,
+				A14CB9F62943259B00DDA990 /* NetworkService.swift */,
+				A14CB9F829433ED600DDA990 /* NetworkServiceImpl.swift */,
 			);
 			path = Repository;
 			sourceTree = "<group>";
@@ -690,7 +690,7 @@
 				A16321522954A5C50011F295 /* AddDividendViewController.swift in Sources */,
 				DF793ADB27E03258007C9442 /* AddStockTableViewCell.swift in Sources */,
 				DFFEB05027E1E37D00C85A53 /* Channel.swift in Sources */,
-				A14CB9F72943259C00DDA990 /* Repository.swift in Sources */,
+				A14CB9F72943259C00DDA990 /* NetworkService.swift in Sources */,
 				DF06F326270D50000031D6FE /* History.swift in Sources */,
 				A199DC3F28C79CAE003FBC61 /* AccountViewController.swift in Sources */,
 				A199DC3828BFA048003FBC61 /* UserDefault+Extension.swift in Sources */,
@@ -705,7 +705,7 @@
 				DF06F32A270DEA1A0031D6FE /* AddHistoryViewController.swift in Sources */,
 				DFFEB04E27E1D6C400C85A53 /* Message.swift in Sources */,
 				A12705122830AE9900ED92F2 /* StockListViewModel.swift in Sources */,
-				A14CB9F929433ED600DDA990 /* RepositoryImpl.swift in Sources */,
+				A14CB9F929433ED600DDA990 /* NetworkServiceImpl.swift in Sources */,
 				DF06F31C270AA43A0031D6FE /* StockViewController.swift in Sources */,
 				DF06F324270B1A4F0031D6FE /* MyStockList.swift in Sources */,
 				A17C2A7928D80C99007508D0 /* FeeType.swift in Sources */,
@@ -759,8 +759,8 @@
 				A14CBA0429437DB500DDA990 /* OnlineDBService.swift in Sources */,
 				A14CBA0D2943818D00DDA990 /* LocalDBService.swift in Sources */,
 				A14CBA0B29437E8300DDA990 /* FavList.swift in Sources */,
-				A14CBA0C2943800B00DDA990 /* RepositoryImpl.swift in Sources */,
-				A14CB9FE2943762F00DDA990 /* Repository.swift in Sources */,
+				A14CBA0C2943800B00DDA990 /* NetworkServiceImpl.swift in Sources */,
+				A14CB9FE2943762F00DDA990 /* NetworkService.swift in Sources */,
 				A14CBA0529437DD700DDA990 /* HistoryOnline.swift in Sources */,
 				A1E1724A2BED087200ED5916 /* View+Extension.swift in Sources */,
 				DFFB337327F858830018F3A4 /* StockWidget.swift in Sources */,

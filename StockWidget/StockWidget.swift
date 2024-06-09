@@ -11,7 +11,7 @@ import Firebase
 
 
 struct Provider: TimelineProvider {
-    let repository = RepositoryImpl()
+    let repository = NetworkServiceImpl()
     // fake data showed before real data
     func placeholder(in context: Context) -> SimpleEntry {
         SimpleEntry(date: Date(), stockList: [WidgetStockData(stockNo: "0050",

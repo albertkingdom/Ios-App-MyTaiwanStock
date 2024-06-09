@@ -9,6 +9,8 @@
 /* Begin PBXBuildFile section */
 		A10CD2D028B9D1BB00B37AA4 /* CustomTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10CD2CF28B9D1BB00B37AA4 /* CustomTabBarViewController.swift */; };
 		A1202125288BB8DD00C8746A /* NewsListTableViewCell2.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1202124288BB8DD00C8746A /* NewsListTableViewCell2.swift */; };
+		A12515612C15C339001BFC53 /* Notification+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12515602C15C339001BFC53 /* Notification+Extension.swift */; };
+		A12515622C15C665001BFC53 /* Notification+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12515602C15C339001BFC53 /* Notification+Extension.swift */; };
 		A12705122830AE9900ED92F2 /* StockListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12705112830AE9900ED92F2 /* StockListViewModel.swift */; };
 		A12705142830B36700ED92F2 /* StockCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12705132830B36700ED92F2 /* StockCellViewModel.swift */; };
 		A12705162830BCE500ED92F2 /* Observable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12705152830BCE500ED92F2 /* Observable.swift */; };
@@ -161,6 +163,7 @@
 /* Begin PBXFileReference section */
 		A10CD2CF28B9D1BB00B37AA4 /* CustomTabBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBarViewController.swift; sourceTree = "<group>"; };
 		A1202124288BB8DD00C8746A /* NewsListTableViewCell2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsListTableViewCell2.swift; sourceTree = "<group>"; };
+		A12515602C15C339001BFC53 /* Notification+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+Extension.swift"; sourceTree = "<group>"; };
 		A12705112830AE9900ED92F2 /* StockListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockListViewModel.swift; sourceTree = "<group>"; };
 		A12705132830B36700ED92F2 /* StockCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockCellViewModel.swift; sourceTree = "<group>"; };
 		A12705152830BCE500ED92F2 /* Observable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Observable.swift; sourceTree = "<group>"; };
@@ -292,6 +295,13 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		A125155F2C15C31D001BFC53 /* New Group */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = "New Group";
+			sourceTree = "<group>";
+		};
 		A12705102830AE7C00ED92F2 /* View Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -360,6 +370,7 @@
 		DF06F2F927097F2C0031D6FE /* MyTaiwanStock */ = {
 			isa = PBXGroup;
 			children = (
+				A125155F2C15C31D001BFC53 /* New Group */,
 				A14CBA112944360600DDA990 /* Repository */,
 				DFFB338127F94B5A0018F3A4 /* MyTaiwanStock.entitlements */,
 				DF3873A327ECC930000E2EAF /* Util */,
@@ -458,6 +469,7 @@
 				A199DC4528C84C54003FBC61 /* OnlineDBService.swift */,
 				A1C03DD328F1452D007098D2 /* LocalDBService.swift */,
 				A1F168322BDE11400080F57E /* UIColor+Extension.swift */,
+				A12515602C15C339001BFC53 /* Notification+Extension.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -724,6 +736,7 @@
 				A1202125288BB8DD00C8746A /* NewsListTableViewCell2.swift in Sources */,
 				DF14418027869C200038D05D /* StockStatistic.swift in Sources */,
 				A127052C2833604400ED92F2 /* NewsListCellViewModel.swift in Sources */,
+				A12515612C15C339001BFC53 /* Notification+Extension.swift in Sources */,
 				DF06F317270A01220031D6FE /* StockTableViewCell.swift in Sources */,
 				A17C2A7B28D81303007508D0 /* Fee.swift in Sources */,
 				DFFEB04A27E1D45000C85A53 /* ChatViewController.swift in Sources */,
@@ -756,6 +769,7 @@
 				A14CB9FD2943761F00DDA990 /* StockInfo.swift in Sources */,
 				A14CBA0E2943882300DDA990 /* StockCellViewModel.swift in Sources */,
 				A128BB7D285241E8007F7645 /* OneDayStockInfo.swift in Sources */,
+				A12515622C15C665001BFC53 /* Notification+Extension.swift in Sources */,
 				A14CBA0429437DB500DDA990 /* OnlineDBService.swift in Sources */,
 				A14CBA0D2943818D00DDA990 /* LocalDBService.swift in Sources */,
 				A14CBA0B29437E8300DDA990 /* FavList.swift in Sources */,

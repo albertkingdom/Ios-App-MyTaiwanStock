@@ -9,9 +9,6 @@ import UIKit
 import CoreData
 import Combine
 import SkeletonView
-import os
-
-let logger = Logger(subsystem: "com.a2006mike.MyTaiwanStock", category: "YourCategory")
 
 class StockListViewController: UIViewController {
     let networkService = NetworkServiceImpl()
@@ -53,7 +50,7 @@ class StockListViewController: UIViewController {
         button.layer.shadowOffset = CGSize(width: 5, height: 5)
         button.layer.shadowRadius = 10
         button.setTitle(nil, for: .normal)
-        button.addTarget(StockListViewController.self, action: #selector(goToAddStockNoVC), for: .touchUpInside)
+        button.addTarget(self, action: #selector(goToAddStockNoVC), for: .touchUpInside)
         return button
     }()
 //    var currentMenuIndex: Int = 0
@@ -70,7 +67,7 @@ class StockListViewController: UIViewController {
         tableView.tableFooterView = UIView()
         
         searchBar.delegate = self
-        
+        self.navigationController?.delegate = self
         navigationItem.leftBarButtonItem = editButtonItem
 
         
@@ -81,7 +78,12 @@ class StockListViewController: UIViewController {
         initView()
         bindViewModel()
         // Listening to label tap notification
-        NotificationCenter.default.addObserver(self, selector: #selector(togglePercentage), name: NSNotification.Name("labelTapped"), object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(togglePercentage),
+            name: NSNotification.Name("labelTapped"),
+            object: nil
+        )
         
         // 點空白處隱藏鍵盤
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
@@ -95,10 +97,10 @@ class StockListViewController: UIViewController {
         setupSearchBarListener()
         
         
-        let isFirstTimeAfterSignIn = UserDefaults.standard.bool(forKey: UserDefaults.isFirstTimeAfterSignIn)
+//        let isFirstTimeAfterSignIn = UserDefaults.standard.bool(forKey: UserDefaults.isFirstTimeAfterSignIn)
         let savedMenuIndex = getSavedListIndex()
         viewModel.setInitialMenuIndex(to: savedMenuIndex)
-
+/*
         if isFirstTimeAfterSignIn {
             // after downloading online data to local database, retrieve all local database at once
             showAlert(title: "下載雲端資料", message: "您剛才登入，將下載雲端資料，是否同意？") { [weak self] in
@@ -110,12 +112,25 @@ class StockListViewController: UIViewController {
         } else {
             viewModel.handleFetchListFromDB()
         }
+ */
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .never
         
-        NotificationCenter.default.addObserver(self, selector: #selector(onAppEnterForeground), name: UIApplication.willEnterForegroundNotification, object: nil)
-        NotificationCenter.default.addObserver(self, selector: #selector(onAppEnterBackground), name: UIApplication.didEnterBackgroundNotification, object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(onAppEnterForeground),
+            name: UIApplication.willEnterForegroundNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(onAppEnterBackground),
+            name: UIApplication.didEnterBackgroundNotification,
+            object: nil
+        )
+
     }
+
     @objc func onAppEnterForeground() {
         logger.debug("view enter foreground")
     }
@@ -134,21 +149,23 @@ class StockListViewController: UIViewController {
         logger.debug("viewWillDisappear")
         viewModel.cancelTimer()
         saveCurrentListIndex()
-        NotificationCenter.default.removeObserver(self, name: UIApplication.willEnterForegroundNotification, object: nil)
-        NotificationCenter.default.removeObserver(self, name: UIApplication.didEnterBackgroundNotification, object: nil)
+       
     }
     
     func bindViewModel() {
         logger.debug("bindViewModel")
         viewModel.menuActionsCombine
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] actionList in
-            self?.configureMenu(actionList: actionList)
-        }
+                self?.configureMenu(actionList: actionList)
+            }
         .store(in: &subscription)
         
 
         viewModel.$menuTitleCombine.sink { [weak self] title in
-            self?.navCenterButton.setTitle(title, for: .normal)
+            DispatchQueue.main.async {
+                self?.navCenterButton.setTitle(title, for: .normal)
+            }
         }.store(in: &subscription)
         
         viewModel.filteredStockCellDatasCombine
@@ -250,6 +267,19 @@ class StockListViewController: UIViewController {
         navigationItem.titleView?.tintColor = .systemBlue
     }
     
+    deinit {
+        logger.debug("stock list vc deinit")
+        NotificationCenter.default.removeObserver(
+            self,
+            name: UIApplication.willEnterForegroundNotification,
+            object: nil
+        )
+        NotificationCenter.default.removeObserver(
+            self,
+            name: UIApplication.didEnterBackgroundNotification,
+            object: nil
+        )
+    }
 }
 
 extension StockListViewController: SkeletonTableViewDataSource, UITableViewDelegate {
@@ -348,5 +378,11 @@ extension StockListViewController: UISearchBarDelegate {
     
 }
 
-
-
+extension StockListViewController: UINavigationControllerDelegate {
+    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        if viewController == self {
+            logger.debug("從其他vc返回到stock list vc")
+            viewModel.handleFetchListFromDB()
+        }
+    }
+}

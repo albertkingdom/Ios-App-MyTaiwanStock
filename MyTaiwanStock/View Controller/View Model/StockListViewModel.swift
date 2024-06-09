@@ -54,31 +54,45 @@ class StockListViewModel {
     init(networkService: any NetworkService) {
         self.repository = networkService
         setupFetchStockInfo()
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleInitialDataUpdate),
+            name: .coreDataDidUpdate,
+            object: nil
+        )
     }
     
-    
+    @objc func handleInitialDataUpdate() {
+        logger.debug("完成core data 同步")
+        handleFetchListFromDB()
+    }
     func handleFetchListFromDB() -> Void {
 
         let listObjectFromDB = repository.stockList()
-        if listObjectFromDB.isEmpty {
-            // if no existing following list in db, create a default one
-
-            let newList = repository.saveList(with:"預設清單1")
-            self.followingListSelectionMenuCombine.send([newList.name!])
-            self.followingListObjectFromDB.append(newList)
-        }
+//        if listObjectFromDB.isEmpty {
+//            // if no existing following list in db, create a default one
+//
+//            let newList = repository.saveList(with:"預設清單1")
+//            self.followingListSelectionMenuCombine.send([newList.name!])
+//            self.followingListObjectFromDB.append(newList)
+//        }
         
         if !listObjectFromDB.isEmpty {
-
+            logger.debug("core data有資料")
             let lists = listObjectFromDB.map({ list in
                 list.name!
             })
+            logger.debug("lists \(lists)")
             self.followingListSelectionMenuCombine.send(lists)
             self.followingListObjectFromDB = listObjectFromDB
+            
+            self.currentMenuIndexCombine.send(lastTimeMenuIndex)
+            
+            setupStockNameStringSet()
+            generateMenu()
+        } else {
+            logger.debug("core data沒有資料")
         }
-        self.currentMenuIndexCombine.send(lastTimeMenuIndex)
-        setupStockNameStringSet()
-        generateMenu()
     }
     
     private func setupFetchStockInfo() {
@@ -178,7 +192,9 @@ class StockListViewModel {
             .sink { completion in
                 switch completion {
                 case .failure(let error):
-                    print("error \(error)")
+                    print("請求台股資料錯誤 \(error)")
+                    let stockCellViewModels = stockNos.map {StockCellViewModel(stockNo: $0 )}
+                    self.stockCellDatasCombine.send(stockCellViewModels)
                 case .finished:
                     //print("finished")
                     break
@@ -200,7 +216,7 @@ class StockListViewModel {
     
     private func setupStockNameStringSet() {
         stockNameStringSetCombine.value.removeAll()
-        currentFollowingListCombine.value = followingListObjectFromDB[currentMenuIndexCombine.value]
+//        currentFollowingListCombine.value = followingListObjectFromDB[currentMenuIndexCombine.value]
         //self.fetchStockNoFromDB()
         guard let setOfStockNoObjects = followingListObjectFromDB[currentMenuIndexCombine.value].stockNo else { return }
         let stockNoStringArray:[String] = setOfStockNoObjects.map { ele -> String in
@@ -254,6 +270,7 @@ class StockListViewModel {
     func saveNewStockNo(stockNumber: String) {
         if stockNameStringSetCombine.value.firstIndex(of: stockNumber) != nil { return }
         repository.saveStockNumber(with: stockNumber, currentFollowingList: currentFollowingListCombine.value!)
+        handleFetchListFromDB()
     }
     
     //MARK: online DB

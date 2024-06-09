@@ -13,16 +13,18 @@ class LocalDBService {
     
     static let shared = LocalDBService()
     
-    lazy var persistentContainer: NSPersistentContainer = {
-        let container = NSPersistentContainer(name: "MyTaiwanStock")
+    var persistentContainer: NSPersistentCloudKitContainer = {
+        let container = NSPersistentCloudKitContainer(name: "MyTaiwanStock")
         container.loadPersistentStores(completionHandler: { storeDescription, error in
             if let error = error as NSError? {
                 fatalError("Unable to load persistent stores: \(error)")
             }
         })
+        container.viewContext.automaticallyMergesChangesFromParent = true
         return container
     }()
-    
+    private var timer: Timer?
+
     // MARK: - Core Data Saving support
     
     func saveContext() {
@@ -48,8 +50,34 @@ class LocalDBService {
     
     }
    
-    init() {}
-    
+    init() {
+        createCoreDataContentChangeObserver() // 打開App讓Core Data和iCloud同步數據，情境：換機後安裝App後第一次打開可以載入之前數據
+        setupTimer()
+    }
+    private func createCoreDataContentChangeObserver() {
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleStoreChange(_:)),
+            name: .NSManagedObjectContextObjectsDidChange,
+            object: persistentContainer.persistentStoreCoordinator
+        )
+    }
+    private func setupTimer() {
+        // 設置一个超時時間，比如3秒，如果在這3秒内没有Core Data數據變化，则手動觸發
+        timer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false) { [weak self] _ in
+            self?.handleStoreChange(nil)  // 如果没有实际的通知对象，可以传递nil
+        }
+    }
+    @objc private func handleStoreChange(_ notification: Notification?) {
+        print("handleStoreChange")
+        if let notification = notification {
+            print("Core Data數據發生變化: \(notification)")
+            timer?.invalidate()
+        } else {
+            print("超時，Core Data沒有數據變化")
+        }
+        NotificationCenter.default.post(name: .coreDataDidUpdate, object: nil)
+    }
     // MARK: Core Data - fetch list
     func fetchAllListFromDB() -> [List]{
         let fetchRequest: NSFetchRequest<List> = List.fetchRequest()

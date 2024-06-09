@@ -9,6 +9,9 @@ import UIKit
 import Firebase
 import FirebaseMessaging
 import GoogleSignIn
+import os
+
+let logger = Logger(subsystem: "com.a2006mike.MyTaiwanStock", category: "YourCategory")
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {

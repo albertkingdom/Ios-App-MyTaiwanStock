@@ -62,6 +62,7 @@ class NetworkServiceImpl: NetworkService {
                     return data
                 }
                 .decode(type: OneDayStockInfo.self, decoder: JSONDecoder())
+                .retry(3)
                 .sink { completion in
 
                     switch completion {

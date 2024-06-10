@@ -228,7 +228,7 @@ class StockListViewController: UIViewController {
         addStockViewController.addNewStockToDB = saveNewStockNumberToDB(stockNumber:)
 
         addStockViewController.listName = viewModel.menuTitleCombine
-        navigationController?.pushViewController(addStockViewController, animated: true)
+        navigationController?.pushViewController(addStockViewController, animated: false)
     }
     func configureMenu(actionList: [UIAction]?) {
         guard var actionList = actionList else {

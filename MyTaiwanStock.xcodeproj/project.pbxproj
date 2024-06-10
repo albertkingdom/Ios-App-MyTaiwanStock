@@ -11,6 +11,7 @@
 		A1202125288BB8DD00C8746A /* NewsListTableViewCell2.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1202124288BB8DD00C8746A /* NewsListTableViewCell2.swift */; };
 		A12515612C15C339001BFC53 /* Notification+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12515602C15C339001BFC53 /* Notification+Extension.swift */; };
 		A12515622C15C665001BFC53 /* Notification+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12515602C15C339001BFC53 /* Notification+Extension.swift */; };
+		A12515642C16076F001BFC53 /* MemoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12515632C16076F001BFC53 /* MemoViewController.swift */; };
 		A12705122830AE9900ED92F2 /* StockListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12705112830AE9900ED92F2 /* StockListViewModel.swift */; };
 		A12705142830B36700ED92F2 /* StockCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12705132830B36700ED92F2 /* StockCellViewModel.swift */; };
 		A12705162830BCE500ED92F2 /* Observable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12705152830BCE500ED92F2 /* Observable.swift */; };
@@ -164,6 +165,7 @@
 		A10CD2CF28B9D1BB00B37AA4 /* CustomTabBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBarViewController.swift; sourceTree = "<group>"; };
 		A1202124288BB8DD00C8746A /* NewsListTableViewCell2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsListTableViewCell2.swift; sourceTree = "<group>"; };
 		A12515602C15C339001BFC53 /* Notification+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+Extension.swift"; sourceTree = "<group>"; };
+		A12515632C16076F001BFC53 /* MemoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoViewController.swift; sourceTree = "<group>"; };
 		A12705112830AE9900ED92F2 /* StockListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockListViewModel.swift; sourceTree = "<group>"; };
 		A12705132830B36700ED92F2 /* StockCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockCellViewModel.swift; sourceTree = "<group>"; };
 		A12705152830BCE500ED92F2 /* Observable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Observable.swift; sourceTree = "<group>"; };
@@ -428,6 +430,7 @@
 				A199DC3E28C79CAE003FBC61 /* AccountViewController.swift */,
 				A16321512954A5C50011F295 /* AddDividendViewController.swift */,
 				A163216D2956A52F0011F295 /* DividendDetailViewController.swift */,
+				A12515632C16076F001BFC53 /* MemoViewController.swift */,
 			);
 			path = "View Controller";
 			sourceTree = "<group>";
@@ -691,6 +694,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A12515642C16076F001BFC53 /* MemoViewController.swift in Sources */,
 				DFD239DD270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodeld in Sources */,
 				A16321542954B05E0011F295 /* AddDividendViewModel.swift in Sources */,
 				A127051C2831F98100ED92F2 /* AddStockNoViewModel.swift in Sources */,

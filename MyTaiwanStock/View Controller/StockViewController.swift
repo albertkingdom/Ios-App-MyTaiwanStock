@@ -403,6 +403,7 @@ class StockViewController: UIViewController {
         
         viewModel.$highlightChartIndex
             .sink { [weak self] index in
+                logger.debug("index=\(index)")
                 self?.combinedChartView.highlightValue(x: Double(index), dataSetIndex: 0, dataIndex: 1)
                 self?.combinedChartView.layoutIfNeeded()
             }

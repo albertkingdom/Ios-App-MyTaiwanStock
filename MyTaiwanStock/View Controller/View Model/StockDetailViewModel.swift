@@ -90,12 +90,13 @@ class StockDetailViewModel {
                 // convert date to following format like:  111/03/18
                 year = year - 1911
                 let fullMonth = month > 9 ? "\(month)" : "0\(month)"
-                let targetDateString = "\(year)/\(fullMonth)/\(day)"
-                
+                let fullDay = day > 9 ? "\(day)" : "0\(day)"
+                let targetDateString = "\(year)/\(fullMonth)/\(fullDay)"
+                logger.debug("targetDateString \(targetDateString)")
                 stockInfoForCandleStickChartCombine.value.enumerated().forEach { index, candleData in
                     // find the index of date in stockInfoForCandleStickChart
                     if candleData[0] == targetDateString {
-                        
+                        logger.debug("yes match date!!!!")
                         highlightChartIndex = index
                     }
                 }

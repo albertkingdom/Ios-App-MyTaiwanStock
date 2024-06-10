@@ -11,7 +11,7 @@ class AddHistoryViewModel {
     var context: NSManagedObjectContext?
     var buyOrSellStatus: Int! = 0
     var date: Date! = Date()
-
+    var memo = ""
     var onlineDBService: OnlineDBService?
     let repository = NetworkServiceImpl()
     
@@ -29,7 +29,7 @@ class AddHistoryViewModel {
         repository.saveNewRecord(stockNo: stockNo,
                                  price: price,
                                  amount: amount,
-                                 reason: reason,
+                                 reason: memo,
                                  buyOrSellStatus: buyOrSellStatus,
                                  date: date)
     }

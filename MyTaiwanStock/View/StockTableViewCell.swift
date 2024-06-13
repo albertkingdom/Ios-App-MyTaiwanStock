@@ -79,6 +79,7 @@ class StockTableViewCell: UITableViewCell {
                 stockPriceDiff.textColor = UIColor.white
             }
         }
+//        stockPriceDiff.sizeToFit()
  
     }
 

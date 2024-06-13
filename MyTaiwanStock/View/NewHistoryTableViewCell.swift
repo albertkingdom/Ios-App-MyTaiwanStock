@@ -23,7 +23,7 @@ class NewHistoryTableViewCell: UITableViewCell {
     }
 
 
-    func configure(with viewModel: HistoryCellViewModel) {
+    func configure(with viewModel: HistoryCellModel) {
         
         statusLabel.text = viewModel.status == 0 ? "買" : "賣" //??
         dateLabel.text = viewModel.dateString

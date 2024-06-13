@@ -16,7 +16,7 @@ class StockDetailViewModel {
     var currentStockPriceString: String
     var chartService: ChartService!
 
-    var historyCombine = CurrentValueSubject<[HistoryCellViewModel],Never>([])
+    var historyCombine = CurrentValueSubject<[HistoryCellModel],Never>([])
     var totalAmountCombine = CurrentValueSubject<Int, Never>(0) //持股數
     var avgBuyPriceCombine = CurrentValueSubject<String, Never>("") // 買入均價
     var avgSellPriceCombine = CurrentValueSubject<String, Never>("") //賣出均價
@@ -25,7 +25,7 @@ class StockDetailViewModel {
     @Published var highlightChartIndex: Int = -1
     var subscription = Set<AnyCancellable>()
     
-    let repository = RepositoryImpl()
+    let repository = NetworkServiceImpl()
     
     init(stockNo: String, currentStockPrice: String, context: NSManagedObjectContext?) {
         self.stockNo = stockNo
@@ -37,10 +37,10 @@ class StockDetailViewModel {
     
     func setupHistoryData() {
         $coreDataObjectsCombine
-            .map { investHistoryList -> [HistoryCellViewModel] in
+            .map { investHistoryList -> [HistoryCellModel] in
                 
                 return investHistoryList.map { investHistory in
-                    HistoryCellViewModel(historyData: investHistory, currentStockPrice: self.currentStockPriceString)
+                    HistoryCellModel(historyData: investHistory, currentStockPrice: self.currentStockPriceString)
                 }
                 
             }
@@ -90,12 +90,13 @@ class StockDetailViewModel {
                 // convert date to following format like:  111/03/18
                 year = year - 1911
                 let fullMonth = month > 9 ? "\(month)" : "0\(month)"
-                let targetDateString = "\(year)/\(fullMonth)/\(day)"
-                
+                let fullDay = day > 9 ? "\(day)" : "0\(day)"
+                let targetDateString = "\(year)/\(fullMonth)/\(fullDay)"
+                logger.debug("targetDateString \(targetDateString)")
                 stockInfoForCandleStickChartCombine.value.enumerated().forEach { index, candleData in
                     // find the index of date in stockInfoForCandleStickChart
                     if candleData[0] == targetDateString {
-                        
+                        logger.debug("yes match date!!!!")
                         highlightChartIndex = index
                     }
                 }
@@ -106,7 +107,7 @@ class StockDetailViewModel {
         
     }
     
-    func calTotalAmount(with historys: [HistoryCellViewModel]) {
+    func calTotalAmount(with historys: [HistoryCellModel]) {
         let amount = historys.map {
             guard let amountInt = Int($0.amountString) else { return 0 }
             return amountInt

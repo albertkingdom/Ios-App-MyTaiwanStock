@@ -11,6 +11,8 @@ import Combine
 import SkeletonView
 
 class StockListViewController: UIViewController {
+    let networkService = NetworkServiceImpl()
+
     var subscription = Set<AnyCancellable>()
     
     var userDefault = UserDefaults(suiteName: "group.a2006mike.myTaiwanStock")
@@ -51,12 +53,12 @@ class StockListViewController: UIViewController {
         button.addTarget(self, action: #selector(goToAddStockNoVC), for: .touchUpInside)
         return button
     }()
-    var currentMenuIndex: Int = 0
+//    var currentMenuIndex: Int = 0
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        print("list vc viewDidLoad")
-        viewModel = StockListViewModel()
+        logger.debug("list vc viewDidLoad")
+        viewModel = StockListViewModel(networkService: networkService)
         
         tableView.delegate = self
         tableView.dataSource = self
@@ -65,7 +67,7 @@ class StockListViewController: UIViewController {
         tableView.tableFooterView = UIView()
         
         searchBar.delegate = self
-        
+        self.navigationController?.delegate = self
         navigationItem.leftBarButtonItem = editButtonItem
 
         
@@ -76,7 +78,12 @@ class StockListViewController: UIViewController {
         initView()
         bindViewModel()
         // Listening to label tap notification
-        NotificationCenter.default.addObserver(self, selector: #selector(togglePercentage), name: NSNotification.Name("labelTapped"), object: nil)
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(togglePercentage),
+            name: NSNotification.Name("labelTapped"),
+            object: nil
+        )
         
         // 點空白處隱藏鍵盤
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
@@ -84,15 +91,16 @@ class StockListViewController: UIViewController {
         view.addGestureRecognizer(tapGesture)
 
     }
+    
     override func viewWillAppear(_ animated: Bool) {
-        
+        logger.debug("viewwillappear")
         setupSearchBarListener()
         
         
-        let isFirstTimeAfterSignIn = UserDefaults.standard.bool(forKey: UserDefaults.isFirstTimeAfterSignIn)
+//        let isFirstTimeAfterSignIn = UserDefaults.standard.bool(forKey: UserDefaults.isFirstTimeAfterSignIn)
         let savedMenuIndex = getSavedListIndex()
         viewModel.setInitialMenuIndex(to: savedMenuIndex)
-
+/*
         if isFirstTimeAfterSignIn {
             // after downloading online data to local database, retrieve all local database at once
             showAlert(title: "下載雲端資料", message: "您剛才登入，將下載雲端資料，是否同意？") { [weak self] in
@@ -104,35 +112,63 @@ class StockListViewController: UIViewController {
         } else {
             viewModel.handleFetchListFromDB()
         }
+ */
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .never
+        
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(onAppEnterForeground),
+            name: UIApplication.willEnterForegroundNotification,
+            object: nil
+        )
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(onAppEnterBackground),
+            name: UIApplication.didEnterBackgroundNotification,
+            object: nil
+        )
+
+    }
+
+    @objc func onAppEnterForeground() {
+        logger.debug("view enter foreground")
+    }
+    @objc func onAppEnterBackground() {
+        logger.debug("onAppEnterBackground")
+        viewModel.cancelTimer()
     }
     override func viewDidLayoutSubviews() {
-        tableView.showAnimatedSkeleton()
+//        tableView.showAnimatedSkeleton()
         view.addSubview(floatingButton)
         floatingButton.frame = CGRect(x: view.frame.width - 80,
                                       y: view.frame.height - 80 - view.safeAreaInsets.bottom,
                                       width: 50, height: 50)
     }
     override func viewWillDisappear(_ animated: Bool) {
+        logger.debug("viewWillDisappear")
         viewModel.cancelTimer()
         saveCurrentListIndex()
+       
     }
     
     func bindViewModel() {
-
+        logger.debug("bindViewModel")
         viewModel.menuActionsCombine
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] actionList in
-            self?.configureMenu(actionList: actionList)
-        }
+                self?.configureMenu(actionList: actionList)
+            }
         .store(in: &subscription)
         
 
         viewModel.$menuTitleCombine.sink { [weak self] title in
-            self?.navCenterButton.setTitle(title, for: .normal)
+            DispatchQueue.main.async {
+                self?.navCenterButton.setTitle(title, for: .normal)
+            }
         }.store(in: &subscription)
         
-        viewModel.$filteredStockCellDatasCombine
+        viewModel.filteredStockCellDatasCombine
             .receive(on: DispatchQueue.main)
             .sink { [weak self] cellViewmodels in
                 print("cellViewmodels \(cellViewmodels)")
@@ -152,19 +188,20 @@ class StockListViewController: UIViewController {
             }
             .store(in: &subscription)
         
-        viewModel.stockNoStringCombine
+        viewModel.stockNameStringSetCombine
             .sink { [weak self] stockNoStrings in
                 //print("stockNoStrings \(stockNoStrings)")
-                self?.userDefault?.setValue(stockNoStrings, forKey: "stockNos")
+                self?.userDefault?.setValue(Array(stockNoStrings), forKey: "stockNos")
                 WidgetCenter.shared.reloadAllTimelines()
             }
             .store(in: &subscription)
         
-        viewModel.currentMenuIndexCombine
-            .sink(receiveValue: {[weak self] index in
-                self?.currentMenuIndex = index
-            })
-            .store(in: &subscription)
+//        viewModel.currentMenuIndexCombine
+//            .sink(receiveValue: {[weak self] index in
+//                logger.debug("currentMenuIndex \(index)")
+//                self?.currentMenuIndex = index
+//            })
+//            .store(in: &subscription)
         
     }
     
@@ -179,7 +216,7 @@ class StockListViewController: UIViewController {
     @objc func refreshData(){
         self.refreshControl.endRefreshing()
     
-        viewModel.repeatFetch(stockNos: viewModel.stockNoStringCombine.value)
+        viewModel.repeatFetch(stockNos: Array(viewModel.stockNameStringSetCombine.value))
 
 
     }
@@ -191,7 +228,7 @@ class StockListViewController: UIViewController {
         addStockViewController.addNewStockToDB = saveNewStockNumberToDB(stockNumber:)
 
         addStockViewController.listName = viewModel.menuTitleCombine
-        navigationController?.pushViewController(addStockViewController, animated: true)
+        navigationController?.pushViewController(addStockViewController, animated: false)
     }
     func configureMenu(actionList: [UIAction]?) {
         guard var actionList = actionList else {
@@ -230,6 +267,19 @@ class StockListViewController: UIViewController {
         navigationItem.titleView?.tintColor = .systemBlue
     }
     
+    deinit {
+        logger.debug("stock list vc deinit")
+        NotificationCenter.default.removeObserver(
+            self,
+            name: UIApplication.willEnterForegroundNotification,
+            object: nil
+        )
+        NotificationCenter.default.removeObserver(
+            self,
+            name: UIApplication.didEnterBackgroundNotification,
+            object: nil
+        )
+    }
 }
 
 extension StockListViewController: SkeletonTableViewDataSource, UITableViewDelegate {
@@ -313,7 +363,7 @@ extension StockListViewController {
     }
     
     func saveCurrentListIndex() {
-        UserDefaults.standard.set(currentMenuIndex, forKey: UserDefaults.menuIndex)
+        UserDefaults.standard.set(viewModel.currentMenuIndexCombine.value, forKey: UserDefaults.menuIndex)
     }
     func getSavedListIndex() -> Int {
         return UserDefaults.standard.integer(forKey: UserDefaults.menuIndex)
@@ -328,5 +378,11 @@ extension StockListViewController: UISearchBarDelegate {
     
 }
 
-
-
+extension StockListViewController: UINavigationControllerDelegate {
+    func navigationController(_ navigationController: UINavigationController, willShow viewController: UIViewController, animated: Bool) {
+        if viewController == self {
+            logger.debug("從其他vc返回到stock list vc")
+            viewModel.handleFetchListFromDB()
+        }
+    }
+}

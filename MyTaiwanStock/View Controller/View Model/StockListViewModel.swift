@@ -13,7 +13,7 @@ class StockListViewModel {
 
     private var timer: Timer?
     private var lastTimeMenuIndex = 0
-    var stockNoStringCombine = CurrentValueSubject<[String], Never>([])
+//    var stockNoStringCombine = CurrentValueSubject<[String], Never>([])
 
     var stockNameStringSetCombine = CurrentValueSubject<Set<String>,Never>([])
 
@@ -33,8 +33,8 @@ class StockListViewModel {
     
     private var stockCellDatasCombine = CurrentValueSubject<[StockCellViewModel], Never>([])
     
-//    let filteredStockCellDatasCombine = CurrentValueSubject<[StockCellViewModel], Never>([])
-    @Published var filteredStockCellDatasCombine: [StockCellViewModel] = []
+    var filteredStockCellDatasCombine = CurrentValueSubject<[StockCellViewModel], Never>([])
+//    @Published var filteredStockCellDatasCombine: [StockCellViewModel] = []
     
     var dataForWidget = PassthroughSubject<Data, Never>()
         
@@ -49,71 +49,85 @@ class StockListViewModel {
         }
     }
     
-    let repository = RepositoryImpl()
+    private let repository: any NetworkService
     
-    init() {
+    init(networkService: any NetworkService) {
+        self.repository = networkService
         setupFetchStockInfo()
+        NotificationCenter.default.addObserver(
+            self,
+            selector: #selector(handleInitialDataUpdate),
+            name: .coreDataDidUpdate,
+            object: nil
+        )
     }
     
-    
+    @objc func handleInitialDataUpdate() {
+        logger.debug("完成core data 同步")
+        handleFetchListFromDB()
+    }
     func handleFetchListFromDB() -> Void {
 
         let listObjectFromDB = repository.stockList()
-        if listObjectFromDB.isEmpty {
-            // if no existing following list in db, create a default one
-
-            let newList = repository.saveList(with:"預設清單1")
-            self.followingListSelectionMenuCombine.send([newList.name!])
-            self.followingListObjectFromDB.append(newList)
-        }
+//        if listObjectFromDB.isEmpty {
+//            // if no existing following list in db, create a default one
+//
+//            let newList = repository.saveList(with:"預設清單1")
+//            self.followingListSelectionMenuCombine.send([newList.name!])
+//            self.followingListObjectFromDB.append(newList)
+//        }
         
         if !listObjectFromDB.isEmpty {
-
+            logger.debug("core data有資料")
             let lists = listObjectFromDB.map({ list in
                 list.name!
             })
+            logger.debug("lists \(lists)")
             self.followingListSelectionMenuCombine.send(lists)
             self.followingListObjectFromDB = listObjectFromDB
+            
+            self.currentMenuIndexCombine.send(lastTimeMenuIndex)
+            
+            setupStockNameStringSet()
+            generateMenu()
+        } else {
+            logger.debug("core data沒有資料")
         }
-        self.currentMenuIndexCombine.send(lastTimeMenuIndex)
-        setupStockNameStringSet()
-        generateMenu()
     }
     
     private func setupFetchStockInfo() {
-
         currentMenuIndexCombine
-            .sink { [unowned self] index in
-                guard self.followingListObjectFromDB.count > 0 else { return }
+            .map { [unowned self] index -> List? in
+                timer?.invalidate()
+                guard self.followingListObjectFromDB.count > 0 else { return nil }
                 let list = self.followingListObjectFromDB[index]
-   
-                self.currentFollowingListCombine.send(list)
-            }.store(in: &subscription)
-        
-        currentFollowingListCombine
-            .sink { [weak self] list in
-                guard let setOfStockNoObjects = list?.stockNo else { return }
-                let stockNoStringArray:[String] = setOfStockNoObjects.map { ele -> String in
-                    guard let stockNo = (ele as? StockNo)?.stockNo else { return "" }
-                    return stockNo
-                }
-                self?.stockNoStringCombine.send(stockNoStringArray)
-            }.store(in: &subscription)
-        
-      
-    
-        
-        stockNoStringCombine
-            //.removeDuplicates()
-            .sink(receiveValue: { [unowned self] stockNos in
-                if stockNos.isEmpty {
-                    self.stockCellDatasCombine.send([])
-                } else {
-                    repeatFetch(stockNos: stockNos)
-                }
+                return list
+            }
+            .handleEvents(receiveOutput: {[unowned self] list in
+                self.currentFollowingListCombine.send(list)  // Maintain external access
             })
+            .compactMap { list -> [String]? in
+                guard let setOfStockNoObjects = list?.stockNo else { return nil}
+                return setOfStockNoObjects.compactMap { ($0 as? StockNo)?.stockNo }
+            }
+            .handleEvents(receiveOutput: { [weak self] stockNoStringArray in
+//                self?.stockNoStringCombine.send(stockNoStringArray)
+                self?.stockNameStringSetCombine.send(Set(stockNoStringArray))
+            })
+            .filter { !$0.isEmpty }
+            .sink { [unowned self] stockNos in
+                logger.debug("stockNos \(stockNos)")
+                self.repeatFetch(stockNos: stockNos)
+            }
             .store(in: &subscription)
         
+//        Handle empty stock numbers separately if needed
+        stockNameStringSetCombine
+            .filter { $0.isEmpty }
+            .sink { [unowned self] _ in
+                self.stockCellDatasCombine.send([])
+            }
+            .store(in: &subscription)
         
         stockCellDatasCombine
             .combineLatest(searchText)
@@ -131,11 +145,14 @@ class StockListViewModel {
                 return output
 
             })
-            .assign(to: &$filteredStockCellDatasCombine)
+            .sink(receiveValue: { [weak self] cellData in
+                self?.filteredStockCellDatasCombine.send(cellData)
+            })
+//            .assign(to: &$filteredStockCellDatasCombine)
 //            .sink(receiveValue: { [weak self] cellDatas in
 //                self?.filteredStockCellDatasCombine.send(cellDatas)
 //            })
-//            .store(in: &subscription)
+            .store(in: &subscription)
     }
     private func generateMenu() {
 
@@ -161,12 +178,13 @@ class StockListViewModel {
         
     }
     func repeatFetch(stockNos: [String]) {
-        //print("repeatFetch \(stockNos)")
-
+        logger.debug("取消timer")
         timer?.invalidate()
-        fetchStockInfo(stockNos: stockNos)
+        if stockNos.isEmpty { return }
+        fetchStockInfo(stockNos: Array(stockNos))
+        logger.debug("建立timer")
         timer = Timer.scheduledTimer(withTimeInterval: 60, repeats: true, block: { [weak self] _ in
-            self?.fetchStockInfo(stockNos: stockNos)
+            self?.fetchStockInfo(stockNos: Array(stockNos))
         })
     }
     private func fetchStockInfo(stockNos: [String]) {
@@ -174,7 +192,9 @@ class StockListViewModel {
             .sink { completion in
                 switch completion {
                 case .failure(let error):
-                    print("error \(error)")
+                    print("請求台股資料錯誤 \(error)")
+                    let stockCellViewModels = stockNos.map {StockCellViewModel(stockNo: $0 )}
+                    self.stockCellDatasCombine.send(stockCellViewModels)
                 case .finished:
                     //print("finished")
                     break
@@ -182,7 +202,7 @@ class StockListViewModel {
                     
                 }
             } receiveValue: { [weak self] data in
-                print("data \(data)")
+//                print("data \(data)")
                 self?.onedayStockInfo = data.msgArray
                 let cellVMs = data.msgArray.map { item in
                     StockCellViewModel(stock: item)
@@ -196,7 +216,7 @@ class StockListViewModel {
     
     private func setupStockNameStringSet() {
         stockNameStringSetCombine.value.removeAll()
-        currentFollowingListCombine.value = followingListObjectFromDB[currentMenuIndexCombine.value]
+//        currentFollowingListCombine.value = followingListObjectFromDB[currentMenuIndexCombine.value]
         //self.fetchStockNoFromDB()
         guard let setOfStockNoObjects = followingListObjectFromDB[currentMenuIndexCombine.value].stockNo else { return }
         let stockNoStringArray:[String] = setOfStockNoObjects.map { ele -> String in
@@ -240,9 +260,9 @@ class StockListViewModel {
             itemToDelete.stockNo != stockNo
         }// edit current stockno list
         
-        stockNoStringCombine.value = stockNoStringCombine.value.filter({ stockNo in
-            itemToDelete.stockNo != stockNo
-        })
+//        stockNoStringCombine.value = stockNoStringCombine.value.filter({ stockNo in
+//            itemToDelete.stockNo != stockNo
+//        })
     }
 
     
@@ -250,6 +270,7 @@ class StockListViewModel {
     func saveNewStockNo(stockNumber: String) {
         if stockNameStringSetCombine.value.firstIndex(of: stockNumber) != nil { return }
         repository.saveStockNumber(with: stockNumber, currentFollowingList: currentFollowingListCombine.value!)
+        handleFetchListFromDB()
     }
     
     //MARK: online DB

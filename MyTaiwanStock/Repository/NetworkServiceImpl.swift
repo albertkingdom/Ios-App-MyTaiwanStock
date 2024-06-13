@@ -8,7 +8,7 @@
 import Foundation
 import Combine
 
-class RepositoryImpl: Repository {
+class NetworkServiceImpl: NetworkService {
 
 
     typealias StockData = OneDayStockInfo
@@ -62,6 +62,7 @@ class RepositoryImpl: Repository {
                     return data
                 }
                 .decode(type: OneDayStockInfo.self, decoder: JSONDecoder())
+                .retry(3)
                 .sink { completion in
 
                     switch completion {

@@ -15,6 +15,15 @@ struct StockCellViewModel {
     let stockPriceDiffPercent: String
     let time: String
     
+    init(stockNo: String) {
+        self.stockNo = stockNo
+        self.stockShortName = "-"
+        self.stockPrice = "-"
+        self.stockPriceDiff = "-"
+        self.stockPriceDiffPercent = "-"
+        self.time = "-"
+    }
+    
     init(stock: OneDayStockInfoDetail) {
         self.stockNo = stock.stockNo
         self.stockShortName = stock.shortName

@@ -23,7 +23,7 @@ class AddHistoryViewController: UITableViewController {
     @IBOutlet weak var stockNoLabel: UILabel!
     @IBOutlet weak var priceTextField: UITextField!
     @IBOutlet weak var amountTextField: UITextField!
-    @IBOutlet weak var reasonTextView: UITextView!
+    @IBOutlet weak var memoLabel: UILabel!
     @IBOutlet weak var feePicker: UIPickerView!
     @IBOutlet weak var feeTextField: UITextField!
     
@@ -52,7 +52,7 @@ class AddHistoryViewController: UITableViewController {
             
             let price = try validationService.validStockPriceInput(priceTextField.text)
             let amount = try validationService.validStockAmountInput(amountTextField.text)
-            let reason = reasonTextView.text ?? ""
+            let reason = memoLabel.text ?? ""
             switch feeType {
             case .Percent(let percent):
                 print("fee percent \(percent)")
@@ -102,10 +102,10 @@ class AddHistoryViewController: UITableViewController {
         priceTextField.inputAccessoryView = toolBar()
         amountTextField.inputAccessoryView = toolBar()
         navigationItem.title = "新增一筆"
-        reasonTextView.layer.borderColor = UIColor.lightGray.cgColor
-        reasonTextView.layer.borderWidth = 2
-        reasonTextView.layer.cornerRadius = 5
-        
+
+        memoLabel.text = viewModel.memo
+        memoLabel.numberOfLines = 1
+        memoLabel.lineBreakMode = .byTruncatingTail
         priceTextField.delegate = self
         amountTextField.delegate = self
         
@@ -118,9 +118,28 @@ class AddHistoryViewController: UITableViewController {
         userDefinedDiscount = UserDefaults.standard.integer(forKey: UserDefaults.userDefinedFeeDiscountKey)
         feePicker.selectRow(userDefinedDiscount, inComponent: 1, animated: true)
         feeTextField.text = fee.feePercentValues[userDefinedDiscount]
+        
+        viewModel.updateFeeAmount = { digit in
+            self.feeTextField.text = "\(digit) 元"
+        }
+        
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        memoLabel.text = viewModel.memo
+    }
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        if segue.identifier == "writeReasonSegue" {
+            logger.debug("writeReasonSegue")
+        }
+    }
+    override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.row == 6 {
+            let nextVC = self.storyboard?.instantiateViewController(withIdentifier: "writeReasonVC") as! MemoViewController
+            nextVC.viewModel = viewModel
+            self.navigationController?.pushViewController(nextVC, animated: true)
+        }
     }
     
-   
 
 }
 
@@ -157,7 +176,19 @@ extension AddHistoryViewController: UITextFieldDelegate {
 //                   textField.replace(textRange, withText: "\(textField.text) strippedString")
 //               }
         }
+        
+        if let amountText = amountTextField.text,
+           let priceText = priceTextField.text,
+           let amountFloat = Float(amountText),
+           let priceFloat = Float(priceText)
+        {
+            if !amountText.isEmpty && !priceText.isEmpty{
+                viewModel.calculateFeeAndTax(price: priceFloat, amount: amountFloat, buyOrSell: 0)
+            }
+        }
+        
         return true
+
     }
 }
 
@@ -210,8 +241,10 @@ extension AddHistoryViewController: UIPickerViewDelegate, UIPickerViewDataSource
                   let amountFloat = Float(amountStr)
             else {return}
             let multiplier = Float(row+1)*0.1
-            let calculatedFee = fee.calFee(price: priceFloat, amount: amountFloat, multiplier: multiplier)
-            feeTextField.text = "\(calculatedFee) 元"
+            viewModel.updateFeeMultiplier(multiplier: multiplier)
+            viewModel.calculateFeeAndTax(price: priceFloat, amount: amountFloat, buyOrSell: 0)
+//            let calculatedFee = fee.calFee(price: priceFloat, amount: amountFloat, multiplier: multiplier)
+//            feeTextField.text = "\(calculatedFee) 元"
             feeTextField.isEnabled = false
             feeType = FeeType.Percent(multiplier)
         case 1:
@@ -220,7 +253,7 @@ extension AddHistoryViewController: UIPickerViewDelegate, UIPickerViewDataSource
             feeTextField.isEnabled = false
             feeType = FeeType.OneDollar
         case 2:
-            feeTextField.isEnabled = true
+            feeTextField.isEnabled = false
             feeTextField.placeholder = "輸入手續費"
             feeTextField.text = "\(userDefinedFee)"
             feeType = FeeType.userDefined

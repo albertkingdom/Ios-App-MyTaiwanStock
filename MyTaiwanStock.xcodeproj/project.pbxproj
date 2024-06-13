@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		A10CD2D028B9D1BB00B37AA4 /* CustomTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10CD2CF28B9D1BB00B37AA4 /* CustomTabBarViewController.swift */; };
 		A1202125288BB8DD00C8746A /* NewsListTableViewCell2.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1202124288BB8DD00C8746A /* NewsListTableViewCell2.swift */; };
+		A12515612C15C339001BFC53 /* Notification+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12515602C15C339001BFC53 /* Notification+Extension.swift */; };
+		A12515622C15C665001BFC53 /* Notification+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12515602C15C339001BFC53 /* Notification+Extension.swift */; };
+		A12515642C16076F001BFC53 /* MemoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12515632C16076F001BFC53 /* MemoViewController.swift */; };
 		A12705122830AE9900ED92F2 /* StockListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12705112830AE9900ED92F2 /* StockListViewModel.swift */; };
 		A12705142830B36700ED92F2 /* StockCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12705132830B36700ED92F2 /* StockCellViewModel.swift */; };
 		A12705162830BCE500ED92F2 /* Observable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12705152830BCE500ED92F2 /* Observable.swift */; };
@@ -19,23 +22,23 @@
 		A1270520283209FD00ED92F2 /* StockDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A127051F283209FD00ED92F2 /* StockDetailViewModel.swift */; };
 		A127052228320B2200ED92F2 /* AddHistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A127052128320B2200ED92F2 /* AddHistoryViewModel.swift */; };
 		A1270524283212FE00ED92F2 /* StatisticViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1270523283212FE00ED92F2 /* StatisticViewModel.swift */; };
-		A127052628321DB000ED92F2 /* HistoryCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A127052528321DB000ED92F2 /* HistoryCellViewModel.swift */; };
+		A127052628321DB000ED92F2 /* HistoryCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A127052528321DB000ED92F2 /* HistoryCellModel.swift */; };
 		A1270528283241D700ED92F2 /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1270527283241D700ED92F2 /* ChatViewModel.swift */; };
 		A127052A28335E6C00ED92F2 /* NewsListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A127052928335E6C00ED92F2 /* NewsListViewModel.swift */; };
 		A127052C2833604400ED92F2 /* NewsListCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A127052B2833604400ED92F2 /* NewsListCellViewModel.swift */; };
 		A128BB7D285241E8007F7645 /* OneDayStockInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F3122709A3190031D6FE /* OneDayStockInfo.swift */; };
 		A128BB7F28524570007F7645 /* WidgetStockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A128BB7E28524570007F7645 /* WidgetStockData.swift */; };
-		A14CB9F72943259C00DDA990 /* Repository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A14CB9F62943259B00DDA990 /* Repository.swift */; };
-		A14CB9F929433ED600DDA990 /* RepositoryImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = A14CB9F829433ED600DDA990 /* RepositoryImpl.swift */; };
+		A14CB9F72943259C00DDA990 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A14CB9F62943259B00DDA990 /* NetworkService.swift */; };
+		A14CB9F929433ED600DDA990 /* NetworkServiceImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = A14CB9F829433ED600DDA990 /* NetworkServiceImpl.swift */; };
 		A14CB9FD2943761F00DDA990 /* StockInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F30F2709805E0031D6FE /* StockInfo.swift */; };
-		A14CB9FE2943762F00DDA990 /* Repository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A14CB9F62943259B00DDA990 /* Repository.swift */; };
+		A14CB9FE2943762F00DDA990 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A14CB9F62943259B00DDA990 /* NetworkService.swift */; };
 		A14CBA0329437DAA00DDA990 /* MyTaiwanStock.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DFD239DB270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodeld */; };
 		A14CBA0429437DB500DDA990 /* OnlineDBService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A199DC4528C84C54003FBC61 /* OnlineDBService.swift */; };
 		A14CBA0529437DD700DDA990 /* HistoryOnline.swift in Sources */ = {isa = PBXBuildFile; fileRef = A199DC4728C88923003FBC61 /* HistoryOnline.swift */; };
 		A14CBA0829437E5200DDA990 /* GoogleSignIn in Frameworks */ = {isa = PBXBuildFile; productRef = A14CBA0729437E5200DDA990 /* GoogleSignIn */; };
 		A14CBA0A29437E5200DDA990 /* GoogleSignInSwift in Frameworks */ = {isa = PBXBuildFile; productRef = A14CBA0929437E5200DDA990 /* GoogleSignInSwift */; };
 		A14CBA0B29437E8300DDA990 /* FavList.swift in Sources */ = {isa = PBXBuildFile; fileRef = A199DC4328C843BD003FBC61 /* FavList.swift */; };
-		A14CBA0C2943800B00DDA990 /* RepositoryImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = A14CB9F829433ED600DDA990 /* RepositoryImpl.swift */; };
+		A14CBA0C2943800B00DDA990 /* NetworkServiceImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = A14CB9F829433ED600DDA990 /* NetworkServiceImpl.swift */; };
 		A14CBA0D2943818D00DDA990 /* LocalDBService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C03DD328F1452D007098D2 /* LocalDBService.swift */; };
 		A14CBA0E2943882300DDA990 /* StockCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12705132830B36700ED92F2 /* StockCellViewModel.swift */; };
 		A14CBA1229443D5200DDA990 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = A12705172830F4AB00ED92F2 /* GoogleService-Info.plist */; };
@@ -161,6 +164,8 @@
 /* Begin PBXFileReference section */
 		A10CD2CF28B9D1BB00B37AA4 /* CustomTabBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBarViewController.swift; sourceTree = "<group>"; };
 		A1202124288BB8DD00C8746A /* NewsListTableViewCell2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsListTableViewCell2.swift; sourceTree = "<group>"; };
+		A12515602C15C339001BFC53 /* Notification+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+Extension.swift"; sourceTree = "<group>"; };
+		A12515632C16076F001BFC53 /* MemoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoViewController.swift; sourceTree = "<group>"; };
 		A12705112830AE9900ED92F2 /* StockListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockListViewModel.swift; sourceTree = "<group>"; };
 		A12705132830B36700ED92F2 /* StockCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockCellViewModel.swift; sourceTree = "<group>"; };
 		A12705152830BCE500ED92F2 /* Observable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Observable.swift; sourceTree = "<group>"; };
@@ -171,13 +176,13 @@
 		A127051F283209FD00ED92F2 /* StockDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailViewModel.swift; sourceTree = "<group>"; };
 		A127052128320B2200ED92F2 /* AddHistoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddHistoryViewModel.swift; sourceTree = "<group>"; };
 		A1270523283212FE00ED92F2 /* StatisticViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticViewModel.swift; sourceTree = "<group>"; };
-		A127052528321DB000ED92F2 /* HistoryCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryCellViewModel.swift; sourceTree = "<group>"; };
+		A127052528321DB000ED92F2 /* HistoryCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryCellModel.swift; sourceTree = "<group>"; };
 		A1270527283241D700ED92F2 /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
 		A127052928335E6C00ED92F2 /* NewsListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsListViewModel.swift; sourceTree = "<group>"; };
 		A127052B2833604400ED92F2 /* NewsListCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsListCellViewModel.swift; sourceTree = "<group>"; };
 		A128BB7E28524570007F7645 /* WidgetStockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetStockData.swift; sourceTree = "<group>"; };
-		A14CB9F62943259B00DDA990 /* Repository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repository.swift; sourceTree = "<group>"; };
-		A14CB9F829433ED600DDA990 /* RepositoryImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RepositoryImpl.swift; sourceTree = "<group>"; };
+		A14CB9F62943259B00DDA990 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
+		A14CB9F829433ED600DDA990 /* NetworkServiceImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkServiceImpl.swift; sourceTree = "<group>"; };
 		A16321512954A5C50011F295 /* AddDividendViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDividendViewController.swift; sourceTree = "<group>"; };
 		A16321532954B05D0011F295 /* AddDividendViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDividendViewModel.swift; sourceTree = "<group>"; };
 		A16321652955A4BF0011F295 /* StatisticDividendTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticDividendTableViewCell.swift; sourceTree = "<group>"; };
@@ -311,8 +316,8 @@
 		A14CBA112944360600DDA990 /* Repository */ = {
 			isa = PBXGroup;
 			children = (
-				A14CB9F62943259B00DDA990 /* Repository.swift */,
-				A14CB9F829433ED600DDA990 /* RepositoryImpl.swift */,
+				A14CB9F62943259B00DDA990 /* NetworkService.swift */,
+				A14CB9F829433ED600DDA990 /* NetworkServiceImpl.swift */,
 			);
 			path = Repository;
 			sourceTree = "<group>";
@@ -417,6 +422,7 @@
 				A199DC3E28C79CAE003FBC61 /* AccountViewController.swift */,
 				A16321512954A5C50011F295 /* AddDividendViewController.swift */,
 				A163216D2956A52F0011F295 /* DividendDetailViewController.swift */,
+				A12515632C16076F001BFC53 /* MemoViewController.swift */,
 			);
 			path = "View Controller";
 			sourceTree = "<group>";
@@ -426,7 +432,7 @@
 			children = (
 				DF06F316270A01220031D6FE /* StockTableViewCell.swift */,
 				A12705132830B36700ED92F2 /* StockCellViewModel.swift */,
-				A127052528321DB000ED92F2 /* HistoryCellViewModel.swift */,
+				A127052528321DB000ED92F2 /* HistoryCellModel.swift */,
 				A168E0A12714822D00C75064 /* NewsListTableViewCell.swift */,
 				A1202124288BB8DD00C8746A /* NewsListTableViewCell2.swift */,
 				A127052B2833604400ED92F2 /* NewsListCellViewModel.swift */,
@@ -458,6 +464,7 @@
 				A199DC4528C84C54003FBC61 /* OnlineDBService.swift */,
 				A1C03DD328F1452D007098D2 /* LocalDBService.swift */,
 				A1F168322BDE11400080F57E /* UIColor+Extension.swift */,
+				A12515602C15C339001BFC53 /* Notification+Extension.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -679,6 +686,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				A12515642C16076F001BFC53 /* MemoViewController.swift in Sources */,
 				DFD239DD270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodeld in Sources */,
 				A16321542954B05E0011F295 /* AddDividendViewModel.swift in Sources */,
 				A127051C2831F98100ED92F2 /* AddStockNoViewModel.swift in Sources */,
@@ -690,7 +698,7 @@
 				A16321522954A5C50011F295 /* AddDividendViewController.swift in Sources */,
 				DF793ADB27E03258007C9442 /* AddStockTableViewCell.swift in Sources */,
 				DFFEB05027E1E37D00C85A53 /* Channel.swift in Sources */,
-				A14CB9F72943259C00DDA990 /* Repository.swift in Sources */,
+				A14CB9F72943259C00DDA990 /* NetworkService.swift in Sources */,
 				DF06F326270D50000031D6FE /* History.swift in Sources */,
 				A199DC3F28C79CAE003FBC61 /* AccountViewController.swift in Sources */,
 				A199DC3828BFA048003FBC61 /* UserDefault+Extension.swift in Sources */,
@@ -701,11 +709,11 @@
 				A168E0A027147C9800C75064 /* NewsListViewController.swift in Sources */,
 				A199DC4828C88924003FBC61 /* HistoryOnline.swift in Sources */,
 				DF3873A227ECC8DC000E2EAF /* LargeValueFormatter.swift in Sources */,
-				A127052628321DB000ED92F2 /* HistoryCellViewModel.swift in Sources */,
+				A127052628321DB000ED92F2 /* HistoryCellModel.swift in Sources */,
 				DF06F32A270DEA1A0031D6FE /* AddHistoryViewController.swift in Sources */,
 				DFFEB04E27E1D6C400C85A53 /* Message.swift in Sources */,
 				A12705122830AE9900ED92F2 /* StockListViewModel.swift in Sources */,
-				A14CB9F929433ED600DDA990 /* RepositoryImpl.swift in Sources */,
+				A14CB9F929433ED600DDA990 /* NetworkServiceImpl.swift in Sources */,
 				DF06F31C270AA43A0031D6FE /* StockViewController.swift in Sources */,
 				DF06F324270B1A4F0031D6FE /* MyStockList.swift in Sources */,
 				A17C2A7928D80C99007508D0 /* FeeType.swift in Sources */,
@@ -724,6 +732,7 @@
 				A1202125288BB8DD00C8746A /* NewsListTableViewCell2.swift in Sources */,
 				DF14418027869C200038D05D /* StockStatistic.swift in Sources */,
 				A127052C2833604400ED92F2 /* NewsListCellViewModel.swift in Sources */,
+				A12515612C15C339001BFC53 /* Notification+Extension.swift in Sources */,
 				DF06F317270A01220031D6FE /* StockTableViewCell.swift in Sources */,
 				A17C2A7B28D81303007508D0 /* Fee.swift in Sources */,
 				DFFEB04A27E1D45000C85A53 /* ChatViewController.swift in Sources */,
@@ -756,11 +765,12 @@
 				A14CB9FD2943761F00DDA990 /* StockInfo.swift in Sources */,
 				A14CBA0E2943882300DDA990 /* StockCellViewModel.swift in Sources */,
 				A128BB7D285241E8007F7645 /* OneDayStockInfo.swift in Sources */,
+				A12515622C15C665001BFC53 /* Notification+Extension.swift in Sources */,
 				A14CBA0429437DB500DDA990 /* OnlineDBService.swift in Sources */,
 				A14CBA0D2943818D00DDA990 /* LocalDBService.swift in Sources */,
 				A14CBA0B29437E8300DDA990 /* FavList.swift in Sources */,
-				A14CBA0C2943800B00DDA990 /* RepositoryImpl.swift in Sources */,
-				A14CB9FE2943762F00DDA990 /* Repository.swift in Sources */,
+				A14CBA0C2943800B00DDA990 /* NetworkServiceImpl.swift in Sources */,
+				A14CB9FE2943762F00DDA990 /* NetworkService.swift in Sources */,
 				A14CBA0529437DD700DDA990 /* HistoryOnline.swift in Sources */,
 				A1E1724A2BED087200ED5916 /* View+Extension.swift in Sources */,
 				DFFB337327F858830018F3A4 /* StockWidget.swift in Sources */,

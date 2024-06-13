@@ -35,6 +35,10 @@ class EditFeeViewController: UITableViewController {
         
         tableView.separatorStyle = .none
         tableView.backgroundColor = .secondarySystemBackground
+        
+        feeTextField.placeholder = "新台幣"
+        feeTextField.backgroundColor = .lightGray
+        feeTextField.keyboardType = .decimalPad
     }
     
 }

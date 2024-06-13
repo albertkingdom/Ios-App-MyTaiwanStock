@@ -22,7 +22,7 @@
 		A1270520283209FD00ED92F2 /* StockDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A127051F283209FD00ED92F2 /* StockDetailViewModel.swift */; };
 		A127052228320B2200ED92F2 /* AddHistoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A127052128320B2200ED92F2 /* AddHistoryViewModel.swift */; };
 		A1270524283212FE00ED92F2 /* StatisticViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1270523283212FE00ED92F2 /* StatisticViewModel.swift */; };
-		A127052628321DB000ED92F2 /* HistoryCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A127052528321DB000ED92F2 /* HistoryCellViewModel.swift */; };
+		A127052628321DB000ED92F2 /* HistoryCellModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A127052528321DB000ED92F2 /* HistoryCellModel.swift */; };
 		A1270528283241D700ED92F2 /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1270527283241D700ED92F2 /* ChatViewModel.swift */; };
 		A127052A28335E6C00ED92F2 /* NewsListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A127052928335E6C00ED92F2 /* NewsListViewModel.swift */; };
 		A127052C2833604400ED92F2 /* NewsListCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A127052B2833604400ED92F2 /* NewsListCellViewModel.swift */; };
@@ -176,7 +176,7 @@
 		A127051F283209FD00ED92F2 /* StockDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockDetailViewModel.swift; sourceTree = "<group>"; };
 		A127052128320B2200ED92F2 /* AddHistoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddHistoryViewModel.swift; sourceTree = "<group>"; };
 		A1270523283212FE00ED92F2 /* StatisticViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatisticViewModel.swift; sourceTree = "<group>"; };
-		A127052528321DB000ED92F2 /* HistoryCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryCellViewModel.swift; sourceTree = "<group>"; };
+		A127052528321DB000ED92F2 /* HistoryCellModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HistoryCellModel.swift; sourceTree = "<group>"; };
 		A1270527283241D700ED92F2 /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
 		A127052928335E6C00ED92F2 /* NewsListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsListViewModel.swift; sourceTree = "<group>"; };
 		A127052B2833604400ED92F2 /* NewsListCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsListCellViewModel.swift; sourceTree = "<group>"; };
@@ -297,13 +297,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		A125155F2C15C31D001BFC53 /* New Group */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = "New Group";
-			sourceTree = "<group>";
-		};
 		A12705102830AE7C00ED92F2 /* View Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -372,7 +365,6 @@
 		DF06F2F927097F2C0031D6FE /* MyTaiwanStock */ = {
 			isa = PBXGroup;
 			children = (
-				A125155F2C15C31D001BFC53 /* New Group */,
 				A14CBA112944360600DDA990 /* Repository */,
 				DFFB338127F94B5A0018F3A4 /* MyTaiwanStock.entitlements */,
 				DF3873A327ECC930000E2EAF /* Util */,
@@ -440,7 +432,7 @@
 			children = (
 				DF06F316270A01220031D6FE /* StockTableViewCell.swift */,
 				A12705132830B36700ED92F2 /* StockCellViewModel.swift */,
-				A127052528321DB000ED92F2 /* HistoryCellViewModel.swift */,
+				A127052528321DB000ED92F2 /* HistoryCellModel.swift */,
 				A168E0A12714822D00C75064 /* NewsListTableViewCell.swift */,
 				A1202124288BB8DD00C8746A /* NewsListTableViewCell2.swift */,
 				A127052B2833604400ED92F2 /* NewsListCellViewModel.swift */,
@@ -717,7 +709,7 @@
 				A168E0A027147C9800C75064 /* NewsListViewController.swift in Sources */,
 				A199DC4828C88924003FBC61 /* HistoryOnline.swift in Sources */,
 				DF3873A227ECC8DC000E2EAF /* LargeValueFormatter.swift in Sources */,
-				A127052628321DB000ED92F2 /* HistoryCellViewModel.swift in Sources */,
+				A127052628321DB000ED92F2 /* HistoryCellModel.swift in Sources */,
 				DF06F32A270DEA1A0031D6FE /* AddHistoryViewController.swift in Sources */,
 				DFFEB04E27E1D6C400C85A53 /* Message.swift in Sources */,
 				A12705122830AE9900ED92F2 /* StockListViewModel.swift in Sources */,

@@ -46,7 +46,6 @@ class AddStockNoViewController: UIViewController {
 
         viewModel.filteredAddStockCellViewModelsCombine
             .sink { [weak self] data in
-                
                 self?.tableView.reloadData()
             }.store(in: &subscription)
     }

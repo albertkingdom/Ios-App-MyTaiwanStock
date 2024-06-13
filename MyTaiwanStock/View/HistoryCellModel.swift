@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct HistoryCellViewModel {
+struct HistoryCellModel {
     var status: Int16 {
         return historyData.status
     } // 0: buy, 1: sell

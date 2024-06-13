@@ -15,6 +15,10 @@ class LocalDBService {
     
     var persistentContainer: NSPersistentCloudKitContainer = {
         let container = NSPersistentCloudKitContainer(name: "MyTaiwanStock")
+        let description = NSPersistentStoreDescription()
+        description.shouldMigrateStoreAutomatically = true
+        description.shouldInferMappingModelAutomatically = true
+        container.persistentStoreDescriptions = [description]
         container.loadPersistentStores(completionHandler: { storeDescription, error in
             if let error = error as NSError? {
                 fatalError("Unable to load persistent stores: \(error)")
@@ -221,7 +225,14 @@ class LocalDBService {
         saveContext()
     }
     // MARK: Core Data - save new record
-    func saveNewRecord(stockNo: String, price: Float, amount: Int, reason: String, buyOrSellStatus: Int, date: Date) {
+    func saveNewRecord(
+        stockNo: String,
+        price: Float,
+        amount: Int,
+        reason: String,
+        buyOrSellStatus: Int,
+        date: Date
+    ) {
         
         let newInvestHistory = InvestHistory(context: context)
         newInvestHistory.stockNo = stockNo
@@ -230,7 +241,6 @@ class LocalDBService {
         newInvestHistory.date = date
         newInvestHistory.status = Int16(buyOrSellStatus)
         newInvestHistory.reason = reason
-        
         saveContext()
         
     }

@@ -24,3 +24,6 @@ Pods/
 
 
 .env
+
+# Exclude Xcode user state files
+*.xcuserstate

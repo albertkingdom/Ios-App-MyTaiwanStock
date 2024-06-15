@@ -43,12 +43,16 @@ class StockListViewModel {
     private var subscription = Set<AnyCancellable>()
 
     
-    @Published var isLoading = false {
+    @Published var isLoading = true {
         didSet {
             print("isLoading \(isLoading)")
         }
     }
-    
+    @Published var shouldShowAlert = false {
+        didSet {
+            print("showTip \(shouldShowAlert)")
+        }
+    }
     private let repository: any NetworkService
     
     init(networkService: any NetworkService) {
@@ -90,8 +94,12 @@ class StockListViewModel {
             
             setupStockNameStringSet()
             generateMenu()
+            isLoading = false
+            shouldShowAlert = false
         } else {
             logger.debug("core data沒有資料")
+            isLoading = false
+            shouldShowAlert = true
         }
     }
     

@@ -9,30 +9,16 @@ import Foundation
 import CoreData
 import UIKit
 
+
 class LocalDBService {
     
     static let shared = LocalDBService()
-    
-    var persistentContainer: NSPersistentCloudKitContainer = {
-        let container = NSPersistentCloudKitContainer(name: "MyTaiwanStock")
-        let description = NSPersistentStoreDescription()
-        description.shouldMigrateStoreAutomatically = true
-        description.shouldInferMappingModelAutomatically = true
-        container.persistentStoreDescriptions = [description]
-        container.loadPersistentStores(completionHandler: { storeDescription, error in
-            if let error = error as NSError? {
-                fatalError("Unable to load persistent stores: \(error)")
-            }
-        })
-        container.viewContext.automaticallyMergesChangesFromParent = true
-        return container
-    }()
-    private var timer: Timer?
+    var container: NSPersistentContainer
 
     // MARK: - Core Data Saving support
     
     func saveContext() {
-        let context = persistentContainer.viewContext
+        let context = container.viewContext
         
         if self.context.hasChanges {
             do {
@@ -46,42 +32,78 @@ class LocalDBService {
     }
     
     
-    
     var context: NSManagedObjectContext {
-        return self.persistentContainer.viewContext
+        return self.container.viewContext
     }
-    init(context: NSManagedObjectContext?) {
-    
-    }
+//    init(context: NSManagedObjectContext?) {
+//    
+//    }
    
-    init() {
-        createCoreDataContentChangeObserver() // 打開App讓Core Data和iCloud同步數據，情境：換機後安裝App後第一次打開可以載入之前數據
-        setupTimer()
+    private init() {
+
+        let syncPreference = UserPreferences.shared.syncPreference
+        container = LocalDBService.configureContainer(syncPreference: syncPreference)
+        loadPersistentStores()
     }
-    private func createCoreDataContentChangeObserver() {
+    static func configureContainer(syncPreference: SyncPreference) -> NSPersistentContainer {
+        if syncPreference == .iCloud {
+            // setup for core data + icloud
+            let container = NSPersistentCloudKitContainer(name: "MyTaiwanStock")
+            let storeURL = URL.storeURL(for: "group.a2006mike.myTaiwanStock", databaseName: "MyTaiwanStock")
+            let storeDescription = NSPersistentStoreDescription(url: storeURL)
+            storeDescription.cloudKitContainerOptions = NSPersistentCloudKitContainerOptions(containerIdentifier: "iCloud.com.a2006mike.MyTaiwanStock2")
+            storeDescription.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
+            container.persistentStoreDescriptions = [storeDescription]
+            return container
+        } else {
+            // setup for local core data only
+            let container = NSPersistentContainer(name: "MyTaiwanStock")
+            let storeURL = URL.storeURL(for: "group.a2006mike.myTaiwanStock", databaseName: "MyTaiwanStock")
+            let storeDescription = NSPersistentStoreDescription(url: storeURL)
+            storeDescription.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
+            container.persistentStoreDescriptions = [storeDescription]
+            return container
+        }
+    }
+    func loadPersistentStores() {
+        container.loadPersistentStores { (storeDescription, error) in
+            if let error = error {
+                fatalError("Unresolved error \(error)")
+            }
+        }
+        container.viewContext.automaticallyMergesChangesFromParent = true
+        container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+        
         NotificationCenter.default.addObserver(
             self,
-            selector: #selector(handleStoreChange(_:)),
-            name: .NSManagedObjectContextObjectsDidChange,
-            object: persistentContainer.persistentStoreCoordinator
+            selector: #selector(handleRemoteChangeNotification),
+            name: .NSPersistentStoreRemoteChange,
+            object: container.persistentStoreCoordinator
         )
     }
-    private func setupTimer() {
-        // 設置一个超時時間，比如3秒，如果在這3秒内没有Core Data數據變化，则手動觸發
-        timer = Timer.scheduledTimer(withTimeInterval: 3.0, repeats: false) { [weak self] _ in
-            self?.handleStoreChange(nil)  // 如果没有实际的通知对象，可以传递nil
-        }
+    @objc private func handleRemoteChangeNotification(_ notification: Notification) {
+        // Handle the notification to update your UI or state
+        print("Data from iCloud has been synced.")
     }
-    @objc private func handleStoreChange(_ notification: Notification?) {
-        print("handleStoreChange")
-        if let notification = notification {
-            print("Core Data數據發生變化: \(notification)")
-            timer?.invalidate()
-        } else {
-            print("超時，Core Data沒有數據變化")
-        }
-        NotificationCenter.default.post(name: .coreDataDidUpdate, object: nil)
-    }
+//    private func createCoreDataContentChangeObserver() {
+//        NotificationCenter.default.addObserver(
+//            self,
+//            selector: #selector(handleStoreChange(_:)),
+//            name: .NSManagedObjectContextObjectsDidChange,
+//            object: persistentContainer.persistentStoreCoordinator
+//        )
+//    }
+
+//    @objc private func handleStoreChange(_ notification: Notification?) {
+//        print("handleStoreChange")
+//        if let notification = notification {
+//            print("Core Data數據發生變化: \(notification)")
+//            timer?.invalidate()
+//        } else {
+//            print("超時，Core Data沒有數據變化")
+//        }
+//        NotificationCenter.default.post(name: .coreDataDidUpdate, object: nil)
+//    }
     // MARK: Core Data - fetch list
     func fetchAllListFromDB() -> [List]{
         let fetchRequest: NSFetchRequest<List> = List.fetchRequest()
@@ -314,9 +336,12 @@ class LocalDBService {
         saveContext()
     }
     
-    
-    struct StockNoToPrice {
-        let stockNo: String
-        let price: Double
+}
+
+extension LocalDBService {
+    // after user switch to (not) enable icloud sync
+    func reset(syncPreference: SyncPreference) {
+        container = LocalDBService.configureContainer(syncPreference: syncPreference)
+        loadPersistentStores()
     }
 }

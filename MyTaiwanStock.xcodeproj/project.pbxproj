@@ -12,6 +12,8 @@
 		A12515612C15C339001BFC53 /* Notification+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12515602C15C339001BFC53 /* Notification+Extension.swift */; };
 		A12515622C15C665001BFC53 /* Notification+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12515602C15C339001BFC53 /* Notification+Extension.swift */; };
 		A12515642C16076F001BFC53 /* MemoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12515632C16076F001BFC53 /* MemoViewController.swift */; };
+		A12515662C1C950E001BFC53 /* UserPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12515652C1C950E001BFC53 /* UserPreferences.swift */; };
+		A12515672C1C9B8E001BFC53 /* UserPreferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12515652C1C950E001BFC53 /* UserPreferences.swift */; };
 		A12705122830AE9900ED92F2 /* StockListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12705112830AE9900ED92F2 /* StockListViewModel.swift */; };
 		A12705142830B36700ED92F2 /* StockCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12705132830B36700ED92F2 /* StockCellViewModel.swift */; };
 		A12705162830BCE500ED92F2 /* Observable.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12705152830BCE500ED92F2 /* Observable.swift */; };
@@ -26,6 +28,8 @@
 		A1270528283241D700ED92F2 /* ChatViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1270527283241D700ED92F2 /* ChatViewModel.swift */; };
 		A127052A28335E6C00ED92F2 /* NewsListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A127052928335E6C00ED92F2 /* NewsListViewModel.swift */; };
 		A127052C2833604400ED92F2 /* NewsListCellViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A127052B2833604400ED92F2 /* NewsListCellViewModel.swift */; };
+		A12719E72C1D8571005AB268 /* URL+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12719E62C1D8571005AB268 /* URL+Extension.swift */; };
+		A12719E82C1D8590005AB268 /* URL+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12719E62C1D8571005AB268 /* URL+Extension.swift */; };
 		A128BB7D285241E8007F7645 /* OneDayStockInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F3122709A3190031D6FE /* OneDayStockInfo.swift */; };
 		A128BB7F28524570007F7645 /* WidgetStockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A128BB7E28524570007F7645 /* WidgetStockData.swift */; };
 		A14CB9F72943259C00DDA990 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A14CB9F62943259B00DDA990 /* NetworkService.swift */; };
@@ -166,6 +170,7 @@
 		A1202124288BB8DD00C8746A /* NewsListTableViewCell2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsListTableViewCell2.swift; sourceTree = "<group>"; };
 		A12515602C15C339001BFC53 /* Notification+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+Extension.swift"; sourceTree = "<group>"; };
 		A12515632C16076F001BFC53 /* MemoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoViewController.swift; sourceTree = "<group>"; };
+		A12515652C1C950E001BFC53 /* UserPreferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserPreferences.swift; sourceTree = "<group>"; };
 		A12705112830AE9900ED92F2 /* StockListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockListViewModel.swift; sourceTree = "<group>"; };
 		A12705132830B36700ED92F2 /* StockCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockCellViewModel.swift; sourceTree = "<group>"; };
 		A12705152830BCE500ED92F2 /* Observable.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Observable.swift; sourceTree = "<group>"; };
@@ -180,6 +185,7 @@
 		A1270527283241D700ED92F2 /* ChatViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChatViewModel.swift; sourceTree = "<group>"; };
 		A127052928335E6C00ED92F2 /* NewsListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsListViewModel.swift; sourceTree = "<group>"; };
 		A127052B2833604400ED92F2 /* NewsListCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsListCellViewModel.swift; sourceTree = "<group>"; };
+		A12719E62C1D8571005AB268 /* URL+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+Extension.swift"; sourceTree = "<group>"; };
 		A128BB7E28524570007F7645 /* WidgetStockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetStockData.swift; sourceTree = "<group>"; };
 		A14CB9F62943259B00DDA990 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		A14CB9F829433ED600DDA990 /* NetworkServiceImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkServiceImpl.swift; sourceTree = "<group>"; };
@@ -465,6 +471,8 @@
 				A1C03DD328F1452D007098D2 /* LocalDBService.swift */,
 				A1F168322BDE11400080F57E /* UIColor+Extension.swift */,
 				A12515602C15C339001BFC53 /* Notification+Extension.swift */,
+				A12515652C1C950E001BFC53 /* UserPreferences.swift */,
+				A12719E62C1D8571005AB268 /* URL+Extension.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -719,6 +727,7 @@
 				A17C2A7928D80C99007508D0 /* FeeType.swift in Sources */,
 				DF06F2FB27097F2C0031D6FE /* AppDelegate.swift in Sources */,
 				A1BB04D6293098F0002F983B /* NewHistoryTableViewCell.swift in Sources */,
+				A12719E72C1D8571005AB268 /* URL+Extension.swift in Sources */,
 				A16321672955A4BF0011F295 /* StatisticDividendTableViewCell.swift in Sources */,
 				DF793AD727DF8C36007C9442 /* AddStockNoViewController.swift in Sources */,
 				DF06F3102709805E0031D6FE /* StockInfo.swift in Sources */,
@@ -726,6 +735,7 @@
 				A1C9DAE02834F9DA00ADDEDB /* UIButton+Extension.swift in Sources */,
 				A1C03DD428F1452D007098D2 /* LocalDBService.swift in Sources */,
 				DF944EE92807DB04005157A9 /* ChartService.swift in Sources */,
+				A12515662C1C950E001BFC53 /* UserPreferences.swift in Sources */,
 				A16321712956A8CC0011F295 /* DividendDetailTableViewCell.swift in Sources */,
 				DF06F2FD27097F2C0031D6FE /* SceneDelegate.swift in Sources */,
 				A12705162830BCE500ED92F2 /* Observable.swift in Sources */,
@@ -770,7 +780,9 @@
 				A14CBA0D2943818D00DDA990 /* LocalDBService.swift in Sources */,
 				A14CBA0B29437E8300DDA990 /* FavList.swift in Sources */,
 				A14CBA0C2943800B00DDA990 /* NetworkServiceImpl.swift in Sources */,
+				A12719E82C1D8590005AB268 /* URL+Extension.swift in Sources */,
 				A14CB9FE2943762F00DDA990 /* NetworkService.swift in Sources */,
+				A12515672C1C9B8E001BFC53 /* UserPreferences.swift in Sources */,
 				A14CBA0529437DD700DDA990 /* HistoryOnline.swift in Sources */,
 				A1E1724A2BED087200ED5916 /* View+Extension.swift in Sources */,
 				DFFB337327F858830018F3A4 /* StockWidget.swift in Sources */,

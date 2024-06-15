@@ -12,7 +12,7 @@ class SettingViewController: UITableViewController {
     
     @IBOutlet weak var userDefinedFeeLabel: UILabel! // 自訂fee數字
     @IBOutlet weak var feeDiscountTextfield: UITextField!
-
+    @IBOutlet weak var syncSwitch: UISwitch!
     var pickerView = UIPickerView()
     var fee: Fee = Fee()
 
@@ -21,6 +21,8 @@ class SettingViewController: UITableViewController {
         initView()
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always
+        syncSwitch.isOn = UserPreferences.shared.syncPreference == .iCloud
+
     }
     override func viewDidAppear(_ animated: Bool) {
         let feeInDollars = UserDefaults.standard.double(forKey: UserDefaults.userDefinedFeeInDollarsKey)
@@ -28,6 +30,10 @@ class SettingViewController: UITableViewController {
         print("viewDidAppear feeInDollars \(feeInDollars)")
         userDefinedFeeLabel.text = "\(feeInDollars) 元"
         feeDiscountTextfield.text = fee.feePercentValues[feeDiscountIndex]
+    }
+    @IBAction func syncSwitchChanged(_ sender: UISwitch) {
+        UserPreferences.shared.syncPreference = sender.isOn ? .iCloud : .local
+        LocalDBService.shared.reset(syncPreference: UserPreferences.shared.syncPreference)
     }
     func initView() {
         navigationItem.title = "設定"

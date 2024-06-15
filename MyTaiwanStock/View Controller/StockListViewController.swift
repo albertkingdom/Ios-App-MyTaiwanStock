@@ -51,9 +51,14 @@ class StockListViewController: UIViewController {
         button.layer.shadowRadius = 10
         button.setTitle(nil, for: .normal)
         button.addTarget(self, action: #selector(goToAddStockNoVC), for: .touchUpInside)
+        button.translatesAutoresizingMaskIntoConstraints = false
+       
         return button
     }()
-//    var currentMenuIndex: Int = 0
+    let secondaryButton1 = UIButton(type: .custom)
+    let secondaryButton2 = UIButton(type: .custom)
+    let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -96,23 +101,9 @@ class StockListViewController: UIViewController {
         logger.debug("viewwillappear")
         setupSearchBarListener()
         
-        
-//        let isFirstTimeAfterSignIn = UserDefaults.standard.bool(forKey: UserDefaults.isFirstTimeAfterSignIn)
         let savedMenuIndex = getSavedListIndex()
         viewModel.setInitialMenuIndex(to: savedMenuIndex)
-/*
-        if isFirstTimeAfterSignIn {
-            // after downloading online data to local database, retrieve all local database at once
-            showAlert(title: "下載雲端資料", message: "您剛才登入，將下載雲端資料，是否同意？") { [weak self] in
-                self?.viewModel.getOnlineDBDataAndInsertLocal(completion: self?.viewModel.handleFetchListFromDB)
-            } negativeAction: { [weak self] in
-                self?.viewModel.handleFetchListFromDB()
-            }
-            UserDefaults.standard.set(false, forKey: UserDefaults.isFirstTimeAfterSignIn)
-        } else {
-            viewModel.handleFetchListFromDB()
-        }
- */
+
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .never
         
@@ -130,7 +121,7 @@ class StockListViewController: UIViewController {
         )
 
     }
-
+   
     @objc func onAppEnterForeground() {
         logger.debug("view enter foreground")
     }
@@ -140,16 +131,14 @@ class StockListViewController: UIViewController {
     }
     override func viewDidLayoutSubviews() {
 //        tableView.showAnimatedSkeleton()
-        view.addSubview(floatingButton)
-        floatingButton.frame = CGRect(x: view.frame.width - 80,
-                                      y: view.frame.height - 80 - view.safeAreaInsets.bottom,
-                                      width: 50, height: 50)
+        
+        
     }
     override func viewWillDisappear(_ animated: Bool) {
         logger.debug("viewWillDisappear")
         viewModel.cancelTimer()
         saveCurrentListIndex()
-       
+       resetFloatingButtonState()
     }
     
     func bindViewModel() {
@@ -202,9 +191,28 @@ class StockListViewController: UIViewController {
 //                self?.currentMenuIndex = index
 //            })
 //            .store(in: &subscription)
+//
+//        Publishers.CombineLatest(viewModel.$shouldShowAlert, viewModel.$isLoading)
+//            .sink { [weak self] isLoading, shouldShowTip in
+//                print("isLoading=\(isLoading), should \(shouldShowTip)")
+//                if !isLoading && shouldShowTip {
+//                    self?.showCustomAlert()
+//
+//                }
+//            }.store(in: &subscription)
         
     }
-    
+//    func showCustomAlert() {
+//        let alert = UIAlertController(title: "Alert", message: "新增您的第一筆收藏清單", preferredStyle: .alert)
+//
+//        alert.addAction(UIAlertAction(title: "帶我去！", style: .default, handler: { [weak self] _ in
+//            let vc = self?.storyboard?.instantiateViewController(identifier: "addListVC") as! AddListViewController
+//
+//            self?.navigationController?.pushViewController(vc, animated: false)
+//            self?.viewModel.shouldShowAlert = false
+//        }))
+//        self.present(alert, animated: true, completion: nil)
+//    }
 
     func saveListToUserDefault(data: Data) {
 
@@ -215,20 +223,23 @@ class StockListViewController: UIViewController {
     
     @objc func refreshData(){
         self.refreshControl.endRefreshing()
-    
         viewModel.repeatFetch(stockNos: Array(viewModel.stockNameStringSetCombine.value))
-
-
     }
     
     @objc private func goToAddStockNoVC() {
         print("tapFloatingButton")
-        let addStockViewController = storyboard?.instantiateViewController(identifier: "addStockVC") as! AddStockNoViewController
-        addStockViewController.followingStockNoList = viewModel.stockNameStringSetCombine.value
-        addStockViewController.addNewStockToDB = saveNewStockNumberToDB(stockNumber:)
+        let buttonsAreHidden = secondaryButton1.alpha == 0
+        
+        UIView.animate(withDuration: 0.3) {
+            self.secondaryButton1.alpha = buttonsAreHidden ? 1 : 0
+            self.secondaryButton2.alpha = buttonsAreHidden ? 1 : 0
+            self.blurEffectView.alpha = buttonsAreHidden ? 1 : 0
+        }
 
-        addStockViewController.listName = viewModel.menuTitleCombine
-        navigationController?.pushViewController(addStockViewController, animated: false)
+    }
+    func navigateToVC<T: UIViewController>(identifier: String, viewControllerType: T.Type) {
+        let VC = self.storyboard?.instantiateViewController(withIdentifier: identifier) as! T
+        self.navigationController?.pushViewController(VC, animated: true)
     }
     func configureMenu(actionList: [UIAction]?) {
         guard var actionList = actionList else {
@@ -237,12 +248,8 @@ class StockListViewController: UIViewController {
         
         actionList.append(
             UIAction(title: "編輯", handler: { action in
-                
-                // go to addlistVC page
-                let addListVC = self.storyboard?.instantiateViewController(withIdentifier: "addListVC") as! AddListViewController
-                self.navigationController?.pushViewController(addListVC, animated: true)
+                self.navigateToVC(identifier: "addListVC", viewControllerType: AddListViewController.self)
             }))
-        
         self.navCenterButton.menu = UIMenu(children: actionList)
     }
 
@@ -259,14 +266,83 @@ class StockListViewController: UIViewController {
             }
             .store(in: &subscription)
     }
-    
+    func setupFloatingButtons() {
+        view.addSubview(floatingButton)
+
+        NSLayoutConstraint.activate([
+            floatingButton.widthAnchor.constraint(equalToConstant: 50),
+            floatingButton.heightAnchor.constraint(equalToConstant: 50),
+            floatingButton.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
+            floatingButton.bottomAnchor.constraint(equalTo: view.bottomAnchor, constant: -100)
+        ])
+    }
+    func setupSecondaryButtons() {
+        configureButton(secondaryButton1, title: "新增清單", color: .systemBlue, offsetY: -90, action: #selector(secondaryButton1Tapped))
+        configureButton(secondaryButton2, title: "新增股票", color: .systemBlue, offsetY: -150, action: #selector(secondaryButton2Tapped))
+    }
+    func configureButton(_ button: UIButton, title: String, color: UIColor, offsetY: CGFloat, action: Selector) {
+        button.translatesAutoresizingMaskIntoConstraints = false
+        button.backgroundColor = color
+        button.layer.cornerRadius = 10 // Adjust for desired corner radius
+        button.setTitle(title, for: .normal)
+        button.setTitleColor(.white, for: .normal)
+        button.alpha = 0 // Hidden initially
+        button.contentEdgeInsets = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16) // Set padding
+        button.addTarget(self, action: action, for: .touchUpInside)
+
+        view.addSubview(button)
+        
+        NSLayoutConstraint.activate([
+            button.heightAnchor.constraint(equalToConstant: 40), // Adjust for desired height
+            button.trailingAnchor.constraint(equalTo: floatingButton.trailingAnchor),
+            button.bottomAnchor.constraint(equalTo: floatingButton.bottomAnchor, constant: offsetY),
+            //               button.leadingAnchor.constraint(equalTo: floatingButton.leadingAnchor)
+        ])
+    }
+    func setupBlurEffectView() {
+          blurEffectView.translatesAutoresizingMaskIntoConstraints = false
+          blurEffectView.alpha = 0 // Hidden initially
+          view.insertSubview(blurEffectView, belowSubview: floatingButton)
+          
+          NSLayoutConstraint.activate([
+              blurEffectView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+              blurEffectView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+              blurEffectView.topAnchor.constraint(equalTo: view.topAnchor),
+              blurEffectView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+          ])
+      }
     func initView() {
         tableView.backgroundColor = .secondarySystemBackground
         tableView.separatorStyle = .none
         tableView.estimatedRowHeight = 50 // for skeleton view to calculate height
         navigationItem.titleView?.tintColor = .systemBlue
+        setupFloatingButtons()
+        setupSecondaryButtons()
+        setupBlurEffectView()
+    }
+    func resetFloatingButtonState() {
+           secondaryButton1.alpha = 0
+           secondaryButton2.alpha = 0
+           blurEffectView.alpha = 0
+       }
+    @objc func secondaryButton1Tapped() {
+        print("Secondary button 1 tapped")
+        // Add additional actions for secondary button 1 here
+        self.navigateToVC(identifier: "addListVC", viewControllerType: AddListViewController.self)
+    
     }
     
+    @objc func secondaryButton2Tapped() {
+        print("Secondary button 2 tapped")
+        // Add additional actions for secondary button 2 here
+        let addStockViewController = storyboard?.instantiateViewController(identifier: "addStockVC") as! AddStockNoViewController
+        addStockViewController.followingStockNoList = viewModel.stockNameStringSetCombine.value
+        addStockViewController.addNewStockToDB = saveNewStockNumberToDB(stockNumber:)
+        
+        addStockViewController.listName = viewModel.menuTitleCombine
+        navigationController?.pushViewController(addStockViewController, animated: false)
+    }
+
     deinit {
         logger.debug("stock list vc deinit")
         NotificationCenter.default.removeObserver(

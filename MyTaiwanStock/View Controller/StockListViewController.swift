@@ -15,7 +15,6 @@ class StockListViewController: UIViewController {
 
     var subscription = Set<AnyCancellable>()
     
-    var userDefault = UserDefaults(suiteName: "group.a2006mike.myTaiwanStock")
     var context: NSManagedObjectContext?
     var viewModel: StockListViewModel!
     var cellDatas: [StockCellViewModel] = []
@@ -63,7 +62,7 @@ class StockListViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         logger.debug("list vc viewDidLoad")
-        viewModel = StockListViewModel(networkService: networkService)
+        viewModel = StockListViewModel.shared
         
         tableView.delegate = self
         tableView.dataSource = self
@@ -170,20 +169,6 @@ class StockListViewController: UIViewController {
             .store(in: &subscription)
         
        
-        viewModel.dataForWidget
-            .sink { [weak self] data in
-                
-                self?.saveListToUserDefault(data: data)
-            }
-            .store(in: &subscription)
-        
-        viewModel.stockNameStringSetCombine
-            .sink { [weak self] stockNoStrings in
-                //print("stockNoStrings \(stockNoStrings)")
-                self?.userDefault?.setValue(Array(stockNoStrings), forKey: "stockNos")
-                WidgetCenter.shared.reloadAllTimelines()
-            }
-            .store(in: &subscription)
         
 //        viewModel.currentMenuIndexCombine
 //            .sink(receiveValue: {[weak self] index in
@@ -214,11 +199,7 @@ class StockListViewController: UIViewController {
 //        self.present(alert, animated: true, completion: nil)
 //    }
 
-    func saveListToUserDefault(data: Data) {
 
-        self.userDefault?.setValue(data, forKey: "stockList")
-        WidgetCenter.shared.reloadAllTimelines()
-    }
     
     
     @objc func refreshData(){

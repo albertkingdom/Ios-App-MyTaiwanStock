@@ -8,9 +8,10 @@ import CoreData
 import Foundation
 import UIKit
 import Combine
+import WidgetKit
 
-class StockListViewModel {
-
+class StockListViewModel: ObservableObject {
+    static let shared = StockListViewModel()
     private var timer: Timer?
     private var lastTimeMenuIndex = 0
 //    var stockNoStringCombine = CurrentValueSubject<[String], Never>([])
@@ -41,7 +42,7 @@ class StockListViewModel {
     var searchText = CurrentValueSubject<String, Never>("")
     
     private var subscription = Set<AnyCancellable>()
-
+    var userDefault = UserDefaults(suiteName: "group.a2006mike.myTaiwanStock")
     
     @Published var isLoading = true {
         didSet {
@@ -55,17 +56,21 @@ class StockListViewModel {
     }
     private let repository: any NetworkService
     
-    init(networkService: any NetworkService) {
-        self.repository = networkService
-        setupFetchStockInfo()
-        NotificationCenter.default.addObserver(
-            self,
-            selector: #selector(handleInitialDataUpdate),
-            name: .coreDataDidUpdate,
-            object: nil
-        )
-    }
+//    init(networkService: any NetworkService) {
+//        self.repository = networkService
+//        setupFetchStockInfo()
+//        NotificationCenter.default.addObserver(
+//            self,
+//            selector: #selector(handleInitialDataUpdate),
+//            name: .coreDataDidUpdate,
+//            object: nil
+//        )
+//    }
     
+    private init() {
+        self.repository = NetworkServiceImpl()
+        setupFetchStockInfo()
+    }
     @objc func handleInitialDataUpdate() {
         logger.debug("完成core data 同步")
         handleFetchListFromDB()
@@ -233,7 +238,7 @@ class StockListViewModel {
             return stockNo
         }
         //print("stockNoStringArray \(stockNoStringArray)")
-        stockNameStringSetCombine.send(Set(stockNoStringArray))
+        self.userDefault?.setValue(stockNoStringArray, forKey: "stockNos")
     }
  
     

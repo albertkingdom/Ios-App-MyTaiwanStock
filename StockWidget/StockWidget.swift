@@ -8,10 +8,22 @@
 import WidgetKit
 import SwiftUI
 import Firebase
+import Combine
+import os
 
+let logger = Logger(subsystem: "com.a2006mike.MyTaiwanStock", category: "YourCategory")
 
+class SubscriptionManager {
+    static let shared = SubscriptionManager()
+    private init() {}
+    
+    var subscriptions = Set<AnyCancellable>()
+}
 struct Provider: TimelineProvider {
     let repository = NetworkServiceImpl()
+    @ObservedObject var viewModel = StockListViewModel.shared
+    var subscription = Set<AnyCancellable>()
+
     // fake data showed before real data
     func placeholder(in context: Context) -> SimpleEntry {
         SimpleEntry(date: Date(), stockList: [WidgetStockData(stockNo: "0050",
@@ -34,11 +46,44 @@ struct Provider: TimelineProvider {
         
         let currentDate = Date()
         let stockNos = retrieveStockNos()
-        
+//        viewModel.stockNameStringSetCombine
+//            .map({ setOfStockNames in
+//                print("setOfStockNames \(setOfStockNames)")
+//                return Array(setOfStockNames)
+//            })
+//            .sink{ arrayOfStockNames in
+//                repository.fetchOneDayStockInfo(stockList: arrayOfStockNames) { result in
+//                    switch result {
+//                    case .success(let data):
+//                        print("success \(data)")
+//                        var stockDatas = data.msgArray.map { priceData in
+//                            WidgetStockData(stockNo: priceData.stockNo,
+//                                            current: priceData.current,
+//                                            shortName: priceData.shortName,
+//                                            yesterDayPrice: priceData.yesterDayPrice)
+//                        }
+//                        if stockDatas.count > 3 {
+//                            stockDatas = Array(stockDatas[0...2])
+//                        }
+//                        let entry = SimpleEntry(date: currentDate, stockList: stockDatas)
+//                        entries.append(entry)
+//                        // create timeline
+//                        let timeline = Timeline(entries: entries, policy: .atEnd)
+//                        completion(timeline)
+//                    case .failure(let error):
+//                        print(error)
+//                        
+//                    }
+//                }}
+//        let list = LocalDBService.shared.fetchAllListFromDB()
+//        print(list.count)
+        let reloadDate = Calendar.current.date(byAdding: .minute,
+                                                  value: 15,
+                                                  to: currentDate)!
         repository.fetchOneDayStockInfo(stockList: stockNos) { result in
             switch result {
             case .success(let data):
-                //print("success \(data)")
+                print("success \(data)")
                 var stockDatas = data.msgArray.map { priceData in
                     WidgetStockData(stockNo: priceData.stockNo,
                                     current: priceData.current,
@@ -51,7 +96,7 @@ struct Provider: TimelineProvider {
                 let entry = SimpleEntry(date: currentDate, stockList: stockDatas)
                 entries.append(entry)
                 // create timeline
-                let timeline = Timeline(entries: entries, policy: .after(currentDate.addingTimeInterval(60)))
+                let timeline = Timeline(entries: entries, policy: .after(reloadDate))
                 completion(timeline)
             case .failure(let error):
                 print(error)
@@ -59,15 +104,14 @@ struct Provider: TimelineProvider {
             }
         }
         
+
+
         
     }
     
     func retrieveStockNos() -> [String] {
         let userDefault = UserDefaults(suiteName: "group.a2006mike.myTaiwanStock")
-        
         guard let stockNos = userDefault?.object(forKey: "stockNos") as? [String] else { return [] }
-        
-        
         return stockNos
     }
 }
@@ -81,7 +125,7 @@ struct SimpleEntry: TimelineEntry {
 
 struct StockWidgetEntryView : View {
     var entry: Provider.Entry
-    
+
     @Environment(\.widgetFamily) var family
     
     private let dateFormatter: DateFormatter = {

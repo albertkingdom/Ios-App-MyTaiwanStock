@@ -79,7 +79,6 @@ class StockListViewController: UIViewController {
         refreshControl = UIRefreshControl()
         tableView.addSubview(refreshControl)
         refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
-        initView()
         bindViewModel()
         // Listening to label tap notification
         NotificationCenter.default.addObserver(
@@ -93,6 +92,7 @@ class StockListViewController: UIViewController {
         let tapGesture = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         tapGesture.cancelsTouchesInView = false  // 這確保了點擊其他控件（如按鈕）時，不會干擾它們的事件
         view.addGestureRecognizer(tapGesture)
+        initView()
 
     }
     
@@ -118,9 +118,15 @@ class StockListViewController: UIViewController {
             name: UIApplication.didEnterBackgroundNotification,
             object: nil
         )
-
+        
     }
-   
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        // 只有初次打開才顯示教學
+        if !UserDefaults.standard.bool(forKey: UserDefaults.isFirstTimeAfterSignIn) {
+            presentWalkthrough(for: floatingButton, hintText: "點擊新增")
+        }
+    }
     @objc func onAppEnterForeground() {
         logger.debug("view enter foreground")
     }
@@ -440,6 +446,20 @@ extension StockListViewController: UINavigationControllerDelegate {
         if viewController == self {
             logger.debug("從其他vc返回到stock list vc")
             viewModel.handleFetchListFromDB()
+        }
+    }
+}
+
+extension StockListViewController {
+    func presentWalkthrough(for view: UIView, hintText: String) {
+        let walkthroughVC = WalkthroughViewController()
+        walkthroughVC.modalPresentationStyle = .overFullScreen
+        walkthroughVC.modalTransitionStyle = .crossDissolve
+        walkthroughVC.targetView = view
+        walkthroughVC.hintText = hintText
+        self.present(walkthroughVC, animated: true) {
+            // 顯示教學後，設定"初次打開"為false
+            UserDefaults.standard.set(false, forKey: UserDefaults.isFirstTimeOpenApp)
         }
     }
 }

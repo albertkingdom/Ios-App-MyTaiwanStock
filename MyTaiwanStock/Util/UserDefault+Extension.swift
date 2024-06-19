@@ -12,4 +12,5 @@ extension UserDefaults {
     static let userDefinedFeeDiscountKey = "userDefinedFeeDiscount"
     static let isFirstTimeAfterSignIn = "isFirstTimeAfterSignIn"
     static let menuIndex = "Menu Index"
+    static let isFirstTimeOpenApp = "isFirstTimeOpenApp"
 }

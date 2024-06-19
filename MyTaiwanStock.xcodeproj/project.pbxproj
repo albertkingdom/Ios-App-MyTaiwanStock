@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		A1065ACB2C1F266B0033A319 /* StockListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12705112830AE9900ED92F2 /* StockListViewModel.swift */; };
+		A1065AD22C21CEF30033A319 /* WalkthroughViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1065AD12C21CEF30033A319 /* WalkthroughViewController.swift */; };
 		A10CD2D028B9D1BB00B37AA4 /* CustomTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10CD2CF28B9D1BB00B37AA4 /* CustomTabBarViewController.swift */; };
 		A1202125288BB8DD00C8746A /* NewsListTableViewCell2.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1202124288BB8DD00C8746A /* NewsListTableViewCell2.swift */; };
 		A12515612C15C339001BFC53 /* Notification+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12515602C15C339001BFC53 /* Notification+Extension.swift */; };
@@ -169,6 +170,7 @@
 /* Begin PBXFileReference section */
 		A1065ACF2C21C4560033A319 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Main.strings"; sourceTree = "<group>"; };
 		A1065AD02C21C4560033A319 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
+		A1065AD12C21CEF30033A319 /* WalkthroughViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalkthroughViewController.swift; sourceTree = "<group>"; };
 		A10CD2CF28B9D1BB00B37AA4 /* CustomTabBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBarViewController.swift; sourceTree = "<group>"; };
 		A1202124288BB8DD00C8746A /* NewsListTableViewCell2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsListTableViewCell2.swift; sourceTree = "<group>"; };
 		A12515602C15C339001BFC53 /* Notification+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+Extension.swift"; sourceTree = "<group>"; };
@@ -432,6 +434,7 @@
 				A16321512954A5C50011F295 /* AddDividendViewController.swift */,
 				A163216D2956A52F0011F295 /* DividendDetailViewController.swift */,
 				A12515632C16076F001BFC53 /* MemoViewController.swift */,
+				A1065AD12C21CEF30033A319 /* WalkthroughViewController.swift */,
 			);
 			path = "View Controller";
 			sourceTree = "<group>";
@@ -730,6 +733,7 @@
 				DF06F324270B1A4F0031D6FE /* MyStockList.swift in Sources */,
 				A17C2A7928D80C99007508D0 /* FeeType.swift in Sources */,
 				DF06F2FB27097F2C0031D6FE /* AppDelegate.swift in Sources */,
+				A1065AD22C21CEF30033A319 /* WalkthroughViewController.swift in Sources */,
 				A1BB04D6293098F0002F983B /* NewHistoryTableViewCell.swift in Sources */,
 				A12719E72C1D8571005AB268 /* URL+Extension.swift in Sources */,
 				A16321672955A4BF0011F295 /* StatisticDividendTableViewCell.swift in Sources */,

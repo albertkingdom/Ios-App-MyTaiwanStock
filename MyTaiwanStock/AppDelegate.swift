@@ -15,13 +15,24 @@ let logger = Logger(subsystem: "com.a2006mike.MyTaiwanStock", category: "YourCat
 
 @main
 class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
-
-
+    var deviceId: String?
+    var networkService:NetworkServiceImpl?
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         FirebaseApp.configure()
         registerForPushNotifications()
         Messaging.messaging().delegate = self
+        // 取得或生成裝置ID
+        if let existingDeviceId = UserDefaults.standard.string(forKey: "deviceId") {
+            deviceId = existingDeviceId
+        } else {
+            let newDeviceId = UUID().uuidString
+            UserDefaults.standard.set(newDeviceId, forKey: "deviceId")
+            deviceId = newDeviceId
+        }
+        
+        print("Device ID: \(deviceId ?? "unknown")")
         return true
     }
     func registerForPushNotifications() {
@@ -46,9 +57,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
             if let error=error{
                 print("fcm error: \(error)")
             }
-            print("fcm token \(token)")
+            self.networkService = NetworkServiceImpl()
+            if let deviceId = self.deviceId {
+                self.networkService?.sendDeviceIdToServer(deviceId: deviceId, token: token)
+                print("fcm token \(token)")
+            }
         }
     }
+
+    
     // Apple Messaging
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
         let tokenParts = deviceToken.map { data -> String in
@@ -81,4 +98,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
       return GIDSignIn.sharedInstance.handle(url)
     }
 }
+
 

@@ -75,4 +75,7 @@ protocol NetworkService {
     // get all history from online DB
     func getAllHistoryFromOnlineDBAndSaveToLocal()
     
+    // 發送ID和FCM令牌到server(server要記錄每個裝置目前的badge count)
+    func sendDeviceIdToServer(deviceId: String, token: String)
+    
 }

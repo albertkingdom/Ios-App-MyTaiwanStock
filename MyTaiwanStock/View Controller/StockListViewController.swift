@@ -123,7 +123,8 @@ class StockListViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         // 只有初次打開才顯示教學
-        if !UserDefaults.standard.bool(forKey: UserDefaults.isFirstTimeAfterSignIn) {
+        
+        if UserDefaults.standard.bool(forKey: UserDefaults.isFirstTimeOpenApp, defaultValue: true) {
             presentWalkthrough(for: floatingButton, hintText: "點擊新增")
         }
     }

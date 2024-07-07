@@ -219,4 +219,23 @@ class NetworkServiceImpl: NetworkService {
     func getAllHistoryFromOnlineDBAndSaveToLocal() {
         onLineDBService.getAllHistoryFromOnlineDBAndSaveToLocal()
     }
+    // 發送ID和FCM令牌到server(server要記錄每個裝置目前的badge count)
+    func sendDeviceIdToServer(deviceId: String, token: String) {
+        let url = URL(string: "http://albertkingdom.ddns.net:3000/register-device")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        let body = ["deviceId": deviceId, "token": token]
+        request.httpBody = try? JSONSerialization.data(withJSONObject: body, options: [])
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        
+        let task = URLSession.shared.dataTask(with: request) { data, response, error in
+            if let error = error {
+                print("Error sending device ID to server: \(error.localizedDescription)")
+                return
+            }
+            print("Successfully sent device ID to server")
+        }
+        task.resume()
+    }
+
 }

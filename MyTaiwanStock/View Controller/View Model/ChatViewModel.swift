@@ -8,6 +8,7 @@ import Firebase
 import FirebaseAuth
 import Foundation
 import Combine
+import UserNotifications
 
 class ChatViewModel {
     var subscription = Set<AnyCancellable>()
@@ -57,7 +58,7 @@ class ChatViewModel {
     func createChannel(){
         
         
-        let documentRef = channelReference.addDocument(data: ["name": stockNo]) { error in
+        let documentRef = channelReference.addDocument(data: ["name": stockNo!]) { error in
             if let error = error {
                 print("Error saving channel: \(error.localizedDescription)")
             }
@@ -83,13 +84,23 @@ class ChatViewModel {
                     guard let id = snapshot?.documents[0].documentID else { return }
                     //self.channelID = snapshot?.documents[0].documentID
                     self.channelIDCombine.send(id)
+                    self.subscribeToTopic(chatRoomName: self.stockNo)
                     return
                 }
                 self.createChannel()
             }
         }
-        
-        
+    }
+    
+    // 訂閱通知topic以獲得通知
+    private func subscribeToTopic(chatRoomName: String) {
+        Messaging.messaging().subscribe(toTopic: "channel_\(chatRoomName)") { error in
+            if let error = error {
+                print("Error subscribing to topic: \(error.localizedDescription)")
+            } else {
+                print("Subscribed to topic: channel_\(chatRoomName)")
+            }
+        }
     }
     func signIn() {
         Auth.auth().signInAnonymously { authResult, error in
@@ -123,7 +134,7 @@ class ChatViewModel {
         switch change.type {
         case .added:
             let message = Message(document: change.document)
-            //print("message \(message)")
+            print("message \(message)")
             //messages.value?.append(message)
 //            messages.value?.sort { (msg1, msg2) -> Bool in
 //                msg1.sentDate < msg2.sentDate
@@ -147,11 +158,11 @@ class ChatViewModel {
           print("Error sending message: \(error.localizedDescription)")
           return
         }
-
       }
     }
     
     func removeListener() {
         messageListener?.remove()
     }
+
 }

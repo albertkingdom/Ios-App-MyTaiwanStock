@@ -8,6 +8,7 @@
 import Foundation
 import CoreData
 import UIKit
+import CloudKit
 
 
 class LocalDBService {
@@ -67,8 +68,12 @@ class LocalDBService {
     }
     func loadPersistentStores() {
         container.loadPersistentStores { (storeDescription, error) in
-            if let error = error {
-                fatalError("Unresolved error \(error)")
+            if let error = error as NSError? {
+                if error.code == CKError.quotaExceeded.rawValue {
+                    print("iCloud storage is full")
+                } else {
+                    fatalError("Unresolved error \(error), \(error.userInfo)")
+                }
             }
         }
         container.viewContext.automaticallyMergesChangesFromParent = true

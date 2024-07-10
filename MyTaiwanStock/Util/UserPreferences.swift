@@ -18,11 +18,13 @@ class UserPreferences {
 
     var syncPreference: SyncPreference {
         get {
-            let value = UserDefaults.standard.string(forKey: syncPreferenceKey) ?? SyncPreference.local.rawValue
-            return SyncPreference(rawValue: value) ?? .local
+            let value = UserDefaults.standard.string(forKey: syncPreferenceKey) ?? SyncPreference.iCloud.rawValue
+            print("sync value \(value)")
+            return SyncPreference(rawValue: value) ?? .iCloud
         }
         set {
             UserDefaults.standard.setValue(newValue.rawValue, forKey: syncPreferenceKey)
+            print("sync newValue \(newValue)")
         }
     }
 }

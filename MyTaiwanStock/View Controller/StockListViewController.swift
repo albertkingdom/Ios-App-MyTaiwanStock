@@ -66,7 +66,7 @@ class StockListViewController: UIViewController {
         
         tableView.delegate = self
         tableView.dataSource = self
-
+        
         
         tableView.tableFooterView = UIView()
         
@@ -216,11 +216,12 @@ class StockListViewController: UIViewController {
     
     @objc private func goToAddStockNoVC() {
         print("tapFloatingButton")
+        let hasMoreThanOneList = viewModel.handleFetchListFromDB() // 是否有建立清單
         let buttonsAreHidden = secondaryButton1.alpha == 0
         
         UIView.animate(withDuration: 0.3) {
             self.secondaryButton1.alpha = buttonsAreHidden ? 1 : 0
-            self.secondaryButton2.alpha = buttonsAreHidden ? 1 : 0
+            self.secondaryButton2.alpha = buttonsAreHidden && hasMoreThanOneList ? 1 : 0
             self.blurEffectView.alpha = buttonsAreHidden ? 1 : 0
         }
 

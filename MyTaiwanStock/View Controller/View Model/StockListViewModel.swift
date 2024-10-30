@@ -75,7 +75,8 @@ class StockListViewModel: ObservableObject {
         logger.debug("完成core data 同步")
         handleFetchListFromDB()
     }
-    func handleFetchListFromDB() -> Void {
+    
+    func handleFetchListFromDB() -> Bool {
 
         let listObjectFromDB = repository.stockList()
 //        if listObjectFromDB.isEmpty {
@@ -101,10 +102,12 @@ class StockListViewModel: ObservableObject {
             generateMenu()
             isLoading = false
             shouldShowAlert = false
+            return true
         } else {
             logger.debug("core data沒有資料")
             isLoading = false
             shouldShowAlert = true
+            return false
         }
     }
     

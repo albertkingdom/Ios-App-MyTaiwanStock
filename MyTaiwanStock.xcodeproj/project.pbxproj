@@ -10,6 +10,7 @@
 		A1065ACB2C1F266B0033A319 /* StockListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12705112830AE9900ED92F2 /* StockListViewModel.swift */; };
 		A1065AD22C21CEF30033A319 /* WalkthroughViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1065AD12C21CEF30033A319 /* WalkthroughViewController.swift */; };
 		A10CD2D028B9D1BB00B37AA4 /* CustomTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10CD2CF28B9D1BB00B37AA4 /* CustomTabBarViewController.swift */; };
+		A1164EFC2CD268220036C275 /* UnreadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1164EFB2CD268220036C275 /* UnreadManager.swift */; };
 		A1202125288BB8DD00C8746A /* NewsListTableViewCell2.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1202124288BB8DD00C8746A /* NewsListTableViewCell2.swift */; };
 		A12515612C15C339001BFC53 /* Notification+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12515602C15C339001BFC53 /* Notification+Extension.swift */; };
 		A12515622C15C665001BFC53 /* Notification+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12515602C15C339001BFC53 /* Notification+Extension.swift */; };
@@ -172,6 +173,8 @@
 		A1065AD02C21C4560033A319 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
 		A1065AD12C21CEF30033A319 /* WalkthroughViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalkthroughViewController.swift; sourceTree = "<group>"; };
 		A10CD2CF28B9D1BB00B37AA4 /* CustomTabBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBarViewController.swift; sourceTree = "<group>"; };
+		A1164EE82CD123BD0036C275 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
+		A1164EFB2CD268220036C275 /* UnreadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnreadManager.swift; sourceTree = "<group>"; };
 		A1202124288BB8DD00C8746A /* NewsListTableViewCell2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsListTableViewCell2.swift; sourceTree = "<group>"; };
 		A12515602C15C339001BFC53 /* Notification+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+Extension.swift"; sourceTree = "<group>"; };
 		A12515632C16076F001BFC53 /* MemoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoViewController.swift; sourceTree = "<group>"; };
@@ -389,6 +392,8 @@
 				DF06F30327097F2E0031D6FE /* Assets.xcassets */,
 				DF06F30527097F2E0031D6FE /* LaunchScreen.storyboard */,
 				DF06F30827097F2E0031D6FE /* Info.plist */,
+				A1164EE82CD123BD0036C275 /* README.md */,
+				A1164EFB2CD268220036C275 /* UnreadManager.swift */,
 			);
 			path = MyTaiwanStock;
 			sourceTree = "<group>";
@@ -588,7 +593,7 @@
 		DF06F2EF27097F2C0031D6FE /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 1320;
+				LastSwiftUpdateCheck = 1520;
 				LastUpgradeCheck = 1250;
 				TargetAttributes = {
 					A181944E28B881B5009475E9 = {
@@ -749,6 +754,7 @@
 				A12705162830BCE500ED92F2 /* Observable.swift in Sources */,
 				A1202125288BB8DD00C8746A /* NewsListTableViewCell2.swift in Sources */,
 				DF14418027869C200038D05D /* StockStatistic.swift in Sources */,
+				A1164EFC2CD268220036C275 /* UnreadManager.swift in Sources */,
 				A127052C2833604400ED92F2 /* NewsListCellViewModel.swift in Sources */,
 				A12515612C15C339001BFC53 /* Notification+Extension.swift in Sources */,
 				DF06F317270A01220031D6FE /* StockTableViewCell.swift in Sources */,
@@ -1005,6 +1011,7 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = UZ2Z639589;
 				INFOPLIST_FILE = MyTaiwanStock/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -1030,6 +1037,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = UZ2Z639589;
 				INFOPLIST_FILE = MyTaiwanStock/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

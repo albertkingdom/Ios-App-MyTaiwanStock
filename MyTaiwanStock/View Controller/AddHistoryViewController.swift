@@ -92,7 +92,7 @@ class AddHistoryViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        viewModel = AddHistoryViewModel(context: context)
+        viewModel = AddHistoryViewModel()
         
         stockNoLabel.text = stockNo
         priceTextField.keyboardType = .decimalPad

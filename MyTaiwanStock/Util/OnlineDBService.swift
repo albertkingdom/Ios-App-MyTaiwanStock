@@ -19,9 +19,7 @@ class OnlineDBService {
     private let db = Firestore.firestore()
     var context: NSManagedObjectContext = LocalDBService.shared.context
     
-    init(context: NSManagedObjectContext?) {
-//        self.context = context
-    }
+    
     init() {
 //        let appDelegate = UIApplication.shared.delegate as! AppDelegate
 //        self.context = appDelegate.persistentContainer.viewContext

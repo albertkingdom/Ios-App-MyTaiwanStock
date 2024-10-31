@@ -86,6 +86,8 @@
 		A1CD75CC2CD3210A000A0A7A /* UIViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1CD75CB2CD3210A000A0A7A /* UIViewController+Extension.swift */; };
 		A1CD75CE2CD325E3000A0A7A /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = A1CD75CD2CD325E3000A0A7A /* Localizable.xcstrings */; };
 		A1CD75D02CD326E2000A0A7A /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1CD75CF2CD326E2000A0A7A /* String+Extension.swift */; };
+		A1CD75D22CD388F1000A0A7A /* DependencyContainer.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1CD75D12CD388F1000A0A7A /* DependencyContainer.swift */; };
+		A1CD75D42CD389F0000A0A7A /* Repository.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1CD75D32CD389F0000A0A7A /* Repository.swift */; };
 		A1CF660A28BEFB88005F6189 /* MessageKit in Frameworks */ = {isa = PBXBuildFile; productRef = A1CF660928BEFB88005F6189 /* MessageKit */; };
 		A1D635F72BEF5A9800375D79 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = A1D635F62BEF5A9800375D79 /* FirebaseMessaging */; };
 		A1E1724A2BED087200ED5916 /* View+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E172492BED087200ED5916 /* View+Extension.swift */; };
@@ -233,6 +235,8 @@
 		A1CD75CB2CD3210A000A0A7A /* UIViewController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extension.swift"; sourceTree = "<group>"; };
 		A1CD75CD2CD325E3000A0A7A /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
 		A1CD75CF2CD326E2000A0A7A /* String+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
+		A1CD75D12CD388F1000A0A7A /* DependencyContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DependencyContainer.swift; sourceTree = "<group>"; };
+		A1CD75D32CD389F0000A0A7A /* Repository.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Repository.swift; sourceTree = "<group>"; };
 		A1E172492BED087200ED5916 /* View+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extension.swift"; sourceTree = "<group>"; };
 		A1E1724C2BED0E6500ED5916 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		A1F168322BDE11400080F57E /* UIColor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
@@ -338,6 +342,7 @@
 			children = (
 				A14CB9F62943259B00DDA990 /* NetworkService.swift */,
 				A14CB9F829433ED600DDA990 /* NetworkServiceImpl.swift */,
+				A1CD75D32CD389F0000A0A7A /* Repository.swift */,
 			);
 			path = Repository;
 			sourceTree = "<group>";
@@ -401,6 +406,7 @@
 				DF06F30827097F2E0031D6FE /* Info.plist */,
 				A1164EE82CD123BD0036C275 /* README.md */,
 				A1164EFB2CD268220036C275 /* UnreadManager.swift */,
+				A1CD75D12CD388F1000A0A7A /* DependencyContainer.swift */,
 			);
 			path = MyTaiwanStock;
 			sourceTree = "<group>";
@@ -727,6 +733,7 @@
 				A181943B28B87895009475E9 /* ValidInputService.swift in Sources */,
 				A16321522954A5C50011F295 /* AddDividendViewController.swift in Sources */,
 				DF793ADB27E03258007C9442 /* AddStockTableViewCell.swift in Sources */,
+				A1CD75D42CD389F0000A0A7A /* Repository.swift in Sources */,
 				DFFEB05027E1E37D00C85A53 /* Channel.swift in Sources */,
 				A14CB9F72943259C00DDA990 /* NetworkService.swift in Sources */,
 				DF06F326270D50000031D6FE /* History.swift in Sources */,
@@ -777,6 +784,7 @@
 				A199DC4428C843BD003FBC61 /* FavList.swift in Sources */,
 				A199DC3228BF1B70003FBC61 /* SettingViewController.swift in Sources */,
 				DF06F3132709A3190031D6FE /* OneDayStockInfo.swift in Sources */,
+				A1CD75D22CD388F1000A0A7A /* DependencyContainer.swift in Sources */,
 				A199DC3428BF400D003FBC61 /* EditFeeViewController.swift in Sources */,
 				DF14417E27868B240038D05D /* StatisticTableViewCell.swift in Sources */,
 				DF14417C2785A5630038D05D /* StatisticViewController.swift in Sources */,

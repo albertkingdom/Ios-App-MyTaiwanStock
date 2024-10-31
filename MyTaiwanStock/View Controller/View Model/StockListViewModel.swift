@@ -11,7 +11,6 @@ import Combine
 import WidgetKit
 
 class StockListViewModel: ObservableObject {
-    static let shared = StockListViewModel()
     private var timer: Timer?
     private var lastTimeMenuIndex = 0
 //    var stockNoStringCombine = CurrentValueSubject<[String], Never>([])
@@ -67,8 +66,8 @@ class StockListViewModel: ObservableObject {
 //        )
 //    }
     
-    private init() {
-        self.repository = NetworkServiceImpl()
+    init(repository: any NetworkService) {
+        self.repository = repository
         setupFetchStockInfo()
     }
     @objc func handleInitialDataUpdate() {

@@ -58,11 +58,13 @@ class StockListViewController: UIViewController {
     let secondaryButton2 = UIButton(type: .custom)
     let blurEffectView = UIVisualEffectView(effect: UIBlurEffect(style: .dark))
 
+    func configure(with viewModel: StockListViewModel) {
+        self.viewModel = viewModel
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
         logger.debug("list vc viewDidLoad")
-        viewModel = StockListViewModel.shared
         
         tableView.delegate = self
         tableView.dataSource = self
@@ -368,16 +370,22 @@ extension StockListViewController: SkeletonTableViewDataSource, UITableViewDeleg
         return cell
     }
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        let stockViewController = storyboard?.instantiateViewController(identifier: "stockViewController") as! StockViewController
-
-        let cellViewModel = cellDatas[indexPath.row]
         
-        stockViewController.stockNo = cellViewModel.stockNo
+        let cellViewModel = cellDatas[indexPath.row]
+        let stockViewController = DependencyContainer.shared.configureStockDetailViewController(
+            stockNo: cellViewModel.stockNo,
+            currentStockPrice: cellViewModel.stockPrice
+        )
+        
+
+       
+        
+//        stockViewController.stockNo = cellViewModel.stockNo
         stockViewController.stockPrice = cellViewModel.stockPrice
         stockViewController.stockName = cellViewModel.stockShortName
         stockViewController.stockPriceDiff = cellViewModel.stockPriceDiff
         stockViewController.timeString = cellViewModel.time
-        stockViewController.context = self.context // TODO:
+//        stockViewController.context = self.context // TODO:
         
 
         navigationController?.pushViewController(stockViewController, animated: true)

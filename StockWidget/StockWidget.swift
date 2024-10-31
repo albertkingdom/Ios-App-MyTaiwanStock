@@ -21,7 +21,7 @@ class SubscriptionManager {
 }
 struct Provider: TimelineProvider {
     let repository = NetworkServiceImpl()
-    @ObservedObject var viewModel = StockListViewModel.shared
+
     var subscription = Set<AnyCancellable>()
 
     // fake data showed before real data

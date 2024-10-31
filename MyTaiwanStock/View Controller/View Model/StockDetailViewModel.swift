@@ -10,7 +10,6 @@ import Foundation
 import Charts
 
 class StockDetailViewModel {
-    var context: NSManagedObjectContext?
     var stockInfoForCandleStickChartCombine = CurrentValueSubject<[[String]], Never>([])
     var stockNo: String
     var currentStockPriceString: String
@@ -25,15 +24,17 @@ class StockDetailViewModel {
     @Published var highlightChartIndex: Int = -1
     var subscription = Set<AnyCancellable>()
     
-    let repository = NetworkServiceImpl()
+    private let repository: any NetworkService
     
-    init(stockNo: String, currentStockPrice: String, context: NSManagedObjectContext?) {
+    init(stockNo: String, currentStockPrice: String, repository: any NetworkService) {
         self.stockNo = stockNo
         self.currentStockPriceString = currentStockPrice
-
+        self.repository = repository
         setupHistoryData()
 
     }
+
+    
     
     func setupHistoryData() {
         $coreDataObjectsCombine

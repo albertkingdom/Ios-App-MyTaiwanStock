@@ -16,7 +16,7 @@ class StockViewController: UIViewController {
     var viewModel: StockDetailViewModel!
     
     var chartService: ChartService!
-    var context: NSManagedObjectContext?
+//    var context: NSManagedObjectContext?
     
     var priceContainerView = UIView()
     var stockPriceLabel = UILabel()
@@ -40,7 +40,6 @@ class StockViewController: UIViewController {
             }
         }
     }
-    var stockNo: String!
     var stockName: String!
     var stockPrice: String!
     var stockPriceDiff: String!
@@ -183,11 +182,13 @@ class StockViewController: UIViewController {
     var avgSellPriceTitleLabel = UILabel()
     @IBOutlet weak var containerTableView: UITableView!
     
-    
+    func configure(with viewModel: StockDetailViewModel) {
+        self.viewModel = viewModel
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel = StockDetailViewModel(stockNo: stockNo, currentStockPrice: stockPrice, context: context)
+        
         bindViewModel()
         combinedChartView.delegate = self
         combinedChartView.dragEnabled = true
@@ -200,7 +201,7 @@ class StockViewController: UIViewController {
         
         //        combinedChartView.dragYEnabled = false
         // 添加观察者来监听滚动
-        navigationItem.title = "\(stockName ?? "") \(stockNo ?? "")"
+        navigationItem.title = "\(stockName ?? "") \(viewModel.stockNo ?? "")"
         
         let newsButton = UIBarButtonItem(title: "detailVC_news_title".localized, style: .plain, target: self, action: #selector(navigateToNews))
         let addHistoryButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(showAlertForDestination))
@@ -352,13 +353,12 @@ class StockViewController: UIViewController {
     }
     @objc func navigateToAddRecord() {
         let destinationController = storyboard?.instantiateViewController(withIdentifier: "addRecordController") as! AddHistoryViewController
-        destinationController.stockNo = self.stockNo
-        destinationController.context = self.context
+        destinationController.stockNo = viewModel.stockNo
         navigationController?.pushViewController(destinationController, animated: true)
     }
     func navigateToDividendVC() {
         let destinationController = storyboard?.instantiateViewController(withIdentifier: "dividendVC") as! AddDividendViewController
-        destinationController.stockNo = self.stockNo
+        destinationController.stockNo = viewModel.stockNo
         navigationController?.pushViewController(destinationController, animated: true)
     }
     @objc func showAlertForDestination() {
@@ -384,7 +384,7 @@ class StockViewController: UIViewController {
     }
     @objc func navigateToChatRoom() {
         
-        let chatRoomVC = ChatViewController(stockNo: stockNo)
+        let chatRoomVC = ChatViewController(stockNo: viewModel.stockNo)
         navigationController?.pushViewController(chatRoomVC, animated: true)
     }
     override func viewWillAppear(_ animated: Bool) {

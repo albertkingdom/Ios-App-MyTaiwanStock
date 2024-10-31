@@ -104,39 +104,46 @@ class NetworkServiceImpl: NetworkService {
         task.resume()
     }
     
-    func fetchTwoMonthCandleData(stockNo: String, completion: @escaping ([[String]]) -> Void) {
-        let group = DispatchGroup()
-        let dateStr = [dateFormat(date: Date()), dateFormat(date: lastMonthDate())] //["20211005", "20210905"]
-        var alldatas: [[String]] = []
+    
+    func fetchStockInfo(stockNo: String, dateStr: String = "20210930") async -> Result<StockInfo,Error> {
+        var urlComponents = URLComponents(string: "https://www.twse.com.tw/exchangeReport/STOCK_DAY")!
         
-        group.enter()
-        StockInfo.fetchStockInfo(stockNo: stockNo, dateStr: dateStr[1]) { result in
-            switch result {
-            case .success(let stockInfo):
-                //print("task1 \(stockInfo.data)")
-                alldatas = stockInfo.data
-            case .failure(let error):
-                print("task1 failure, \(error)")
-            }
-            group.leave()
-        }
-        group.wait()
-        group.enter()
-        StockInfo.fetchStockInfo(stockNo: stockNo, dateStr: dateStr[0]) { result in
-            switch result {
-            case .success(let stockInfo):
-                //print("task2 \(stockInfo.data)")
-                alldatas.insert(contentsOf: stockInfo.data, at: alldatas.endIndex)
-            case .failure(let error):
-                print("task2 failure, \(error)")
-            }
-            group.leave()
-        }
-        group.notify(queue: DispatchQueue.main){
-            completion(alldatas)
+        urlComponents.queryItems = ["date":dateStr,"response":"json", "stockNo": stockNo].map({ URLQueryItem(name: $0.key, value: $0.value)
+        })
+        do {
+            let (data, response) = try await URLSession.shared.data(from: urlComponents.url!)
+            let jsonDecoder = JSONDecoder()
+            let stockInfo = try jsonDecoder.decode(StockInfo.self, from: data)
+            return .success(stockInfo)
+        } catch let error {
+            return .failure(error)
         }
     }
-
+    
+    func fetchTwoMonthCandleData(stockNo: String) async -> [[String]] {
+        var orderedData: [String: [[String]]] = [:]
+        let dateStrs = [
+            dateFormat(date: startDateOfMonth(diff: -2)),
+            dateFormat(date: startDateOfMonth(diff: -1)),
+            dateFormat(date: Date()),
+        ] //[, "20210905", "20211005"]
+        var alldatas: [[String]] = []
+        for dateStr in dateStrs {
+            
+            let result = await fetchStockInfo(stockNo: stockNo, dateStr: dateStr)
+            
+            switch result {
+            case .success(let stockInfo):
+                orderedData[dateStr] = stockInfo.data
+            case .failure(let error):
+                print("failure, \(error)")
+            }
+            
+        }
+        alldatas = dateStrs.compactMap { orderedData[$0] }.flatMap { $0 }
+        
+        return alldatas
+    }
     
     func stockList() -> [List] {
         return localDBService.fetchAllListFromDB()
@@ -237,5 +244,42 @@ class NetworkServiceImpl: NetworkService {
         }
         task.resume()
     }
+    
+    func sendDevice(deviceId: String, token: String) async {
+        let url = URL(string: "http://albertkingdom.ddns.net:3000/register-device")!
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        let body = ["deviceId": deviceId, "token": token]
+        request.httpBody = try? JSONSerialization.data(withJSONObject: body, options: [])
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        do {
+            let (data, response) = try await URLSession.shared.data(for: request)
+            if let httpResponse = response as? HTTPURLResponse {
+                if (200...299).contains(httpResponse.statusCode) {
+                    print("Successfully sent device ID to server")
+                }
+            }
+        } catch let error {
+            print("Error sending device ID to server: \(error.localizedDescription)")
+        }
+    }
 
+    private func dateFormat(date: Date) -> String {
+        let dateFormatter = DateFormatter()
+        
+        dateFormatter.dateFormat = "yyyyMMdd"
+        let datestr = dateFormatter.string(from: date)
+        
+        return datestr
+    }
+    
+    private func startDateOfMonth(diff: Int) -> Date {
+        var datecomponent = DateComponents()
+        datecomponent.month = diff
+        
+        //print(datecomponent)
+        let lastmonth = Calendar(identifier: .gregorian).date(byAdding: datecomponent, to: Date())!
+        
+        return lastmonth
+    }
 }

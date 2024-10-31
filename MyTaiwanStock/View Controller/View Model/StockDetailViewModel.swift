@@ -52,16 +52,12 @@ class StockDetailViewModel {
             .store(in: &subscription)
     }
     
-    func fetchRemoteData(to chart: CombinedChartView) {
-        StockInfo.fetchTwoMonth(stockNo: stockNo) { data in
-            //self.stockInfoForCandleStickChart.value = data
+    func fetchRemoteData(to chart: CombinedChartView) async {
+        let data = await repository.fetchTwoMonthCandleData(stockNo: stockNo)
+        DispatchQueue.main.async {
             self.stockInfoForCandleStickChartCombine.send(data)
-            
-            DispatchQueue.main.async {
-                
-                self.chartService = ChartService(candleStickData: data, stockNo: self.stockNo)
-                self.chartService.prepareForCombinedChart(combinedChartView: chart)
-            }
+            self.chartService = ChartService(candleStickData: data, stockNo: self.stockNo)
+            self.chartService.prepareForCombinedChart(combinedChartView: chart)
         }
     }
     func fetchDB(){

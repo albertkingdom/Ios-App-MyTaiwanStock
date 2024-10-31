@@ -120,9 +120,10 @@ class ChartService {
         combinedData.isHighlightEnabled = true
         
         guard let stockInfoForCandleStickChart = stockInfoForCandleStickChart, let stockNo = stockNo else {return}
-        combinedData.candleData = self.generateCandleData(stockInfoForCandleStickChart: stockInfoForCandleStickChart, stockNo: stockNo)
+       
         combinedData.barData = self.generateBarData(stockInfoForCandleStickChart: stockInfoForCandleStickChart)
         let candleDatas: CandleChartData = self.generateCandleData(stockInfoForCandleStickChart: stockInfoForCandleStickChart, stockNo: stockNo)
+        combinedData.candleData = candleDatas
         if let candleData = combinedData.candleData {
             if let dataSet = candleData.dataSets.first as? CandleChartDataSet {
                 // Get all candle entries
@@ -153,8 +154,14 @@ class ChartService {
         combinedData.candleData.isHighlightEnabled = true
         combinedData.barData.isHighlightEnabled = false
         combinedChartView.data = combinedData
+        
         combinedChartView.notifyDataSetChanged()
         
+        // 顯示幾個數據點
+        combinedChartView.setVisibleXRangeMaximum(20) // 必須先有資料
+        
+        guard let totalCandleCount = combinedData.candleData.dataSets.first?.entryCount else {return}
+        combinedChartView.moveViewToX(Double(totalCandleCount-10))
     }
     
     func prepareForPieChart(pieChartView: PieChartView) {

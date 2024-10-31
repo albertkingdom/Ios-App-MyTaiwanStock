@@ -21,7 +21,7 @@ protocol NetworkService {
     func fetchCandleData(stockNo: String, dateStr: String, completion: @escaping (Result<CandleData, Error>) -> Void)
     
     // 2 month candle stick data
-    func fetchTwoMonthCandleData(stockNo: String, completion: @escaping (_ alldata: [[String]]) -> Void)
+    func fetchTwoMonthCandleData(stockNo: String) async -> [[String]]
     
     // fetch saved List
     func stockList() -> [List]

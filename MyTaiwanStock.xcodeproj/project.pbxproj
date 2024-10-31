@@ -83,6 +83,9 @@
 		A1C03DD428F1452D007098D2 /* LocalDBService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C03DD328F1452D007098D2 /* LocalDBService.swift */; };
 		A1C2E5E728B71F55009D8D9B /* ViewController+extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C2E5E628B71F55009D8D9B /* ViewController+extension.swift */; };
 		A1C9DAE02834F9DA00ADDEDB /* UIButton+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1C9DADF2834F9DA00ADDEDB /* UIButton+Extension.swift */; };
+		A1CD75CC2CD3210A000A0A7A /* UIViewController+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1CD75CB2CD3210A000A0A7A /* UIViewController+Extension.swift */; };
+		A1CD75CE2CD325E3000A0A7A /* Localizable.xcstrings in Resources */ = {isa = PBXBuildFile; fileRef = A1CD75CD2CD325E3000A0A7A /* Localizable.xcstrings */; };
+		A1CD75D02CD326E2000A0A7A /* String+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1CD75CF2CD326E2000A0A7A /* String+Extension.swift */; };
 		A1CF660A28BEFB88005F6189 /* MessageKit in Frameworks */ = {isa = PBXBuildFile; productRef = A1CF660928BEFB88005F6189 /* MessageKit */; };
 		A1D635F72BEF5A9800375D79 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = A1D635F62BEF5A9800375D79 /* FirebaseMessaging */; };
 		A1E1724A2BED087200ED5916 /* View+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E172492BED087200ED5916 /* View+Extension.swift */; };
@@ -227,6 +230,9 @@
 		A1C03DD328F1452D007098D2 /* LocalDBService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalDBService.swift; sourceTree = "<group>"; };
 		A1C2E5E628B71F55009D8D9B /* ViewController+extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ViewController+extension.swift"; sourceTree = "<group>"; };
 		A1C9DADF2834F9DA00ADDEDB /* UIButton+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIButton+Extension.swift"; sourceTree = "<group>"; };
+		A1CD75CB2CD3210A000A0A7A /* UIViewController+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIViewController+Extension.swift"; sourceTree = "<group>"; };
+		A1CD75CD2CD325E3000A0A7A /* Localizable.xcstrings */ = {isa = PBXFileReference; lastKnownFileType = text.json.xcstrings; path = Localizable.xcstrings; sourceTree = "<group>"; };
+		A1CD75CF2CD326E2000A0A7A /* String+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "String+Extension.swift"; sourceTree = "<group>"; };
 		A1E172492BED087200ED5916 /* View+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extension.swift"; sourceTree = "<group>"; };
 		A1E1724C2BED0E6500ED5916 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		A1F168322BDE11400080F57E /* UIColor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
@@ -356,6 +362,7 @@
 		DF06F2EE27097F2C0031D6FE = {
 			isa = PBXGroup;
 			children = (
+				A1CD75CD2CD325E3000A0A7A /* Localizable.xcstrings */,
 				A1E1724C2BED0E6500ED5916 /* .gitignore */,
 				DFFB338227F94B740018F3A4 /* StockWidgetExtension.entitlements */,
 				DF06F2F927097F2C0031D6FE /* MyTaiwanStock */,
@@ -484,6 +491,8 @@
 				A12515602C15C339001BFC53 /* Notification+Extension.swift */,
 				A12515652C1C950E001BFC53 /* UserPreferences.swift */,
 				A12719E62C1D8571005AB268 /* URL+Extension.swift */,
+				A1CD75CB2CD3210A000A0A7A /* UIViewController+Extension.swift */,
+				A1CD75CF2CD326E2000A0A7A /* String+Extension.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -657,6 +666,7 @@
 				A16321722956A8CC0011F295 /* DividendDetailTableViewCell.xib in Resources */,
 				A12705182830F4AB00ED92F2 /* GoogleService-Info.plist in Resources */,
 				A1BB04D7293098F0002F983B /* NewHistoryTableViewCell.xib in Resources */,
+				A1CD75CE2CD325E3000A0A7A /* Localizable.xcstrings in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -737,8 +747,10 @@
 				DF06F31C270AA43A0031D6FE /* StockViewController.swift in Sources */,
 				DF06F324270B1A4F0031D6FE /* MyStockList.swift in Sources */,
 				A17C2A7928D80C99007508D0 /* FeeType.swift in Sources */,
+				A1CD75CC2CD3210A000A0A7A /* UIViewController+Extension.swift in Sources */,
 				DF06F2FB27097F2C0031D6FE /* AppDelegate.swift in Sources */,
 				A1065AD22C21CEF30033A319 /* WalkthroughViewController.swift in Sources */,
+				A1CD75D02CD326E2000A0A7A /* String+Extension.swift in Sources */,
 				A1BB04D6293098F0002F983B /* NewHistoryTableViewCell.swift in Sources */,
 				A12719E72C1D8571005AB268 /* URL+Extension.swift in Sources */,
 				A16321672955A4BF0011F295 /* StatisticDividendTableViewCell.swift in Sources */,

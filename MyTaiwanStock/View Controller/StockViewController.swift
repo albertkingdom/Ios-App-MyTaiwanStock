@@ -115,7 +115,7 @@ class StockViewController: UIViewController {
         let stackOfTitle = UIStackView()
         
         let title = UILabel()
-        title.text = "Overview"
+        title.text = "detailVC_overview_title".localized
         title.font = UIFont.systemFont(ofSize: 18, weight: .bold)
         stack.axis = .horizontal
         stack.distribution = .fillEqually
@@ -192,7 +192,7 @@ class StockViewController: UIViewController {
 
         navigationItem.title = "\(stockName ?? "") \(stockNo ?? "")"
        
-        let newsButton = UIBarButtonItem(title: "News", style: .plain, target: self, action: #selector(navigateToNews))
+        let newsButton = UIBarButtonItem(title: "detailVC_news_title".localized, style: .plain, target: self, action: #selector(navigateToNews))
         let addHistoryButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(showAlertForDestination))
         let chatRoomButton = UIBarButtonItem(image: UIImage(systemName: "message"), style: .plain, target: self, action: #selector(navigateToChatRoom))
         navigationItem.rightBarButtonItems = [addHistoryButton, newsButton, chatRoomButton]
@@ -265,7 +265,7 @@ class StockViewController: UIViewController {
     class MyCustomSectionHeader: UITableViewHeaderFooterView {
         let title: UILabel = {
             let label = UILabel()
-            label.text = "History"
+            label.text = "detailVC_history_title".localized
             label.font = UIFont.systemFont(ofSize: 18, weight: .bold)
             return label
         }()

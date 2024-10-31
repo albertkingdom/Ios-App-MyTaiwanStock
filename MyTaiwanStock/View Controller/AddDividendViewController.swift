@@ -17,12 +17,13 @@ class AddDividendViewController: UITableViewController {
     @IBAction func dateValueChanged(_ sender: UIDatePicker) {
         selectedDate = sender.date
     }
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        
-
-        tableView.rowHeight=50
+        tableView.delegate = self
+        cashDividend.backgroundColor = UIColor(hex: "#eeeeee")
+        cashDividend.borderStyle = .roundedRect
+        stockDividend.backgroundColor = UIColor(hex: "#eeeeee")
+        stockDividend.borderStyle = .roundedRect
         tableView.separatorStyle = .none
         navigationItem.title = "新增股利"
         navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(pressCancel))
@@ -32,7 +33,8 @@ class AddDividendViewController: UITableViewController {
         // keyboard
         cashDividend.keyboardType = .numberPad
         stockDividend.keyboardType = .numberPad
-        
+        cashDividend.inputAccessoryView = toolBar()
+        stockDividend.inputAccessoryView = toolBar()
     }
     @objc func pressCancel() {
         navigationController?.popViewController(animated: true)
@@ -65,10 +67,10 @@ class AddDividendViewController: UITableViewController {
         }
         
     }
-   
+}
 
-    
-
-    
-   
+extension AddDividendViewController {
+    override func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
+        return false
+    }
 }

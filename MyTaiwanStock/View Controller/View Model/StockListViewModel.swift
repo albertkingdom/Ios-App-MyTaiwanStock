@@ -153,10 +153,10 @@ class StockListViewModel: ObservableObject {
                 if text.count > 0 {
                     output = cellDatas.filter { cellData in
                         cellData.stockNo.contains(text)
-                    }
-
+                    }.sorted(by: {(a,b) in a.stockNo < b.stockNo})
+                    
                 }else {
-                    output = cellDatas
+                    output = cellDatas.sorted(by: {(a,b) in a.stockNo < b.stockNo})
                 }
                 return output
 

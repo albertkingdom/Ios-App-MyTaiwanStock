@@ -16,7 +16,6 @@ class StockViewController: UIViewController {
     var viewModel: StockDetailViewModel!
     
     var chartService: ChartService!
-//    var context: NSManagedObjectContext?
     
     var priceContainerView = UIView()
     var stockPriceLabel = UILabel()
@@ -201,7 +200,7 @@ class StockViewController: UIViewController {
         
         //        combinedChartView.dragYEnabled = false
         // 添加观察者来监听滚动
-        navigationItem.title = "\(stockName ?? "") \(viewModel.stockNo ?? "")"
+        navigationItem.title = "\(stockName ?? "") \(viewModel.stockNo )"
         
         let newsButton = UIBarButtonItem(title: "detailVC_news_title".localized, style: .plain, target: self, action: #selector(navigateToNews))
         let addHistoryButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(showAlertForDestination))

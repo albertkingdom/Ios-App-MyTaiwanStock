@@ -389,7 +389,7 @@ class StockViewController: UIViewController {
     override func viewWillAppear(_ animated: Bool) {
         
         Task {
-            await viewModel.fetchRemoteData(to: combinedChartView)
+            await viewModel.prepareChart(to: combinedChartView)
         }
         viewModel.fetchDB()
         
@@ -545,7 +545,7 @@ extension StockViewController: UITableViewDataSource, UITableViewDelegate {
     
     // MARK: click table cell to highlight on chart
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        viewModel.findClickHistoryDate(index: indexPath.row)
+        viewModel.highLightChart(at: indexPath.row)
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 70

@@ -35,14 +35,12 @@ class StockDetailViewModel {
         self.stockNo = stockNo
         self.currentStockPriceString = currentStockPrice
         self.repository = repository
-        setupHistoryData()
-
+        setupHistoryDataPipeline()
     }
 
-    func setupHistoryData() {
+    private func setupHistoryDataPipeline() {
         $coreDataObjectsCombine
             .map { investHistoryList -> [HistoryCellModel] in
-
                 return investHistoryList.map { investHistory in
                     HistoryCellModel(
                         historyData: investHistory,
@@ -57,13 +55,15 @@ class StockDetailViewModel {
             }
             .store(in: &subscription)
     }
-
-    func fetchRemoteData(to chart: CombinedChartView) async {
+    // TODO: refactor
+    func prepareChart(to chart: CombinedChartView) async {
         let data = await repository.fetchTwoMonthCandleData(stockNo: stockNo)
         DispatchQueue.main.async {
             self.stockInfoForCandleStickChartCombine.send(data)
             self.chartService = ChartService(
-                candleStickData: data, stockNo: self.stockNo)
+                candleStickData: data,
+                stockNo: self.stockNo
+            )
             self.chartService.prepareForCombinedChart(combinedChartView: chart)
         }
     }
@@ -75,45 +75,24 @@ class StockDetailViewModel {
         let itemToDelete = coreDataObjectsCombine[index]
 
         repository.deleteHistory(historyObject: itemToDelete)
-        coreDataObjectsCombine = coreDataObjectsCombine.filter({ object in
-            object != itemToDelete
-        })
+
+        fetchDB()
     }
 
-    func findClickHistoryDate(index: Int) {
-        if let date = coreDataObjectsCombine[index].date {
-            let dateFormatter = DateFormatter()
-            dateFormatter.locale = Locale(identifier: "zh_TW")
-            dateFormatter.setLocalizedDateFormatFromTemplate("yyyy/MM/dd")
-
-            let calendar = Calendar(identifier: .gregorian)
-            let components = calendar.dateComponents(
-                [.year, .month, .day], from: date)
-            if var year = components.year, let month = components.month,
-                let day = components.day
-            {
-                // convert date to following format like:  111/03/18
-                year = year - 1911
-                let fullMonth = month > 9 ? "\(month)" : "0\(month)"
-                let fullDay = day > 9 ? "\(day)" : "0\(day)"
-                let targetDateString = "\(year)/\(fullMonth)/\(fullDay)"
-                logger.debug("targetDateString \(targetDateString)")
-                stockInfoForCandleStickChartCombine.value.enumerated().forEach {
-                    index, candleData in
-                    // find the index of date in stockInfoForCandleStickChart
-                    if candleData[0] == targetDateString {
-                        logger.debug("yes match date!!!!")
-                        highlightChartIndex = index
-                    }
-                }
-
+    func highLightChart(at index: Int) {
+        guard let date = coreDataObjectsCombine[index].date else { return }
+        let dateString = date.taiwanFormat(date: date)
+        stockInfoForCandleStickChartCombine.value.enumerated().forEach {
+            index, candleData in
+            // find the index of date in stockInfoForCandleStickChart
+            if candleData[0] == dateString {
+                logger.debug("yes match date!!!!")
+                highlightChartIndex = index
             }
-
         }
-
     }
 
-    func calOverView(with historys: [HistoryCellModel]) {
+    private func calOverView(with historys: [HistoryCellModel]) {
         let currentStockPriceFloat = Float(self.currentStockPriceString)
         let calculator = OverViewCalculator(
             historys: historys,

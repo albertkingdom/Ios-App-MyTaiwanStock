@@ -14,6 +14,7 @@
 		A11E04682CF2DB6B00138497 /* OverViewCaculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11E04672CF2DB6B00138497 /* OverViewCaculator.swift */; };
 		A11E046B2CF2DE1100138497 /* TestStockViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11E04692CF2DE1100138497 /* TestStockViewModel.swift */; };
 		A11E046D2CF2EBE700138497 /* testOverViewCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11E046C2CF2EBE700138497 /* testOverViewCalculator.swift */; };
+		A11E046F2CFAC2AE00138497 /* Date+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11E046E2CFAC2A700138497 /* Date+Extension.swift */; };
 		A1202125288BB8DD00C8746A /* NewsListTableViewCell2.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1202124288BB8DD00C8746A /* NewsListTableViewCell2.swift */; };
 		A12515612C15C339001BFC53 /* Notification+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12515602C15C339001BFC53 /* Notification+Extension.swift */; };
 		A12515622C15C665001BFC53 /* Notification+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12515602C15C339001BFC53 /* Notification+Extension.swift */; };
@@ -185,6 +186,7 @@
 		A11E04672CF2DB6B00138497 /* OverViewCaculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverViewCaculator.swift; sourceTree = "<group>"; };
 		A11E04692CF2DE1100138497 /* TestStockViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestStockViewModel.swift; sourceTree = "<group>"; };
 		A11E046C2CF2EBE700138497 /* testOverViewCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = testOverViewCalculator.swift; sourceTree = "<group>"; };
+		A11E046E2CFAC2A700138497 /* Date+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extension.swift"; sourceTree = "<group>"; };
 		A1202124288BB8DD00C8746A /* NewsListTableViewCell2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsListTableViewCell2.swift; sourceTree = "<group>"; };
 		A12515602C15C339001BFC53 /* Notification+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Notification+Extension.swift"; sourceTree = "<group>"; };
 		A12515632C16076F001BFC53 /* MemoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MemoViewController.swift; sourceTree = "<group>"; };
@@ -491,6 +493,7 @@
 		DF3873A327ECC930000E2EAF /* Util */ = {
 			isa = PBXGroup;
 			children = (
+				A11E046E2CFAC2A700138497 /* Date+Extension.swift */,
 				DF3873A127ECC8DC000E2EAF /* LargeValueFormatter.swift */,
 				DF944EE82807DB04005157A9 /* ChartService.swift */,
 				A12705152830BCE500ED92F2 /* Observable.swift */,
@@ -797,6 +800,7 @@
 				DF14417C2785A5630038D05D /* StatisticViewController.swift in Sources */,
 				A127051E283201D700ED92F2 /* AddListViewModel.swift in Sources */,
 				A1270520283209FD00ED92F2 /* StockDetailViewModel.swift in Sources */,
+				A11E046F2CFAC2AE00138497 /* Date+Extension.swift in Sources */,
 				DF793AD927DF8E29007C9442 /* StockNoList.swift in Sources */,
 				A1C2E5E728B71F55009D8D9B /* ViewController+extension.swift in Sources */,
 				A168E09E27146EF600C75064 /* NewsAPI.swift in Sources */,

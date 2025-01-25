@@ -10,7 +10,9 @@ import UIKit
 //
 import WidgetKit
 
-class StockListViewController: UIViewController {
+class StockListViewController: UIViewController, Navigator {
+    typealias Destination = UIViewController
+    
     let networkService = NetworkServiceImpl()
 
     var subscription = Set<AnyCancellable>()
@@ -206,14 +208,7 @@ class StockListViewController: UIViewController {
         let hasMoreThanOneList = viewModel.handleFetchListFromDB()  // 是否有建立清單
         floatingButtonManager.toggleSecondaryButtons(hasMoreThanOneList: hasMoreThanOneList, parentFloatingButton: floatingButton)
     }
-    func navigateToVC<T: UIViewController>(
-        identifier: String, viewControllerType: T.Type
-    ) {
-        let VC =
-            self.storyboard?.instantiateViewController(
-                withIdentifier: identifier) as! T
-        self.navigationController?.pushViewController(VC, animated: true)
-    }
+
     func configureMenu(actionList: [UIAction]?) {
         guard var actionList = actionList else {
             return
@@ -223,9 +218,7 @@ class StockListViewController: UIViewController {
             UIAction(
                 title: "編輯",
                 handler: { action in
-                    self.navigateToVC(
-                        identifier: "addListVC",
-                        viewControllerType: AddListViewController.self)
+                    self.navigateToVC(identifier: "addListVC")
                 }))
         self.navCenterButton.menu = UIMenu(children: actionList)
     }
@@ -433,9 +426,7 @@ extension StockListViewController {
 
 extension StockListViewController: FloatingButtonManagerDelegate {
     func didTapSecondaryButton1() {
-        self.navigateToVC(
-            identifier: "addListVC",
-            viewControllerType: AddListViewController.self)
+        navigateToVC(identifier: "addListVC")
     }
     
     func didTapSecondaryButton2() {

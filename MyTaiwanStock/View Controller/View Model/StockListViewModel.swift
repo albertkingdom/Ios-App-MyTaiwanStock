@@ -55,16 +55,6 @@ class StockListViewModel: ObservableObject {
     }
     private let repository: any NetworkService
     
-//    init(networkService: any NetworkService) {
-//        self.repository = networkService
-//        setupFetchStockInfo()
-//        NotificationCenter.default.addObserver(
-//            self,
-//            selector: #selector(handleInitialDataUpdate),
-//            name: .coreDataDidUpdate,
-//            object: nil
-//        )
-//    }
     
     init(repository: any NetworkService) {
         self.repository = repository
@@ -75,39 +65,38 @@ class StockListViewModel: ObservableObject {
         handleFetchListFromDB()
     }
     
+    func fetchListFromDB() -> [List]? {
+        let listObjectFromDB = repository.stockList()
+        return listObjectFromDB.isEmpty ? nil : listObjectFromDB
+    }
+    
+    fileprivate func prepareData(_ listObjectFromDB: [List]) {
+        logger.debug("core data有資料")
+        let lists = listObjectFromDB.compactMap({ list in
+            list.name
+        })
+        logger.debug("lists \(lists)")
+        self.followingListSelectionMenuCombine.send(lists)
+        self.followingListObjectFromDB = listObjectFromDB
+        
+        self.currentMenuIndexCombine.send(lastTimeMenuIndex)
+        
+        setupStockNameStringSet()
+        generateMenu()
+        isLoading = false
+        shouldShowAlert = false
+    }
+    
     func handleFetchListFromDB() -> Bool {
 
-        let listObjectFromDB = repository.stockList()
-//        if listObjectFromDB.isEmpty {
-//            // if no existing following list in db, create a default one
-//
-//            let newList = repository.saveList(with:"預設清單1")
-//            self.followingListSelectionMenuCombine.send([newList.name!])
-//            self.followingListObjectFromDB.append(newList)
-//        }
-        
-        if !listObjectFromDB.isEmpty {
+        guard let listObjectFromDB = fetchListFromDB() else {
             logger.debug("core data有資料")
-            let lists = listObjectFromDB.map({ list in
-                list.name!
-            })
-            logger.debug("lists \(lists)")
-            self.followingListSelectionMenuCombine.send(lists)
-            self.followingListObjectFromDB = listObjectFromDB
-            
-            self.currentMenuIndexCombine.send(lastTimeMenuIndex)
-            
-            setupStockNameStringSet()
-            generateMenu()
             isLoading = false
             shouldShowAlert = false
-            return true
-        } else {
-            logger.debug("core data沒有資料")
-            isLoading = false
-            shouldShowAlert = true
             return false
         }
+        prepareData(listObjectFromDB)
+        return true
     }
     
     private func setupFetchStockInfo() {
@@ -121,17 +110,14 @@ class StockListViewModel: ObservableObject {
             .handleEvents(receiveOutput: {[unowned self] list in
                 self.currentFollowingListCombine.send(list)  // Maintain external access
             })
-            .compactMap { list -> [String]? in
-                guard let setOfStockNoObjects = list?.stockNo else { return nil}
+            .compactMap { list -> [String] in
+                guard let setOfStockNoObjects = list?.stockNo else { return [] }
                 return setOfStockNoObjects.compactMap { ($0 as? StockNo)?.stockNo }
             }
-            .handleEvents(receiveOutput: { [weak self] stockNoStringArray in
-//                self?.stockNoStringCombine.send(stockNoStringArray)
-                self?.stockNameStringSetCombine.send(Set(stockNoStringArray))
-            })
             .filter { !$0.isEmpty }
             .sink { [unowned self] stockNos in
                 logger.debug("stockNos \(stockNos)")
+                self.stockNameStringSetCombine.send(Set(stockNos))
                 self.repeatFetch(stockNos: stockNos)
             }
             .store(in: &subscription)
@@ -147,26 +133,13 @@ class StockListViewModel: ObservableObject {
         stockCellDatasCombine
             .combineLatest(searchText)
             .map({ (cellDatas: [StockCellViewModel], text:String) -> [StockCellViewModel] in
-                print("celldatas \(cellDatas) text \(text)")
-                var output: [StockCellViewModel]
-                if text.count > 0 {
-                    output = cellDatas.filter { cellData in
-                        cellData.stockNo.contains(text)
-                    }.sorted(by: {(a,b) in a.stockNo < b.stockNo})
-                    
-                }else {
-                    output = cellDatas.sorted(by: {(a,b) in a.stockNo < b.stockNo})
-                }
-                return output
-
+                text.isEmpty ?
+                cellDatas.sorted { $0.stockNo < $1.stockNo}:
+                cellDatas.filter { $0.stockNo.contains(text) }.sorted { $0.stockNo < $1.stockNo }
             })
             .sink(receiveValue: { [weak self] cellData in
                 self?.filteredStockCellDatasCombine.send(cellData)
             })
-//            .assign(to: &$filteredStockCellDatasCombine)
-//            .sink(receiveValue: { [weak self] cellDatas in
-//                self?.filteredStockCellDatasCombine.send(cellDatas)
-//            })
             .store(in: &subscription)
     }
     private func generateMenu() {
@@ -204,7 +177,8 @@ class StockListViewModel: ObservableObject {
     }
     private func fetchStockInfo(stockNos: [String]) {
         repository.fetchOneDayStockInfoCombine(stockList: stockNos)
-            .sink { completion in
+            .sink { [weak self] completion in
+                guard let self = self else { return }
                 switch completion {
                 case .failure(let error):
                     print("請求台股資料錯誤 \(error)")
@@ -218,12 +192,14 @@ class StockListViewModel: ObservableObject {
                 }
             } receiveValue: { [weak self] data in
 //                print("data \(data)")
-                self?.onedayStockInfo = data.msgArray
+                guard let self = self else { return }
+
+                self.onedayStockInfo = data.msgArray
                 let cellVMs = data.msgArray.map { item in
                     StockCellViewModel(stock: item)
                 }
-                self?.stockCellDatasCombine.send(cellVMs)
-                self?.repository.updateStockNoInDBwithPrice(stockNos: stockNos, cellViewModels: cellVMs)
+                self.stockCellDatasCombine.send(cellVMs)
+                self.repository.updateStockNoInDBwithPrice(stockNos: stockNos, cellViewModels: cellVMs)
             }
             .store(in: &self.subscription)
     }

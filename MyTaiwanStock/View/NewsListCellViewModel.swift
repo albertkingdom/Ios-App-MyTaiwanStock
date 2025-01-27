@@ -10,7 +10,7 @@ import Foundation
 struct NewsListCellViewModel {
     let title: String
     let detail: String
-    let publishedAt: String
+    let publishedAt: Date
     var dateString: String {
         return formatDate(publishedAt)
     }
@@ -19,19 +19,16 @@ struct NewsListCellViewModel {
     let url: String
     
     init(article: Article) {
-        self.title = article.title
-        self.detail = article.description
+        self.title = article.title ?? ""
+        self.detail = article.description ?? ""
         self.publishedAt = article.publishedAt
-        self.imageURL = URL(string: article.urlToImage)
-        self.url = article.url
+        self.imageURL = URL(string: article.urlToImage ?? "")
+        self.url = article.url ?? ""
     }
     
-    func formatDate(_ dateStr: String) -> String {
+    func formatDate(_ date: Date) -> String {
         let dateformatter = DateFormatter()
-        dateformatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ssZZZZZ"
-        let date = dateformatter.date(from: dateStr)
-
-        dateformatter.dateFormat = "yyyy-MM-dd"
-        return dateformatter.string(from: date!)
+        dateformatter.dateFormat = "yyyy-MM-dd HH:mm"
+        return dateformatter.string(from: date)
     }
 }

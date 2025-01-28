@@ -45,8 +45,8 @@ class AddDividendViewController: UITableViewController {
         stockDividend.borderStyle = .roundedRect
         tableView.separatorStyle = .none
         navigationItem.title = "新增股利"
-        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel", style: .plain, target: self, action: #selector(pressCancel))
-        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "儲存", style: .plain, target: self, action: #selector(pressSave))
+        navigationItem.leftBarButtonItem = UIBarButtonItem(title: "Cancel".localized, style: .plain, target: self, action: #selector(pressCancel))
+        navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Save".localized, style: .plain, target: self, action: #selector(pressSave))
     }
     func changeTextFieldBorderColor(_ textField: UITextField, to color: UIColor) {
         textField.layer.borderColor = color.cgColor

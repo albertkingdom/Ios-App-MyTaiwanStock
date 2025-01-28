@@ -10,9 +10,7 @@ import CoreData
 import Foundation
 
 class StockDetailViewModel {
-    var stockInfoForCandleStickChartCombine = CurrentValueSubject<
-        [[String]], Never
-    >([])
+    var stockInfoForCandleStickChartCombine = CurrentValueSubject<[[String]], Never>([])
     var stockNo: String
     var currentStockPriceString: String
     var chartService: ChartService!

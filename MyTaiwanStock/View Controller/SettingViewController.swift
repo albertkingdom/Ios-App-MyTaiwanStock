@@ -18,24 +18,20 @@ class SettingViewController: UITableViewController {
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        initView()
+        setup()
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .always
         syncSwitch.isOn = UserPreferences.shared.syncPreference == .iCloud
 
     }
     override func viewDidAppear(_ animated: Bool) {
-        let feeInDollars = UserDefaults.standard.double(forKey: UserDefaults.userDefinedFeeInDollarsKey)
-        let feeDiscountIndex = UserDefaults.standard.integer(forKey: UserDefaults.userDefinedFeeDiscountKey)
-        print("viewDidAppear feeInDollars \(feeInDollars)")
-        userDefinedFeeLabel.text = "\(feeInDollars) 元"
-        feeDiscountTextfield.text = fee.feePercentValues[feeDiscountIndex]
+        initView()
     }
     @IBAction func syncSwitchChanged(_ sender: UISwitch) {
         UserPreferences.shared.syncPreference = sender.isOn ? .iCloud : .local
         LocalDBService.shared.reset(syncPreference: UserPreferences.shared.syncPreference)
     }
-    func initView() {
+    func setup() {
         navigationItem.title = "設定"
         
         tableView.backgroundColor = .secondarySystemBackground
@@ -45,11 +41,17 @@ class SettingViewController: UITableViewController {
         feeDiscountTextfield.borderStyle = .none
         feeDiscountTextfield.delegate = self
         feeDiscountTextfield.tintColor = .clear
-        
+        feeDiscountTextfield.inputAccessoryView = toolBar()
         pickerView.delegate = self
         pickerView.dataSource = self
-        
-        
+    }
+    
+    func initView() {
+        let feeInDollars = UserDefaults.standard.double(forKey: UserDefaults.userDefinedFeeInDollarsKey)
+        let feeDiscountIndex = UserDefaults.standard.integer(forKey: UserDefaults.userDefinedFeeDiscountKey)
+        print("viewDidAppear feeInDollars \(feeInDollars)")
+        userDefinedFeeLabel.text = "\(feeInDollars) 元"
+        feeDiscountTextfield.text = fee.feePercentValues[feeDiscountIndex]
     }
 
     
@@ -101,6 +103,6 @@ extension SettingViewController: UIPickerViewDataSource, UIPickerViewDelegate {
         feeDiscountTextfield.text = fee.feePercentValues[row]
         
         UserDefaults.standard.set(row, forKey: UserDefaults.userDefinedFeeDiscountKey)
-        feeDiscountTextfield.resignFirstResponder()
+//        feeDiscountTextfield.resignFirstResponder()
     }
 }

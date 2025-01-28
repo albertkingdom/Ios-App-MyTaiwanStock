@@ -74,7 +74,7 @@ extension UIViewController {
             alertVC.addAction(positiveAction)
         }
         if let negativeAction = negativeAction {
-            let negativeAction = UIAlertAction(title: "Cancel", style: .cancel) { _ -> Void in
+            let negativeAction = UIAlertAction(title: "Cancel".localized, style: .cancel) { _ -> Void in
                 negativeAction()
             }
             alertVC.addAction(negativeAction)

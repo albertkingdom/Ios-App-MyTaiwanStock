@@ -66,7 +66,6 @@
 		A164DC9729A11A07001DDB15 /* Charts in Frameworks */ = {isa = PBXBuildFile; productRef = A164DC9629A11A07001DDB15 /* Charts */; };
 		A168E09E27146EF600C75064 /* NewsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A168E09D27146EF600C75064 /* NewsAPI.swift */; };
 		A168E0A027147C9800C75064 /* NewsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A168E09F27147C9800C75064 /* NewsListViewController.swift */; };
-		A168E0A22714822D00C75064 /* NewsListTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = A168E0A12714822D00C75064 /* NewsListTableViewCell.swift */; };
 		A168E0A427148D1600C75064 /* webViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A168E0A327148D1600C75064 /* webViewController.swift */; };
 		A17C2A7928D80C99007508D0 /* FeeType.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17C2A7828D80C99007508D0 /* FeeType.swift */; };
 		A17C2A7B28D81303007508D0 /* Fee.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17C2A7A28D81303007508D0 /* Fee.swift */; };
@@ -224,7 +223,6 @@
 		A16321702956A8CC0011F295 /* DividendDetailTableViewCell.xib */ = {isa = PBXFileReference; lastKnownFileType = file.xib; path = DividendDetailTableViewCell.xib; sourceTree = "<group>"; };
 		A168E09D27146EF600C75064 /* NewsAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsAPI.swift; sourceTree = "<group>"; };
 		A168E09F27147C9800C75064 /* NewsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsListViewController.swift; sourceTree = "<group>"; };
-		A168E0A12714822D00C75064 /* NewsListTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsListTableViewCell.swift; sourceTree = "<group>"; };
 		A168E0A327148D1600C75064 /* webViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = webViewController.swift; sourceTree = "<group>"; };
 		A17C2A7828D80C99007508D0 /* FeeType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeType.swift; sourceTree = "<group>"; };
 		A17C2A7A28D81303007508D0 /* Fee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fee.swift; sourceTree = "<group>"; };
@@ -477,7 +475,6 @@
 				DF06F316270A01220031D6FE /* StockTableViewCell.swift */,
 				A12705132830B36700ED92F2 /* StockCellViewModel.swift */,
 				A127052528321DB000ED92F2 /* HistoryCellModel.swift */,
-				A168E0A12714822D00C75064 /* NewsListTableViewCell.swift */,
 				A1202124288BB8DD00C8746A /* NewsListTableViewCell2.swift */,
 				A127052B2833604400ED92F2 /* NewsListCellViewModel.swift */,
 				DF14417D27868B240038D05D /* StatisticTableViewCell.swift */,
@@ -749,7 +746,6 @@
 				A1F168332BDE11400080F57E /* UIColor+Extension.swift in Sources */,
 				A10CD2D028B9D1BB00B37AA4 /* CustomTabBarViewController.swift in Sources */,
 				A163216B2955EF8F0011F295 /* StatisticStockTableViewCell.swift in Sources */,
-				A168E0A22714822D00C75064 /* NewsListTableViewCell.swift in Sources */,
 				A181943B28B87895009475E9 /* ValidInputService.swift in Sources */,
 				A16321522954A5C50011F295 /* AddDividendViewController.swift in Sources */,
 				DF793ADB27E03258007C9442 /* AddStockTableViewCell.swift in Sources */,

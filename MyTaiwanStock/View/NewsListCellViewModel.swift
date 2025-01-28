@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct NewsListCellViewModel {
+struct NewsListCellViewModel: Hashable {
     let title: String
     let detail: String
     let publishedAt: Date

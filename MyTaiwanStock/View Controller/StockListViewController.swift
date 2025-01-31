@@ -8,16 +8,14 @@ import UIKit
 //
 //  Created by Albert Lin on 2021/10/3.
 //
-import WidgetKit
 
 class StockListViewController: UIViewController, Navigator {
     typealias Destination = UIViewController
-    
+
     let networkService = NetworkServiceImpl()
 
     var subscription = Set<AnyCancellable>()
 
-    var context: NSManagedObjectContext?
     var viewModel: StockListViewModel!
     var cellDatas: [StockCellViewModel] = []
     var refreshControl: UIRefreshControl!
@@ -41,14 +39,11 @@ class StockListViewController: UIViewController, Navigator {
         return button
     }()
     let floatingButton = FloatingButton()
-  
 
     func configure(with viewModel: StockListViewModel) {
         self.viewModel = viewModel
     }
-    private func setupFloatingButton(){
-        floatingButton.addTarget(self, action: #selector(goToAddStockNoVC), for: .touchUpInside)
-    }
+
     private var floatingButtonManager: FloatingButtonManager!
 
     override func viewDidLoad() {
@@ -64,11 +59,6 @@ class StockListViewController: UIViewController, Navigator {
         self.navigationController?.delegate = self
         navigationItem.leftBarButtonItem = editButtonItem
 
-        // pull refresh
-        refreshControl = UIRefreshControl()
-        tableView.addSubview(refreshControl)
-        refreshControl.addTarget(
-            self, action: #selector(refreshData), for: .valueChanged)
         bindViewModel()
         // Listening to label tap notification
         NotificationCenter.default.addObserver(
@@ -78,14 +68,9 @@ class StockListViewController: UIViewController, Navigator {
             object: nil
         )
 
-        // 點空白處隱藏鍵盤
-        let tapGesture = UITapGestureRecognizer(
-            target: self, action: #selector(dismissKeyboard))
-        tapGesture.cancelsTouchesInView = false  // 這確保了點擊其他控件（如按鈕）時，不會干擾它們的事件
-        view.addGestureRecognizer(tapGesture)
+        addDismissKeyBoardGesture()
         initView()
-        floatingButtonManager = FloatingButtonManager(parentView: self.view, floatingButton: floatingButton, delegate: self)
-        setupFloatingButton()
+
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -168,34 +153,7 @@ class StockListViewController: UIViewController, Navigator {
             }
             .store(in: &subscription)
 
-        //        viewModel.currentMenuIndexCombine
-        //            .sink(receiveValue: {[weak self] index in
-        //                logger.debug("currentMenuIndex \(index)")
-        //                self?.currentMenuIndex = index
-        //            })
-        //            .store(in: &subscription)
-        //
-        //        Publishers.CombineLatest(viewModel.$shouldShowAlert, viewModel.$isLoading)
-        //            .sink { [weak self] isLoading, shouldShowTip in
-        //                print("isLoading=\(isLoading), should \(shouldShowTip)")
-        //                if !isLoading && shouldShowTip {
-        //                    self?.showCustomAlert()
-        //
-        //                }
-        //            }.store(in: &subscription)
-
     }
-    //    func showCustomAlert() {
-    //        let alert = UIAlertController(title: "Alert", message: "新增您的第一筆收藏清單", preferredStyle: .alert)
-    //
-    //        alert.addAction(UIAlertAction(title: "帶我去！", style: .default, handler: { [weak self] _ in
-    //            let vc = self?.storyboard?.instantiateViewController(identifier: "addListVC") as! AddListViewController
-    //
-    //            self?.navigationController?.pushViewController(vc, animated: false)
-    //            self?.viewModel.shouldShowAlert = false
-    //        }))
-    //        self.present(alert, animated: true, completion: nil)
-    //    }
 
     @objc func refreshData() {
         self.refreshControl.endRefreshing()
@@ -206,10 +164,12 @@ class StockListViewController: UIViewController, Navigator {
     @objc private func goToAddStockNoVC() {
         print("tapFloatingButton")
         let hasMoreThanOneList = viewModel.handleFetchListFromDB()  // 是否有建立清單
-        floatingButtonManager.toggleSecondaryButtons(hasMoreThanOneList: hasMoreThanOneList, parentFloatingButton: floatingButton)
+        floatingButtonManager.toggleSecondaryButtons(
+            hasMoreThanOneList: hasMoreThanOneList,
+            parentFloatingButton: floatingButton)
     }
 
-    func configureMenu(actionList: [UIAction]?) {
+    private func configureMenu(actionList: [UIAction]?) {
         guard var actionList = actionList else {
             return
         }
@@ -230,14 +190,16 @@ class StockListViewController: UIViewController, Navigator {
 
         publisher
             .compactMap { notification in
-                (notification.object as? UITextField)?.text
+                (notification.object as? UITextField)?.text?.trimmingCharacters(
+                    in: .whitespacesAndNewlines)
             }
+            .debounce(for: .milliseconds(300), scheduler: DispatchQueue.main)
             .sink { [weak self] str in
                 self?.viewModel.searchText.send(str)
             }
             .store(in: &subscription)
     }
-    func setupFloatingButtons() {
+    private func setupFloatingButtons() {
         view.addSubview(floatingButton)
 
         NSLayoutConstraint.activate([
@@ -248,19 +210,29 @@ class StockListViewController: UIViewController, Navigator {
             floatingButton.bottomAnchor.constraint(
                 equalTo: view.bottomAnchor, constant: -100),
         ])
+
+        floatingButton.addTarget(
+            self, action: #selector(goToAddStockNoVC), for: .touchUpInside)
+        floatingButtonManager = FloatingButtonManager(
+            parentView: self.view, floatingButton: floatingButton,
+            delegate: self)
     }
-    
-    
-    
+
     func initView() {
         tableView.backgroundColor = .secondarySystemBackground
         tableView.separatorStyle = .none
         tableView.estimatedRowHeight = 50  // for skeleton view to calculate height
         navigationItem.titleView?.tintColor = .systemBlue
         setupFloatingButtons()
-
+        setupPullRefresh()
     }
-
+    func setupPullRefresh() {
+        // pull refresh
+        refreshControl = UIRefreshControl()
+        tableView.addSubview(refreshControl)
+        refreshControl.addTarget(
+            self, action: #selector(refreshData), for: .valueChanged)
+    }
 
     deinit {
         logger.debug("stock list vc deinit")
@@ -323,7 +295,6 @@ extension StockListViewController: SkeletonTableViewDataSource,
         stockViewController.stockName = cellViewModel.stockShortName
         stockViewController.stockPriceDiff = cellViewModel.stockPriceDiff
         stockViewController.timeString = cellViewModel.time
-        //        stockViewController.context = self.context // TODO:
 
         navigationController?.pushViewController(
             stockViewController, animated: true)
@@ -393,6 +364,9 @@ extension StockListViewController: UISearchBarDelegate {
     func searchBarSearchButtonClicked(_ searchBar: UISearchBar) {
         self.searchBar.endEditing(true)
     }
+    func searchBarShouldEndEditing(_ searchBar: UISearchBar) -> Bool {
+        return true
+    }
 
 }
 
@@ -423,12 +397,11 @@ extension StockListViewController {
     }
 }
 
-
 extension StockListViewController: FloatingButtonManagerDelegate {
     func didTapSecondaryButton1() {
         navigateToVC(identifier: "addListVC")
     }
-    
+
     func didTapSecondaryButton2() {
         let addStockViewController =
             storyboard?.instantiateViewController(identifier: "addStockVC")
@@ -442,6 +415,5 @@ extension StockListViewController: FloatingButtonManagerDelegate {
         navigationController?.pushViewController(
             addStockViewController, animated: false)
     }
-    
-    
+
 }

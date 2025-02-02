@@ -13,7 +13,6 @@ import WidgetKit
 class StockListViewModel: ObservableObject {
     private var timer: Timer?
     private var lastTimeMenuIndex = 0
-//    var stockNoStringCombine = CurrentValueSubject<[String], Never>([])
 
     var stockNameStringSetCombine = CurrentValueSubject<Set<String>,Never>([])
 
@@ -34,7 +33,6 @@ class StockListViewModel: ObservableObject {
     private var stockCellDatasCombine = CurrentValueSubject<[StockCellViewModel], Never>([])
     
     var filteredStockCellDatasCombine = CurrentValueSubject<[StockCellViewModel], Never>([])
-//    @Published var filteredStockCellDatasCombine: [StockCellViewModel] = []
     
     var dataForWidget = PassthroughSubject<Data, Never>()
         
@@ -122,13 +120,6 @@ class StockListViewModel: ObservableObject {
             }
             .store(in: &subscription)
         
-//        Handle empty stock numbers separately if needed
-        stockNameStringSetCombine
-            .filter { $0.isEmpty }
-            .sink { [unowned self] _ in
-                self.stockCellDatasCombine.send([])
-            }
-            .store(in: &subscription)
         
         stockCellDatasCombine
             .combineLatest(searchText)
@@ -207,8 +198,6 @@ class StockListViewModel: ObservableObject {
     
     private func setupStockNameStringSet() {
         stockNameStringSetCombine.value.removeAll()
-//        currentFollowingListCombine.value = followingListObjectFromDB[currentMenuIndexCombine.value]
-        //self.fetchStockNoFromDB()
         guard let setOfStockNoObjects = followingListObjectFromDB[currentMenuIndexCombine.value].stockNo else { return }
         let stockNoStringArray:[String] = setOfStockNoObjects.map { ele -> String in
             guard let stockNo = (ele as? StockNo)?.stockNo else { return "" }
@@ -220,7 +209,8 @@ class StockListViewModel: ObservableObject {
     }
  
     
-    func deleteStockNumber(at index: Int) {
+    func deleteStockNumber(stockNo: String) {
+        guard let index = stockCellDatasCombine.value.firstIndex(where: { $0.stockNo == stockNo }) else { return }
         let itemToDelete = stockCellDatasCombine.value[index]
         // find the stockNo object to be deleted
         guard let stockNoSet = currentFollowingListCombine.value?.stockNo else { return }
@@ -251,9 +241,9 @@ class StockListViewModel: ObservableObject {
             itemToDelete.stockNo != stockNo
         }// edit current stockno list
         
-//        stockNoStringCombine.value = stockNoStringCombine.value.filter({ stockNo in
-//            itemToDelete.stockNo != stockNo
-//        })
+        // Create a new fetch with updated stock list
+        let updatedStockNos = Array(stockNameStringSetCombine.value)
+        repeatFetch(stockNos: updatedStockNos)
     }
 
     
@@ -275,5 +265,15 @@ class StockListViewModel: ObservableObject {
     func setInitialMenuIndex(to index: Int) {
         lastTimeMenuIndex = index
     }
+    
+    func saveCurrentListIndex() {
+           UserDefaults.standard.set(currentMenuIndexCombine.value, forKey: UserDefaults.menuIndex)
+       }
+
+   // 新增：從 UserDefaults 獲取儲存的索引
+   func getSavedListIndex() -> Int {
+       return UserDefaults.standard.integer(forKey: UserDefaults.menuIndex)
+   }
+
 }
 

@@ -8,8 +8,15 @@ import UIKit
 //
 //  Created by Albert Lin on 2021/10/3.
 //
-
 class StockListViewController: UIViewController, Navigator {
+
+    enum Section {
+        case main
+    }
+    struct Item:  Hashable {
+        let viewModel: StockCellViewModel
+    }
+   
     typealias Destination = UIViewController
 
     let networkService = NetworkServiceImpl()
@@ -22,7 +29,16 @@ class StockListViewController: UIViewController, Navigator {
     var showPercentage = false
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
-
+    private lazy var dataSource : UITableViewDiffableDataSource = {
+        let dataSource = UITableViewDiffableDataSource<Section, Item>(tableView: tableView, cellProvider: { tableView, indexPath, item in
+            guard let cell = tableView.dequeueReusableCell(withIdentifier: "stockPriceInfoCell", for: indexPath) as? StockTableViewCell else {
+                fatalError("Cannot create new cell")
+            }
+            cell.update(with: item.viewModel, isPercentFormat: self.showPercentage)
+            return cell
+        })
+        return dataSource
+    }()
     // button at center of navigation bar
     lazy var navCenterButton: UIButton = {
         guard let rightIcon = UIImage(systemName: "chevron.down") else {
@@ -43,7 +59,13 @@ class StockListViewController: UIViewController, Navigator {
     func configure(with viewModel: StockListViewModel) {
         self.viewModel = viewModel
     }
-
+    func applySnapshot(data: [StockCellViewModel], animatingDifferences: Bool = true) {
+        var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
+        snapshot.appendSections([.main])
+        let items = data.map { Item(viewModel: $0) }
+        snapshot.appendItems(items, toSection: .main)
+        dataSource.apply(snapshot, animatingDifferences: animatingDifferences)
+    }
     private var floatingButtonManager: FloatingButtonManager!
 
     override func viewDidLoad() {
@@ -51,8 +73,6 @@ class StockListViewController: UIViewController, Navigator {
         logger.debug("list vc viewDidLoad")
 
         tableView.delegate = self
-        tableView.dataSource = self
-
         tableView.tableFooterView = UIView()
 
         searchBar.delegate = self
@@ -143,13 +163,7 @@ class StockListViewController: UIViewController, Navigator {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] cellViewmodels in
                 print("cellViewmodels \(cellViewmodels)")
-                self?.cellDatas = cellViewmodels
-                self?.tableView.reloadData()
-                DispatchQueue.main.asyncAfter(
-                    deadline: .now() + 1,
-                    execute: {
-                        self?.tableView.hideSkeleton()
-                    })
+                self?.applySnapshot(data: cellViewmodels, animatingDifferences: true)
             }
             .store(in: &subscription)
 
@@ -249,48 +263,17 @@ class StockListViewController: UIViewController, Navigator {
     }
 }
 
-extension StockListViewController: SkeletonTableViewDataSource,
-    UITableViewDelegate
-{
-    func collectionSkeletonView(
-        _ skeletonView: UITableView, cellIdentifierForRowAt indexPath: IndexPath
-    ) -> ReusableCellIdentifier {
-        return "stockPriceInfoCell"
-    }
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int)
-        -> Int
-    {
-
-        return cellDatas.count
-    }
-
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath)
-        -> UITableViewCell
-    {
-        let cell =
-            tableView.dequeueReusableCell(
-                withIdentifier: "stockPriceInfoCell", for: indexPath)
-            as! StockTableViewCell
-        cell.viewController = self
-
-        let cellViewModel = cellDatas[indexPath.row]
-        cell.update(with: cellViewModel, isPercentFormat: showPercentage)
-        cell.selectionStyle = .none
-
-        return cell
-    }
+extension StockListViewController: UITableViewDelegate {
     func tableView(
         _ tableView: UITableView, didSelectRowAt indexPath: IndexPath
     ) {
-
-        let cellViewModel = cellDatas[indexPath.row]
+        guard let item = dataSource.itemIdentifier(for: indexPath) else {return}
+        let cellViewModel = item.viewModel
         let stockViewController = DependencyContainer.shared
             .configureStockDetailViewController(
                 stockNo: cellViewModel.stockNo,
                 currentStockPrice: cellViewModel.stockPrice
             )
-
-        //        stockViewController.stockNo = cellViewModel.stockNo
         stockViewController.stockPrice = cellViewModel.stockPrice
         stockViewController.stockName = cellViewModel.stockShortName
         stockViewController.stockPriceDiff = cellViewModel.stockPriceDiff
@@ -305,21 +288,20 @@ extension StockListViewController: SkeletonTableViewDataSource,
     ) -> CGFloat {
         return 100
     }
-    // MARK: delete row
-    func tableView(
-        _ tableView: UITableView,
-        commit editingStyle: UITableViewCell.EditingStyle,
-        forRowAt indexPath: IndexPath
-    ) {
-
-        if editingStyle == .delete {
-
-            deleteStockNumber(at: indexPath.row)
-            cellDatas.remove(at: indexPath.row)
-            tableView.deleteRows(at: [indexPath], with: .automatic)
-
+    // MARK: swipe to delete row
+    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { (action, view, completion) in
+            guard let item = self.dataSource.itemIdentifier(for: indexPath) else { return }
+            self.viewModel.deleteStockNumber(stockNo: item.viewModel.stockNo)
+            var snapshot = self.dataSource.snapshot()
+            snapshot.deleteItems([item])
+            self.dataSource.apply(snapshot, animatingDifferences: true)
+            completion(false)
         }
+        let confiiguration = UISwipeActionsConfiguration(actions: [deleteAction])
+        return confiiguration
     }
+    
 
     func tableView(
         _ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath
@@ -342,20 +324,11 @@ extension StockListViewController: SkeletonTableViewDataSource,
 
 extension StockListViewController {
 
-    func saveNewStockNumberToDB(stockNumber: String) {
-        viewModel.saveNewStockNo(stockNumber: stockNumber)
-    }
-    func deleteStockNumber(at index: Int) {
-        viewModel.deleteStockNumber(at: index)
-    }
-
     func saveCurrentListIndex() {
-        UserDefaults.standard.set(
-            viewModel.currentMenuIndexCombine.value,
-            forKey: UserDefaults.menuIndex)
+        viewModel.saveCurrentListIndex()
     }
     func getSavedListIndex() -> Int {
-        return UserDefaults.standard.integer(forKey: UserDefaults.menuIndex)
+        return viewModel.getSavedListIndex()
     }
 
 }
@@ -408,8 +381,7 @@ extension StockListViewController: FloatingButtonManagerDelegate {
             as! AddStockNoViewController
         addStockViewController.followingStockNoList =
             viewModel.stockNameStringSetCombine.value
-        addStockViewController.addNewStockToDB = saveNewStockNumberToDB(
-            stockNumber:)
+        addStockViewController.addNewStockToDB = viewModel.saveNewStockNo(stockNumber:)
 
         addStockViewController.listName = viewModel.menuTitleCombine
         navigationController?.pushViewController(

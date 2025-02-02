@@ -7,7 +7,7 @@
 
 import Foundation
 
-struct StockCellViewModel {
+struct StockCellViewModel: Hashable {
     let stockNo: String
     let stockShortName: String
     let stockPrice: String

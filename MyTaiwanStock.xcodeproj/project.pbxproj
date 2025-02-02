@@ -7,7 +7,6 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		A1065ACB2C1F266B0033A319 /* StockListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12705112830AE9900ED92F2 /* StockListViewModel.swift */; };
 		A1065AD22C21CEF30033A319 /* WalkthroughViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1065AD12C21CEF30033A319 /* WalkthroughViewController.swift */; };
 		A10CD2D028B9D1BB00B37AA4 /* CustomTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10CD2CF28B9D1BB00B37AA4 /* CustomTabBarViewController.swift */; };
 		A1164EFC2CD268220036C275 /* UnreadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1164EFB2CD268220036C275 /* UnreadManager.swift */; };
@@ -826,7 +825,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				A14CBA0329437DAA00DDA990 /* MyTaiwanStock.xcdatamodeld in Sources */,
-				A1065ACB2C1F266B0033A319 /* StockListViewModel.swift in Sources */,
 				A14CB9FD2943761F00DDA990 /* StockInfo.swift in Sources */,
 				A14CBA0E2943882300DDA990 /* StockCellViewModel.swift in Sources */,
 				A128BB7D285241E8007F7645 /* OneDayStockInfo.swift in Sources */,

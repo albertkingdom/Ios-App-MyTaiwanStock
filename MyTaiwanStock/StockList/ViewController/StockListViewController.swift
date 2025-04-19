@@ -40,7 +40,7 @@ class StockListViewController: UIViewController, Navigator {
         return dataSource
     }()
     // button at center of navigation bar
-    lazy var navCenterButton: UIButton = {
+    private lazy var navCenterButton: UIButton = {
         guard let rightIcon = UIImage(systemName: "chevron.down") else {
             return UIButton()
         }
@@ -54,7 +54,7 @@ class StockListViewController: UIViewController, Navigator {
 
         return button
     }()
-    let floatingButton = FloatingButton()
+    private let floatingButton = FloatingButton()
 
     func configure(with viewModel: StockListViewModel) {
         self.viewModel = viewModel

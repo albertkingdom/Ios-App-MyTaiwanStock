@@ -2,6 +2,10 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>UIAppFonts</key>
+	<array>
+		<string>NotoSansTC-VariableFont_wght.ttf</string>
+	</array>
 	<key>NEWS_API_KEY</key>
 	<string>a451f92024dc45ef90293b8a9e4a18df</string>
 	<key>CFBundleDevelopmentRegion</key>

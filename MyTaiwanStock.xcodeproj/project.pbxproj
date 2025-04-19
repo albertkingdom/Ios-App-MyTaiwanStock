@@ -68,6 +68,8 @@
 		A168E0A427148D1600C75064 /* webViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A168E0A327148D1600C75064 /* webViewController.swift */; };
 		A17C2A7928D80C99007508D0 /* FeeType.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17C2A7828D80C99007508D0 /* FeeType.swift */; };
 		A17C2A7B28D81303007508D0 /* Fee.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17C2A7A28D81303007508D0 /* Fee.swift */; };
+		A17DCFE72DB34FC900707C87 /* NotoSansTC-VariableFont_wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A17DCFE62DB34FC900707C87 /* NotoSansTC-VariableFont_wght.ttf */; };
+		A17DCFE92DB3515400707C87 /* FontManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17DCFE82DB3514C00707C87 /* FontManager.swift */; };
 		A181943B28B87895009475E9 /* ValidInputService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A181943A28B87895009475E9 /* ValidInputService.swift */; };
 		A181945928B88209009475E9 /* ValidInputServiceTest.swift in Sources */ = {isa = PBXBuildFile; fileRef = A181945828B88209009475E9 /* ValidInputServiceTest.swift */; };
 		A18A2AC4291229D700791FE0 /* SkeletonView in Frameworks */ = {isa = PBXBuildFile; productRef = A18A2AC3291229D700791FE0 /* SkeletonView */; };
@@ -225,6 +227,8 @@
 		A168E0A327148D1600C75064 /* webViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = webViewController.swift; sourceTree = "<group>"; };
 		A17C2A7828D80C99007508D0 /* FeeType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeType.swift; sourceTree = "<group>"; };
 		A17C2A7A28D81303007508D0 /* Fee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fee.swift; sourceTree = "<group>"; };
+		A17DCFE62DB34FC900707C87 /* NotoSansTC-VariableFont_wght.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSansTC-VariableFont_wght.ttf"; sourceTree = "<group>"; };
+		A17DCFE82DB3514C00707C87 /* FontManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontManager.swift; sourceTree = "<group>"; };
 		A181943A28B87895009475E9 /* ValidInputService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidInputService.swift; sourceTree = "<group>"; };
 		A181944F28B881B5009475E9 /* MyTaiwanStockTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = MyTaiwanStockTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		A181945828B88209009475E9 /* ValidInputServiceTest.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidInputServiceTest.swift; sourceTree = "<group>"; };
@@ -333,7 +337,6 @@
 		A12705102830AE7C00ED92F2 /* View Model */ = {
 			isa = PBXGroup;
 			children = (
-				A12705112830AE9900ED92F2 /* StockListViewModel.swift */,
 				A127051B2831F98100ED92F2 /* AddStockNoViewModel.swift */,
 				A127051D283201D700ED92F2 /* AddListViewModel.swift */,
 				A127051F283209FD00ED92F2 /* StockDetailViewModel.swift */,
@@ -374,6 +377,40 @@
 			path = OnlineDB;
 			sourceTree = "<group>";
 		};
+		A1DE92592DB3997500D743C7 /* StockList */ = {
+			isa = PBXGroup;
+			children = (
+				A1DE925C2DB39A7400D743C7 /* ViewModel */,
+				A1DE925B2DB39A4400D743C7 /* View */,
+				A1DE925A2DB3999500D743C7 /* ViewController */,
+			);
+			path = StockList;
+			sourceTree = "<group>";
+		};
+		A1DE925A2DB3999500D743C7 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				DF06F2FE27097F2C0031D6FE /* StockListViewController.swift */,
+			);
+			path = ViewController;
+			sourceTree = "<group>";
+		};
+		A1DE925B2DB39A4400D743C7 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				DF06F316270A01220031D6FE /* StockTableViewCell.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		A1DE925C2DB39A7400D743C7 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				A12705112830AE9900ED92F2 /* StockListViewModel.swift */,
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
 		DF06F2EE27097F2C0031D6FE = {
 			isa = PBXGroup;
 			children = (
@@ -385,6 +422,7 @@
 				A181945028B881B5009475E9 /* MyTaiwanStockTests */,
 				DF06F2F827097F2C0031D6FE /* Products */,
 				DF8691F227ECC463003FF990 /* Frameworks */,
+				A17DCFE62DB34FC900707C87 /* NotoSansTC-VariableFont_wght.ttf */,
 			);
 			sourceTree = "<group>";
 		};
@@ -401,6 +439,8 @@
 		DF06F2F927097F2C0031D6FE /* MyTaiwanStock */ = {
 			isa = PBXGroup;
 			children = (
+				A1DE92592DB3997500D743C7 /* StockList */,
+				A17DCFE82DB3514C00707C87 /* FontManager.swift */,
 				A14CBA112944360600DDA990 /* Repository */,
 				DFFB338127F94B5A0018F3A4 /* MyTaiwanStock.entitlements */,
 				DF3873A327ECC930000E2EAF /* Util */,
@@ -447,7 +487,6 @@
 			isa = PBXGroup;
 			children = (
 				A12705102830AE7C00ED92F2 /* View Model */,
-				DF06F2FE27097F2C0031D6FE /* StockListViewController.swift */,
 				DF06F329270DEA1A0031D6FE /* AddHistoryViewController.swift */,
 				DF06F31B270AA43A0031D6FE /* StockViewController.swift */,
 				A168E09F27147C9800C75064 /* NewsListViewController.swift */,
@@ -471,7 +510,6 @@
 		DF06F315270A00DF0031D6FE /* View */ = {
 			isa = PBXGroup;
 			children = (
-				DF06F316270A01220031D6FE /* StockTableViewCell.swift */,
 				A12705132830B36700ED92F2 /* StockCellViewModel.swift */,
 				A127052528321DB000ED92F2 /* HistoryCellModel.swift */,
 				A1202124288BB8DD00C8746A /* NewsListTableViewCell2.swift */,
@@ -680,6 +718,7 @@
 			files = (
 				DF06F30727097F2E0031D6FE /* LaunchScreen.storyboard in Resources */,
 				A16321682955A4BF0011F295 /* StatisticDividendTableViewCell.xib in Resources */,
+				A17DCFE72DB34FC900707C87 /* NotoSansTC-VariableFont_wght.ttf in Resources */,
 				DF06F30427097F2E0031D6FE /* Assets.xcassets in Resources */,
 				DF06F30227097F2C0031D6FE /* Main.storyboard in Resources */,
 				A163216C2955EF8F0011F295 /* StatisticStockTableViewCell.xib in Resources */,
@@ -768,6 +807,7 @@
 				A12705122830AE9900ED92F2 /* StockListViewModel.swift in Sources */,
 				A14CB9F929433ED600DDA990 /* NetworkServiceImpl.swift in Sources */,
 				DF06F31C270AA43A0031D6FE /* StockViewController.swift in Sources */,
+				A17DCFE92DB3515400707C87 /* FontManager.swift in Sources */,
 				DF06F324270B1A4F0031D6FE /* MyStockList.swift in Sources */,
 				A17C2A7928D80C99007508D0 /* FeeType.swift in Sources */,
 				A1CD75CC2CD3210A000A0A7A /* UIViewController+Extension.swift in Sources */,

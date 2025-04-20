@@ -73,7 +73,30 @@ class StockListViewModel: ObservableObject {
         logger.debug("完成core data 同步")
         handleFetchListFromDB()
     }
+    struct Input {
+        var didRefresh: PassthroughSubject<Void, Never>
+    }
+    struct Output {
+        var stocks: AnyPublisher<[StockCellViewModel], Never>
+        var isLoading: AnyPublisher<Bool, Never>
 
+    }
+    func transform(input: Input) -> Output {
+        input
+            .didRefresh
+            .sink { [weak self] _ in
+                guard let self = self else { return }
+                let currentStockNos = Array(
+                    self.stockNameStringSetCombine.value)
+
+                self.repeatFetch(stockNos: currentStockNos)
+            }
+            .store(in: &subscription)
+        return Output(
+            stocks: filteredStockCellDatasCombine.eraseToAnyPublisher(),
+            isLoading: $isLoading.eraseToAnyPublisher()
+        )
+    }
     func fetchListFromDB() -> [List]? {
         let listObjectFromDB = repository.stockList()
         return listObjectFromDB.isEmpty ? nil : listObjectFromDB
@@ -85,12 +108,14 @@ class StockListViewModel: ObservableObject {
             list.name
         })
         logger.debug("lists \(lists)")
+        let savedIndex = getSavedListIndex()
+        let validIndex = min(savedIndex, listObjectFromDB.count - 1)
+
         self.followingListSelectionMenuCombine.send(lists)
         self.followingListObjectFromDB = listObjectFromDB
 
-        self.currentMenuIndexCombine.send(lastTimeMenuIndex)
+        self.currentMenuIndexCombine.send(validIndex)
 
-        setupStockNameStringSet()
         generateMenu()
         isLoading = false
         shouldShowAlert = false
@@ -109,6 +134,11 @@ class StockListViewModel: ObservableObject {
     }
 
     private func setupFetchStockInfo() {
+        stockNameStringSetCombine
+            .sink { stockNos in
+                logger.debug("🔍 stockNameStringSetCombine changed: \(stockNos)")
+            }
+            .store(in: &subscription)
         currentMenuIndexCombine
             .map { [unowned self] index -> List? in
                 timer?.invalidate()
@@ -192,6 +222,7 @@ class StockListViewModel: ObservableObject {
         repository.fetchOneDayStockInfoCombine(stockList: stockNos)
             .sink { [weak self] completion in
                 guard let self = self else { return }
+                self.isLoading = false
                 switch completion {
                 case .failure(let error):
                     print("請求台股資料錯誤 \(error)")
@@ -215,6 +246,7 @@ class StockListViewModel: ObservableObject {
                 self.stockCellDatasCombine.send(cellVMs)
                 self.repository.updateStockNoInDBwithPrice(
                     stockNos: stockNos, cellViewModels: cellVMs)
+                self.isLoading = false
             }
             .store(in: &self.subscription)
     }

@@ -1,14 +1,15 @@
-import Combine
-import CoreData
-import SkeletonView
-import UIKit
-
 //
 //  ViewController.swift
 //  MyTaiwanStock
 //
 //  Created by Albert Lin on 2021/10/3.
 //
+
+import Combine
+import CoreData
+import SkeletonView
+import UIKit
+
 class StockListViewController: UIViewController, Navigator {
 
     enum Section {
@@ -83,7 +84,8 @@ class StockListViewController: UIViewController, Navigator {
         dataSource.apply(snapshot, animatingDifferences: animatingDifferences)
     }
     private var floatingButtonManager: FloatingButtonManager!
-
+    var didRefresh = PassthroughSubject<Void, Never>()
+    private var output: StockListViewModel.Output?
     override func viewDidLoad() {
         super.viewDidLoad()
         logger.debug("list vc viewDidLoad")
@@ -163,8 +165,13 @@ class StockListViewController: UIViewController, Navigator {
         saveCurrentListIndex()
     }
 
-    func bindViewModel() {
+    private func bindViewModel() {
         logger.debug("bindViewModel")
+        let input = StockListViewModel.Input(
+            didRefresh: didRefresh
+        )
+        let output = viewModel.transform(input: input)
+        self.output = output
         viewModel.menuActionsCombine
             .receive(on: DispatchQueue.main)
             .sink { [weak self] actionList in
@@ -178,14 +185,22 @@ class StockListViewController: UIViewController, Navigator {
             }
         }.store(in: &subscription)
 
-        viewModel.filteredStockCellDatasCombine
+        output.stocks
             .receive(on: DispatchQueue.main)
             .sink { [weak self] cellViewmodels in
-                print("cellViewmodels \(cellViewmodels)")
                 self?.applySnapshot(
                     data: cellViewmodels, animatingDifferences: true)
             }
             .store(in: &subscription)
+        output.isLoading
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] isLoading in
+                    if !isLoading {
+                        self?.refreshControl.endRefreshing()
+                        self?.tableView.contentOffset = CGPoint.zero
+                    }
+                }
+                .store(in: &subscription)
 
     }
     // 所有需要viewModel的設置
@@ -211,9 +226,8 @@ class StockListViewController: UIViewController, Navigator {
     }
 
     @objc func refreshData() {
-        self.refreshControl.endRefreshing()
-        viewModel.repeatFetch(
-            stockNos: Array(viewModel.stockNameStringSetCombine.value))
+//        self.refreshControl.endRefreshing()
+        didRefresh.send()
     }
 
     @objc private func goToAddStockNoVC() {
@@ -280,9 +294,8 @@ class StockListViewController: UIViewController, Navigator {
     }
     func setupPullRefresh() {
         guard let viewModel = viewModel else { return }
-
-        // pull refresh
         refreshControl = UIRefreshControl()
+        tableView.refreshControl = refreshControl
         tableView.addSubview(refreshControl)
         refreshControl.addTarget(
             self, action: #selector(refreshData), for: .valueChanged)

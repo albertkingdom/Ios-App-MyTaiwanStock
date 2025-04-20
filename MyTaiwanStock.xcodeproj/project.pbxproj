@@ -96,6 +96,8 @@
 		A1D635F72BEF5A9800375D79 /* FirebaseMessaging in Frameworks */ = {isa = PBXBuildFile; productRef = A1D635F62BEF5A9800375D79 /* FirebaseMessaging */; };
 		A1D831352D44A48A00497508 /* FloatingButtonManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1D831342D44A48A00497508 /* FloatingButtonManager.swift */; };
 		A1D831372D44D42400497508 /* Navigator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1D831362D44D42400497508 /* Navigator.swift */; };
+		A1DE925E2DB39EFC00D743C7 /* StockListCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1DE925D2DB39EF200D743C7 /* StockListCoordinator.swift */; };
+		A1DE92602DB3A3CD00D743C7 /* AppCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1DE925F2DB3A3C300D743C7 /* AppCoordinator.swift */; };
 		A1E1724A2BED087200ED5916 /* View+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1E172492BED087200ED5916 /* View+Extension.swift */; };
 		A1F168272BDD4FF30080F57E /* FirebaseAuth in Frameworks */ = {isa = PBXBuildFile; productRef = A1F168262BDD4FF30080F57E /* FirebaseAuth */; };
 		A1F168292BDD4FF30080F57E /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = A1F168282BDD4FF30080F57E /* FirebaseFirestore */; };
@@ -250,6 +252,8 @@
 		A1CD75D12CD388F1000A0A7A /* DependencyContainer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DependencyContainer.swift; sourceTree = "<group>"; };
 		A1D831342D44A48A00497508 /* FloatingButtonManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingButtonManager.swift; sourceTree = "<group>"; };
 		A1D831362D44D42400497508 /* Navigator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Navigator.swift; sourceTree = "<group>"; };
+		A1DE925D2DB39EF200D743C7 /* StockListCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockListCoordinator.swift; sourceTree = "<group>"; };
+		A1DE925F2DB3A3C300D743C7 /* AppCoordinator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppCoordinator.swift; sourceTree = "<group>"; };
 		A1E172492BED087200ED5916 /* View+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extension.swift"; sourceTree = "<group>"; };
 		A1E1724C2BED0E6500ED5916 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		A1F168322BDE11400080F57E /* UIColor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
@@ -380,6 +384,7 @@
 		A1DE92592DB3997500D743C7 /* StockList */ = {
 			isa = PBXGroup;
 			children = (
+				A1DE925D2DB39EF200D743C7 /* StockListCoordinator.swift */,
 				A1DE925C2DB39A7400D743C7 /* ViewModel */,
 				A1DE925B2DB39A4400D743C7 /* View */,
 				A1DE925A2DB3999500D743C7 /* ViewController */,
@@ -439,6 +444,7 @@
 		DF06F2F927097F2C0031D6FE /* MyTaiwanStock */ = {
 			isa = PBXGroup;
 			children = (
+				A1DE925F2DB3A3C300D743C7 /* AppCoordinator.swift */,
 				A1DE92592DB3997500D743C7 /* StockList */,
 				A17DCFE82DB3514C00707C87 /* FontManager.swift */,
 				A14CBA112944360600DDA990 /* Repository */,
@@ -833,6 +839,7 @@
 				A1164EFC2CD268220036C275 /* UnreadManager.swift in Sources */,
 				A127052C2833604400ED92F2 /* NewsListCellViewModel.swift in Sources */,
 				A12515612C15C339001BFC53 /* Notification+Extension.swift in Sources */,
+				A1DE92602DB3A3CD00D743C7 /* AppCoordinator.swift in Sources */,
 				DF06F317270A01220031D6FE /* StockTableViewCell.swift in Sources */,
 				A17C2A7B28D81303007508D0 /* Fee.swift in Sources */,
 				DFFEB04A27E1D45000C85A53 /* ChatViewController.swift in Sources */,
@@ -850,6 +857,7 @@
 				A11E046F2CFAC2AE00138497 /* Date+Extension.swift in Sources */,
 				DF793AD927DF8E29007C9442 /* StockNoList.swift in Sources */,
 				A1C2E5E728B71F55009D8D9B /* ViewController+extension.swift in Sources */,
+				A1DE925E2DB39EFC00D743C7 /* StockListCoordinator.swift in Sources */,
 				A168E09E27146EF600C75064 /* NewsAPI.swift in Sources */,
 				A127051A28314D6900ED92F2 /* AddStockCellViewModel.swift in Sources */,
 				A168E0A427148D1600C75064 /* webViewController.swift in Sources */,

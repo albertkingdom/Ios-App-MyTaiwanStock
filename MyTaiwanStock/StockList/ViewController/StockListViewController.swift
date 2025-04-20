@@ -2,6 +2,7 @@ import Combine
 import CoreData
 import SkeletonView
 import UIKit
+
 //
 //  ViewController.swift
 //  MyTaiwanStock
@@ -13,30 +14,43 @@ class StockListViewController: UIViewController, Navigator {
     enum Section {
         case main
     }
-    struct Item:  Hashable {
+    struct Item: Hashable {
         let viewModel: StockCellViewModel
     }
-   
-    typealias Destination = UIViewController
 
-    let networkService = NetworkServiceImpl()
+    typealias Destination = UIViewController
 
     var subscription = Set<AnyCancellable>()
 
-    var viewModel: StockListViewModel!
+    private var viewModel: StockListViewModel! {
+        didSet {
+            NSLog("ViewModel \(viewModel != nil)")
+            if isViewLoaded {
+                setupWithViewModel()
+            }
+        }
+    }
+
     var cellDatas: [StockCellViewModel] = []
     var refreshControl: UIRefreshControl!
     var showPercentage = false
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
-    private lazy var dataSource : UITableViewDiffableDataSource = {
-        let dataSource = UITableViewDiffableDataSource<Section, Item>(tableView: tableView, cellProvider: { tableView, indexPath, item in
-            guard let cell = tableView.dequeueReusableCell(withIdentifier: "stockPriceInfoCell", for: indexPath) as? StockTableViewCell else {
-                fatalError("Cannot create new cell")
-            }
-            cell.update(with: item.viewModel, isPercentFormat: self.showPercentage)
-            return cell
-        })
+    private lazy var dataSource: UITableViewDiffableDataSource = {
+        let dataSource = UITableViewDiffableDataSource<Section, Item>(
+            tableView: tableView,
+            cellProvider: { tableView, indexPath, item in
+                guard
+                    let cell = tableView.dequeueReusableCell(
+                        withIdentifier: "stockPriceInfoCell", for: indexPath)
+                        as? StockTableViewCell
+                else {
+                    fatalError("Cannot create new cell")
+                }
+                cell.update(
+                    with: item.viewModel, isPercentFormat: self.showPercentage)
+                return cell
+            })
         return dataSource
     }()
     // button at center of navigation bar
@@ -59,7 +73,9 @@ class StockListViewController: UIViewController, Navigator {
     func configure(with viewModel: StockListViewModel) {
         self.viewModel = viewModel
     }
-    func applySnapshot(data: [StockCellViewModel], animatingDifferences: Bool = true) {
+    func applySnapshot(
+        data: [StockCellViewModel], animatingDifferences: Bool = true
+    ) {
         var snapshot = NSDiffableDataSourceSnapshot<Section, Item>()
         snapshot.appendSections([.main])
         let items = data.map { Item(viewModel: $0) }
@@ -78,8 +94,9 @@ class StockListViewController: UIViewController, Navigator {
         searchBar.delegate = self
         self.navigationController?.delegate = self
         navigationItem.leftBarButtonItem = editButtonItem
-
-        bindViewModel()
+        if viewModel != nil {
+            setupWithViewModel()
+        }
         // Listening to label tap notification
         NotificationCenter.default.addObserver(
             self,
@@ -95,14 +112,16 @@ class StockListViewController: UIViewController, Navigator {
 
     override func viewWillAppear(_ animated: Bool) {
         logger.debug("viewwillappear")
-        setupSearchBarListener()
-
-        let savedMenuIndex = getSavedListIndex()
-        viewModel.setInitialMenuIndex(to: savedMenuIndex)
 
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .never
 
+        floatingButtonManager.resetFloatingButtonState()
+        if viewModel != nil {
+            setupWithViewModel()
+        }
+    }
+    private func setupNotifications() {
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(onAppEnterForeground),
@@ -115,8 +134,8 @@ class StockListViewController: UIViewController, Navigator {
             name: UIApplication.didEnterBackgroundNotification,
             object: nil
         )
-        floatingButtonManager.resetFloatingButtonState()
     }
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         // 只有初次打開才顯示教學
@@ -163,10 +182,32 @@ class StockListViewController: UIViewController, Navigator {
             .receive(on: DispatchQueue.main)
             .sink { [weak self] cellViewmodels in
                 print("cellViewmodels \(cellViewmodels)")
-                self?.applySnapshot(data: cellViewmodels, animatingDifferences: true)
+                self?.applySnapshot(
+                    data: cellViewmodels, animatingDifferences: true)
             }
             .store(in: &subscription)
 
+    }
+    // 所有需要viewModel的設置
+    private func setupWithViewModel() {
+        guard let viewModel = viewModel else { return }
+        viewModel.handleFetchListFromDB()
+        floatingButton.addTarget(
+            self, action: #selector(goToAddStockNoVC), for: .touchUpInside)
+        // Bind view model
+        bindViewModel()
+
+        // Setup search bar listener
+        setupSearchBarListener()
+
+        // Setup initial menu index
+        let savedMenuIndex = viewModel.getSavedListIndex()
+        viewModel.setInitialMenuIndex(to: savedMenuIndex)
+
+        // Setup notifications
+        setupNotifications()
+
+        setupPullRefresh()
     }
 
     @objc func refreshData() {
@@ -177,7 +218,7 @@ class StockListViewController: UIViewController, Navigator {
 
     @objc private func goToAddStockNoVC() {
         print("tapFloatingButton")
-        let hasMoreThanOneList = viewModel.handleFetchListFromDB()  // 是否有建立清單
+        let hasMoreThanOneList = self.viewModel.handleFetchListFromDB()  // 是否有建立清單
         floatingButtonManager.toggleSecondaryButtons(
             hasMoreThanOneList: hasMoreThanOneList,
             parentFloatingButton: floatingButton)
@@ -191,8 +232,8 @@ class StockListViewController: UIViewController, Navigator {
         actionList.append(
             UIAction(
                 title: "編輯",
-                handler: { action in
-                    self.navigateToVC(identifier: "addListVC")
+                handler: { [weak self] action in
+                    self?.viewModel.navigateToAddList()
                 }))
         self.navCenterButton.menu = UIMenu(children: actionList)
     }
@@ -213,7 +254,7 @@ class StockListViewController: UIViewController, Navigator {
             }
             .store(in: &subscription)
     }
-    private func setupFloatingButtons() {
+    private func setupFloatingButtonUI() {
         view.addSubview(floatingButton)
 
         NSLayoutConstraint.activate([
@@ -225,8 +266,6 @@ class StockListViewController: UIViewController, Navigator {
                 equalTo: view.bottomAnchor, constant: -100),
         ])
 
-        floatingButton.addTarget(
-            self, action: #selector(goToAddStockNoVC), for: .touchUpInside)
         floatingButtonManager = FloatingButtonManager(
             parentView: self.view, floatingButton: floatingButton,
             delegate: self)
@@ -237,10 +276,11 @@ class StockListViewController: UIViewController, Navigator {
         tableView.separatorStyle = .none
         tableView.estimatedRowHeight = 50  // for skeleton view to calculate height
         navigationItem.titleView?.tintColor = .systemBlue
-        setupFloatingButtons()
-        setupPullRefresh()
+        setupFloatingButtonUI()
     }
     func setupPullRefresh() {
+        guard let viewModel = viewModel else { return }
+
         // pull refresh
         refreshControl = UIRefreshControl()
         tableView.addSubview(refreshControl)
@@ -267,20 +307,18 @@ extension StockListViewController: UITableViewDelegate {
     func tableView(
         _ tableView: UITableView, didSelectRowAt indexPath: IndexPath
     ) {
-        guard let item = dataSource.itemIdentifier(for: indexPath) else {return}
+        guard let item = dataSource.itemIdentifier(for: indexPath) else {
+            return
+        }
         let cellViewModel = item.viewModel
-        let stockViewController = DependencyContainer.shared
-            .configureStockDetailViewController(
-                stockNo: cellViewModel.stockNo,
-                currentStockPrice: cellViewModel.stockPrice
-            )
-        stockViewController.stockPrice = cellViewModel.stockPrice
-        stockViewController.stockName = cellViewModel.stockShortName
-        stockViewController.stockPriceDiff = cellViewModel.stockPriceDiff
-        stockViewController.timeString = cellViewModel.time
 
-        navigationController?.pushViewController(
-            stockViewController, animated: true)
+        viewModel.navigateToStockDetail(
+            stockNo: cellViewModel.stockNo,
+            currentStockPrice: cellViewModel.stockPrice,
+            stockName: cellViewModel.stockShortName,
+            stockPriceDiff: cellViewModel.stockPriceDiff,
+            timeString: cellViewModel.time
+        )
 
     }
     func tableView(
@@ -289,19 +327,25 @@ extension StockListViewController: UITableViewDelegate {
         return 100
     }
     // MARK: swipe to delete row
-    func tableView(_ tableView: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
-        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { (action, view, completion) in
-            guard let item = self.dataSource.itemIdentifier(for: indexPath) else { return }
+    func tableView(
+        _ tableView: UITableView,
+        trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath
+    ) -> UISwipeActionsConfiguration? {
+        let deleteAction = UIContextualAction(
+            style: .destructive, title: "Delete"
+        ) { (action, view, completion) in
+            guard let item = self.dataSource.itemIdentifier(for: indexPath)
+            else { return }
             self.viewModel.deleteStockNumber(stockNo: item.viewModel.stockNo)
             var snapshot = self.dataSource.snapshot()
             snapshot.deleteItems([item])
             self.dataSource.apply(snapshot, animatingDifferences: true)
             completion(false)
         }
-        let confiiguration = UISwipeActionsConfiguration(actions: [deleteAction])
+        let confiiguration = UISwipeActionsConfiguration(actions: [deleteAction]
+        )
         return confiiguration
     }
-    
 
     func tableView(
         _ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath
@@ -350,7 +394,10 @@ extension StockListViewController: UINavigationControllerDelegate {
     ) {
         if viewController == self {
             logger.debug("從其他vc返回到stock list vc")
-            viewModel.handleFetchListFromDB()
+            //            viewModel.handleFetchListFromDB()
+            if viewModel != nil {
+                setupWithViewModel()
+            }
         }
     }
 }
@@ -372,20 +419,19 @@ extension StockListViewController {
 
 extension StockListViewController: FloatingButtonManagerDelegate {
     func didTapSecondaryButton1() {
-        navigateToVC(identifier: "addListVC")
+        guard let viewModel = viewModel else {
+            logger.debug("ViewModel is nil in didTapSecondaryButton1")
+            return
+        }
+        viewModel.navigateToAddList()
     }
 
     func didTapSecondaryButton2() {
-        let addStockViewController =
-            storyboard?.instantiateViewController(identifier: "addStockVC")
-            as! AddStockNoViewController
-        addStockViewController.followingStockNoList =
-            viewModel.stockNameStringSetCombine.value
-        addStockViewController.addNewStockToDB = viewModel.saveNewStockNo(stockNumber:)
-
-        addStockViewController.listName = viewModel.menuTitleCombine
-        navigationController?.pushViewController(
-            addStockViewController, animated: false)
+        guard let viewModel = viewModel else {
+            logger.debug("ViewModel is nil in didTapSecondaryButton1")
+            return
+        }
+        viewModel.navigateToAddStock()
     }
 
 }

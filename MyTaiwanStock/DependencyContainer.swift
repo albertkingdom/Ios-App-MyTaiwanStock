@@ -17,16 +17,18 @@ class DependencyContainer {
     }()
     
     
-    func configureStockListViewController() -> StockListViewController{
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        
-        guard let viewController = storyboard.instantiateViewController(withIdentifier: "stockListVC") as? StockListViewController else {
-            fatalError("Could not find UserViewController in storyboard")
-        }
-        let viewModel = StockListViewModel(repository: networkService)
-        viewController.configure(with: viewModel)
-        return viewController
-    }
+//    func configureStockListViewController(coordinator: StockListCoordinatorProtocol) -> StockListViewController{
+//        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+////        
+//        guard let viewController = storyboard.instantiateViewController(withIdentifier: "stockListVC") as? StockListViewController else {
+//            fatalError("Could not find UserViewController in storyboard")
+//        }
+//        let viewModel = StockListViewModel(repository: networkService, coordinator: coordinator)
+//        viewController.configure(with: viewModel)
+//
+//        return viewController
+////        return StockListViewController(viewModel: viewModel)
+//    }
     
     func configureStockDetailViewController(
         stockNo: String,

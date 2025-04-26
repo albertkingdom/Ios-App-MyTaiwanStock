@@ -21,7 +21,7 @@ class StockListViewModel: ObservableObject {
     }
     var currentMenuIndexCombine = CurrentValueSubject<Int, Never>(0)
 
-    @Published var menuTitleCombine: String = ""
+    var menuTitleCombine = CurrentValueSubject<String, Never>("")
 
     var menuActionsCombine = CurrentValueSubject<[UIAction], Never>([])
 
@@ -94,7 +94,7 @@ class StockListViewModel: ObservableObject {
                 self.repeatFetch(stockNos: currentStockNos)
             }
             .store(in: &subscription)
-        
+
         input.viewDidLoad
             .flatMap { _ -> AnyPublisher<[List]?, Never> in
                 return Just(self.fetchListFromDB()).eraseToAnyPublisher()
@@ -109,19 +109,29 @@ class StockListViewModel: ObservableObject {
                     }
                     self.followingListSelectionMenuCombine.send(listNames)
                     let savedIndex = self.getSavedListIndex()
-                    let validIndex = min(savedIndex, listNames.count - 1)
+                    let index = min(savedIndex, listNames.count - 1)
+                    let validIndex = max(0, index)
                     self.currentMenuIndexCombine.send(validIndex)
                 }
                 self.isLoading = false
                 self.shouldShowAlert = false
             }
             .store(in: &subscription)
-        
+
         followingListSelectionMenuCombine
             .combineLatest(currentMenuIndexCombine)
+            .filter { listNames, _ in
+                !listNames.isEmpty && !listNames.contains { $0.isEmpty }
+            }
+            .removeDuplicates(by: { prev, current in
+                let (prevNames, prevIndex) = prev
+                let (currentNames, currentIndex) = current
+                return prevNames == currentNames && prevIndex == currentIndex
+            })
             .sink(receiveValue: { [weak self] listNames, index in
-                let title = listNames.isEmpty ? "" : listNames[min(listNames.count-1, index)]
-                self?.menuTitleCombine = title
+                let title = listNames[min(listNames.count - 1, index)]
+                guard !title.isEmpty else {return}
+                self?.menuTitleCombine.send(title)
 
                 let actions = listNames.enumerated().map { index, str in
                     UIAction(
@@ -136,11 +146,11 @@ class StockListViewModel: ObservableObject {
                 self?.menuActionsCombine.send(actions)
             })
             .store(in: &subscription)
-        
+
         return Output(
             stocks: filteredStockCellDatasCombine.eraseToAnyPublisher(),
             isLoading: $isLoading.eraseToAnyPublisher(),
-            menuTitle: $menuTitleCombine.eraseToAnyPublisher()
+            menuTitle: menuTitleCombine.eraseToAnyPublisher()
         )
     }
     private func fetchListFromDB() -> [List]? {
@@ -148,14 +158,8 @@ class StockListViewModel: ObservableObject {
         return listObjectFromDB.isEmpty ? nil : listObjectFromDB
     }
 
-
-
     private func setupFetchStockInfo() {
-        stockNameStringSetCombine
-            .sink { stockNos in
-                logger.debug("🔍 stockNameStringSetCombine changed: \(stockNos)")
-            }
-            .store(in: &subscription)
+
         currentMenuIndexCombine
             .map { [unowned self] index -> List? in
                 timer?.invalidate()
@@ -204,31 +208,7 @@ class StockListViewModel: ObservableObject {
             })
             .store(in: &subscription)
     }
-    private func generateMenu() {
 
-        followingListSelectionMenuCombine
-            .combineLatest(currentMenuIndexCombine)
-            .sink(receiveValue: { [weak self] listNames, index in
-                self?.menuTitleCombine =
-                    self?.followingListSelectionMenuCombine.value[index] ?? ""
-                let actions = listNames.enumerated().map { index, str in
-                    UIAction(
-                        title: str,
-                        state: index == self?.currentMenuIndexCombine.value
-                            ? .on : .off,
-                        handler: { action in
-
-                            self?.currentMenuIndexCombine.send(index)
-                            self?.setupStockNameStringSet()
-
-                        })
-                }
-                self?.menuActionsCombine.send(actions)
-
-            })
-            .store(in: &subscription)
-
-    }
     func repeatFetch(stockNos: [String]) {
         logger.debug("取消timer and stockNos \(stockNos)")
         timer?.invalidate()
@@ -318,7 +298,7 @@ class StockListViewModel: ObservableObject {
         print("delete stockNo string \(itemToDelete.stockNo)")
 
         repository.deleteStockNumber(
-            stockNoObject: stockNoObjectToDel, listName: menuTitleCombine,
+            stockNoObject: stockNoObjectToDel, listName: menuTitleCombine.value,
             stockNumber: itemToDelete.stockNo
         )
 
@@ -396,7 +376,7 @@ extension StockListViewModel {
     func navigateToAddStock() {
         coordinator.showAddStock(
             followingStockNoList: stockNameStringSetCombine.value,
-            listName: menuTitleCombine,
+            listName: menuTitleCombine.value,
             addNewStockToDB: saveNewStockNo
         )
     }

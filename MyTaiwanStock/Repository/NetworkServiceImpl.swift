@@ -44,7 +44,7 @@ class NetworkServiceImpl: NetworkService {
     }
     
     
-    func fetchOneDayStockInfoCombine(stockList: [String]) -> Future<OneDayStockInfo, Error> {
+    func fetchOneDayStockInfoCombine(stockList: [String]) -> AnyPublisher<OneDayStockInfo, Error> {
         var urlComponents = URLComponents(string: "https://mis.twse.com.tw/stock/api/getStockInfo.jsp")!
         
         let stockListQuerys = stockList.map {"tse_\($0).tw"}.joined(separator: "|")
@@ -76,7 +76,7 @@ class NetworkServiceImpl: NetworkService {
                     promise(.success(stockInfo))
                 }
                 .store(in: &self.subscription)
-        }
+        }.eraseToAnyPublisher()
     }
     
     

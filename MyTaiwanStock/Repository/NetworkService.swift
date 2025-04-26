@@ -15,7 +15,7 @@ protocol NetworkService {
     // realtime stock info
     func fetchOneDayStockInfo(stockList: [String], completionHandler: @escaping (Result<StockData,Error>) -> Void)
     
-    func fetchOneDayStockInfoCombine(stockList: [String]) -> Future<OneDayStockInfo, Error>
+    func fetchOneDayStockInfoCombine(stockList: [String]) -> AnyPublisher<OneDayStockInfo, Error>
     
     // get candle stick data
     func fetchCandleData(stockNo: String, dateStr: String, completion: @escaping (Result<CandleData, Error>) -> Void)

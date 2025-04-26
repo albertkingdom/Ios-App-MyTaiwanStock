@@ -87,30 +87,56 @@ class StockListViewModel: ObservableObject {
         input
             .didRefresh
             .print("did refresh triggr")
-            .sink {  _ in
+            .sink { _ in
                 //guard let self = self else { return }
                 let currentStockNos = Array(self.stockNameString)
 
                 self.repeatFetch(stockNos: currentStockNos)
             }
             .store(in: &subscription)
+        
         input.viewDidLoad
             .flatMap { _ -> AnyPublisher<[List]?, Never> in
                 return Just(self.fetchListFromDB()).eraseToAnyPublisher()
             }
-            .sink {  listObjectFromDB in
-                //guard let self = self else { return }
-                guard let listObjectFromDB else {
-                    self.isLoading = false
-                    self.shouldShowAlert = false
-                    return
+            .sink { [weak self] listObjectFromDB in
+                guard let self = self else { return }
+                if let listObjectFromDB {
+
+                    self.followingListObjectFromDB = listObjectFromDB
+                    let listNames = listObjectFromDB.compactMap {
+                        $0.name
+                    }
+                    self.followingListSelectionMenuCombine.send(listNames)
+                    let savedIndex = self.getSavedListIndex()
+                    let validIndex = min(savedIndex, listNames.count - 1)
+                    self.currentMenuIndexCombine.send(validIndex)
                 }
-                
-                self.prepareData(listObjectFromDB)
-                
+                self.isLoading = false
+                self.shouldShowAlert = false
             }
             .store(in: &subscription)
+        
+        followingListSelectionMenuCombine
+            .combineLatest(currentMenuIndexCombine)
+            .sink(receiveValue: { [weak self] listNames, index in
+                let title = listNames.isEmpty ? "" : listNames[min(listNames.count-1, index)]
+                self?.menuTitleCombine = title
 
+                let actions = listNames.enumerated().map { index, str in
+                    UIAction(
+                        title: str,
+                        state: index == self?.currentMenuIndexCombine.value
+                            ? .on : .off,
+                        handler: { action in
+                            self?.currentMenuIndexCombine.send(index)
+                            self?.setupStockNameStringSet()
+                        })
+                }
+                self?.menuActionsCombine.send(actions)
+            })
+            .store(in: &subscription)
+        
         return Output(
             stocks: filteredStockCellDatasCombine.eraseToAnyPublisher(),
             isLoading: $isLoading.eraseToAnyPublisher(),
@@ -122,35 +148,7 @@ class StockListViewModel: ObservableObject {
         return listObjectFromDB.isEmpty ? nil : listObjectFromDB
     }
 
-    fileprivate func prepareData(_ listObjectFromDB: [List]) {
-        logger.debug("prepareData有資料")
-        let listNames = listObjectFromDB.compactMap{
-            $0.name
-        }
-        let savedIndex = getSavedListIndex()
-        let validIndex = min(savedIndex, listObjectFromDB.count - 1)
 
-        self.followingListSelectionMenuCombine.send(listNames)
-        self.followingListObjectFromDB = listObjectFromDB
-
-        self.currentMenuIndexCombine.send(validIndex)
-
-        generateMenu()
-        isLoading = false
-        shouldShowAlert = false
-    }
-
-    //    func handleFetchListFromDB() -> Bool {
-    //
-    //        guard let listObjectFromDB = fetchListFromDB() else {
-    //            logger.debug("core data有資料")
-    //            isLoading = false
-    //            shouldShowAlert = false
-    //            return false
-    //        }
-    //        prepareData(listObjectFromDB)
-    //        return true
-    //    }
 
     private func setupFetchStockInfo() {
         stockNameStringSetCombine
@@ -172,14 +170,14 @@ class StockListViewModel: ObservableObject {
             })
             .compactMap { list -> [String] in
                 guard let setOfStockNoObjects = list?.stockNo else {
-                                        return []
+                    return []
                 }
                 return setOfStockNoObjects.compactMap {
                     ($0 as? StockNo)?.stockNo
                 }
             }
             .sink { [weak self] stockNos in
-                guard let self else {return}
+                guard let self else { return }
                 logger.debug("stockNos \(stockNos)")
                 if !stockNos.isEmpty {
                     self.stockNameStringSetCombine.send(Set(stockNos))
@@ -272,15 +270,15 @@ class StockListViewModel: ObservableObject {
                     StockCellViewModel(stock: item)
                 }
                 self.stockCellDatasCombine.send(cellVMs)
-//                self.repository.updateStockNoInDBwithPrice(
-//                    stockNos: stockNos, cellViewModels: cellVMs)
+                //                self.repository.updateStockNoInDBwithPrice(
+                //                    stockNos: stockNos, cellViewModels: cellVMs)
                 //self.isLoading = false
             }
             .store(in: &self.subscription)
     }
 
     private func setupStockNameStringSet() {
-//        stockNameStringSetCombine.value.removeAll()
+        //        stockNameStringSetCombine.value.removeAll()
         guard
             let setOfStockNoObjects = followingListObjectFromDB[
                 currentMenuIndexCombine.value

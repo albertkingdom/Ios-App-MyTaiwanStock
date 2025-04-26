@@ -15,7 +15,10 @@ class StockListViewModel: ObservableObject {
     private var lastTimeMenuIndex = 0
 
     var stockNameStringSetCombine = CurrentValueSubject<Set<String>, Never>([])
-
+    var stockNameString: Set<String> {
+        print("\(stockNameStringSetCombine.value)")
+        return stockNameStringSetCombine.value
+    }
     var currentMenuIndexCombine = CurrentValueSubject<Int, Never>(0)
 
     @Published var menuTitleCombine: String = ""
@@ -69,49 +72,65 @@ class StockListViewModel: ObservableObject {
         self.coordinator = coordinator
         setupFetchStockInfo()
     }
-    @objc func handleInitialDataUpdate() {
-        logger.debug("完成core data 同步")
-        handleFetchListFromDB()
-    }
+
     struct Input {
         var didRefresh: PassthroughSubject<Void, Never>
+        var viewDidLoad: PassthroughSubject<Void, Never>
+        //        var tapFloatingButton: PassthroughSubject<Void, Never>
     }
     struct Output {
         var stocks: AnyPublisher<[StockCellViewModel], Never>
         var isLoading: AnyPublisher<Bool, Never>
-
+        var menuTitle: AnyPublisher<String, Never>
     }
     func transform(input: Input) -> Output {
         input
             .didRefresh
-            .sink { [weak self] _ in
-                guard let self = self else { return }
-                let currentStockNos = Array(
-                    self.stockNameStringSetCombine.value)
+            .print("did refresh triggr")
+            .sink {  _ in
+                //guard let self = self else { return }
+                let currentStockNos = Array(self.stockNameString)
 
                 self.repeatFetch(stockNos: currentStockNos)
             }
             .store(in: &subscription)
+        input.viewDidLoad
+            .flatMap { _ -> AnyPublisher<[List]?, Never> in
+                return Just(self.fetchListFromDB()).eraseToAnyPublisher()
+            }
+            .sink {  listObjectFromDB in
+                //guard let self = self else { return }
+                guard let listObjectFromDB else {
+                    self.isLoading = false
+                    self.shouldShowAlert = false
+                    return
+                }
+                
+                self.prepareData(listObjectFromDB)
+                
+            }
+            .store(in: &subscription)
+
         return Output(
             stocks: filteredStockCellDatasCombine.eraseToAnyPublisher(),
-            isLoading: $isLoading.eraseToAnyPublisher()
+            isLoading: $isLoading.eraseToAnyPublisher(),
+            menuTitle: $menuTitleCombine.eraseToAnyPublisher()
         )
     }
-    func fetchListFromDB() -> [List]? {
+    private func fetchListFromDB() -> [List]? {
         let listObjectFromDB = repository.stockList()
         return listObjectFromDB.isEmpty ? nil : listObjectFromDB
     }
 
     fileprivate func prepareData(_ listObjectFromDB: [List]) {
-        logger.debug("core data有資料")
-        let lists = listObjectFromDB.compactMap({ list in
-            list.name
-        })
-        logger.debug("lists \(lists)")
+        logger.debug("prepareData有資料")
+        let listNames = listObjectFromDB.compactMap{
+            $0.name
+        }
         let savedIndex = getSavedListIndex()
         let validIndex = min(savedIndex, listObjectFromDB.count - 1)
 
-        self.followingListSelectionMenuCombine.send(lists)
+        self.followingListSelectionMenuCombine.send(listNames)
         self.followingListObjectFromDB = listObjectFromDB
 
         self.currentMenuIndexCombine.send(validIndex)
@@ -121,17 +140,17 @@ class StockListViewModel: ObservableObject {
         shouldShowAlert = false
     }
 
-    func handleFetchListFromDB() -> Bool {
-
-        guard let listObjectFromDB = fetchListFromDB() else {
-            logger.debug("core data有資料")
-            isLoading = false
-            shouldShowAlert = false
-            return false
-        }
-        prepareData(listObjectFromDB)
-        return true
-    }
+    //    func handleFetchListFromDB() -> Bool {
+    //
+    //        guard let listObjectFromDB = fetchListFromDB() else {
+    //            logger.debug("core data有資料")
+    //            isLoading = false
+    //            shouldShowAlert = false
+    //            return false
+    //        }
+    //        prepareData(listObjectFromDB)
+    //        return true
+    //    }
 
     private func setupFetchStockInfo() {
         stockNameStringSetCombine
@@ -152,16 +171,22 @@ class StockListViewModel: ObservableObject {
                 self.currentFollowingListCombine.send(list)  // Maintain external access
             })
             .compactMap { list -> [String] in
-                guard let setOfStockNoObjects = list?.stockNo else { return [] }
+                guard let setOfStockNoObjects = list?.stockNo else {
+                                        return []
+                }
                 return setOfStockNoObjects.compactMap {
                     ($0 as? StockNo)?.stockNo
                 }
             }
-            .filter { !$0.isEmpty }
-            .sink { [unowned self] stockNos in
+            .sink { [weak self] stockNos in
+                guard let self else {return}
                 logger.debug("stockNos \(stockNos)")
-                self.stockNameStringSetCombine.send(Set(stockNos))
-                self.repeatFetch(stockNos: stockNos)
+                if !stockNos.isEmpty {
+                    self.stockNameStringSetCombine.send(Set(stockNos))
+                    self.repeatFetch(stockNos: stockNos)
+                } else {
+                    self.filteredStockCellDatasCombine.send([])
+                }
             }
             .store(in: &subscription)
 
@@ -207,14 +232,17 @@ class StockListViewModel: ObservableObject {
 
     }
     func repeatFetch(stockNos: [String]) {
-        logger.debug("取消timer")
+        logger.debug("取消timer and stockNos \(stockNos)")
         timer?.invalidate()
-        if stockNos.isEmpty { return }
+        if stockNos.isEmpty {
+            self.isLoading = false
+            return
+        }
         fetchStockInfo(stockNos: Array(stockNos))
-        logger.debug("建立timer")
+        logger.debug("建立timer and stockNos \(stockNos)")
         timer = Timer.scheduledTimer(
             withTimeInterval: 60, repeats: true,
-            block: { [weak self] _ in
+            block: { [weak self, stockNos] _ in
                 self?.fetchStockInfo(stockNos: Array(stockNos))
             })
     }
@@ -244,15 +272,15 @@ class StockListViewModel: ObservableObject {
                     StockCellViewModel(stock: item)
                 }
                 self.stockCellDatasCombine.send(cellVMs)
-                self.repository.updateStockNoInDBwithPrice(
-                    stockNos: stockNos, cellViewModels: cellVMs)
-                self.isLoading = false
+//                self.repository.updateStockNoInDBwithPrice(
+//                    stockNos: stockNos, cellViewModels: cellVMs)
+                //self.isLoading = false
             }
             .store(in: &self.subscription)
     }
 
     private func setupStockNameStringSet() {
-        stockNameStringSetCombine.value.removeAll()
+//        stockNameStringSetCombine.value.removeAll()
         guard
             let setOfStockNoObjects = followingListObjectFromDB[
                 currentMenuIndexCombine.value
@@ -265,6 +293,8 @@ class StockListViewModel: ObservableObject {
             return stockNo
         }
         //print("stockNoStringArray \(stockNoStringArray)")
+        stockNameStringSetCombine.send(Set(stockNoStringArray))  // CHANGE: use send() instead of direct assignment
+
         self.userDefault?.setValue(stockNoStringArray, forKey: "stockNos")
     }
 
@@ -319,7 +349,7 @@ class StockListViewModel: ObservableObject {
         repository.saveStockNumber(
             with: stockNumber,
             currentFollowingList: currentFollowingListCombine.value!)
-        handleFetchListFromDB()
+        //        handleFetchListFromDB()
     }
 
     //MARK: online DB

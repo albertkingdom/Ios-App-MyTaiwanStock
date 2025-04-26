@@ -26,9 +26,9 @@ class StockListViewController: UIViewController, Navigator {
     private var viewModel: StockListViewModel! {
         didSet {
             NSLog("ViewModel \(viewModel != nil)")
-            if isViewLoaded {
-                setupWithViewModel()
-            }
+//            if isViewLoaded {
+//                setupWithViewModel()
+//            }
         }
     }
 
@@ -85,6 +85,7 @@ class StockListViewController: UIViewController, Navigator {
     }
     private var floatingButtonManager: FloatingButtonManager!
     var didRefresh = PassthroughSubject<Void, Never>()
+    var getData = PassthroughSubject<Void, Never>()
     private var output: StockListViewModel.Output?
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -119,9 +120,8 @@ class StockListViewController: UIViewController, Navigator {
         navigationItem.largeTitleDisplayMode = .never
 
         floatingButtonManager.resetFloatingButtonState()
-        if viewModel != nil {
-            setupWithViewModel()
-        }
+        getData.send()
+        
     }
     private func setupNotifications() {
         NotificationCenter.default.addObserver(
@@ -168,7 +168,8 @@ class StockListViewController: UIViewController, Navigator {
     private func bindViewModel() {
         logger.debug("bindViewModel")
         let input = StockListViewModel.Input(
-            didRefresh: didRefresh
+            didRefresh: didRefresh,
+            viewDidLoad: getData
         )
         let output = viewModel.transform(input: input)
         self.output = output
@@ -179,7 +180,7 @@ class StockListViewController: UIViewController, Navigator {
             }
             .store(in: &subscription)
 
-        viewModel.$menuTitleCombine.sink { [weak self] title in
+        output.menuTitle.sink { [weak self] title in
             DispatchQueue.main.async {
                 self?.navCenterButton.setTitle(title, for: .normal)
             }
@@ -187,12 +188,14 @@ class StockListViewController: UIViewController, Navigator {
 
         output.stocks
             .receive(on: DispatchQueue.main)
+            .print("stocks received)")
             .sink { [weak self] cellViewmodels in
                 self?.applySnapshot(
                     data: cellViewmodels, animatingDifferences: true)
             }
             .store(in: &subscription)
         output.isLoading
+            .print("isLoading received")
                 .receive(on: DispatchQueue.main)
                 .sink { [weak self] isLoading in
                     if !isLoading {
@@ -206,7 +209,7 @@ class StockListViewController: UIViewController, Navigator {
     // 所有需要viewModel的設置
     private func setupWithViewModel() {
         guard let viewModel = viewModel else { return }
-        viewModel.handleFetchListFromDB()
+//        viewModel.handleFetchListFromDB()
         floatingButton.addTarget(
             self, action: #selector(goToAddStockNoVC), for: .touchUpInside)
         // Bind view model
@@ -227,15 +230,16 @@ class StockListViewController: UIViewController, Navigator {
 
     @objc func refreshData() {
 //        self.refreshControl.endRefreshing()
+        print("下拉")
         didRefresh.send()
     }
 
     @objc private func goToAddStockNoVC() {
         print("tapFloatingButton")
-        let hasMoreThanOneList = self.viewModel.handleFetchListFromDB()  // 是否有建立清單
-        floatingButtonManager.toggleSecondaryButtons(
-            hasMoreThanOneList: hasMoreThanOneList,
-            parentFloatingButton: floatingButton)
+        /*let hasMoreThanOneList = self.viewModel.handleFetchListFromDB() */ // 是否有建立清單
+//        floatingButtonManager.toggleSecondaryButtons(
+//            hasMoreThanOneList: hasMoreThanOneList,
+//            parentFloatingButton: floatingButton)
     }
 
     private func configureMenu(actionList: [UIAction]?) {
@@ -408,9 +412,9 @@ extension StockListViewController: UINavigationControllerDelegate {
         if viewController == self {
             logger.debug("從其他vc返回到stock list vc")
             //            viewModel.handleFetchListFromDB()
-            if viewModel != nil {
-                setupWithViewModel()
-            }
+//            if viewModel != nil {
+//                setupWithViewModel()
+//            }
         }
     }
 }

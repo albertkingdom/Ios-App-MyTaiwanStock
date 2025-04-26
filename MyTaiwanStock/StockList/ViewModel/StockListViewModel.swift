@@ -19,7 +19,7 @@ class StockListViewModel: ObservableObject {
         print("\(stockNameStringSetCombine.value)")
         return stockNameStringSetCombine.value
     }
-    var currentMenuIndexCombine = CurrentValueSubject<Int, Never>(0)
+    var currentMenuIndex = CurrentValueSubject<Int, Never>(0)
 
     var menuTitleCombine = CurrentValueSubject<String, Never>("")
 
@@ -30,7 +30,7 @@ class StockListViewModel: ObservableObject {
     private var currentFollowingListCombine = CurrentValueSubject<List?, Never>(
         nil)
 
-    private var followingListSelectionMenuCombine = CurrentValueSubject<
+    private var followingListNames = CurrentValueSubject<
         [String], Never
     >([])
 
@@ -107,19 +107,19 @@ class StockListViewModel: ObservableObject {
                     let listNames = listObjectFromDB.compactMap {
                         $0.name
                     }
-                    self.followingListSelectionMenuCombine.send(listNames)
+                    self.followingListNames.send(listNames)
                     let savedIndex = self.getSavedListIndex()
                     let index = min(savedIndex, listNames.count - 1)
                     let validIndex = max(0, index)
-                    self.currentMenuIndexCombine.send(validIndex)
+                    self.currentMenuIndex.send(validIndex)
                 }
                 self.isLoading = false
                 self.shouldShowAlert = false
             }
             .store(in: &subscription)
-
-        followingListSelectionMenuCombine
-            .combineLatest(currentMenuIndexCombine)
+        // 產生menu選單
+        followingListNames
+            .combineLatest(currentMenuIndex)
             .filter { listNames, _ in
                 !listNames.isEmpty && !listNames.contains { $0.isEmpty }
             }
@@ -130,16 +130,16 @@ class StockListViewModel: ObservableObject {
             })
             .sink(receiveValue: { [weak self] listNames, index in
                 let title = listNames[min(listNames.count - 1, index)]
-                guard !title.isEmpty else {return}
+                guard !title.isEmpty else { return }
                 self?.menuTitleCombine.send(title)
 
                 let actions = listNames.enumerated().map { index, str in
                     UIAction(
                         title: str,
-                        state: index == self?.currentMenuIndexCombine.value
+                        state: index == self?.currentMenuIndex.value
                             ? .on : .off,
                         handler: { action in
-                            self?.currentMenuIndexCombine.send(index)
+                            self?.currentMenuIndex.send(index)
                             self?.setupStockNameStringSet()
                         })
                 }
@@ -160,19 +160,32 @@ class StockListViewModel: ObservableObject {
 
     private func setupFetchStockInfo() {
 
-        currentMenuIndexCombine
-            .map { [unowned self] index -> List? in
-                timer?.invalidate()
-                guard self.followingListObjectFromDB.count > 0 else {
+        currentMenuIndex
+            //  Handle Timer/List Side Effects in handleEvents
+            .handleEvents(receiveOutput: { [weak self] index in
+                guard let self = self else { return }
+                self.timer?.invalidate()
+                let list: List?
+                if self.followingListObjectFromDB.count > index
+                    && self.followingListObjectFromDB.count > 0
+                {
+                    list = self.followingListObjectFromDB[index]
+                } else {
+                    list = nil
+                }
+                self.currentFollowingListCombine.send(list)
+            })
+            .compactMap { [weak self] index -> List? in
+                guard let self = self,
+                    self.followingListObjectFromDB.count > index,
+                    self.followingListObjectFromDB.count > 0
+                else {
+                    // 如果索引無效或數據庫為空，則這裡返回 nil，compactMap 會過濾掉
                     return nil
                 }
-                let list = self.followingListObjectFromDB[index]
-                return list
+                return self.followingListObjectFromDB[index]
             }
-            .handleEvents(receiveOutput: { [unowned self] list in
-                self.currentFollowingListCombine.send(list)  // Maintain external access
-            })
-            .compactMap { list -> [String] in
+            .map { list -> [String] in
                 guard let setOfStockNoObjects = list?.stockNo else {
                     return []
                 }
@@ -183,8 +196,9 @@ class StockListViewModel: ObservableObject {
             .sink { [weak self] stockNos in
                 guard let self else { return }
                 logger.debug("stockNos \(stockNos)")
+                self.stockNameStringSetCombine.send(Set(stockNos))
+
                 if !stockNos.isEmpty {
-                    self.stockNameStringSetCombine.send(Set(stockNos))
                     self.repeatFetch(stockNos: stockNos)
                 } else {
                     self.filteredStockCellDatasCombine.send([])
@@ -242,7 +256,6 @@ class StockListViewModel: ObservableObject {
 
                 }
             } receiveValue: { [weak self] data in
-                //                print("data \(data)")
                 guard let self = self else { return }
 
                 self.onedayStockInfo = data.msgArray
@@ -258,10 +271,9 @@ class StockListViewModel: ObservableObject {
     }
 
     private func setupStockNameStringSet() {
-        //        stockNameStringSetCombine.value.removeAll()
         guard
             let setOfStockNoObjects = followingListObjectFromDB[
-                currentMenuIndexCombine.value
+                currentMenuIndex.value
             ].stockNo
         else { return }
         let stockNoStringArray: [String] = setOfStockNoObjects.map {
@@ -345,7 +357,7 @@ class StockListViewModel: ObservableObject {
 
     func saveCurrentListIndex() {
         UserDefaults.standard.set(
-            currentMenuIndexCombine.value, forKey: UserDefaults.menuIndex)
+            currentMenuIndex.value, forKey: UserDefaults.menuIndex)
     }
 
     // 新增：從 UserDefaults 獲取儲存的索引

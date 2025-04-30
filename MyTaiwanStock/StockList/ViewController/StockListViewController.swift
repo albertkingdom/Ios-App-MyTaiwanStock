@@ -23,21 +23,13 @@ class StockListViewController: UIViewController, Navigator {
 
     var subscription = Set<AnyCancellable>()
 
-    private var viewModel: StockListViewModel! {
-        didSet {
-            NSLog("ViewModel \(viewModel != nil)")
-//            if isViewLoaded {
-//                setupWithViewModel()
-//            }
-        }
-    }
+    private var viewModel: StockListViewModel!
 
-    var cellDatas: [StockCellViewModel] = []
     var refreshControl: UIRefreshControl!
-    var showPercentage = false
     @IBOutlet weak var searchBar: UISearchBar!
     @IBOutlet weak var tableView: UITableView!
-    private lazy var dataSource: UITableViewDiffableDataSource = {
+    var dataSource: UITableViewDiffableDataSource<Section, Item>?
+    private func makeDataSource() {
         let dataSource = UITableViewDiffableDataSource<Section, Item>(
             tableView: tableView,
             cellProvider: { tableView, indexPath, item in
@@ -49,11 +41,12 @@ class StockListViewController: UIViewController, Navigator {
                     fatalError("Cannot create new cell")
                 }
                 cell.update(
-                    with: item.viewModel, isPercentFormat: self.showPercentage)
+                    with: item.viewModel
+                )
                 return cell
             })
-        return dataSource
-    }()
+        self.dataSource = dataSource
+    }
     // button at center of navigation bar
     private lazy var navCenterButton: UIButton = {
         guard let rightIcon = UIImage(systemName: "chevron.down") else {
@@ -81,7 +74,8 @@ class StockListViewController: UIViewController, Navigator {
         snapshot.appendSections([.main])
         let items = data.map { Item(viewModel: $0) }
         snapshot.appendItems(items, toSection: .main)
-        dataSource.apply(snapshot, animatingDifferences: animatingDifferences)
+        makeDataSource()
+        dataSource?.apply(snapshot, animatingDifferences: animatingDifferences)
     }
     private var floatingButtonManager: FloatingButtonManager!
     var didRefresh = PassthroughSubject<Void, Never>()
@@ -96,7 +90,6 @@ class StockListViewController: UIViewController, Navigator {
 
         searchBar.delegate = self
         self.navigationController?.delegate = self
-        navigationItem.leftBarButtonItem = editButtonItem
         if viewModel != nil {
             setupWithViewModel()
         }
@@ -121,7 +114,7 @@ class StockListViewController: UIViewController, Navigator {
 
         floatingButtonManager.resetFloatingButtonState()
         getData.send()
-        
+
     }
     private func setupNotifications() {
         NotificationCenter.default.addObserver(
@@ -159,6 +152,7 @@ class StockListViewController: UIViewController, Navigator {
         //        tableView.showAnimatedSkeleton()
 
     }
+    private var togglePriceDiffInPercentage = PassthroughSubject<Void, Never>()
     override func viewWillDisappear(_ animated: Bool) {
         logger.debug("viewWillDisappear")
         viewModel.cancelTimer()
@@ -169,7 +163,8 @@ class StockListViewController: UIViewController, Navigator {
         logger.debug("bindViewModel")
         let input = StockListViewModel.Input(
             didRefresh: didRefresh,
-            viewDidLoad: getData
+            viewDidLoad: getData,
+            togglePriceDiffFormat: togglePriceDiffInPercentage
         )
         let output = viewModel.transform(input: input)
         self.output = output
@@ -196,26 +191,26 @@ class StockListViewController: UIViewController, Navigator {
             .store(in: &subscription)
         output.isLoading
             .print("isLoading received")
-                .receive(on: DispatchQueue.main)
-                .sink { [weak self] isLoading in
-                    if !isLoading {
-                        self?.refreshControl.endRefreshing()
-                        self?.tableView.contentOffset = CGPoint.zero
-                    }
+            .receive(on: DispatchQueue.main)
+            .sink { [weak self] isLoading in
+                if !isLoading {
+                    self?.refreshControl.endRefreshing()
+                    self?.tableView.contentOffset = CGPoint.zero
                 }
-                .store(in: &subscription)
+            }
+            .store(in: &subscription)
+        
 
     }
     // 所有需要viewModel的設置
     private func setupWithViewModel() {
         guard let viewModel = viewModel else { return }
-//        viewModel.handleFetchListFromDB()
+        //        viewModel.handleFetchListFromDB()
         floatingButton.addTarget(
             self, action: #selector(goToAddStockNoVC), for: .touchUpInside)
         // Bind view model
         bindViewModel()
 
-        // Setup search bar listener
         setupSearchBarListener()
 
         // Setup initial menu index
@@ -229,30 +224,21 @@ class StockListViewController: UIViewController, Navigator {
     }
 
     @objc func refreshData() {
-//        self.refreshControl.endRefreshing()
-        print("下拉")
         didRefresh.send()
     }
 
     @objc private func goToAddStockNoVC() {
-        print("tapFloatingButton")
-        /*let hasMoreThanOneList = self.viewModel.handleFetchListFromDB() */ // 是否有建立清單
-//        floatingButtonManager.toggleSecondaryButtons(
-//            hasMoreThanOneList: hasMoreThanOneList,
-//            parentFloatingButton: floatingButton)
+        let hasMoreThanOneList = self.viewModel.listNames.count >= 1  // 是否有建立清單
+        floatingButtonManager.toggleSecondaryButtons(
+            hasMoreThanOneList: hasMoreThanOneList,
+            parentFloatingButton: floatingButton
+        )
     }
 
     private func configureMenu(actionList: [UIAction]?) {
         guard var actionList = actionList else {
             return
         }
-
-        actionList.append(
-            UIAction(
-                title: "編輯",
-                handler: { [weak self] action in
-                    self?.viewModel.navigateToAddList()
-                }))
         self.navCenterButton.menu = UIMenu(children: actionList)
     }
 
@@ -285,8 +271,10 @@ class StockListViewController: UIViewController, Navigator {
         ])
 
         floatingButtonManager = FloatingButtonManager(
-            parentView: self.view, floatingButton: floatingButton,
-            delegate: self)
+            parentView: self.view,
+            floatingButton: floatingButton,
+            delegate: self
+        )
     }
 
     func initView() {
@@ -295,14 +283,15 @@ class StockListViewController: UIViewController, Navigator {
         tableView.estimatedRowHeight = 50  // for skeleton view to calculate height
         navigationItem.titleView?.tintColor = .systemBlue
         setupFloatingButtonUI()
+        navigationItem.leftBarButtonItem = editButtonItem
+
     }
     func setupPullRefresh() {
         guard let viewModel = viewModel else { return }
         refreshControl = UIRefreshControl()
         tableView.refreshControl = refreshControl
         tableView.addSubview(refreshControl)
-        refreshControl.addTarget(
-            self, action: #selector(refreshData), for: .valueChanged)
+        refreshControl.addTarget(self, action: #selector(refreshData), for: .valueChanged)
     }
 
     deinit {
@@ -324,7 +313,7 @@ extension StockListViewController: UITableViewDelegate {
     func tableView(
         _ tableView: UITableView, didSelectRowAt indexPath: IndexPath
     ) {
-        guard let item = dataSource.itemIdentifier(for: indexPath) else {
+        guard let item = dataSource?.itemIdentifier(for: indexPath) else {
             return
         }
         let cellViewModel = item.viewModel
@@ -351,12 +340,12 @@ extension StockListViewController: UITableViewDelegate {
         let deleteAction = UIContextualAction(
             style: .destructive, title: "Delete"
         ) { (action, view, completion) in
-            guard let item = self.dataSource.itemIdentifier(for: indexPath)
+            guard let dataSource = self.dataSource, let item = dataSource.itemIdentifier(for: indexPath)
             else { return }
             self.viewModel.deleteStockNumber(stockNo: item.viewModel.stockNo)
-            var snapshot = self.dataSource.snapshot()
+            var snapshot = dataSource.snapshot()
             snapshot.deleteItems([item])
-            self.dataSource.apply(snapshot, animatingDifferences: true)
+            dataSource.apply(snapshot, animatingDifferences: true)
             completion(false)
         }
         let confiiguration = UISwipeActionsConfiguration(actions: [deleteAction]
@@ -378,8 +367,8 @@ extension StockListViewController: UITableViewDelegate {
     }
 
     @objc func togglePercentage() {
-        showPercentage.toggle()
-        tableView.reloadData()
+        togglePriceDiffInPercentage.send()
+        //tableView.reloadData()
     }
 }
 
@@ -412,9 +401,9 @@ extension StockListViewController: UINavigationControllerDelegate {
         if viewController == self {
             logger.debug("從其他vc返回到stock list vc")
             //            viewModel.handleFetchListFromDB()
-//            if viewModel != nil {
-//                setupWithViewModel()
-//            }
+            //            if viewModel != nil {
+            //                setupWithViewModel()
+            //            }
         }
     }
 }

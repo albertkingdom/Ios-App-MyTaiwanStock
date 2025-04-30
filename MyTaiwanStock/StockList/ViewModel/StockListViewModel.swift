@@ -13,6 +13,9 @@ import WidgetKit
 class StockListViewModel: ObservableObject {
     private var timer: Timer?
     private var lastTimeMenuIndex = 0
+    private var priceDiffFormat = CurrentValueSubject<
+        StockCellViewModel.PriceDiffFormat, Never
+    >(.Digit)
 
     var stockNameStringSetCombine = CurrentValueSubject<Set<String>, Never>([])
     var stockNameString: Set<String> {
@@ -33,6 +36,10 @@ class StockListViewModel: ObservableObject {
     private var followingListNames = CurrentValueSubject<
         [String], Never
     >([])
+
+    var listNames: [String] {
+        return self.followingListNames.value
+    }
 
     private var onedayStockInfo: [OneDayStockInfoDetail] = []
 
@@ -76,12 +83,13 @@ class StockListViewModel: ObservableObject {
     struct Input {
         var didRefresh: PassthroughSubject<Void, Never>
         var viewDidLoad: PassthroughSubject<Void, Never>
-        //        var tapFloatingButton: PassthroughSubject<Void, Never>
+        var togglePriceDiffFormat: PassthroughSubject<Void, Never>
     }
     struct Output {
         var stocks: AnyPublisher<[StockCellViewModel], Never>
         var isLoading: AnyPublisher<Bool, Never>
         var menuTitle: AnyPublisher<String, Never>
+        //        var priceDiffInPercentage: AnyPublisher<Bool, Never>
     }
     func transform(input: Input) -> Output {
         input
@@ -133,7 +141,7 @@ class StockListViewModel: ObservableObject {
                 guard !title.isEmpty else { return }
                 self?.menuTitleCombine.send(title)
 
-                let actions = listNames.enumerated().map { index, str in
+                var actions = listNames.enumerated().map { index, str in
                     UIAction(
                         title: str,
                         state: index == self?.currentMenuIndex.value
@@ -143,8 +151,27 @@ class StockListViewModel: ObservableObject {
                             self?.setupStockNameStringSet()
                         })
                 }
+                actions.append(
+                    UIAction(
+                        title: "編輯",
+                        handler: { [weak self] action in
+                            self?.navigateToAddList()
+                        })
+                )
                 self?.menuActionsCombine.send(actions)
             })
+            .store(in: &subscription)
+
+        input.togglePriceDiffFormat
+            .sink { [weak self] (_) in
+                guard let self else { return }
+                if priceDiffFormat.value == .Digit {
+                    priceDiffFormat.send(.Percentage)
+                } else {
+                    priceDiffFormat.send(.Digit)
+                }
+
+            }
             .store(in: &subscription)
 
         return Output(
@@ -207,20 +234,28 @@ class StockListViewModel: ObservableObject {
             .store(in: &subscription)
 
         stockCellDatasCombine
-            .combineLatest(searchText)
+            .combineLatest(searchText, priceDiffFormat)
+            .print("改變了-")
             .map({
-                (cellDatas: [StockCellViewModel], text: String)
+                (cellDatas: [StockCellViewModel], text: String, desiredFormat)
                     -> [StockCellViewModel] in
                 text.isEmpty
                     ? cellDatas.sorted { $0.stockNo < $1.stockNo }
                     : cellDatas.filter { $0.stockNo.contains(text) }.sorted {
                         $0.stockNo < $1.stockNo
                     }
+                let updatedViewModels = cellDatas.map { viewModel in
+                    var mutableViewModel = viewModel  // struct 會進行值複製，所以是新的 ViewModel
+                    mutableViewModel.priceDiffFormat = desiredFormat  // 將外部訊號的格式設定到 View Model 內部
+                    return mutableViewModel  // 返回修改後的 ViewModel
+                }
+                return updatedViewModels
             })
             .sink(receiveValue: { [weak self] cellData in
                 self?.filteredStockCellDatasCombine.send(cellData)
             })
             .store(in: &subscription)
+
     }
 
     func repeatFetch(stockNos: [String]) {
@@ -260,7 +295,11 @@ class StockListViewModel: ObservableObject {
 
                 self.onedayStockInfo = data.msgArray
                 let cellVMs = data.msgArray.map { item in
-                    StockCellViewModel(stock: item)
+
+                    return StockCellViewModel(
+                        stock: item,
+                        priceDiffInPercentage: self.priceDiffFormat.value
+                    )
                 }
                 self.stockCellDatasCombine.send(cellVMs)
                 //                self.repository.updateStockNoInDBwithPrice(

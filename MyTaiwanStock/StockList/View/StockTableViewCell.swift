@@ -60,15 +60,15 @@ class StockTableViewCell: UITableViewCell {
             return super.hitTest(point, with: event)
         }
     }
-    func update(with stockViewModel: StockCellViewModel, isPercentFormat: Bool)
+    func update(with stockViewModel: StockCellViewModel)
     {
-        print("update \(isPercentFormat)")
         stockNo.text = stockViewModel.stockNo
         stockName.text = stockViewModel.stockShortName
         stockPrice.text = stockViewModel.stockPrice
-        if isPercentFormat {
+        switch stockViewModel.priceDiffFormat {
+        case .Percentage:
             stockPriceDiff.text = stockViewModel.stockPriceDiffPercent
-        } else {
+        case .Digit:
             stockPriceDiff.text = stockViewModel.stockPriceDiff
         }
 

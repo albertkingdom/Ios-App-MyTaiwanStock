@@ -429,6 +429,7 @@
 			isa = PBXGroup;
 			children = (
 				A12705112830AE9900ED92F2 /* StockListViewModel.swift */,
+				A12705132830B36700ED92F2 /* StockCellViewModel.swift */,
 			);
 			path = ViewModel;
 			sourceTree = "<group>";
@@ -537,7 +538,6 @@
 		DF06F315270A00DF0031D6FE /* View */ = {
 			isa = PBXGroup;
 			children = (
-				A12705132830B36700ED92F2 /* StockCellViewModel.swift */,
 				A127052528321DB000ED92F2 /* HistoryCellModel.swift */,
 				A1202124288BB8DD00C8746A /* NewsListTableViewCell2.swift */,
 				A127052B2833604400ED92F2 /* NewsListCellViewModel.swift */,

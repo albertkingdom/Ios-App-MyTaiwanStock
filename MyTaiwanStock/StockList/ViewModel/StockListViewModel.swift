@@ -275,6 +275,32 @@ class StockListViewModel: ObservableObject {
     }
     private func fetchStockInfo(stockNos: [String]) {
         repository.fetchOneDayStockInfoCombine(stockList: stockNos)
+            .map { stockInfo -> [OneDayStockInfoDetail] in
+                self.onedayStockInfo = stockInfo.msgArray
+                return stockInfo.msgArray
+            }
+            .flatMap { stockInfoDetails -> AnyPublisher<[StockCellViewModel], Error> in
+                // 建立一個映射，用於快速查找股票資訊
+                let stockInfoMap = Dictionary(
+                    uniqueKeysWithValues: stockInfoDetails.map { ($0.stockNo, $0) }
+                )
+                
+                // 根據傳入的 stockNos 順序建立 ViewModel
+                let cellVMs = stockNos.map { stockNo -> StockCellViewModel in
+                    if let stockInfo = stockInfoMap[stockNo] {
+                        return StockCellViewModel(
+                            stock: stockInfo,
+                            priceDiffInPercentage: self.priceDiffFormat.value
+                        )
+                    } else {
+                        // 如果找不到股票資訊，創建一個空的 ViewModel
+                        return StockCellViewModel(stockNo: stockNo)
+                    }
+                }
+                return Just(cellVMs)
+                    .setFailureType(to: Error.self)
+                    .eraseToAnyPublisher()
+            }
             .sink { [weak self] completion in
                 guard let self = self else { return }
                 self.isLoading = false
@@ -286,35 +312,21 @@ class StockListViewModel: ObservableObject {
                     }
                     self.stockCellDatasCombine.send(stockCellViewModels)
                 case .finished:
-                    //print("finished")
                     break
-
                 }
-            } receiveValue: { [weak self] data in
+            } receiveValue: { [weak self] cellVMs in
                 guard let self = self else { return }
-
-                self.onedayStockInfo = data.msgArray
-                let cellVMs = data.msgArray.map { item in
-
-                    return StockCellViewModel(
-                        stock: item,
-                        priceDiffInPercentage: self.priceDiffFormat.value
-                    )
-                }
                 self.stockCellDatasCombine.send(cellVMs)
-                //                self.repository.updateStockNoInDBwithPrice(
-                //                    stockNos: stockNos, cellViewModels: cellVMs)
-                //self.isLoading = false
             }
             .store(in: &self.subscription)
     }
 
     private func setupStockNameStringSet() {
-        guard
-            let setOfStockNoObjects = followingListObjectFromDB[
-                currentMenuIndex.value
-            ].stockNo
-        else { return }
+
+        let setOfStockNoObjects = followingListObjectFromDB[
+            currentMenuIndex.value
+        ].stockNos
+
         let stockNoStringArray: [String] = setOfStockNoObjects.map {
             ele -> String in
             guard let stockNo = (ele as? StockNo)?.stockNo else { return "" }

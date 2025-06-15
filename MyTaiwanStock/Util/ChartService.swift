@@ -31,9 +31,14 @@ class ChartService {
         self.stockNoObjects = stockNoObjects
     }
     func generateCandleData(stockInfoForCandleStickChart: [[String]], stockNo: String) -> CandleChartData {
-        let candleStickEntries = stockInfoForCandleStickChart.enumerated().map({ (index, day) in
-            return CandleChartDataEntry.init(x: Double(index), shadowH: Double(day[4])!, shadowL: Double(day[5])!, open: Double(day[3])!, close: Double(day[6])!)
-        })
+        let candleStickEntries = stockInfoForCandleStickChart.enumerated().map { (index, day) in
+
+            let shadowH = Double(day[4]) ?? 0.0
+            let shadowL = Double(day[5]) ?? 0.0
+            let open = Double(day[3]) ?? 0.0
+            let close = Double(day[6]) ?? 0.0
+            return CandleChartDataEntry.init(x: Double(index), shadowH: shadowH, shadowL: shadowL, open: open, close: close)
+        }
         
         
         

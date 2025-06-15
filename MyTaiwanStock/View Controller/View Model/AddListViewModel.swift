@@ -16,7 +16,7 @@ class AddListViewModel {
 
     var listNamesCombine = CurrentValueSubject<[String],Never>([])
 
-    var coreDataItemsCombine = CurrentValueSubject<[List],Never>([])
+    var coreDataItemsCombine = CurrentValueSubject<[ListStruct],Never>([])
     
     let repository = NetworkServiceImpl()
     
@@ -46,8 +46,9 @@ class AddListViewModel {
     }
     //
     func updateListName(at index: Int, with newName: String) {
-        let listToBeUpdate = self.coreDataItemsCombine.value[index]
-        listToBeUpdate.name = newName
+//        let listToBeUpdate = self.coreDataItemsCombine.value[index]
+//        listToBeUpdate.name = newName
+        let updatedListInfo = ListStruct(name: newName, stockNos: []) // stockNos 在這裡通常不需要
 
         repository.localDBService.saveContext()
         

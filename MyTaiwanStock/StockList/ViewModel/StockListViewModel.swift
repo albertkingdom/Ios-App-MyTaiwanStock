@@ -28,9 +28,11 @@ class StockListViewModel: ObservableObject {
 
     var menuActionsCombine = CurrentValueSubject<[UIAction], Never>([])
 
-    private var followingListObjectFromDB: [List] = []
+    private var followingListObjectFromDB: [ListStruct] = []
 
-    private var currentFollowingListCombine = CurrentValueSubject<List?, Never>(
+    private var currentFollowingListCombine = CurrentValueSubject<
+        ListStruct?, Never
+    >(
         nil)
 
     private var followingListNames = CurrentValueSubject<
@@ -43,13 +45,13 @@ class StockListViewModel: ObservableObject {
 
     private var onedayStockInfo: [OneDayStockInfoDetail] = []
 
-    private var stockCellDatasCombine = CurrentValueSubject<
+    var stockCellDatasCombine = CurrentValueSubject<
         [StockCellViewModel], Never
     >([])
 
-    var filteredStockCellDatasCombine = CurrentValueSubject<
+    var filteredStockCellDatasCombine = PassthroughSubject<
         [StockCellViewModel], Never
-    >([])
+    >()
 
     var dataForWidget = PassthroughSubject<Data, Never>()
 
@@ -85,12 +87,13 @@ class StockListViewModel: ObservableObject {
         var viewDidLoad: PassthroughSubject<Void, Never>
         var togglePriceDiffFormat: PassthroughSubject<Void, Never>
     }
+
     struct Output {
         var stocks: AnyPublisher<[StockCellViewModel], Never>
         var isLoading: AnyPublisher<Bool, Never>
         var menuTitle: AnyPublisher<String, Never>
-        //        var priceDiffInPercentage: AnyPublisher<Bool, Never>
     }
+
     func transform(input: Input) -> Output {
         input
             .didRefresh
@@ -104,7 +107,7 @@ class StockListViewModel: ObservableObject {
             .store(in: &subscription)
 
         input.viewDidLoad
-            .flatMap { _ -> AnyPublisher<[List]?, Never> in
+            .flatMap { _ -> AnyPublisher<[ListStruct]?, Never> in
                 return Just(self.fetchListFromDB()).eraseToAnyPublisher()
             }
             .sink { [weak self] listObjectFromDB in
@@ -180,7 +183,7 @@ class StockListViewModel: ObservableObject {
             menuTitle: menuTitleCombine.eraseToAnyPublisher()
         )
     }
-    private func fetchListFromDB() -> [List]? {
+    private func fetchListFromDB() -> [ListStruct]? {
         let listObjectFromDB = repository.stockList()
         return listObjectFromDB.isEmpty ? nil : listObjectFromDB
     }
@@ -192,7 +195,7 @@ class StockListViewModel: ObservableObject {
             .handleEvents(receiveOutput: { [weak self] index in
                 guard let self = self else { return }
                 self.timer?.invalidate()
-                let list: List?
+                let list: ListStruct?
                 if self.followingListObjectFromDB.count > index
                     && self.followingListObjectFromDB.count > 0
                 {
@@ -202,7 +205,7 @@ class StockListViewModel: ObservableObject {
                 }
                 self.currentFollowingListCombine.send(list)
             })
-            .compactMap { [weak self] index -> List? in
+            .compactMap { [weak self] index -> ListStruct? in
                 guard let self = self,
                     self.followingListObjectFromDB.count > index,
                     self.followingListObjectFromDB.count > 0
@@ -213,11 +216,9 @@ class StockListViewModel: ObservableObject {
                 return self.followingListObjectFromDB[index]
             }
             .map { list -> [String] in
-                guard let setOfStockNoObjects = list?.stockNo else {
-                    return []
-                }
+                let setOfStockNoObjects = list.stockNos
                 return setOfStockNoObjects.compactMap {
-                    ($0 as? StockNo)?.stockNo
+                    $0.stockNo
                 }
             }
             .sink { [weak self] stockNos in
@@ -235,16 +236,18 @@ class StockListViewModel: ObservableObject {
 
         stockCellDatasCombine
             .combineLatest(searchText, priceDiffFormat)
+            .dropFirst()
             .print("改變了-")
             .map({
                 (cellDatas: [StockCellViewModel], text: String, desiredFormat)
                     -> [StockCellViewModel] in
-                text.isEmpty
+                let filteredCellDatas =
+                    text.isEmpty
                     ? cellDatas.sorted { $0.stockNo < $1.stockNo }
                     : cellDatas.filter { $0.stockNo.contains(text) }.sorted {
                         $0.stockNo < $1.stockNo
                     }
-                let updatedViewModels = cellDatas.map { viewModel in
+                let updatedViewModels = filteredCellDatas.map { viewModel in
                     var mutableViewModel = viewModel  // struct 會進行值複製，所以是新的 ViewModel
                     mutableViewModel.priceDiffFormat = desiredFormat  // 將外部訊號的格式設定到 View Model 內部
                     return mutableViewModel  // 返回修改後的 ViewModel
@@ -329,42 +332,42 @@ class StockListViewModel: ObservableObject {
 
     func deleteStockNumber(stockNo: String) {
         guard
-            let index = stockCellDatasCombine.value.firstIndex(where: {
+            let stockIndex = stockCellDatasCombine.value.firstIndex(where: {
                 $0.stockNo == stockNo
             })
         else { return }
-        let itemToDelete = stockCellDatasCombine.value[index]
         // find the stockNo object to be deleted
-        guard let stockNoSet = currentFollowingListCombine.value?.stockNo else {
+        guard let stockNoSet = currentFollowingListCombine.value?.stockNos
+        else {
             return
         }
-
-        let stockNoObjectArray = stockNoSet.map({ ele -> StockNo in
-            let stockNoObject = ele as! StockNo
-            return stockNoObject
-        })
-        let stockNoObjectToDel = stockNoObjectArray[index]
+        
+        
+        let stockNoObjectToDel = stockNoSet[stockIndex]
 
         // delete stockNo from online DB
-        print("delete stockNo string \(itemToDelete.stockNo)")
-
+        print("delete stockNo string \(stockNo)")
+        let currentIndex = currentMenuIndex.value
+        guard currentIndex < followingListObjectFromDB.count else { return }
+      
+        
         repository.deleteStockNumber(
-            stockNoObject: stockNoObjectToDel, listName: menuTitleCombine.value,
-            stockNumber: itemToDelete.stockNo
+            stockNoObject: stockNoObjectToDel,
+            listName: menuTitleCombine.value,
+            stockNumber: stockNo
         )
-
+        followingListObjectFromDB[currentIndex].stockNos = followingListObjectFromDB[currentIndex]
+            .stockNos.filter { $0.stockNo != stockNo }
+        
         onedayStockInfo = onedayStockInfo.filter({
-            $0.stockNo != itemToDelete.stockNo
+            $0.stockNo != stockNo
         })
 
         stockCellDatasCombine.value = stockCellDatasCombine.value.filter({
-            $0.stockNo != itemToDelete.stockNo
+            $0.stockNo != stockNo
         })
 
-        stockNameStringSetCombine.value = stockNameStringSetCombine.value.filter
-        { stockNo in
-            itemToDelete.stockNo != stockNo
-        }  // edit current stockno list
+        stockNameStringSetCombine.value = stockNameStringSetCombine.value.filter{ $0 != stockNo }  // edit current stockno list
 
         // Create a new fetch with updated stock list
         let updatedStockNos = Array(stockNameStringSetCombine.value)

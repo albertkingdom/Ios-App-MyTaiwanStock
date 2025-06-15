@@ -110,16 +110,16 @@ class LocalDBService {
 //        NotificationCenter.default.post(name: .coreDataDidUpdate, object: nil)
 //    }
     // MARK: Core Data - fetch list
-    func fetchAllListFromDB() -> [List]{
+    func fetchAllListFromDB() -> [ListStruct]{
         let fetchRequest: NSFetchRequest<List> = List.fetchRequest()
-        var lists: [List] = []
         do {
             let result = try context.fetch(fetchRequest)
-            lists = result
+            let listStructs = result.compactMap { $0.toStruct() }
+            return listStructs
         } catch let error {
             print(error.localizedDescription)
+            return []
         }
-        return lists
     }
     
     // MARK: Core Data - fetch history
@@ -243,14 +243,44 @@ class LocalDBService {
         return newList
     }
     // MARK: Core Data - save stockNo
-    func saveNewStockNumberToDB(stockNumber: String, currentFollowingList: List) {
+    func saveNewStockNumberToDB(stockNumber: String, currentFollowingList: ListStruct) {
         
-        let newStockNo = StockNo(context: context)
-        newStockNo.stockNo = stockNumber
-        newStockNo.ofList = currentFollowingList // set the relationship between list and stockNo
-        
-        saveContext()
+        if let listMO = fetchListMO(withName: currentFollowingList.name) {
+                // 2. 創建新的 StockNo Core Data 物件
+                let newStockNoMO = StockNo(context: context)
+                newStockNoMO.stockNo = stockNumber
+
+                // 3. 建立 StockNo 和 List 之間的關聯
+                newStockNoMO.ofList = listMO
+
+                // 4. 將新的 StockNo 添加到 List 的 stockNo 關聯中 (確保關係設定正確)
+                if var stockNoSet = listMO.stockNo as? NSMutableSet {
+                    stockNoSet.add(newStockNoMO)
+                    listMO.stockNo = stockNoSet as NSSet
+                } else {
+                    listMO.stockNo = NSSet(object: newStockNoMO)
+                }
+
+                // 5. 保存 Core Data 上下文
+                saveContext()
+            } else {
+                print("錯誤：找不到名為 '\(currentFollowingList.name ?? "")' 的 List 物件，無法添加新的股票代號。")
+            }
     }
+    private func fetchListMO(withName name: String?) -> List? {
+        guard let listName = name else { return nil }
+        let fetchRequest: NSFetchRequest<List> = List.fetchRequest()
+        fetchRequest.predicate = NSPredicate(format: "name == %@", listName)
+
+        do {
+            let results = try context.fetch(fetchRequest)
+            return results.first
+        } catch {
+            print("提取名為 '\(listName)' 的 List 失敗：\(error)")
+            return nil
+        }
+    }
+    
     // MARK: Core Data - save new record
     func saveNewRecord(
         stockNo: String,
@@ -292,16 +322,17 @@ class LocalDBService {
     }
     
     // MARK: Core Data - delete
-    func deleteStockNumberInDB(stockNoObject: StockNo) {
-        context.delete(stockNoObject)
-        
-        let result = checkIfRemainingStockNoObject(with: stockNoObject.stockNo!)
-        
-        if !result {
-            deleteHistory(with: stockNoObject.stockNo!)
-        }
-        // TODO: show the UIAlert
-        saveContext()
+    func deleteStockNumberInDB(stockNoObject: StockNoStruct) {
+//        context.delete(stockNoObject)
+//        
+//        let result = checkIfRemainingStockNoObject(with: stockNoObject.stockNo!)
+//        
+//        if !result {
+//            deleteHistory(with: stockNoObject.stockNo!)
+//        }
+//        // TODO: show the UIAlert
+//        saveContext()
+        StockNo.delete(with: stockNoObject, in: context)
         
     }
     func deleteHistoryInDB(historyObject: InvestHistory) {
@@ -336,9 +367,16 @@ class LocalDBService {
             saveContext()
         }
     }
-    func deleteListFromDB(list: List) {
-        context.delete(list)
-        saveContext()
+    func deleteListFromDB(list: ListStruct) {
+//        context.delete(list)
+//        saveContext()
+        List.delete(with: list, in: context)
+    }
+    
+    func updateListName(newName: String, oldName: String) {
+        let updatedListInfo = ListStruct(name: newName, stockNos: []) // stockNos 在這裡通常不需要
+
+        List.updateName(with: updatedListInfo, in: context, currentName: oldName)
     }
     
 }

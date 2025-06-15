@@ -24,7 +24,7 @@ protocol NetworkService {
     func fetchTwoMonthCandleData(stockNo: String) async -> [[String]]
     
     // fetch saved List
-    func stockList() -> [List]
+    func stockList() -> [ListStruct]
     
     // fetch saved history
     func historyList(with stockNo: String) -> [InvestHistory]
@@ -46,7 +46,7 @@ protocol NetworkService {
     func saveList(with listName: String) -> List
     
     // save new stock no.
-    func saveStockNumber(with stockNumber: String, currentFollowingList: List)
+    func saveStockNumber(with stockNumber: String, currentFollowingList: ListStruct)
     
     // save new investing record
     func saveNewRecord(stockNo: String, price: Float, amount: Int, reason: String, buyOrSellStatus: Int, date: Date)
@@ -58,13 +58,13 @@ protocol NetworkService {
     func saveCashDividend(stockNo: String, amount: Int, date: Date)
     
     // delete stock number
-    func deleteStockNumber(stockNoObject: StockNo, listName: String, stockNumber: String)
+    func deleteStockNumber(stockNoObject: StockNoStruct, listName: String, stockNumber: String)
     
     // delete history
     func deleteHistory(historyObject: InvestHistory)
     
     // delete list
-    func deleteList(list: List)
+    func deleteList(list: ListStruct)
     
     // update
     func updateStockNoInDBwithPrice(stockNos: [String], cellViewModels: [StockCellViewModel])

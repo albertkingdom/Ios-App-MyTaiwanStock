@@ -85,6 +85,7 @@ class StockListViewController: UIViewController, Navigator {
         super.viewDidLoad()
         logger.debug("list vc viewDidLoad")
 
+        edgesForExtendedLayout.insert(.bottom)
         tableView.delegate = self
         tableView.tableFooterView = UIView()
 

@@ -137,17 +137,6 @@ extension SceneDelegate {
             ]
         }
 
-        // 設置TabBar的外觀
-        if #available(iOS 15.0, *) {
-            let tabBarAppearance = UITabBarAppearance()
-            tabBarAppearance.configureWithDefaultBackground()
-            UITabBar.appearance().standardAppearance = tabBarAppearance
-            UITabBar.appearance().scrollEdgeAppearance = tabBarAppearance
-        }
-
-        // 設置TabBar的顏色
-        //        UITabBar.appearance().tintColor = .systemBlue // 選中項目的顏色
-        //        UITabBar.appearance().unselectedItemTintColor = .systemGray // 未選中項目的顏色
     }
 
 }

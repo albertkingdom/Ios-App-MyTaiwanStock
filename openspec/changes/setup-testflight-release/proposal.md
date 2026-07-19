@@ -5,6 +5,7 @@
 ## What Changes
 
 - 新增獨立的 GitHub Actions workflow，可透過 `workflow_dispatch` 手動觸發，或 push 一個符合 `v*` 格式的 git tag（例如 `v1.0.1`）自動觸發，串接以下步驟：
+  - tag push 觸發時，workflow 會先驗證該 tag 指向的 commit 是否存在於 `release` 分支的歷史中，不是則直接失敗、不執行任何簽章或上傳動作
   - 用 fastlane match 從既有的 private repo（`github.com/albertkingdom/ios-signing`，同一開發者帳號下已在使用的 match 憑證庫）抓取/安裝 App Store distribution 憑證，並為 MyTaiwanStock 新建專屬的 provisioning profile（match 私有 repo 存取憑證存於 GitHub Secrets）
   - 自動遞增 `CURRENT_PROJECT_VERSION`（build number），避免每次上傳撞號
   - 用 fastlane `gym`（`build_app`）以 App Store distribution method Archive 並 export IPA

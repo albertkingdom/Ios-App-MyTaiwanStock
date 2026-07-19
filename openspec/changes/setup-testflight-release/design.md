@@ -52,6 +52,10 @@
 
 額外加上 `push` 觸發、限定符合 `v*` 格式的 tag（例如 `v1.0.1`）：打 tag 本身就是一個刻意的動作（不像分支 push 那樣每個 commit 都會發生），可以兼顧「自動化上傳」與「使用者仍然決定何時發版」兩個需求，且 tag 名稱可以順便作為這次發佈對應的版本紀錄。**不**採用「push 到 `release` 分支自動觸發」的作法，因為分支上的每個 commit 都會觸發，遠比 tag push 頻繁，risk 更高。兩種觸發方式（手動、tag push）共用同一個 job 定義，行為完全一致，只差在觸發條件。
 
+### tag push 觸發時，限定 tag 必須指向 `release` 分支歷史中的 commit
+
+原因：這個 repo 已經有一個既有的 `release` 分支（目前存在，`origin/release`），推測是使用者原本手動維護的「準備發版」分支。如果任何分支都能打 `v*` tag 觸發 TestFlight 發佈，容易發生「不小心從 `mvvm` 或某個 feature branch 打了 tag」而發出未經確認的 beta。加上這道檢查後，tag push 觸發時 workflow 第一步就驗證該 tag 指向的 commit 是否在 `origin/release` 的祖先鏈裡（`git merge-base --is-ancestor <tag-commit> origin/release`），不符合就立刻失敗、不執行任何簽章/上傳動作。`workflow_dispatch` 手動觸發**不**受此限制（使用者手動選分支觸發時已經是刻意行為，不需要額外限制），只有 tag push 這個自動觸發路徑需要這道保護。
+
 ### 自動遞增 `CURRENT_PROJECT_VERSION`，使用 fastlane `increment_build_number` 搭配 App Store Connect 最新 build number 查詢
 
 原因：`CURRENT_PROJECT_VERSION` 目前固定為 `1`，如果每次上傳都不遞增，會因為 build number 重複被 App Store Connect 拒絕上傳。使用 fastlane 的 `latest_testflight_build_number` action 讀取 App Store Connect 上該 app 目前最新的 build number，再用 `increment_build_number` 設成「該數字 + 1」，而不是單純遞增本機 `project.pbxproj` 裡的數字，因為本機數字可能因為多人協作、多分支而落後於 App Store Connect 上實際已上傳的 build number，用「查詢 + 遞增」可以避免跟已上傳過的 build number 衝突。此步驟只在 CI workflow 執行時對 checkout 出來的暫存副本生效，**不會**把新的 build number commit 回專案的 git 歷史（維持 stateless CI，避免 workflow 自己 push commit 回 repo 造成的循環觸發或權限複雜度）。
@@ -60,6 +64,7 @@
 
 **行為（Behavior）：**
 - 使用者在 GitHub Actions 頁面手動觸發 `TestFlight Release` workflow（`workflow_dispatch`），選擇要發佈的分支；或是對 repo push 一個符合 `v*` 格式的 git tag（例如 `v1.0.1`），workflow 自動觸發並使用該 tag 指向的 commit
+- tag push 觸發時，若該 tag 指向的 commit 不在 `release` 分支的歷史中，workflow 在最早期就失敗，不執行任何簽章或上傳動作；`workflow_dispatch` 手動觸發不受此限制
 - Workflow 完成後，一個新的 build 出現在 App Store Connect 的 TestFlight 分頁，build number 比目前 App Store Connect 上最新的 build number 大 1，`MARKETING_VERSION` 沿用 `project.pbxproj` 當下的值（`1.0`，這次不處理自動遞增行銷版本號）
 - Internal tester 群組（若使用者已在 App Store Connect 網頁設定過）會依照 App Store Connect 既有規則收到可測試的新 build 通知
 - Workflow 失敗時（簽章失敗、Archive 失敗、上傳失敗）该次 run 標示為 failure，log 中保留 fastlane 的錯誤輸出，不會有「部分成功」的中間狀態被誤判為成功
@@ -77,9 +82,10 @@
   - `MATCH_PASSWORD`：match 用來加解密憑證的密碼（沿用 `ios-signing` repo 建立時設定的密碼，不是新密碼）
 - Steps（依序）：
   1. `actions/checkout@v4`
-  2. 安裝 Ruby/Bundler（或直接用 `gem install fastlane` / `brew install fastlane`，視 runner 內建版本決定）
-  3. `xcodebuild -resolvePackageDependencies`（沿用 CI workflow 的 SPM resolve 方式）
-  4. 執行 `fastlane ios beta`（Fastfile 中定義的 lane），內部依序執行：
+  2. 驗證 tag 是否指向 `release` 分支歷史中的 commit（僅 `on.push.tags` 觸發時執行，`workflow_dispatch` 觸發時跳過）：`git fetch origin release` 後執行 `git merge-base --is-ancestor "$GITHUB_SHA" origin/release`，非 0 結束碼視為不符合，立刻中止 workflow 並輸出明確錯誤訊息（不進入後續任何步驟）
+  3. 安裝 Ruby/Bundler（或直接用 `gem install fastlane` / `brew install fastlane`，視 runner 內建版本決定）
+  4. `xcodebuild -resolvePackageDependencies`（沿用 CI workflow 的 SPM resolve 方式）
+  5. 執行 `fastlane ios beta`（Fastfile 中定義的 lane），內部依序執行：
      a. `app_store_connect_api_key`：從環境變數建立 API Key 物件
      b. `match(type: "appstore", readonly: false, git_url: "https://github.com/albertkingdom/ios-signing")`：抓取/建立三個 target 各自的 App Store provisioning profile
      c. `latest_testflight_build_number` + `increment_build_number`：設定新的 build number
@@ -88,6 +94,7 @@
 - `fastlane/Fastfile`、`fastlane/Appfile`、`fastlane/Matchfile` 為新增檔案，`Matchfile` 內 `git_url` 指向 `https://github.com/albertkingdom/ios-signing`，`type` 預設 `appstore`
 
 **失敗模式（Failure modes）：**
+- tag push 觸發，但該 tag 指向的 commit 不在 `release` 分支歷史中 → 驗證 step 失敗並中止 workflow，log 顯示明確訊息說明此 tag 不是從 `release` 分支打的，不執行任何簽章/建置/上傳動作
 - API Key 相關 Secrets 缺漏或格式錯誤 → `app_store_connect_api_key` action 失敗，workflow 在最早期就中止，不會嘗試後續任何簽章或上傳動作
 - match 存取 `ios-signing` repo 失敗（權限不足、`MATCH_PASSWORD` 錯誤）→ match step 失敗並中止，不會進入 build_app
 - match 產生的 provisioning profile 與 `project.pbxproj` 內 `PROVISIONING_PROFILE_SPECIFIER`／bundle id 不一致 → `build_app` 簽章失敗，錯誤訊息會指出找不到對應的 profile

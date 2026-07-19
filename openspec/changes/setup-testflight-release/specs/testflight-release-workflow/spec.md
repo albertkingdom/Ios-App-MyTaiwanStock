@@ -15,6 +15,21 @@ The system SHALL provide a GitHub Actions workflow that packages and uploads a n
 - **WHEN** a collaborator pushes commits to any branch (including `mvvm` or `release`) without pushing a matching `v*` tag
 - **THEN** the `TestFlight Release` workflow SHALL NOT be triggered
 
+### Requirement: Tag-triggered releases must originate from the release branch
+When the workflow is triggered by a `v*` tag push, the system SHALL verify that the tagged commit exists in the history of the `release` branch before performing any signing, build, or upload step. This restriction SHALL NOT apply to manually-triggered (`workflow_dispatch`) runs.
+
+#### Scenario: Tag points to a commit on the release branch
+- **WHEN** a `v*` tag is pushed and the tagged commit is an ancestor of (or equal to) `origin/release`
+- **THEN** the workflow SHALL proceed to the signing, build, and upload steps
+
+#### Scenario: Tag points to a commit not on the release branch
+- **WHEN** a `v*` tag is pushed (e.g. from `mvvm` or a feature branch) and the tagged commit is not in the history of `origin/release`
+- **THEN** the workflow SHALL fail immediately with a message identifying that the tag does not originate from the `release` branch, and SHALL NOT execute any signing, build, or upload step
+
+#### Scenario: Manual dispatch bypasses the release-branch restriction
+- **WHEN** the workflow is triggered via `workflow_dispatch` on any branch
+- **THEN** the release-branch verification step SHALL be skipped and the workflow SHALL proceed normally
+
 ### Requirement: Signing without local Apple ID interaction
 The system SHALL sign the `MyTaiwanStock`, `StockWidgetExtension`, and `LiveActivityExtension` targets for App Store distribution using fastlane match, retrieving certificates and provisioning profiles from the existing `github.com/albertkingdom/ios-signing` private repository, without any interactive Apple ID prompt.
 

@@ -9,6 +9,7 @@ import Combine
 import CoreData
 import SkeletonView
 import UIKit
+import ActivityKit
 
 class StockListViewController: UIViewController, Navigator {
 
@@ -333,6 +334,67 @@ extension StockListViewController: UITableViewDelegate {
     ) -> CGFloat {
         return 100
     }
+
+    func tableView(
+        _ tableView: UITableView,
+        contextMenuConfigurationForRowAt indexPath: IndexPath,
+        point: CGPoint
+    ) -> UIContextMenuConfiguration? {
+        guard let item = dataSource?.itemIdentifier(for: indexPath) else {
+            return nil
+        }
+        let cellViewModel = item.viewModel
+
+        guard #available(iOS 16.1, *) else { return nil }
+
+        return UIContextMenuConfiguration(identifier: nil, previewProvider: nil) { _ in
+            let action = UIAction(
+                title: "開啟即時報價",
+                image: UIImage(systemName: "chart.line.uptrend.xyaxis")
+            ) { [weak self] _ in
+                self?.startLiveActivity(from: cellViewModel)
+            }
+            return UIMenu(children: [action])
+        }
+    }
+
+    @available(iOS 16.1, *)
+    private func startLiveActivity(from cellViewModel: StockCellViewModel) {
+        let stockPrice = cellViewModel.stockPrice == "-" ? "0.00" : cellViewModel.stockPrice
+        let diffStr = cellViewModel.stockPriceDiff == "-" ? "0.00" : cellViewModel.stockPriceDiff
+        let percentStr = cellViewModel.stockPriceDiffPercent == "-" ? "0.000%" : cellViewModel.stockPriceDiffPercent
+
+        let priceChange: String
+        if let diffFloat = Float(diffStr) {
+            priceChange = diffFloat >= 0 ? String(format: "+%.2f", diffFloat) : String(format: "%.2f", diffFloat)
+        } else {
+            priceChange = "0.00"
+        }
+
+        let priceChangePercent: String
+        if let pctFloat = Float(diffStr) {
+            priceChangePercent = pctFloat >= 0 ? "+\(percentStr)" : percentStr
+        } else {
+            priceChangePercent = percentStr
+        }
+
+        let yesterDayPrice: String
+        if let currentFloat = Float(stockPrice), let diffFloat = Float(diffStr) {
+            yesterDayPrice = String(format: "%.2f", currentFloat - diffFloat)
+        } else {
+            yesterDayPrice = "0.00"
+        }
+
+        _ = ActivityManager.shared.start(
+            stockNo: cellViewModel.stockNo,
+            stockName: cellViewModel.stockShortName,
+            currentPrice: stockPrice,
+            priceChange: priceChange,
+            priceChangePercent: priceChangePercent,
+            yesterDayPrice: yesterDayPrice,
+            time: cellViewModel.time)
+    }
+
     // MARK: swipe to delete row
     func tableView(
         _ tableView: UITableView,

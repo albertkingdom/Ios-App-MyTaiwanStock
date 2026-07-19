@@ -39,6 +39,7 @@
 		A12719E82C1D8590005AB268 /* URL+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A12719E62C1D8571005AB268 /* URL+Extension.swift */; };
 		A128BB7D285241E8007F7645 /* OneDayStockInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F3122709A3190031D6FE /* OneDayStockInfo.swift */; };
 		A128BB7F28524570007F7645 /* WidgetStockData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A128BB7E28524570007F7645 /* WidgetStockData.swift */; };
+		6668EF90813808B0AF082831 /* WidgetStockFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61C5137F5E2482205CC6FE45 /* WidgetStockFetcher.swift */; };
 		A14CB9F72943259C00DDA990 /* NetworkService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A14CB9F62943259B00DDA990 /* NetworkService.swift */; };
 		A14CB9F929433ED600DDA990 /* NetworkServiceImpl.swift in Sources */ = {isa = PBXBuildFile; fileRef = A14CB9F829433ED600DDA990 /* NetworkServiceImpl.swift */; };
 		A14CB9FD2943761F00DDA990 /* StockInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F30F2709805E0031D6FE /* StockInfo.swift */; };
@@ -245,6 +246,7 @@
 		A127052B2833604400ED92F2 /* NewsListCellViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsListCellViewModel.swift; sourceTree = "<group>"; };
 		A12719E62C1D8571005AB268 /* URL+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "URL+Extension.swift"; sourceTree = "<group>"; };
 		A128BB7E28524570007F7645 /* WidgetStockData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetStockData.swift; sourceTree = "<group>"; };
+		61C5137F5E2482205CC6FE45 /* WidgetStockFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WidgetStockFetcher.swift; sourceTree = "<group>"; };
 		A14CB9F62943259B00DDA990 /* NetworkService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkService.swift; sourceTree = "<group>"; };
 		A14CB9F829433ED600DDA990 /* NetworkServiceImpl.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NetworkServiceImpl.swift; sourceTree = "<group>"; };
 		A16321512954A5C50011F295 /* AddDividendViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddDividendViewController.swift; sourceTree = "<group>"; };
@@ -375,12 +377,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				A14CBA0829437E5200DDA990 /* GoogleSignIn in Frameworks */,
-				A1F1682D2BDD512F0080F57E /* FirebaseAuth in Frameworks */,
 				DFFB337027F858830018F3A4 /* SwiftUI.framework in Frameworks */,
-				A1F168312BDD52550080F57E /* FirebaseFirestoreSwift in Frameworks */,
-				A14CBA0A29437E5200DDA990 /* GoogleSignInSwift in Frameworks */,
-				A1F1682B2BDD51170080F57E /* FirebaseFirestore in Frameworks */,
 				DFFB336E27F858830018F3A4 /* WidgetKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -663,6 +660,7 @@
 				DFFB337627F858850018F3A4 /* Info.plist */,
 				A128BB7E28524570007F7645 /* WidgetStockData.swift */,
 				A1E172492BED087200ED5916 /* View+Extension.swift */,
+				61C5137F5E2482205CC6FE45 /* WidgetStockFetcher.swift */,
 			);
 			path = StockWidget;
 			sourceTree = "<group>";
@@ -754,13 +752,6 @@
 			dependencies = (
 			);
 			name = StockWidgetExtension;
-			packageProductDependencies = (
-				A14CBA0729437E5200DDA990 /* GoogleSignIn */,
-				A14CBA0929437E5200DDA990 /* GoogleSignInSwift */,
-				A1F1682A2BDD51170080F57E /* FirebaseFirestore */,
-				A1F1682C2BDD512F0080F57E /* FirebaseAuth */,
-				A1F168302BDD52550080F57E /* FirebaseFirestoreSwift */,
-			);
 			productName = StockWidgetExtension;
 			productReference = DFFB336C27F858830018F3A4 /* StockWidgetExtension.appex */;
 			productType = "com.apple.product-type.app-extension";
@@ -1013,27 +1004,19 @@
 			buildActionMask = 2147483647;
 			files = (
 				A1DE927D2DC325DC00D743C7 /* StockNoStruct.swift in Sources */,
-				A14CBA0329437DAA00DDA990 /* MyTaiwanStock.xcdatamodeld in Sources */,
 				A14CB9FD2943761F00DDA990 /* StockInfo.swift in Sources */,
 				A14CBA0E2943882300DDA990 /* StockCellViewModel.swift in Sources */,
 				A1DE927B2DC325D300D743C7 /* ListStruct.swift in Sources */,
 				A128BB7D285241E8007F7645 /* OneDayStockInfo.swift in Sources */,
 				A12515622C15C665001BFC53 /* Notification+Extension.swift in Sources */,
-				A14CBA0429437DB500DDA990 /* OnlineDBService.swift in Sources */,
-				A14CBA0D2943818D00DDA990 /* LocalDBService.swift in Sources */,
-				A1DE926F2DBCC67700D743C7 /* StockNo+CoreDataClass.swift in Sources */,
 				A14CBA0B29437E8300DDA990 /* FavList.swift in Sources */,
-				A14CBA0C2943800B00DDA990 /* NetworkServiceImpl.swift in Sources */,
-				A1DE92722DBCC68200D743C7 /* List+CoreDataClass.swift in Sources */,
-				A1DE92742DBCC68600D743C7 /* List+CoreDataProperties.swift in Sources */,
 				A12719E82C1D8590005AB268 /* URL+Extension.swift in Sources */,
-				A14CB9FE2943762F00DDA990 /* NetworkService.swift in Sources */,
-				A1DE926E2DBCC66F00D743C7 /* StockNo+CoreDataProperties.swift in Sources */,
 				A12515672C1C9B8E001BFC53 /* UserPreferences.swift in Sources */,
 				A14CBA0529437DD700DDA990 /* HistoryOnline.swift in Sources */,
 				A1E1724A2BED087200ED5916 /* View+Extension.swift in Sources */,
 				DFFB337327F858830018F3A4 /* StockWidget.swift in Sources */,
 				A128BB7F28524570007F7645 /* WidgetStockData.swift in Sources */,
+				6668EF90813808B0AF082831 /* WidgetStockFetcher.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

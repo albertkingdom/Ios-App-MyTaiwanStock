@@ -7,22 +7,12 @@
 
 import WidgetKit
 import SwiftUI
-import Firebase
-import Combine
 import os
 
 let logger = Logger(subsystem: "com.a2006mike.MyTaiwanStock", category: "YourCategory")
 
-class SubscriptionManager {
-    static let shared = SubscriptionManager()
-    private init() {}
-    
-    var subscriptions = Set<AnyCancellable>()
-}
 struct Provider: TimelineProvider {
-    let repository = NetworkServiceImpl()
-
-    var subscription = Set<AnyCancellable>()
+    let repository = WidgetStockFetcher()
 
     // fake data showed before real data
     func placeholder(in context: Context) -> SimpleEntry {
@@ -90,7 +80,7 @@ struct Provider: TimelineProvider {
     func retrieveStockNos() -> [String] {
         let userDefault = UserDefaults(suiteName: "group.a2006mike.myTaiwanStock")
         guard let stockNos = userDefault?.object(forKey: "stockNos") as? [String] else { return [] }
-        return stockNos
+        return stockNos.filter { !$0.isEmpty }
     }
 }
     
@@ -124,13 +114,13 @@ struct StockWidgetEntryView : View {
                             .fontWeight(Font.Weight.bold)
                             .frame(maxWidth: .infinity)
                         
-                        Text(item.shortName)
+                        Text(item.shortName.isEmpty ? item.stockNo : item.shortName)
                             .font(Font.system(size: 12, weight: .regular, design: .default))
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
                     }
                     Spacer()
-                    Text(formatString(price:item.current))
+                    Text(formatString(price: item.current, fallback: item.yesterDayPrice))
                         .fontWeight(Font.Weight.bold)
                         .foregroundColor(.primary)
                         .frame(maxWidth: .infinity, alignment: .trailing)
@@ -168,10 +158,12 @@ struct StockWidgetEntryView : View {
 
     }
     
-    func formatString(price: String) -> String {
+    func formatString(price: String, fallback: String) -> String {
 
         if let currentPrice = Float(price) {
             return String(format: "%.2f", currentPrice)
+        } else if let fallbackPrice = Float(fallback) {
+            return String(format: "%.2f", fallbackPrice)
         } else {
             return "-"
         }
@@ -192,9 +184,6 @@ struct StockWidgetEntryView : View {
 @main
 struct StockWidget: Widget {
     let kind: String = "StockWidget"
-    init() {
-        // FirebaseApp.configure()
-    }
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
             StockWidgetEntryView(entry: entry)

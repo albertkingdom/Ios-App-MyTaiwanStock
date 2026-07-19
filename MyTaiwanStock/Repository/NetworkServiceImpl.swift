@@ -14,8 +14,8 @@ class NetworkServiceImpl: NetworkService {
     typealias CandleData = StockInfo
 
     var subscription = Set<AnyCancellable>()
-    var localDBService = LocalDBService.shared
-    var onLineDBService = OnlineDBService()
+    lazy var localDBService = LocalDBService.shared
+    lazy var onLineDBService = OnlineDBService()
 
     func fetchOneDayStockInfo(
         stockList: [String],
@@ -39,17 +39,19 @@ class NetworkServiceImpl: NetworkService {
             response,
             error in
             let jsonDecoder = JSONDecoder()
-            if let data = data {
-                do {
-                    let stockInfo = try jsonDecoder.decode(
-                        OneDayStockInfo.self,
-                        from: data
-                    )
+            guard let data = data else {
+                completionHandler(.failure(error ?? URLError(.badServerResponse)))
+                return
+            }
+            do {
+                let stockInfo = try jsonDecoder.decode(
+                    OneDayStockInfo.self,
+                    from: data
+                )
 
-                    completionHandler(.success(stockInfo))
-                } catch {
-                    completionHandler(.failure(error))
-                }
+                completionHandler(.success(stockInfo))
+            } catch {
+                completionHandler(.failure(error))
             }
         }
 

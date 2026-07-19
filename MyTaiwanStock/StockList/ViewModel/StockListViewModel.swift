@@ -229,6 +229,8 @@ class StockListViewModel: ObservableObject {
                 guard let self else { return }
                 logger.debug("stockNos \(stockNos)")
                 self.stockNameStringSetCombine.send(Set(stockNos))
+                self.userDefault?.setValue(stockNos, forKey: "stockNos")
+                WidgetCenter.shared.reloadAllTimelines()
 
                 if !stockNos.isEmpty {
                     self.repeatFetch(stockNos: stockNos)
@@ -340,11 +342,9 @@ class StockListViewModel: ObservableObject {
             currentMenuIndex.value
         ].stockNos
 
-        let stockNoStringArray: [String] = setOfStockNoObjects.map {
-            ele -> String in
-            guard let stockNo = (ele as? StockNo)?.stockNo else { return "" }
-            //print(" \(stockNo)")
-            return stockNo
+        let stockNoStringArray: [String] = setOfStockNoObjects.compactMap {
+            ele -> String? in
+            (ele as? StockNo)?.stockNo
         }
         //print("stockNoStringArray \(stockNoStringArray)")
         stockNameStringSetCombine.send(Set(stockNoStringArray))  // CHANGE: use send() instead of direct assignment

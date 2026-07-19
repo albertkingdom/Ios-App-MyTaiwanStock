@@ -1,0 +1,49 @@
+name: TestFlight Release
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  release:
+    runs-on: macos-latest
+
+    env:
+      APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
+      APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
+      APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
+      MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Verify tag originates from release branch
+        if: github.event_name == 'push'
+        run: |
+          git fetch origin release
+          if ! git merge-base --is-ancestor "$GITHUB_SHA" origin/release; then
+            echo "::error::Tag $GITHUB_REF_NAME does not point to a commit on the release branch. TestFlight releases via tag push must be tagged from release."
+            exit 1
+          fi
+
+      - name: Set up SSH for match repo
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.MATCH_GIT_PRIVATE_KEY }}
+
+      - name: Trust GitHub host key
+        run: mkdir -p ~/.ssh && ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      - name: Resolve Swift Package dependencies
+        run: xcodebuild -resolvePackageDependencies -project MyTaiwanStock.xcodeproj
+
+      - name: Install fastlane
+        run: gem install fastlane
+
+      - name: Build and upload to TestFlight
+        run: fastlane ios beta

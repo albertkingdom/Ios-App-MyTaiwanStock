@@ -78,20 +78,21 @@
   - `APP_STORE_CONNECT_API_KEY_ID`：API Key 的 Key ID
   - `APP_STORE_CONNECT_API_ISSUER_ID`：Issuer ID
   - `APP_STORE_CONNECT_API_KEY_CONTENT`：.p8 檔案內容（base64 或原始內容，由 Fastfile 內的 `app_store_connect_api_key` action 讀取並還原成暫存檔）
-  - `MATCH_GIT_BASIC_AUTHORIZATION` 或 `MATCH_GIT_PRIVATE_KEY`：對 `ios-signing` repo 有讀取權限的憑證（GitHub PAT 或 deploy key，用於 match 的 `git_url` 私有 repo 存取）
+  - `MATCH_GIT_PRIVATE_KEY`：對 `ios-signing` repo 唯讀的 SSH deploy key 私鑰。做法沿用 `ios-mybusapp`（同帳號下另一個已在正式運作的專案）已驗證可行的模式：在 `ios-signing` repo 新增一組唯讀 deploy key，`Matchfile` 的 `git_url` 改用 SSH 格式（`git@github.com:albertkingdom/ios-signing.git`），CI 裡用 `webfactory/ssh-agent` action 載入這把私鑰、`ssh-keyscan github.com` 信任 GitHub host key 後即可 clone。選擇 deploy key 而非 GitHub PAT：deploy key 直接綁定在 `ios-signing` repo 上、預設不過期、權限範圍僅限這一個 repo，比綁在個人帳號上的 PAT 更小範圍、更不需要定期更新
   - `MATCH_PASSWORD`：match 用來加解密憑證的密碼（沿用 `ios-signing` repo 建立時設定的密碼，不是新密碼）
 - Steps（依序）：
   1. `actions/checkout@v4`
   2. 驗證 tag 是否指向 `release` 分支歷史中的 commit（僅 `on.push.tags` 觸發時執行，`workflow_dispatch` 觸發時跳過）：`git fetch origin release` 後執行 `git merge-base --is-ancestor "$GITHUB_SHA" origin/release`，非 0 結束碼視為不符合，立刻中止 workflow 並輸出明確錯誤訊息（不進入後續任何步驟）
   3. 安裝 Ruby/Bundler（或直接用 `gem install fastlane` / `brew install fastlane`，視 runner 內建版本決定）
-  4. `xcodebuild -resolvePackageDependencies`（沿用 CI workflow 的 SPM resolve 方式）
-  5. 執行 `fastlane ios beta`（Fastfile 中定義的 lane），內部依序執行：
+  4. 用 `webfactory/ssh-agent@v0.9.0` action 載入 `MATCH_GIT_PRIVATE_KEY`，並執行 `ssh-keyscan github.com >> ~/.ssh/known_hosts` 信任 GitHub host key，讓後續 `match` 能透過 SSH clone `ios-signing`（做法沿用 `ios-mybusapp` 的 `.github/workflows/ios.yml` 既有模式）
+  5. `xcodebuild -resolvePackageDependencies`（沿用 CI workflow 的 SPM resolve 方式）
+  6. 執行 `fastlane ios beta`（Fastfile 中定義的 lane），內部依序執行：
      a. `app_store_connect_api_key`：從環境變數建立 API Key 物件
-     b. `match(type: "appstore", readonly: false, git_url: "https://github.com/albertkingdom/ios-signing")`：抓取/建立三個 target 各自的 App Store provisioning profile
+     b. `match(type: "appstore", readonly: false)`：抓取/建立三個 target 各自的 App Store provisioning profile（`git_url` 已在 `Matchfile` 中以 SSH 格式指定，不需在呼叫時重複帶入）
      c. `latest_testflight_build_number` + `increment_build_number`：設定新的 build number
      d. `build_app(scheme: "MyTaiwanStock", export_method: "app-store")`：Archive 並匯出 IPA
      e. `upload_to_testflight(skip_waiting_for_build_processing: true)`：上傳到 TestFlight
-- `fastlane/Fastfile`、`fastlane/Appfile`、`fastlane/Matchfile` 為新增檔案，`Matchfile` 內 `git_url` 指向 `https://github.com/albertkingdom/ios-signing`，`git_branch` **必須明確指定為 `"main"`**（不可省略，見 Risks 中的實測教訓），`type` 預設 `appstore`
+- `fastlane/Fastfile`、`fastlane/Appfile`、`fastlane/Matchfile` 為新增檔案，`Matchfile` 內 `git_url` 使用 SSH 格式 `git@github.com:albertkingdom/ios-signing.git`（搭配 CI 裡的 SSH deploy key，見上），`git_branch` **必須明確指定為 `"main"`**（不可省略，見 Risks 中的實測教訓），`type` 預設 `appstore`
 
 **失敗模式（Failure modes）：**
 - tag push 觸發，但該 tag 指向的 commit 不在 `release` 分支歷史中 → 驗證 step 失敗並中止 workflow，log 顯示明確訊息說明此 tag 不是從 `release` 分支打的，不執行任何簽章/建置/上傳動作

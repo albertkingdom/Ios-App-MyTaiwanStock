@@ -1,11 +1,19 @@
 ## ADDED Requirements
 
 ### Requirement: Manual TestFlight release trigger
-The system SHALL provide a manually-triggered GitHub Actions workflow (`workflow_dispatch`) that packages and uploads a new TestFlight build without requiring the operator to run any local commands.
+The system SHALL provide a GitHub Actions workflow that packages and uploads a new TestFlight build without requiring the operator to run any local commands, triggerable either manually (`workflow_dispatch`) or automatically by pushing a git tag matching `v*`.
 
 #### Scenario: Operator triggers a release from GitHub Actions
 - **WHEN** a repository collaborator manually triggers the `TestFlight Release` workflow from the GitHub Actions UI, selecting a branch
 - **THEN** GitHub Actions SHALL start a workflow run named `TestFlight Release` that checks out the selected branch/commit
+
+#### Scenario: Pushing a version tag triggers a release automatically
+- **WHEN** a collaborator pushes a git tag matching `v*` (e.g. `v1.0.1`) to the repository
+- **THEN** GitHub Actions SHALL automatically start a workflow run named `TestFlight Release` that checks out the commit the tag points to, without any manual trigger
+
+#### Scenario: Pushing to a branch does not trigger a release
+- **WHEN** a collaborator pushes commits to any branch (including `mvvm` or `release`) without pushing a matching `v*` tag
+- **THEN** the `TestFlight Release` workflow SHALL NOT be triggered
 
 ### Requirement: Signing without local Apple ID interaction
 The system SHALL sign the `MyTaiwanStock`, `StockWidgetExtension`, and `LiveActivityExtension` targets for App Store distribution using fastlane match, retrieving certificates and provisioning profiles from the existing `github.com/albertkingdom/ios-signing` private repository, without any interactive Apple ID prompt.

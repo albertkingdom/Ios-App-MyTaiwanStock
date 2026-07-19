@@ -19,7 +19,7 @@
 
 **Goals:**
 
-- 用一個手動觸發（`workflow_dispatch`）的 GitHub Actions workflow，完成「簽章 → 遞增 build number → Archive → 匯出 IPA → 上傳 TestFlight」的完整流程
+- 用一個可手動觸發（`workflow_dispatch`）或以 `v*` git tag push 自動觸發的 GitHub Actions workflow，完成「簽章 → 遞增 build number → Archive → 匯出 IPA → 上傳 TestFlight」的完整流程
 - 沿用既有的 `ios-signing` match 憑證庫，不重新建立簽章基礎設施
 - 所有跟 Apple/App Store Connect 的驗證都用 API Key（.p8），不使用帳號密碼或雙因素登入互動
 - 三個需要簽章的 target 從 Automatic 改為 Manual signing，確保 CI 環境（無互動、無 Xcode GUI）能穩定簽章
@@ -46,9 +46,11 @@
 
 原因：CI 環境無法完成雙因素驗證（2FA）互動，且帳密登入的 session token 在 CI 裡不穩定、容易過期。API Key 是 Apple 官方建議的 CI/CD 驗證方式，沒有 2FA 互動需求，且可以精確控制權限範圍（Admin/App Manager 等角色）。fastlane 的 `app_store_connect_api_key` action 讀取三個環境變數（Key ID、Issuer ID、.p8 內容），供後續 `match`、`pilot`、`upload_to_testflight` 等 action 共用同一組驗證。
 
-### Workflow 觸發方式：`workflow_dispatch`（手動觸發），不綁定 tag push 或固定分支
+### Workflow 觸發方式：`workflow_dispatch`（手動觸發）與 `v*` git tag push（自動觸發）並存，不綁定固定分支的 push
 
-原因：使用者希望自己控制「什麼時候真的要發一個 beta 版本」，不希望每次 push 或每個 tag 都自動發布到 TestFlight（TestFlight 上傳次數雖然沒有嚴格限制，但每次上傳都會建立一個新 build，過於頻繁會讓 tester 端的版本列表雜亂）。`workflow_dispatch` 讓使用者在 GitHub Actions 頁面上手動點擊觸發，可以選擇要發佈的分支/commit。
+原因：使用者希望自己控制「什麼時候真的要發一個 beta 版本」，不希望每次對某個分支 push 都自動發布到 TestFlight（分支 push 太頻繁，容易因為忘記這件事而在有 bug 的 commit 上自動發出 beta）。`workflow_dispatch` 讓使用者在 GitHub Actions 頁面上手動點擊觸發，可以選擇要發佈的分支/commit，是最基本、最安全的觸發方式。
+
+額外加上 `push` 觸發、限定符合 `v*` 格式的 tag（例如 `v1.0.1`）：打 tag 本身就是一個刻意的動作（不像分支 push 那樣每個 commit 都會發生），可以兼顧「自動化上傳」與「使用者仍然決定何時發版」兩個需求，且 tag 名稱可以順便作為這次發佈對應的版本紀錄。**不**採用「push 到 `release` 分支自動觸發」的作法，因為分支上的每個 commit 都會觸發，遠比 tag push 頻繁，risk 更高。兩種觸發方式（手動、tag push）共用同一個 job 定義，行為完全一致，只差在觸發條件。
 
 ### 自動遞增 `CURRENT_PROJECT_VERSION`，使用 fastlane `increment_build_number` 搭配 App Store Connect 最新 build number 查詢
 
@@ -57,7 +59,7 @@
 ## Implementation Contract
 
 **行為（Behavior）：**
-- 使用者在 GitHub Actions 頁面手動觸發 `TestFlight Release` workflow（`workflow_dispatch`），選擇要發佈的分支
+- 使用者在 GitHub Actions 頁面手動觸發 `TestFlight Release` workflow（`workflow_dispatch`），選擇要發佈的分支；或是對 repo push 一個符合 `v*` 格式的 git tag（例如 `v1.0.1`），workflow 自動觸發並使用該 tag 指向的 commit
 - Workflow 完成後，一個新的 build 出現在 App Store Connect 的 TestFlight 分頁，build number 比目前 App Store Connect 上最新的 build number 大 1，`MARKETING_VERSION` 沿用 `project.pbxproj` 當下的值（`1.0`，這次不處理自動遞增行銷版本號）
 - Internal tester 群組（若使用者已在 App Store Connect 網頁設定過）會依照 App Store Connect 既有規則收到可測試的新 build 通知
 - Workflow 失敗時（簽章失敗、Archive 失敗、上傳失敗）该次 run 標示為 failure，log 中保留 fastlane 的錯誤輸出，不會有「部分成功」的中間狀態被誤判為成功
@@ -65,7 +67,7 @@
 **Workflow 結構（Interface）：**
 - 檔案路徑：`.github/workflows/testflight.yml`
 - `name: TestFlight Release`
-- `on.workflow_dispatch:`（無額外 input，使用觸發時選擇的分支/commit）
+- `on.workflow_dispatch:`（無額外 input，使用觸發時選擇的分支/commit）與 `on.push.tags: ['v*']`（push 符合 `v*` 格式的 tag 時自動觸發，使用該 tag 指向的 commit）
 - `jobs.release.runs-on: macos-latest`
 - 需要的 GitHub Secrets（存在這個 repo 的 Settings → Secrets and variables → Actions）：
   - `APP_STORE_CONNECT_API_KEY_ID`：API Key 的 Key ID

@@ -9,6 +9,7 @@ import CoreData
 import UIKit
 import Charts
 import FirebaseFirestore
+import ActivityKit
 
 
 class StockViewController: UIViewController {
@@ -205,7 +206,29 @@ class StockViewController: UIViewController {
         let newsButton = UIBarButtonItem(title: "detailVC_news_title".localized, style: .plain, target: self, action: #selector(navigateToNews))
         let addHistoryButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(showAlertForDestination))
         let chatRoomButton = UIBarButtonItem(image: UIImage(systemName: "message"), style: .plain, target: self, action: #selector(navigateToChatRoom))
-        navigationItem.rightBarButtonItems = [addHistoryButton, newsButton, chatRoomButton]
+
+        if #available(iOS 16.1, *) {
+            let liveActivityButton = UIBarButtonItem(
+                image: UIImage(systemName: "chart.line.uptrend.xyaxis"),
+                style: .plain,
+                target: self,
+                action: #selector(toggleLiveActivity))
+            navigationItem.rightBarButtonItems = [addHistoryButton, newsButton, chatRoomButton, liveActivityButton]
+
+            ActivityManager.shared.isActive
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] _ in
+                    guard let self = self else { return }
+                    let isActiveForThisStock = ActivityManager.shared.trackedStockNo == self.viewModel.stockNo
+                    let imageName = isActiveForThisStock
+                        ? "chart.line.uptrend.xyaxis.circle.fill"
+                        : "chart.line.uptrend.xyaxis"
+                    liveActivityButton.image = UIImage(systemName: imageName)
+                }
+                .store(in: &subscription)
+        } else {
+            navigationItem.rightBarButtonItems = [addHistoryButton, newsButton, chatRoomButton]
+        }
         
         // custom table header
         setTableHeader()
@@ -385,6 +408,65 @@ class StockViewController: UIViewController {
         
         let chatRoomVC = ChatViewController(stockNo: viewModel.stockNo)
         navigationController?.pushViewController(chatRoomVC, animated: true)
+    }
+
+    @available(iOS 16.1, *)
+    @objc func toggleLiveActivity() {
+        guard let stockName = stockName,
+              let stockPrice = stockPrice,
+              let stockPriceDiff = stockPriceDiff,
+              let timeString = timeString else { return }
+
+        if ActivityManager.shared.trackedStockNo == viewModel.stockNo {
+            ActivityManager.shared.end()
+            return
+        }
+
+        let yesterDayPrice: String
+        let priceChange: String
+        let priceChangePercent: String
+
+        if let currentFloat = Float(stockPrice),
+           let diffFloat = Float(stockPriceDiff) {
+            let yesterDayFloat = currentFloat - diffFloat
+            yesterDayPrice = String(format: "%.2f", yesterDayFloat)
+
+            if diffFloat >= 0 {
+                priceChange = String(format: "+%.2f", diffFloat)
+            } else {
+                priceChange = String(format: "%.2f", diffFloat)
+            }
+
+            if yesterDayFloat != 0 {
+                let percentFloat = (diffFloat / yesterDayFloat) * 100
+                if percentFloat >= 0 {
+                    priceChangePercent = String(format: "+%.3f%%", percentFloat)
+                } else {
+                    priceChangePercent = String(format: "%.3f%%", percentFloat)
+                }
+            } else {
+                priceChangePercent = "0.000%"
+            }
+        } else {
+            yesterDayPrice = "-"
+            priceChange = "-"
+            priceChangePercent = "-"
+        }
+
+        let started = ActivityManager.shared.start(
+            stockNo: viewModel.stockNo,
+            stockName: stockName,
+            currentPrice: stockPrice,
+            priceChange: priceChange,
+            priceChangePercent: priceChangePercent,
+            yesterDayPrice: yesterDayPrice,
+            time: timeString)
+
+        if !started {
+            let alert = UIAlertController(title: "錯誤", message: "無法啟動即時報價", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "確定", style: .default))
+            present(alert, animated: true)
+        }
     }
     override func viewWillAppear(_ animated: Bool) {
         

@@ -9,6 +9,7 @@ import CoreData
 import Foundation
 import UIKit
 import WidgetKit
+import ActivityKit
 
 class StockListViewModel: ObservableObject {
     private var timer: Timer?
@@ -16,6 +17,9 @@ class StockListViewModel: ObservableObject {
     private var priceDiffFormat = CurrentValueSubject<
         StockCellViewModel.PriceDiffFormat, Never
     >(.Digit)
+
+    private var lastFetchTime: String?
+    private var staleTimeCount = 0
 
     var stockNameStringSetCombine = CurrentValueSubject<Set<String>, Never>([])
     var stockNameString: Set<String> {
@@ -151,7 +155,6 @@ class StockListViewModel: ObservableObject {
                             ? .on : .off,
                         handler: { action in
                             self?.currentMenuIndex.send(index)
-                            self?.setupStockNameStringSet()
                         })
                 }
                 actions.append(
@@ -219,12 +222,14 @@ class StockListViewModel: ObservableObject {
                 let setOfStockNoObjects = list.stockNos
                 return setOfStockNoObjects.compactMap {
                     $0.stockNo
-                }
+                }.sorted()
             }
             .sink { [weak self] stockNos in
                 guard let self else { return }
                 logger.debug("stockNos \(stockNos)")
                 self.stockNameStringSetCombine.send(Set(stockNos))
+                self.userDefault?.setValue(stockNos, forKey: "stockNos")
+                WidgetCenter.shared.reloadAllTimelines()
 
                 if !stockNos.isEmpty {
                     self.repeatFetch(stockNos: stockNos)
@@ -304,6 +309,7 @@ class StockListViewModel: ObservableObject {
                     .setFailureType(to: Error.self)
                     .eraseToAnyPublisher()
             }
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] completion in
                 guard let self = self else { return }
                 self.isLoading = false
@@ -320,26 +326,13 @@ class StockListViewModel: ObservableObject {
             } receiveValue: { [weak self] cellVMs in
                 guard let self = self else { return }
                 self.stockCellDatasCombine.send(cellVMs)
+
+                if #available(iOS 16.1, *) {
+                    self.updateLiveActivityIfNeeded()
+                    self.checkMarketClose()
+                }
             }
             .store(in: &self.subscription)
-    }
-
-    private func setupStockNameStringSet() {
-
-        let setOfStockNoObjects = followingListObjectFromDB[
-            currentMenuIndex.value
-        ].stockNos
-
-        let stockNoStringArray: [String] = setOfStockNoObjects.map {
-            ele -> String in
-            guard let stockNo = (ele as? StockNo)?.stockNo else { return "" }
-            //print(" \(stockNo)")
-            return stockNo
-        }
-        //print("stockNoStringArray \(stockNoStringArray)")
-        stockNameStringSetCombine.send(Set(stockNoStringArray))  // CHANGE: use send() instead of direct assignment
-
-        self.userDefault?.setValue(stockNoStringArray, forKey: "stockNos")
     }
 
     func deleteStockNumber(stockNo: String) {
@@ -381,8 +374,11 @@ class StockListViewModel: ObservableObject {
 
         stockNameStringSetCombine.value = stockNameStringSetCombine.value.filter{ $0 != stockNo }  // edit current stockno list
 
-        // Create a new fetch with updated stock list
-        let updatedStockNos = Array(stockNameStringSetCombine.value)
+        // Update App Group + refresh widget
+        let updatedStockNos = Array(stockNameStringSetCombine.value).sorted()
+        self.userDefault?.setValue(updatedStockNos, forKey: "stockNos")
+        WidgetCenter.shared.reloadAllTimelines()
+
         repeatFetch(stockNos: updatedStockNos)
     }
 
@@ -393,7 +389,12 @@ class StockListViewModel: ObservableObject {
         repository.saveStockNumber(
             with: stockNumber,
             currentFollowingList: currentFollowingListCombine.value!)
-        //        handleFetchListFromDB()
+        stockNameStringSetCombine.value = stockNameStringSetCombine.value.union([stockNumber])
+        let updatedStockNos = Array(stockNameStringSetCombine.value).sorted()
+        self.userDefault?.setValue(updatedStockNos, forKey: "stockNos")
+        WidgetCenter.shared.reloadAllTimelines()
+
+        repeatFetch(stockNos: updatedStockNos)
     }
 
     //MARK: online DB
@@ -417,6 +418,76 @@ class StockListViewModel: ObservableObject {
     // 新增：從 UserDefaults 獲取儲存的索引
     func getSavedListIndex() -> Int {
         return UserDefaults.standard.integer(forKey: UserDefaults.menuIndex)
+    }
+
+    @available(iOS 16.1, *)
+    private func updateLiveActivityIfNeeded() {
+        let trackedStockNo = ActivityManager.shared.trackedStockNo
+        guard let trackedStockNo = trackedStockNo else { return }
+
+        guard let stockInfo = onedayStockInfo.first(where: { $0.stockNo == trackedStockNo }) else {
+            return
+        }
+
+        let priceChange: String
+        let priceChangePercent: String
+        let yesterDayPrice: String
+
+        if let currentFloat = Float(stockInfo.current),
+           let yesterDayFloat = Float(stockInfo.yesterDayPrice) {
+            let diff = currentFloat - yesterDayFloat
+            priceChange = diff >= 0 ? String(format: "+%.2f", diff) : String(format: "%.2f", diff)
+            yesterDayPrice = String(format: "%.2f", yesterDayFloat)
+
+            if yesterDayFloat != 0 {
+                let pct = (diff / yesterDayFloat) * 100
+                priceChangePercent = pct >= 0 ? String(format: "+%.3f%%", pct) : String(format: "%.3f%%", pct)
+            } else {
+                priceChangePercent = "0.000%"
+            }
+        } else {
+            return
+        }
+
+        ActivityManager.shared.update(
+            currentPrice: stockInfo.current,
+            priceChange: priceChange,
+            priceChangePercent: priceChangePercent,
+            yesterDayPrice: yesterDayPrice,
+            time: stockInfo.time)
+    }
+
+    @available(iOS 16.1, *)
+    private func checkMarketClose() {
+        guard let trackedStockNo = ActivityManager.shared.trackedStockNo else { return }
+
+        let calendar = Calendar.current
+        let taiwanTimeZone = TimeZone(identifier: "Asia/Taipei")!
+        let now = Date()
+        let components = calendar.dateComponents(in: taiwanTimeZone, from: now)
+
+        guard let hour = components.hour,
+              let minute = components.minute else { return }
+
+        let totalMinutes = hour * 60 + minute
+        guard totalMinutes >= (13 * 60 + 30) else {
+            staleTimeCount = 0
+            lastFetchTime = nil
+            return
+        }
+
+        let latestTime = onedayStockInfo.first(where: { $0.stockNo == trackedStockNo })?.time
+        if let lastTime = lastFetchTime, let latestTime = latestTime, lastTime == latestTime {
+            staleTimeCount += 1
+            if staleTimeCount >= 2 {
+                ActivityManager.shared.end()
+                staleTimeCount = 0
+                lastFetchTime = nil
+            }
+        } else {
+            staleTimeCount = 1
+            lastFetchTime = latestTime
+        }
     }
 
 }

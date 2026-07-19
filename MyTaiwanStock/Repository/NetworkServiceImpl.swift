@@ -14,46 +14,17 @@ class NetworkServiceImpl: NetworkService {
     typealias CandleData = StockInfo
 
     var subscription = Set<AnyCancellable>()
-    var localDBService = LocalDBService.shared
-    var onLineDBService = OnlineDBService()
+    lazy var localDBService = LocalDBService.shared
+    lazy var onLineDBService = OnlineDBService()
 
     func fetchOneDayStockInfo(
         stockList: [String],
         completionHandler: @escaping (Result<OneDayStockInfo, Error>) -> Void
     ) {
-        var urlComponents = URLComponents(
-            string: "https://mis.twse.com.tw/stock/api/getStockInfo.jsp"
-        )!
-
-        let stockListQuerys = stockList.map { "tse_\($0).tw" }.joined(
-            separator: "|"
+        TWSEStockInfoFetcher().fetchOneDayStockInfo(
+            stockList: stockList,
+            completionHandler: completionHandler
         )
-
-        // tse_2330.tw|tse_0050.tw
-        urlComponents.queryItems = ["ex_ch": stockListQuerys, "json": "1"].map({
-            URLQueryItem(name: $0.key, value: $0.value)
-        })
-
-        let task = URLSession.shared.dataTask(with: urlComponents.url!) {
-            data,
-            response,
-            error in
-            let jsonDecoder = JSONDecoder()
-            if let data = data {
-                do {
-                    let stockInfo = try jsonDecoder.decode(
-                        OneDayStockInfo.self,
-                        from: data
-                    )
-
-                    completionHandler(.success(stockInfo))
-                } catch {
-                    completionHandler(.failure(error))
-                }
-            }
-        }
-
-        task.resume()
     }
 
     func fetchOneDayStockInfoCombine(stockList: [String]) -> AnyPublisher<

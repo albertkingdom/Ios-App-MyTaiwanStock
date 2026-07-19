@@ -12,7 +12,7 @@ import os
 let logger = Logger(subsystem: "com.a2006mike.MyTaiwanStock", category: "YourCategory")
 
 struct Provider: TimelineProvider {
-    let repository = WidgetStockFetcher()
+    let repository = TWSEStockInfoFetcher()
 
     // fake data showed before real data
     func placeholder(in context: Context) -> SimpleEntry {
@@ -47,6 +47,12 @@ struct Provider: TimelineProvider {
         repository.fetchOneDayStockInfo(stockList: stockNos) { result in
             switch result {
             case .success(let data):
+                guard !data.msgArray.isEmpty else {
+                    let entry = placeholderEntry()
+                    let timeline = Timeline(entries: [entry], policy: .after(reloadDate))
+                    completion(timeline)
+                    return
+                }
                 var stockDatas = data.msgArray.map { priceData in
                     WidgetStockData(stockNo: priceData.stockNo,
                                     current: priceData.current,
@@ -114,7 +120,7 @@ struct StockWidgetEntryView : View {
                             .fontWeight(Font.Weight.bold)
                             .frame(maxWidth: .infinity)
                         
-                        Text(item.shortName.isEmpty ? item.stockNo : item.shortName)
+                        Text(item.shortName)
                             .font(Font.system(size: 12, weight: .regular, design: .default))
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)

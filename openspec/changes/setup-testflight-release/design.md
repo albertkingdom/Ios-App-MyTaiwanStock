@@ -91,7 +91,7 @@
      c. `latest_testflight_build_number` + `increment_build_number`：設定新的 build number
      d. `build_app(scheme: "MyTaiwanStock", export_method: "app-store")`：Archive 並匯出 IPA
      e. `upload_to_testflight(skip_waiting_for_build_processing: true)`：上傳到 TestFlight
-- `fastlane/Fastfile`、`fastlane/Appfile`、`fastlane/Matchfile` 為新增檔案，`Matchfile` 內 `git_url` 指向 `https://github.com/albertkingdom/ios-signing`，`type` 預設 `appstore`
+- `fastlane/Fastfile`、`fastlane/Appfile`、`fastlane/Matchfile` 為新增檔案，`Matchfile` 內 `git_url` 指向 `https://github.com/albertkingdom/ios-signing`，`git_branch` **必須明確指定為 `"main"`**（不可省略，見 Risks 中的實測教訓），`type` 預設 `appstore`
 
 **失敗模式（Failure modes）：**
 - tag push 觸發，但該 tag 指向的 commit 不在 `release` 分支歷史中 → 驗證 step 失敗並中止 workflow，log 顯示明確訊息說明此 tag 不是從 `release` 分支打的，不執行任何簽章/建置/上傳動作
@@ -112,7 +112,9 @@
 
 ## Risks / Trade-offs
 
-- [風險] `ios-signing` repo 裡的 distribution 憑證可能不屬於 `UZ2Z639589` 這個 team，或已過期 → [緩解] 在 tasks 早期加入驗證步驟：本機執行 `fastlane match appstore --readonly` 確認能成功抓到憑證且憑證有效期未過期，若不符則需要重新產生
+- [風險] `ios-signing` repo 裡的 distribution 憑證可能不屬於 `UZ2Z639589` 這個 team，或已過期 → [緩解] 在 tasks 早期加入驗證步驟：本機執行 `fastlane match appstore --readonly` 確認能成功抓到憑證且憑證有效期未過期，若不符則需要重新產生。**已實際發生**：repo 裡原本的 distribution 憑證（`B5D9B2S5JZ`）在 Apple 後台已經失效（極可能是 `MyTaiwanStock` 過去使用 Automatic signing 時，Xcode 在背景建立/汰換憑證所致），拿掉 `--readonly` 用 App Store Connect API Key 驗證後，match 自動生成了一張新憑證（`Apple Distribution: Yu-Kai Lin (UZ2Z639589)`，效期至 2027-01-25）並成功寫回 repo，過程沒有撤銷任何舊憑證，不影響 repo 內其他 app（`MyBusMapSwiftUI`）既有的資料
+- [風險] fastlane match 的 `git_branch` 若不明確指定，預設值是 `master`；如果 storage repo 的實際分支是 `main`（如 `ios-signing`），match 會誤判成「這個分支不存在」而建立一個**與 `main` 完全沒有共同歷史的孤兒分支**，導致新資料寫錯地方、無法回頭合併 → [緩解] **已實際踩到這個陷阱**（第一次執行忘記指定 `git_branch`，資料寫進了誤建的孤兒 `master` 分支，事後已刪除該分支並改用 `git_branch("main")` 重新執行、驗證 `MyBusMapSwiftUI` 既有檔案 checksum 完全不受影響）。因此 `Matchfile` 與後續所有 `match` 呼叫（本機、CI）都必須明確帶上 `git_branch("main")`，不可依賴預設值
+- [風險] `ios-signing` repo 用來加解密的 `MATCH_PASSWORD` passphrase 如果使用者自己忘記，本機/CI 都無法解密既有內容，且沒有救回機制（match 是純本地端對稱加密，沒有密碼救援後門）→ [緩解] 此次已實際發生密碼一時想不起來的狀況，所幸使用者後來想起正確密碼並成功解密；若日後再次發生且真的救不回來，因為憑證本身的真實有效性是由 Apple 伺服器端決定（不是本地檔案決定），可用 API Key 搭配拿掉 `--readonly` 的方式讓 match 重新產生一組新憑證/profile 並用新密碼重新初始化 repo，缺點是舊資料（若還有其他 app 依賴）會變成無法解密的死檔案
 - [風險] 使用者不確定是否已有 App Store Connect API Key → [緩解] tasks 中包含「檢查 App Store Connect 上是否已有 API Key，若無則建立一組新的 Admin 或 App Manager 權限 key」的步驟，此步驟需要使用者親自登入 App Store Connect 完成（無法由 CI/自動化代勞），完成後才能繼續設定 GitHub Secrets
 - [風險] `CODE_SIGN_STYLE` 改成 Manual 會讓本機開發者的 Xcode 建置行為改變，若沒有先跑過 `fastlane match development`，本機 build 可能失敗 → [緩解] 在 tasks 中明確加入「本機驗證：改完 Manual signing 後，跑一次 `fastlane match development` 並確認 Xcode 本機仍可正常 build/run」的步驟，且在 design 與 proposal 中已標記為 **BREAKING** 提醒使用者
 - [風險] GitHub-hosted runner 上的 fastlane/Ruby 版本可能跟 `match_version.txt` 記錄的 `2.231.1` 不完全一致，導致 match 憑證格式相容性問題 → [緩解] 若發生，在 workflow 中明確 pin fastlane 版本（例如透過 `Gemfile` + `bundle exec fastlane`）而非依賴 runner 預裝版本

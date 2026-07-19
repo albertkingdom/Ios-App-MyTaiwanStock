@@ -28,9 +28,9 @@ Repo 為 public，GitHub Actions 對 public repo 的 hosted macOS runner 無使�
 
 原因：public repo 使用 GitHub-hosted macOS runner 完全免費，`macos-latest` 內建多個 Xcode 版本可透過 `xcode-select` 切換，不需額外基礎設施維運。使用者已於討論中確認選擇 GitHub Actions（相較 Xcode Cloud，彈性更高、無 25 小時/月的用量上限疑慮）。
 
-### 建置目的地固定為 iOS Simulator（`platform=iOS Simulator,name=iPhone 16`），並停用程式碼簽章
+### 建置目的地固定為 iOS Simulator（`platform=iOS Simulator,name=iPhone 17`），並停用程式碼簽章
 
-原因：這次範圍明確排除簽章/發佈（見 Non-Goals）。對 simulator 建置設定 `CODE_SIGNING_ALLOWED=NO`，可完全略過憑證與 provisioning profile，避免在沒有 Apple Developer 憑證匯入的情況下建置失敗。選擇具體裝置名稱（`iPhone 16`）而非 `generic/platform=iOS Simulator`，是因為 `xcodebuild test` 需要一個可實際啟動的 simulator 目的地；不指定 OS 版本，讓 xcodebuild 依 runner 上安裝的最新可用 runtime 自動選擇，避免因 Xcode 版本更新導致寫死的 OS 版本號失效。
+原因：這次範圍明確排除簽章/發佈（見 Non-Goals）。對 simulator 建置設定 `CODE_SIGNING_ALLOWED=NO`，可完全略過憑證與 provisioning profile，避免在沒有 Apple Developer 憑證匯入的情況下建置失敗。選擇具體裝置名稱（`iPhone 17`）而非 `generic/platform=iOS Simulator`，是因為 `xcodebuild test` 需要一個可實際啟動的 simulator 目的地；不指定 OS 版本，讓 xcodebuild 依 runner 上安裝的最新可用 runtime 自動選擇，避免因 Xcode 版本更新導致寫死的 OS 版本號失效。
 
 ### 單一 workflow job 依序執行 build 與 test（先 build 三個 target，再對 `MyTaiwanStock` scheme 跑 test）
 
@@ -62,9 +62,9 @@ Repo 為 public，GitHub Actions 對 public repo 的 hosted macOS runner 無使�
   2. 選擇 Xcode 版本（`xcode-select -p` 確認後如需固定版本可用 `sudo xcode-select -s /Applications/Xcode_<version>.app`；若無特殊需求則使用 runner 預設 Xcode，不额外指定）
   3. `actions/cache@v4`：key 依 `Package.resolved` 內容雜湊（`hashFiles('**/Package.resolved')`），快取路徑涵蓋 SPM 套件下載目錄
   4. Resolve 套件：`xcodebuild -resolvePackageDependencies -project MyTaiwanStock.xcodeproj`
-  5. Build App target：`xcodebuild build -project MyTaiwanStock.xcodeproj -scheme MyTaiwanStock -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 16' CODE_SIGNING_ALLOWED=NO`
+  5. Build App target：`xcodebuild build -project MyTaiwanStock.xcodeproj -scheme MyTaiwanStock -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 17' CODE_SIGNING_ALLOWED=NO`
   6. Build extension targets（`StockWidgetExtension`、`LiveActivityExtension`）：以各自 shared scheme 或以 `-target` 方式建置，同樣加上 `CODE_SIGNING_ALLOWED=NO`
-  7. Run tests：`xcodebuild test -project MyTaiwanStock.xcodeproj -scheme MyTaiwanStock -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 16' CODE_SIGNING_ALLOWED=NO`
+  7. Run tests：`xcodebuild test -project MyTaiwanStock.xcodeproj -scheme MyTaiwanStock -sdk iphonesimulator -destination 'platform=iOS Simulator,name=iPhone 17' CODE_SIGNING_ALLOWED=NO`
 
 **失敗模式（Failure modes）：**
 - SPM resolve 失敗（例如套件來源不可達）→ step 4 失敗，後續 step 不執行，workflow 標示 failure，log 顯示 xcodebuild 的 resolve 錯誤輸出
@@ -83,7 +83,7 @@ Repo 為 public，GitHub Actions 對 public repo 的 hosted macOS runner 無使�
 
 ## Risks / Trade-offs
 
-- [風險] `iPhone 16` 模擬器裝置名稱未來可能在新版 Xcode 中被移除或改名，導致 destination 找不到裝置而失敗 → [緩解] 若發生，改用當下 runner 可用清單中存在的裝置名稱（`xcrun simctl list devicetypes`），或改用 `platform=iOS Simulator,name=Any iOS Simulator Device` 等更寬鬆寫法
+- [風險] `iPhone 17` 模擬器裝置名稱未來可能在新版 Xcode 中被移除或改名，導致 destination 找不到裝置而失敗 → [緩解] 若發生，改用當下 runner 可用清單中存在的裝置名稱（`xcrun simctl list devicetypes`），或改用 `platform=iOS Simulator,name=Any iOS Simulator Device` 等更寬鬆寫法
 - [風險] GitHub-hosted `macos-latest` runner 內建的 Xcode 版本會隨時間推進，可能與本機開發環境使用的 Xcode 版本不一致，導致「本機過、CI 不過」或反之 → [緩解] 若後續需要穩定性，可在 workflow 中明確指定 Xcode 版本（`xcode-select -s`），此變更先不鎖定版本，觀察實際執行狀況再決定
 - [風險] SPM 套件數量多（含 Firebase），首次無快取時 resolve 可能耗時數分鐘 → [緩解] 已透過 Decisions 中的 `actions/cache` 設計快取依賴，僅首次或 `Package.resolved` 變動時需要完整下載
 - [風險] `CODE_SIGNING_ALLOWED=NO` 對某些 target 若有依賴簽章相關的 build phase script（例如需要 entitlements 處理）可能仍會出錯 → [緩解] 若發生，於 apply 階段實際執行 workflow 觀察錯誤訊息，針對特定 target 額外加上 `CODE_SIGN_IDENTITY=""` 或 `-skipPackagePluginValidation` 等參數調整

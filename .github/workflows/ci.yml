@@ -13,7 +13,7 @@ jobs:
     env:
       PROJECT: MyTaiwanStock.xcodeproj
       SCHEME: MyTaiwanStock
-      DESTINATION: platform=iOS Simulator,name=iPhone 16
+      DESTINATION: platform=iOS Simulator,name=iPhone 17
 
     steps:
       - name: Checkout

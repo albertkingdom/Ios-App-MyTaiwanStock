@@ -9,12 +9,15 @@ on:
 jobs:
   release:
     runs-on: macos-latest
+    timeout-minutes: 45
 
     env:
       APP_STORE_CONNECT_API_KEY_ID: ${{ secrets.APP_STORE_CONNECT_API_KEY_ID }}
       APP_STORE_CONNECT_API_ISSUER_ID: ${{ secrets.APP_STORE_CONNECT_API_ISSUER_ID }}
       APP_STORE_CONNECT_API_KEY_CONTENT: ${{ secrets.APP_STORE_CONNECT_API_KEY_CONTENT }}
       MATCH_PASSWORD: ${{ secrets.MATCH_PASSWORD }}
+      MATCH_KEYCHAIN_NAME: signing.keychain-db
+      MATCH_KEYCHAIN_PASSWORD: ${{ github.run_id }}-${{ github.run_attempt }}
 
     steps:
       - name: Checkout
@@ -54,6 +57,14 @@ jobs:
 
       - name: Install fastlane
         run: gem install fastlane
+
+      - name: Set up signing keychain
+        run: |
+          security create-keychain -p "$MATCH_KEYCHAIN_PASSWORD" "$MATCH_KEYCHAIN_NAME"
+          security set-keychain-settings -lut 3600 "$MATCH_KEYCHAIN_NAME"
+          security unlock-keychain -p "$MATCH_KEYCHAIN_PASSWORD" "$MATCH_KEYCHAIN_NAME"
+          security list-keychains -d user -s "$MATCH_KEYCHAIN_NAME" $(security list-keychains -d user | sed 's/"//g')
+          security default-keychain -d user -s "$MATCH_KEYCHAIN_NAME"
 
       - name: Build and upload to TestFlight
         run: fastlane ios beta

@@ -308,6 +308,7 @@ class StockListViewModel: ObservableObject {
                     .setFailureType(to: Error.self)
                     .eraseToAnyPublisher()
             }
+            .receive(on: DispatchQueue.main)
             .sink { [weak self] completion in
                 guard let self = self else { return }
                 self.isLoading = false
@@ -406,9 +407,12 @@ class StockListViewModel: ObservableObject {
         repository.saveStockNumber(
             with: stockNumber,
             currentFollowingList: currentFollowingListCombine.value!)
-        let updatedStockNos = Array(stockNameStringSetCombine.value) + [stockNumber]
+        stockNameStringSetCombine.value = stockNameStringSetCombine.value.union([stockNumber])
+        let updatedStockNos = Array(stockNameStringSetCombine.value)
         self.userDefault?.setValue(updatedStockNos, forKey: "stockNos")
         WidgetCenter.shared.reloadAllTimelines()
+
+        repeatFetch(stockNos: updatedStockNos)
     }
 
     //MARK: online DB
@@ -473,6 +477,8 @@ class StockListViewModel: ObservableObject {
 
     @available(iOS 16.1, *)
     private func checkMarketClose() {
+        guard let trackedStockNo = ActivityManager.shared.trackedStockNo else { return }
+
         let calendar = Calendar.current
         let taiwanTimeZone = TimeZone(identifier: "Asia/Taipei")!
         let now = Date()
@@ -488,7 +494,7 @@ class StockListViewModel: ObservableObject {
             return
         }
 
-        let latestTime = onedayStockInfo.first?.time
+        let latestTime = onedayStockInfo.first(where: { $0.stockNo == trackedStockNo })?.time
         if let lastTime = lastFetchTime, let latestTime = latestTime, lastTime == latestTime {
             staleTimeCount += 1
             if staleTimeCount >= 2 {

@@ -21,10 +21,18 @@ platform :ios do
       api_key: api_key
     )
 
-    latest_build = latest_testflight_build_number(
-      app_identifier: "com.a2006mike.MyTaiwanStock",
-      api_key: api_key
-    ).to_i
+    # latest_testflight_build_number filters App Store Connect builds by
+    # processingState "PROCESSING,FAILED,COMPLETE", which does not include
+    # "VALID" -- the state every build in this app's history actually has.
+    # That made it find nothing and fall back to 1, colliding with builds
+    # already uploaded years ago under earlier marketing versions. Query
+    # every build ever uploaded for this app, across all versions and
+    # states, and take the true historical maximum instead.
+    require 'spaceship'
+    Spaceship::ConnectAPI.token = Spaceship::ConnectAPI::Token.from(hash: api_key)
+    asc_app = Spaceship::ConnectAPI::App.find("com.a2006mike.MyTaiwanStock")
+    all_builds = Spaceship::ConnectAPI::Build.all(app_id: asc_app.id, limit: 200)
+    latest_build = all_builds.map { |b| b.version.to_i }.max || 0
 
     next_build_number =
       if latest_build.zero?

@@ -1,0 +1,26 @@
+## 1. 前置確認（需要人工操作 App Store Connect 網頁與本機終端機）
+
+- [ ] 1.1 確認 App Store Connect 上是否已有可用的 API Key；若沒有則建立一組新的（角色至少 App Manager），並記下 Key ID、Issuer ID，下載 .p8 檔案，實現規格「App Store Connect authentication via API key only」，對應設計決策「App Store Connect 驗證一律使用 API Key（.p8 + Key ID + Issuer ID），不使用 Apple ID 帳密」。驗證方式：在 App Store Connect →「使用者與存取」→「整合」分頁能看到一組狀態為 Active 的 API Key，且本機已保存 .p8 檔案內容、Key ID、Issuer ID 三項資料。
+- [ ] 1.2 驗證 `github.com/albertkingdom/ios-signing` repo 裡的 distribution 憑證屬於 `UZ2Z639589` 這個 Apple Developer Team 且未過期，對應設計決策「沿用既有的 `github.com/albertkingdom/ios-signing` 作為 match storage repo，而非新建 repo」。驗證方式：本機執行 `fastlane match appstore --readonly --git_url https://github.com/albertkingdom/ios-signing --team_id UZ2Z639589`（需先在本機安裝 fastlane 並提供 `MATCH_PASSWORD`），指令成功完成且未回報憑證過期或 team 不符的錯誤。
+
+## 2. Fastlane 專案設定建立
+
+- [ ] 2.1 新增 `fastlane/Appfile`，設定 `app_identifier("com.a2006mike.MyTaiwanStock")` 與 `team_id("UZ2Z639589")`，實現「Signing without local Apple ID interaction」與「App Store Connect authentication via API key only」的專案層級設定依據。驗證方式：檔案內容包含正確的 `app_identifier` 與 `team_id`，本機執行 `bundle exec fastlane match appstore --readonly` 或等效指令時能正確讀到這兩個值而不需額外手動輸入。
+- [ ] 2.2 新增 `fastlane/Matchfile`，設定 `git_url("https://github.com/albertkingdom/ios-signing")`、`storage_mode("git")`、`type("appstore")`，對應設計決策「沿用既有的 `github.com/albertkingdom/ios-signing` 作為 match storage repo，而非新建 repo」。驗證方式：檔案內容的 `git_url` 指向 `https://github.com/albertkingdom/ios-signing`，`type` 預設為 `appstore`。
+- [ ] 2.3 新增 `fastlane/Fastfile`，定義 `platform :ios do lane :beta do ... end end`，依序呼叫 `app_store_connect_api_key`、`match(type: "appstore")`、`latest_testflight_build_number` + `increment_build_number`（含查詢失敗時 fallback 為 `project.pbxproj` 現有 `CURRENT_PROJECT_VERSION` 的邏輯）、`build_app(scheme: "MyTaiwanStock", export_method: "app-store")`、`upload_to_testflight(skip_waiting_for_build_processing: true)`，實現規格「Archive, export, and upload to TestFlight」與「Build number auto-increment without version collision」，對應設計決策「自動遞增 `CURRENT_PROJECT_VERSION`，使用 fastlane `increment_build_number` 搭配 App Store Connect 最新 build number 查詢」。驗證方式：本機在已設定好對應環境變數的情況下執行 `bundle exec fastlane ios beta`，lane 能依序執行到 `build_app` 完成本機 Archive（不需要真的執行到上傳，此步驟先驗證 lane 定義語法正確、各 action 參數齊全，實際上傳留待 4.x 的端對端驗證）。
+
+## 3. Xcode 簽章設定調整（Manual Signing）— **BREAKING**
+
+- [ ] 3.1 把 `MyTaiwanStock`、`StockWidgetExtension`、`LiveActivityExtension` 三個 target 的 `CODE_SIGN_STYLE` 從 `Automatic` 改為 `Manual`，並各自指定 match 產生的 provisioning profile（`PROVISIONING_PROFILE_SPECIFIER`），對應設計決策「`CODE_SIGN_STYLE` 從 Automatic 改為 Manual，三個 target 都改」。驗證方式：檢視 `MyTaiwanStock.xcodeproj/project.pbxproj`，三個 target 的 Release configuration 皆為 `CODE_SIGN_STYLE = Manual` 且 `PROVISIONING_PROFILE_SPECIFIER` 對應到 match 建立的 profile 名稱。
+- [ ] 3.2 本機執行 `fastlane match development` 取得開發憑證，確認改成 Manual signing 後 Xcode 仍可在本機正常 build 與 run，實現設計 Risks 中「`CODE_SIGN_STYLE` 改成 Manual 會讓本機開發者的 Xcode 建置行為改變」的緩解措施。驗證方式：本機用 Xcode 對實機或模擬器建置 `MyTaiwanStock` scheme 成功，不出現簽章相關錯誤（例如 "No signing certificate" 或 "Provisioning profile doesn't match"）。
+
+## 4. GitHub Actions Workflow 與 Secrets 設定
+
+- [ ] 4.1 在 GitHub repo 的 Settings → Secrets and variables → Actions 新增 `APP_STORE_CONNECT_API_KEY_ID`、`APP_STORE_CONNECT_API_ISSUER_ID`、`APP_STORE_CONNECT_API_KEY_CONTENT`、`MATCH_GIT_BASIC_AUTHORIZATION`（或 `MATCH_GIT_PRIVATE_KEY`）、`MATCH_PASSWORD` 五個 Secrets，實現規格「App Store Connect authentication via API key only」與「Signing without local Apple ID interaction」。驗證方式：GitHub repo 的 Secrets 列表可見這五個名稱（值本身不可見，僅確認名稱存在且非空）。
+- [ ] 4.2 新增 `.github/workflows/testflight.yml`，設定 `name: TestFlight Release`、`on.workflow_dispatch:`、`jobs.release.runs-on: macos-latest`，實現規格「Manual TestFlight release trigger」與設計決策「Workflow 觸發方式：`workflow_dispatch`（手動觸發），不綁定 tag push 或固定分支」。驗證方式：檢視 YAML，`on` 區塊只有 `workflow_dispatch`，沒有 `push`/`pull_request` 等其他觸發條件。
+- [ ] 4.3 在 workflow 中新增 checkout、SPM resolve、安裝 fastlane、執行 `bundle exec fastlane ios beta` 的 steps，並把 4.1 建立的五個 Secrets 對應注入為環境變數（`APP_STORE_CONNECT_API_KEY_ID`、`APP_STORE_CONNECT_API_ISSUER_ID`、`APP_STORE_CONNECT_API_KEY_CONTENT`、`MATCH_GIT_BASIC_AUTHORIZATION` 或 `MATCH_GIT_PRIVATE_KEY`、`MATCH_PASSWORD`），實現規格「Archive, export, and upload to TestFlight」與「Failures are surfaced without partial-success states」。驗證方式：檢視 YAML，`fastlane` 執行 step 的 `env` 區塊包含上述五個環境變數，且各自對應到 `secrets.<NAME>`。
+
+## 5. 端對端驗證
+
+- [ ] 5.1 在 GitHub Actions 頁面手動觸發 `TestFlight Release` workflow，觀察 run 是否成功並在 App Store Connect 的 TestFlight 分頁確認出現一筆新 build，build number 正確遞增，實現規格「Manual TestFlight release trigger」與「Build number auto-increment without version collision」的端對端行為。驗證方式：workflow run 顯示成功（綠勾），App Store Connect TestFlight 分頁出現新 build 且 build number 比觸發前的最新 build number大 1。
+- [ ] 5.2 刻意讓 `MATCH_PASSWORD` 這個 Secret 暫時設成錯誤的值，觸發一次 workflow，確認在 match 階段正確失敗並在 log 顯示可辨識的錯誤訊息，而不是卡住或誤報成功，實現規格「Failures are surfaced without partial-success states」中「Match fails due to invalid credentials」情境。驗證方式：該次 workflow run 標示為 failure，log 中 match step 出現密碼錯誤或無法解密的訊息；確認後把 `MATCH_PASSWORD` 改回正確的值。

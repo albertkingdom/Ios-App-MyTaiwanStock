@@ -164,7 +164,8 @@ struct StockWidgetEntryView : View {
         .frame(maxHeight: .infinity)
         .padding([.top,.bottom], 0)
         .padding([.horizontal], 10)
-        
+        .widgetBackground(Color(.systemBackground))
+
     }
     
     func formatString(price: String) -> String {

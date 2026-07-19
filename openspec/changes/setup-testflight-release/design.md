@@ -58,7 +58,11 @@
 
 ### 自動遞增 `CURRENT_PROJECT_VERSION`，使用 fastlane `increment_build_number` 搭配 App Store Connect 最新 build number 查詢
 
-原因：`CURRENT_PROJECT_VERSION` 目前固定為 `1`，如果每次上傳都不遞增，會因為 build number 重複被 App Store Connect 拒絕上傳。使用 fastlane 的 `latest_testflight_build_number` action 讀取 App Store Connect 上該 app 目前最新的 build number，再用 `increment_build_number` 設成「該數字 + 1」，而不是單純遞增本機 `project.pbxproj` 裡的數字，因為本機數字可能因為多人協作、多分支而落後於 App Store Connect 上實際已上傳的 build number，用「查詢 + 遞增」可以避免跟已上傳過的 build number 衝突。此步驟只在 CI workflow 執行時對 checkout 出來的暫存副本生效，**不會**把新的 build number commit 回專案的 git 歷史（維持 stateless CI，避免 workflow 自己 push commit 回 repo 造成的循環觸發或權限複雜度）。
+原因：`CURRENT_PROJECT_VERSION` 目前固定為 `1`，如果每次上傳都不遞增，會因為 build number 重複被 App Store Connect 拒絕上傳。此步驟只在 CI workflow 執行時對 checkout 出來的暫存副本生效，**不會**把新的 build number commit 回專案的 git 歷史（維持 stateless CI，避免 workflow 自己 push commit 回 repo 造成的循環觸發或權限複雜度）。
+
+**已實際發生且修正**：原本規劃用 fastlane 內建的 `latest_testflight_build_number` action 查詢最新 build number，但實測發現這個 action（以及它底層的 `app_store_build_number`）查詢時用的 processingState 篩選條件是 `"PROCESSING,FAILED,COMPLETE"`，不包含 `"VALID"`——而這個 app 從 2022-2024 透過舊的 CodeMagic 流程上傳過的所有 build（最高到 build 11）狀態全部是 `VALID`，導致查詢完全找不到任何歷史紀錄，回退成預設值 `1`。而 Apple 對 build number 遞增的限制是**跨所有版本號全域生效**，不是只看目前的 `MARKETING_VERSION`（首次上傳 `MARKETING_VERSION 1.4` 時，`latest_testflight_build_number` 誤判成 1 → 算出 2 → 上傳時被 Apple 拒絕，因為 build 2 早在 2022-08-22 就用過了）。
+
+修正做法：改用 `Spaceship::ConnectAPI::Build.all`（fastlane 內部使用的底層 API，預設 `processing_states` 包含 `PROCESSING,FAILED,INVALID,VALID`，且透過 `.all_pages` 正確處理分頁）直接查詢**這個 app 曾經上傳過的所有 build，不限版本、不限狀態**，取其中的最大 build number 再 +1，才能正確符合 Apple 的全域遞增限制。
 
 ## Implementation Contract
 
@@ -120,3 +124,5 @@
 - [風險] `CODE_SIGN_STYLE` 改成 Manual 會讓本機開發者的 Xcode 建置行為改變，若沒有先跑過 `fastlane match development`，本機 build 可能失敗 → [緩解] 在 tasks 中明確加入「本機驗證：改完 Manual signing 後，跑一次 `fastlane match development` 並確認 Xcode 本機仍可正常 build/run」的步驟，且在 design 與 proposal 中已標記為 **BREAKING** 提醒使用者
 - [風險] GitHub-hosted runner 上的 fastlane/Ruby 版本可能跟 `match_version.txt` 記錄的 `2.231.1` 不完全一致，導致 match 憑證格式相容性問題 → [緩解] 若發生，在 workflow 中明確 pin fastlane 版本（例如透過 `Gemfile` + `bundle exec fastlane`）而非依賴 runner 預裝版本
 - [風險] `upload_to_testflight` 上傳後，App Store Connect 端的 build 處理（processing）可能需要數分鐘到數十分鐘，workflow 若等待處理完成會讓 run 時間變得不可預期 → [緩解] 已在 Implementation Contract 中決定使用 `skip_waiting_for_build_processing: true`，workflow 上傳成功即視為完成，不等待處理結果，使用者需要自行到 App Store Connect 網頁確認 build 是否通過處理
+- [風險] fastlane 匯入憑證到 keychain 後，需要執行 `security set-key-partition-list` 才能讓 `codesign` 在無互動環境下存取私鑰；這一步需要「keychain 本身的解鎖密碼」，若沒有明確指定，match 會匯入到 GitHub Actions runner 的預設 login keychain 並猜測空密碼，跟 runner 實際的 keychain 密碼對不上，導致這個步驟靜默失敗（只印警告，不會讓 workflow 失敗），`codesign` 之後就會卡住等一個永遠不會出現的授權彈窗 → **已實際發生**：前兩次真實 workflow run 分別卡了 1 小時 15 分與 5 小時 38 分（逼近 GitHub 6 小時上限）才被手動取消，卡點都在同一個地方（`Signing StockWidgetExtension.appex`）。[緩解] 已修正：workflow 明確建立一個帶已知密碼的專用 keychain（`MATCH_KEYCHAIN_NAME`/`MATCH_KEYCHAIN_PASSWORD` 環境變數，密碼衍生自 `github.run_id`），並加入 `timeout-minutes: 45` 作為保險，修正後同一個 archive 只需要約 3.5 分鐘
+- [風險] `latest_testflight_build_number`（以及底層的 `app_store_build_number`）查詢 App Store Connect 時寫死的 processingState 篩選條件是 `PROCESSING,FAILED,COMPLETE`，不包含 `VALID` → **已實際發生**：這個 app 過去（2022-2024，透過舊的 CodeMagic 流程）上傳過的所有 build 狀態都是 `VALID`，查詢因此完全找不到任何歷史紀錄、回退成預設值 `1`；而 Apple 對 build number 遞增的限制是跨所有版本號全域生效（不是只看目前 `MARKETING_VERSION`），首次上傳 `1.4` 版時因此誤算出已經用過的 build number `2`，被 Apple 拒絕上傳。[緩解] 已修正為直接呼叫 `Spaceship::ConnectAPI::Build.all`（見上方 Decision 的更新）

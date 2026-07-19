@@ -343,8 +343,7 @@ class StockListViewModel: ObservableObject {
         ].stockNos
 
         let stockNoStringArray: [String] = setOfStockNoObjects.compactMap {
-            ele -> String? in
-            (ele as? StockNo)?.stockNo
+            $0.stockNo
         }
         //print("stockNoStringArray \(stockNoStringArray)")
         stockNameStringSetCombine.send(Set(stockNoStringArray))  // CHANGE: use send() instead of direct assignment

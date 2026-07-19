@@ -222,7 +222,7 @@ class StockListViewModel: ObservableObject {
                 let setOfStockNoObjects = list.stockNos
                 return setOfStockNoObjects.compactMap {
                     $0.stockNo
-                }
+                }.sorted()
             }
             .sink { [weak self] stockNos in
                 guard let self else { return }
@@ -375,7 +375,7 @@ class StockListViewModel: ObservableObject {
         stockNameStringSetCombine.value = stockNameStringSetCombine.value.filter{ $0 != stockNo }  // edit current stockno list
 
         // Update App Group + refresh widget
-        let updatedStockNos = Array(stockNameStringSetCombine.value)
+        let updatedStockNos = Array(stockNameStringSetCombine.value).sorted()
         self.userDefault?.setValue(updatedStockNos, forKey: "stockNos")
         WidgetCenter.shared.reloadAllTimelines()
 
@@ -390,7 +390,7 @@ class StockListViewModel: ObservableObject {
             with: stockNumber,
             currentFollowingList: currentFollowingListCombine.value!)
         stockNameStringSetCombine.value = stockNameStringSetCombine.value.union([stockNumber])
-        let updatedStockNos = Array(stockNameStringSetCombine.value)
+        let updatedStockNos = Array(stockNameStringSetCombine.value).sorted()
         self.userDefault?.setValue(updatedStockNos, forKey: "stockNos")
         WidgetCenter.shared.reloadAllTimelines()
 

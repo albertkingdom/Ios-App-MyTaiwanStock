@@ -47,7 +47,8 @@ Users of this stock tracking app need to monitor real-time stock prices without 
 
 ### 實機測試後追加的變更（見 tasks.md 第 7 組）
 
-- Modified: `MyTaiwanStock/Repository/NetworkServiceImpl.swift`（修正 completion handler 不回呼的 bug）
-- Modified: `StockWidget/StockWidget.swift`（移除 Firebase 依賴、修正 containerBackground、加上收盤價/名稱 fallback、過濾空字串 stockNos）
-- New: `StockWidget/WidgetStockFetcher.swift`（取代 widget 對 `NetworkServiceImpl` 的依賴）
-- Modified: `MyTaiwanStock.xcodeproj/project.pbxproj`（移除 `StockWidgetExtension` target 對 Firebase/GoogleSignIn/Core Data 的連結）
+- Modified: `MyTaiwanStock/Repository/NetworkServiceImpl.swift`（修正 completion handler 不回呼的 bug；後續改為委派給 `TWSEStockInfoFetcher`）
+- Modified: `StockWidget/StockWidget.swift`（移除 Firebase 依賴、修正 containerBackground、加上收盤價/名稱 fallback、過濾空字串 stockNos、空 `msgArray` fallback 到 placeholder）
+- New → Renamed: `StockWidget/WidgetStockFetcher.swift` 取代 widget 對 `NetworkServiceImpl` 的依賴，之後再整併為共用檔案 `MyTaiwanStock/Repository/TWSEStockInfoFetcher.swift`（同時編譯進 app 與 widget extension target，取代原本分散在兩處的重複抓取邏輯）
+- Modified: `MyTaiwanStock.xcodeproj/project.pbxproj`（移除 `StockWidgetExtension` target 對 Firebase/GoogleSignIn/Core Data 的連結；後續清理因此遺留的孤兒 `PBXBuildFile` 項目）
+- Modified: `MyTaiwanStock/StockList/ViewModel/StockListViewModel.swift`（修正 App Group 股票清單同步的型別轉型 bug、移除重複同步呼叫、三處同步點改為依股票代號排序以穩定 widget 前 3 名顯示，見 tasks.md 7.10–7.13）

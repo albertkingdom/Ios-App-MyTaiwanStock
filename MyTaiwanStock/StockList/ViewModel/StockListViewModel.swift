@@ -155,7 +155,6 @@ class StockListViewModel: ObservableObject {
                             ? .on : .off,
                         handler: { action in
                             self?.currentMenuIndex.send(index)
-                            self?.setupStockNameStringSet()
                         })
                 }
                 actions.append(
@@ -334,22 +333,6 @@ class StockListViewModel: ObservableObject {
                 }
             }
             .store(in: &self.subscription)
-    }
-
-    private func setupStockNameStringSet() {
-
-        let setOfStockNoObjects = followingListObjectFromDB[
-            currentMenuIndex.value
-        ].stockNos
-
-        let stockNoStringArray: [String] = setOfStockNoObjects.compactMap {
-            $0.stockNo
-        }
-        //print("stockNoStringArray \(stockNoStringArray)")
-        stockNameStringSetCombine.send(Set(stockNoStringArray))  // CHANGE: use send() instead of direct assignment
-
-        self.userDefault?.setValue(stockNoStringArray, forKey: "stockNos")
-        WidgetCenter.shared.reloadAllTimelines()
     }
 
     func deleteStockNumber(stockNo: String) {

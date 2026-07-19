@@ -22,3 +22,7 @@ DerivedData
 
 # CocoaPods
 Pods/
+
+# Spectra app data
+.spectra/
+openspec/.vector-search.db*

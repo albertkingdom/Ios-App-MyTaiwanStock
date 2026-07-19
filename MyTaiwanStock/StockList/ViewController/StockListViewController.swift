@@ -372,7 +372,7 @@ extension StockListViewController: UITableViewDelegate {
         }
 
         let priceChangePercent: String
-        if let pctFloat = Float(diffStr) {
+        if let pctFloat = Float(percentStr.replacingOccurrences(of: "%", with: "")) {
             priceChangePercent = pctFloat >= 0 ? "+\(percentStr)" : percentStr
         } else {
             priceChangePercent = percentStr

@@ -217,9 +217,10 @@ class StockViewController: UIViewController {
 
             ActivityManager.shared.isActive
                 .receive(on: DispatchQueue.main)
-                .sink { [weak self] isActive in
+                .sink { [weak self] _ in
                     guard let self = self else { return }
-                    let imageName = isActive
+                    let isActiveForThisStock = ActivityManager.shared.trackedStockNo == self.viewModel.stockNo
+                    let imageName = isActiveForThisStock
                         ? "chart.line.uptrend.xyaxis.circle.fill"
                         : "chart.line.uptrend.xyaxis"
                     liveActivityButton.image = UIImage(systemName: imageName)
@@ -416,7 +417,7 @@ class StockViewController: UIViewController {
               let stockPriceDiff = stockPriceDiff,
               let timeString = timeString else { return }
 
-        if ActivityManager.shared.isActive.value {
+        if ActivityManager.shared.trackedStockNo == viewModel.stockNo {
             ActivityManager.shared.end()
             return
         }

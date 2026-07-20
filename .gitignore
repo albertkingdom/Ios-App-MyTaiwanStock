@@ -26,3 +26,6 @@ Pods/
 # Spectra app data
 .spectra/
 openspec/.vector-search.db*
+
+# fastlane local secrets (DO NOT COMMIT)
+fastlane/.env

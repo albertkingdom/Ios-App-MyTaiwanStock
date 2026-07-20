@@ -23,8 +23,8 @@ DerivedData
 # CocoaPods
 Pods/
 
-
 .env
 
-# Exclude Xcode user state files
-*.xcuserstate
+# Spectra app data
+.spectra/
+openspec/.vector-search.db*

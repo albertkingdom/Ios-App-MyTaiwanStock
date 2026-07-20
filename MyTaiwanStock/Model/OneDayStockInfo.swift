@@ -33,4 +33,21 @@ struct OneDayStockInfoDetail: Codable {
         case yesterDayPrice = "y"
         case time = "t"
     }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        // stockNo 是必要欄位，如果沒有就應該拋出錯誤
+        stockNo = try container.decode(String.self, forKey: .stockNo)
+        
+        // 其他欄位使用 decodeIfPresent，解析失敗時使用預設值
+        open = try container.decodeIfPresent(String.self, forKey: .open) ?? "0"
+        low = try container.decodeIfPresent(String.self, forKey: .low) ?? "0"
+        high = try container.decodeIfPresent(String.self, forKey: .high) ?? "0"
+        fullName = try container.decodeIfPresent(String.self, forKey: .fullName) ?? ""
+        current = try container.decodeIfPresent(String.self, forKey: .current) ?? "0"
+        shortName = try container.decodeIfPresent(String.self, forKey: .shortName) ?? ""
+        yesterDayPrice = try container.decodeIfPresent(String.self, forKey: .yesterDayPrice) ?? "0"
+        time = try container.decodeIfPresent(String.self, forKey: .time) ?? ""
+    }
 }

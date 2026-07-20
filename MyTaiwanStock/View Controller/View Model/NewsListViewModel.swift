@@ -8,7 +8,7 @@ import Combine
 import Foundation
 
 class NewsListViewModel {
-
+    
     var newsList = CurrentValueSubject<[NewsListCellViewModel], Never>([])
     var stockName: String?
     var isLoading = CurrentValueSubject<Bool, Never>(true)
@@ -19,10 +19,15 @@ class NewsListViewModel {
     }
     
     func fetchNews() {
-        NewsResult.fetchNews(queryTitle: stockName!) { [weak self] result in
+        guard let stockName = stockName else {
+            print("Error: Stock name is nil")
+            isLoading.send(false)
+            return
+        }
+        NewsAPIClient.shared.fetchNews(queryTitle: stockName) { [weak self] result in
             switch result {
             case .success(let news):
-
+                
                 let newsCellData = news.articles.map({ article in
                     NewsListCellViewModel(article: article)
                 })
@@ -32,7 +37,7 @@ class NewsListViewModel {
             case .failure(let error):
                 print("error, \(error.localizedDescription)")
                 self?.isLoading.send(false)
-
+                
             }
         }
     }

@@ -74,7 +74,7 @@ extension UIViewController {
             alertVC.addAction(positiveAction)
         }
         if let negativeAction = negativeAction {
-            let negativeAction = UIAlertAction(title: "Cancel", style: .cancel) { _ -> Void in
+            let negativeAction = UIAlertAction(title: "Cancel".localized, style: .cancel) { _ -> Void in
                 negativeAction()
             }
             alertVC.addAction(negativeAction)
@@ -111,5 +111,13 @@ extension UIViewController {
         ])
         
        return container
+    }
+    
+    func addDismissKeyBoardGesture() {
+        // 點空白處隱藏鍵盤
+        let tapGesture = UITapGestureRecognizer(
+            target: self, action: #selector(dismissKeyboard))
+        tapGesture.cancelsTouchesInView = false  // 這確保了點擊其他控件（如按鈕）時，不會干擾它們的事件
+        view.addGestureRecognizer(tapGesture)
     }
 }

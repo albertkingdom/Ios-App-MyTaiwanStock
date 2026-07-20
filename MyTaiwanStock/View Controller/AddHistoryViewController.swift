@@ -92,13 +92,15 @@ class AddHistoryViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
 
-        viewModel = AddHistoryViewModel(context: context)
+        viewModel = AddHistoryViewModel()
         
         stockNoLabel.text = stockNo
         priceTextField.keyboardType = .decimalPad
         amountTextField.keyboardType = .numberPad
-       
-
+        priceTextField.backgroundColor = UIColor(hex: "#eeeeee")
+        amountTextField.backgroundColor = UIColor(hex: "#eeeeee")
+        priceTextField.borderStyle = .roundedRect
+        amountTextField.borderStyle = .roundedRect
         priceTextField.inputAccessoryView = toolBar()
         amountTextField.inputAccessoryView = toolBar()
         navigationItem.title = "新增一筆"
@@ -143,23 +145,6 @@ class AddHistoryViewController: UITableViewController {
 
 }
 
-extension UIViewController {
-    // toolbar on the top of keyboard
-    func toolBar() -> UIToolbar {
-        let toolBar = UIToolbar(frame: CGRect(origin: .zero, size: CGSize(width: 100, height: 44)))
-       
-        let space = UIBarButtonItem(barButtonSystemItem: .flexibleSpace, target: nil, action: nil)
-        let doneButton = UIBarButtonItem(title: "Done", style: .plain, target: self, action: #selector(dismissKeyboard))
-        
-        toolBar.setItems([space, doneButton], animated: true)
-        toolBar.translatesAutoresizingMaskIntoConstraints = false
-        toolBar.sizeToFit()
-        return toolBar
-    }
-    @objc func dismissKeyboard() {
-        view.endEditing(true)
-    }
-}
 
 extension AddHistoryViewController: UITextFieldDelegate {
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {

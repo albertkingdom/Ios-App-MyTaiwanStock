@@ -8,7 +8,6 @@ import CoreData
 import Foundation
 
 class AddHistoryViewModel {
-    var context: NSManagedObjectContext?
     var buyOrSellStatus: Int! = 0 // 0: buy, 1: sell
     var date: Date! = Date()
     var memo = ""
@@ -25,11 +24,9 @@ class AddHistoryViewModel {
     var updateFeeAmount: ((Float)->Void)?
     var revenue: Float = 0
     
-    init(context: NSManagedObjectContext?) {
-        self.context = context
-
-        self.onlineDBService = OnlineDBService(context: context)
-    }
+//    init(context: NSManagedObjectContext?) {
+//        self.onlineDBService = OnlineDBService()
+//    }
     
     init() {
         self.onlineDBService = OnlineDBService()

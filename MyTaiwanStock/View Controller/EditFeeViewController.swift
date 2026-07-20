@@ -12,7 +12,7 @@ class EditFeeViewController: UITableViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Save", style: .done, target: self, action: #selector(onTapSave(_:)))
+        self.navigationItem.rightBarButtonItem = UIBarButtonItem(title: "Save".localized, style: .done, target: self, action: #selector(onTapSave(_:)))
         
         initView()
         
@@ -37,8 +37,10 @@ class EditFeeViewController: UITableViewController {
         tableView.backgroundColor = .secondarySystemBackground
         
         feeTextField.placeholder = "新台幣"
-        feeTextField.backgroundColor = .lightGray
+        feeTextField.borderStyle = .roundedRect
+//        feeTextField.backgroundColor = .lightGray
         feeTextField.keyboardType = .decimalPad
+        feeTextField.inputAccessoryView = toolBar()
     }
     
 }

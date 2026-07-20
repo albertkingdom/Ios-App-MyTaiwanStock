@@ -9,6 +9,7 @@ import CoreData
 import UIKit
 import Charts
 import FirebaseFirestore
+import ActivityKit
 
 
 class StockViewController: UIViewController {
@@ -16,8 +17,7 @@ class StockViewController: UIViewController {
     var viewModel: StockDetailViewModel!
     
     var chartService: ChartService!
-    var context: NSManagedObjectContext?
-
+    
     var priceContainerView = UIView()
     var stockPriceLabel = UILabel()
     var arrowImageView = UIImageView()
@@ -25,11 +25,12 @@ class StockViewController: UIViewController {
     var timeLabel = UILabel()
     
     var combinedChartView = CombinedChartView()
+    private var lastContentOffset: Double = 0
     var stockInfoForCandleStickChart: [[String]]! {
         didSet {
             if let stockPriceDiffString = stockInfoForCandleStickChart.last?[7],
                let stockPriceDiffFloat = Float(stockPriceDiffString) {
-        
+                
                 priceDiffLabel.text = "\(abs(stockPriceDiffFloat))"
                 arrowImageView.tintColor = stockPriceDiffFloat>=0 ? .systemRed : .systemGreen
                 priceContainerView.backgroundColor = stockPriceDiffFloat>=0 ? .systemPink.withAlphaComponent(0.5):.systemGreen.withAlphaComponent(0.5)
@@ -39,14 +40,13 @@ class StockViewController: UIViewController {
             }
         }
     }
-    var stockNo: String!
     var stockName: String!
     var stockPrice: String!
     var stockPriceDiff: String!
     var timeString: String!
     private let database = Firestore.firestore()
-
-
+    
+    
     var plotDateLabel = UILabel()
     var plotDateTitleLabel = UILabel()
     var plotOpenPriceLabel = UILabel()
@@ -58,7 +58,7 @@ class StockViewController: UIViewController {
     var plotLowPriceLabel = UILabel()
     var plotLowPriceTitleLabel = UILabel()
     lazy var plotInfo:UIStackView = {
-
+        
         let stacklineContainer = UIStackView()
         let stacklineL = UIStackView()
         let stacklineR = UIStackView()
@@ -69,7 +69,7 @@ class StockViewController: UIViewController {
         stacklineContainer.spacing = 10
         stacklineContainer.addArrangedSubview(stacklineL)
         stacklineContainer.addArrangedSubview(stacklineR)
-
+        
         stacklineR.addArrangedSubview(stacklineTop)
         stacklineR.addArrangedSubview(stacklineBtm)
         stacklineL.axis = .horizontal
@@ -93,7 +93,7 @@ class StockViewController: UIViewController {
         plotClosePriceLabel.font = UIFont.systemFont(ofSize: 14)
         plotHighPriceLabel.font = UIFont.systemFont(ofSize: 14)
         plotLowPriceLabel.font = UIFont.systemFont(ofSize: 14)
-
+        
         stacklineL.addArrangedSubview(plotDateTitleLabel)
         stacklineL.addArrangedSubview(plotDateLabel)
         stacklineTop.addArrangedSubview(plotOpenPriceTitleLabel)
@@ -107,15 +107,15 @@ class StockViewController: UIViewController {
         
         return stacklineContainer
     }()
- 
-
+    
+    
     lazy var overviewInfo: UIView = {
         let container = UIView()
         let stack = UIStackView()
         let stackOfTitle = UIStackView()
         
         let title = UILabel()
-        title.text = "Overview"
+        title.text = "detailVC_overview_title".localized
         title.font = UIFont.systemFont(ofSize: 18, weight: .bold)
         stack.axis = .horizontal
         stack.distribution = .fillEqually
@@ -141,7 +141,7 @@ class StockViewController: UIViewController {
         totalAmountTitleLabel.font = UIFont.systemFont(ofSize: 14)
         avgBuyPriceTitleLabel.font = UIFont.systemFont(ofSize: 14)
         avgSellPriceTitleLabel.font = UIFont.systemFont(ofSize: 14)
-
+        
         totalAssetValueTitleLabel.textAlignment = .center
         totalAmountTitleLabel.textAlignment = .center
         avgBuyPriceTitleLabel.textAlignment = .center
@@ -182,24 +182,57 @@ class StockViewController: UIViewController {
     var avgSellPriceTitleLabel = UILabel()
     @IBOutlet weak var containerTableView: UITableView!
     
+    func configure(with viewModel: StockDetailViewModel) {
+        self.viewModel = viewModel
+    }
     
-
     override func viewDidLoad() {
         super.viewDidLoad()
-        viewModel = StockDetailViewModel(stockNo: stockNo, currentStockPrice: stockPrice, context: context)
+        
         bindViewModel()
         combinedChartView.delegate = self
-
-        navigationItem.title = "\(stockName ?? "") \(stockNo ?? "")"
-       
-        let newsButton = UIBarButtonItem(title: "News", style: .plain, target: self, action: #selector(navigateToNews))
+        combinedChartView.dragEnabled = true
+        combinedChartView.setScaleEnabled(true)
+        combinedChartView.pinchZoomEnabled = true
+        
+        // 启用水平滚动
+        combinedChartView.dragXEnabled = true
+        
+        
+        //        combinedChartView.dragYEnabled = false
+        // 添加观察者来监听滚动
+        navigationItem.title = "\(stockName ?? "") \(viewModel.stockNo )"
+        
+        let newsButton = UIBarButtonItem(title: "detailVC_news_title".localized, style: .plain, target: self, action: #selector(navigateToNews))
         let addHistoryButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(showAlertForDestination))
         let chatRoomButton = UIBarButtonItem(image: UIImage(systemName: "message"), style: .plain, target: self, action: #selector(navigateToChatRoom))
-        navigationItem.rightBarButtonItems = [addHistoryButton, newsButton, chatRoomButton]
+
+        if #available(iOS 16.1, *) {
+            let liveActivityButton = UIBarButtonItem(
+                image: UIImage(systemName: "chart.line.uptrend.xyaxis"),
+                style: .plain,
+                target: self,
+                action: #selector(toggleLiveActivity))
+            navigationItem.rightBarButtonItems = [addHistoryButton, newsButton, chatRoomButton, liveActivityButton]
+
+            ActivityManager.shared.isActive
+                .receive(on: DispatchQueue.main)
+                .sink { [weak self] _ in
+                    guard let self = self else { return }
+                    let isActiveForThisStock = ActivityManager.shared.trackedStockNo == self.viewModel.stockNo
+                    let imageName = isActiveForThisStock
+                        ? "chart.line.uptrend.xyaxis.circle.fill"
+                        : "chart.line.uptrend.xyaxis"
+                    liveActivityButton.image = UIImage(systemName: imageName)
+                }
+                .store(in: &subscription)
+        } else {
+            navigationItem.rightBarButtonItems = [addHistoryButton, newsButton, chatRoomButton]
+        }
         
         // custom table header
         setTableHeader()
-
+        
         containerTableView.dataSource = self
         containerTableView.delegate = self
         containerTableView.showsVerticalScrollIndicator = false
@@ -227,7 +260,7 @@ class StockViewController: UIViewController {
         arrowImageView.translatesAutoresizingMaskIntoConstraints = false
         stockPriceLabel.translatesAutoresizingMaskIntoConstraints = false
         timeLabel.translatesAutoresizingMaskIntoConstraints = false
-
+        
         combinedChartView.translatesAutoresizingMaskIntoConstraints = false
         overviewInfo.translatesAutoresizingMaskIntoConstraints = false
         plotInfo.translatesAutoresizingMaskIntoConstraints = false
@@ -247,7 +280,7 @@ class StockViewController: UIViewController {
                                       combinedChartView.leadingAnchor.constraint(equalTo: header.leadingAnchor),
                                       combinedChartView.trailingAnchor.constraint(equalTo: header.trailingAnchor),
                                       combinedChartView.topAnchor.constraint(equalTo: priceContainerView.bottomAnchor),
-//                                      combinedChartView.heightAnchor.constraint(equalToConstant: 300),
+                                      //                                      combinedChartView.heightAnchor.constraint(equalToConstant: 300),
                                       combinedChartView.heightAnchor.constraint(equalTo: header.heightAnchor, multiplier: 0.7),
                                       plotInfo.topAnchor.constraint(equalTo: combinedChartView.bottomAnchor),
                                       plotInfo.leadingAnchor.constraint(equalTo: header.leadingAnchor),
@@ -265,7 +298,7 @@ class StockViewController: UIViewController {
     class MyCustomSectionHeader: UITableViewHeaderFooterView {
         let title: UILabel = {
             let label = UILabel()
-            label.text = "History"
+            label.text = "detailVC_history_title".localized
             label.font = UIFont.systemFont(ofSize: 18, weight: .bold)
             return label
         }()
@@ -342,13 +375,12 @@ class StockViewController: UIViewController {
     }
     @objc func navigateToAddRecord() {
         let destinationController = storyboard?.instantiateViewController(withIdentifier: "addRecordController") as! AddHistoryViewController
-        destinationController.stockNo = self.stockNo
-        destinationController.context = self.context
+        destinationController.stockNo = viewModel.stockNo
         navigationController?.pushViewController(destinationController, animated: true)
     }
     func navigateToDividendVC() {
         let destinationController = storyboard?.instantiateViewController(withIdentifier: "dividendVC") as! AddDividendViewController
-        destinationController.stockNo = self.stockNo
+        destinationController.stockNo = viewModel.stockNo
         navigationController?.pushViewController(destinationController, animated: true)
     }
     @objc func showAlertForDestination() {
@@ -373,24 +405,83 @@ class StockViewController: UIViewController {
         navigationController?.pushViewController(destinationController, animated: true)
     }
     @objc func navigateToChatRoom() {
-
-        let chatRoomVC = ChatViewController(stockNo: stockNo)
+        
+        let chatRoomVC = ChatViewController(stockNo: viewModel.stockNo)
         navigationController?.pushViewController(chatRoomVC, animated: true)
     }
+
+    @available(iOS 16.1, *)
+    @objc func toggleLiveActivity() {
+        guard let stockName = stockName,
+              let stockPrice = stockPrice,
+              let stockPriceDiff = stockPriceDiff,
+              let timeString = timeString else { return }
+
+        if ActivityManager.shared.trackedStockNo == viewModel.stockNo {
+            ActivityManager.shared.end()
+            return
+        }
+
+        let yesterDayPrice: String
+        let priceChange: String
+        let priceChangePercent: String
+
+        if let currentFloat = Float(stockPrice),
+           let diffFloat = Float(stockPriceDiff) {
+            let yesterDayFloat = currentFloat - diffFloat
+            yesterDayPrice = String(format: "%.2f", yesterDayFloat)
+
+            if diffFloat >= 0 {
+                priceChange = String(format: "+%.2f", diffFloat)
+            } else {
+                priceChange = String(format: "%.2f", diffFloat)
+            }
+
+            if yesterDayFloat != 0 {
+                let percentFloat = (diffFloat / yesterDayFloat) * 100
+                if percentFloat >= 0 {
+                    priceChangePercent = String(format: "+%.3f%%", percentFloat)
+                } else {
+                    priceChangePercent = String(format: "%.3f%%", percentFloat)
+                }
+            } else {
+                priceChangePercent = "0.000%"
+            }
+        } else {
+            yesterDayPrice = "-"
+            priceChange = "-"
+            priceChangePercent = "-"
+        }
+
+        let started = ActivityManager.shared.start(
+            stockNo: viewModel.stockNo,
+            stockName: stockName,
+            currentPrice: stockPrice,
+            priceChange: priceChange,
+            priceChangePercent: priceChangePercent,
+            yesterDayPrice: yesterDayPrice,
+            time: timeString)
+
+        if !started {
+            let alert = UIAlertController(title: "錯誤", message: "無法啟動即時報價", preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "確定", style: .default))
+            present(alert, animated: true)
+        }
+    }
     override func viewWillAppear(_ animated: Bool) {
-      
-
-        viewModel.fetchRemoteData(to: combinedChartView)
-
+        
+        Task {
+            await viewModel.prepareChart(to: combinedChartView)
+        }
         viewModel.fetchDB()
         
         navigationItem.largeTitleDisplayMode = .always
-    
+        
     }
     
-   
+    
     func bindViewModel() {
-
+        
         viewModel.stockInfoForCandleStickChartCombine
             .sink { [weak self] data in
                 self?.stockInfoForCandleStickChart = data
@@ -439,11 +530,11 @@ class StockViewController: UIViewController {
     func outputTimeString() -> String {
         let currentDate = Date()
         let formatter = DateFormatter()
-//        formatter.dateFormat = "MM-dd HH:mm"
+        //        formatter.dateFormat = "MM-dd HH:mm"
         formatter.dateFormat = "MM-dd"
         let _ = Calendar.current.component(.weekday, from: currentDate)
         let _ = Calendar.current.component(.hour, from: currentDate)
-     
+        
         let string = formatter.string(from: currentDate)
         
         return string
@@ -452,8 +543,9 @@ class StockViewController: UIViewController {
 
 
 extension StockViewController: ChartViewDelegate {
+    
     func chartValueSelected(_ chartView: ChartViewBase, entry: ChartDataEntry, highlight: Highlight) {
-
+        
         let index = Int(highlight.x)
         plotDateLabel.text = "\(stockInfoForCandleStickChart[index][0])"
         plotOpenPriceLabel.text = "\(stockInfoForCandleStickChart[index][3])"
@@ -462,7 +554,47 @@ extension StockViewController: ChartViewDelegate {
         plotLowPriceLabel.text = "\(stockInfoForCandleStickChart[index][5])"
         
     }
-
+    // 使用 Charts 提供的代理方法偵測滑動
+    func chartTranslated(_ chartView: ChartViewBase, dX: CGFloat, dY: CGFloat) {
+        guard let combinedChart = chartView as? CombinedChartView else { return }
+        
+        // 使用 getTransformer() 來獲取當前可見的 X 軸範圍
+        let transformer = combinedChart.getTransformer(forAxis: .left)
+        let viewPort = transformer.valueForTouchPoint(CGPoint(x: combinedChart.bounds.minX, y: 0))
+        let currentOffset = viewPort.x
+        
+        if currentOffset < lastContentOffset {
+            print("使用者正在向左滑動（往 -X 方向）")
+            handleNegativeXScroll(combinedChart)
+        }
+        
+        lastContentOffset = currentOffset
+    }
+    
+    
+    private func handleNegativeXScroll(_ chartView: CombinedChartView) {
+        // 使用 getTransformer 獲取可見範圍
+        let transformer = chartView.getTransformer(forAxis: .left)
+        let leftPoint = transformer.valueForTouchPoint(CGPoint(x: chartView.bounds.minX, y: 0))
+        let rightPoint = transformer.valueForTouchPoint(CGPoint(x: chartView.bounds.maxX, y: 0))
+        
+        // 如果接近左邊界，載入更多資料
+        if leftPoint.x <= 1 {  // 可以依需求調整這個閾值
+            print("沒了")
+            //            loadMoreHistoricalData()
+        }
+    }
+        
+    func loadMoreHistoricalData() {
+        // 在這裡實作載入更多歷史資料的邏輯
+        // 例如：
+        // 1. 從伺服器取得更多資料
+        // 2. 更新圖表資料
+        let newData = CombinedChartData() // 建立新的資料
+        // 設定新的資料...
+        combinedChartView.data = newData
+        combinedChartView.notifyDataSetChanged()
+    }
 }
 
 
@@ -480,12 +612,12 @@ extension StockViewController: UITableViewDataSource, UITableViewDelegate {
         return 1
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-
+        
         return viewModel.historyCombine.value.count
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
+        
         let cell = containerTableView.dequeueReusableCell(withIdentifier: NewHistoryTableViewCell.identifier, for: indexPath) as! NewHistoryTableViewCell
         let historyViewModel = viewModel.historyCombine.value[indexPath.row]
         cell.configure(with: historyViewModel)
@@ -495,7 +627,7 @@ extension StockViewController: UITableViewDataSource, UITableViewDelegate {
     
     // MARK: click table cell to highlight on chart
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        viewModel.findClickHistoryDate(index: indexPath.row)
+        viewModel.highLightChart(at: indexPath.row)
     }
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         return 70

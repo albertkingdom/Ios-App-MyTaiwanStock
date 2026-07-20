@@ -38,6 +38,7 @@ struct HistoryCellModel {
         
     }
     
+    
     func dateFormat(date: Date) -> String {
         let dateFormatter = DateFormatter()
 

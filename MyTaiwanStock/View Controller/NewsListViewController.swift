@@ -8,41 +8,58 @@ import Combine
 import UIKit
 
 class NewsListViewController: UIViewController {
+    enum Section {
+        case main
+    }
+    struct Item: Hashable {
+        let viewModel: NewsListCellViewModel
+        static func == (lhs: Item, rhs: Item) -> Bool {
+            return lhs.viewModel.url == rhs.viewModel.url
+        }
+    }
     var subscription = Set<AnyCancellable>()
     var viewModel: NewsListViewModel!
     var stockName: String?
     @IBOutlet weak var tableView: UITableView!
     
+    private lazy var dataSource: UITableViewDiffableDataSource<Section, Item> = {
+        let dataSource = UITableViewDiffableDataSource<Section, Item>(
+            tableView: tableView) { tableView, indexPath, itemIdentifier in
+                guard let cell = tableView.dequeueReusableCell(withIdentifier: "newsCell2", for: indexPath) as? NewsListTableViewCell2 else {
+                    fatalError("Cannot create new cell")
+                }
+                cell.configure(with: itemIdentifier.viewModel)
+              cell.selectionStyle = .none
+              return cell
+            }
+        return dataSource
+    }()
     
     override func viewDidLoad() {
-        tableView.dataSource = self
+        tableView.dataSource = dataSource
         tableView.delegate = self
         tableView.separatorStyle = .none
         guard let stockName = stockName else { return }
         title = "\(stockName)新聞"
         
         viewModel = NewsListViewModel(stockName: stockName)
-        
+        applySnapShot(animate: false) // Apply an initial empty snapshot without animation
         bindViewModel()
         
-        
-        //print("NewsListViewController stockName: \(stockName)")
-    }
+}
     
     func bindViewModel() {
-
-        
-        // 
         viewModel.newsList
             .combineLatest(viewModel.isLoading)
             .receive(on: DispatchQueue.main)
             .sink(receiveValue: { [weak self] data, isLoading in
                 print("data \(data), isLoading \(isLoading)")
-                self?.tableView.reloadData()
                 
                 if !isLoading && data.isEmpty {
                     self?.showAlert()
                 }
+                let animate = !isLoading
+                self?.applySnapShot(animate: animate)
             })
             .store(in: &subscription)
     }
@@ -52,20 +69,16 @@ class NewsListViewController: UIViewController {
         alertC.addAction(okAction)
         self.present(alertC, animated: true, completion: nil)
     }
+    func applySnapShot(animate: Bool = true) {
+        var snapShot = NSDiffableDataSourceSnapshot<Section, Item>()
+        snapShot.appendSections([.main])
+        let items = viewModel.newsList.value.map { Item(viewModel: $0) }
+        snapShot.appendItems(items)
+        dataSource.apply(snapShot, animatingDifferences: true)
+    }
 }
 
-extension NewsListViewController: UITableViewDataSource, UITableViewDelegate {
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return viewModel.newsList.value.count
-    }
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "newsCell2", for: indexPath) as! NewsListTableViewCell2
-        let cellViewModel = viewModel.newsList.value[indexPath.row]
-        cell.configure(with: cellViewModel)
-        cell.selectionStyle = .none
-
-        return cell
-    }
+extension NewsListViewController: UITableViewDelegate {
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         let wvc = storyboard?.instantiateViewController(withIdentifier: "webviewController") as! webViewController
         let cellViewModel = viewModel.newsList.value[indexPath.row]

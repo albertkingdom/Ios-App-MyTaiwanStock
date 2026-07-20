@@ -7,13 +7,19 @@
 
 import Foundation
 
-struct StockCellViewModel {
+struct StockCellViewModel: Hashable {
     let stockNo: String
     let stockShortName: String
     let stockPrice: String
     let stockPriceDiff: String
     let stockPriceDiffPercent: String
     let time: String
+    var priceDiffFormat: PriceDiffFormat = .Digit
+    
+    enum PriceDiffFormat {
+        case Percentage
+        case Digit
+    }
     
     init(stockNo: String) {
         self.stockNo = stockNo
@@ -24,10 +30,10 @@ struct StockCellViewModel {
         self.time = "-"
     }
     
-    init(stock: OneDayStockInfoDetail) {
+    init(stock: OneDayStockInfoDetail, priceDiffInPercentage: PriceDiffFormat) {
         self.stockNo = stock.stockNo
         self.stockShortName = stock.shortName
-       
+        self.priceDiffFormat = priceDiffInPercentage
         var price = ""
         
         if let currentPrice = Float(stock.current){

@@ -7,22 +7,12 @@
 
 import WidgetKit
 import SwiftUI
-import Firebase
-import Combine
 import os
 
 let logger = Logger(subsystem: "com.a2006mike.MyTaiwanStock", category: "YourCategory")
 
-class SubscriptionManager {
-    static let shared = SubscriptionManager()
-    private init() {}
-    
-    var subscriptions = Set<AnyCancellable>()
-}
 struct Provider: TimelineProvider {
-    let repository = NetworkServiceImpl()
-    @ObservedObject var viewModel = StockListViewModel.shared
-    var subscription = Set<AnyCancellable>()
+    let repository = TWSEStockInfoFetcher()
 
     // fake data showed before real data
     func placeholder(in context: Context) -> SimpleEntry {
@@ -41,49 +31,28 @@ struct Provider: TimelineProvider {
     }
 
     func getTimeline(in context: Context, completion: @escaping (Timeline<Entry>) -> ()) {
-        var entries: [SimpleEntry] = []
-
-        
         let currentDate = Date()
-        let stockNos = retrieveStockNos()
-//        viewModel.stockNameStringSetCombine
-//            .map({ setOfStockNames in
-//                print("setOfStockNames \(setOfStockNames)")
-//                return Array(setOfStockNames)
-//            })
-//            .sink{ arrayOfStockNames in
-//                repository.fetchOneDayStockInfo(stockList: arrayOfStockNames) { result in
-//                    switch result {
-//                    case .success(let data):
-//                        print("success \(data)")
-//                        var stockDatas = data.msgArray.map { priceData in
-//                            WidgetStockData(stockNo: priceData.stockNo,
-//                                            current: priceData.current,
-//                                            shortName: priceData.shortName,
-//                                            yesterDayPrice: priceData.yesterDayPrice)
-//                        }
-//                        if stockDatas.count > 3 {
-//                            stockDatas = Array(stockDatas[0...2])
-//                        }
-//                        let entry = SimpleEntry(date: currentDate, stockList: stockDatas)
-//                        entries.append(entry)
-//                        // create timeline
-//                        let timeline = Timeline(entries: entries, policy: .atEnd)
-//                        completion(timeline)
-//                    case .failure(let error):
-//                        print(error)
-//                        
-//                    }
-//                }}
-//        let list = LocalDBService.shared.fetchAllListFromDB()
-//        print(list.count)
         let reloadDate = Calendar.current.date(byAdding: .minute,
                                                   value: 15,
                                                   to: currentDate)!
+        let stockNos = retrieveStockNos()
+
+        guard !stockNos.isEmpty else {
+            let entry = placeholderEntry()
+            let timeline = Timeline(entries: [entry], policy: .after(reloadDate))
+            completion(timeline)
+            return
+        }
+
         repository.fetchOneDayStockInfo(stockList: stockNos) { result in
             switch result {
             case .success(let data):
-                print("success \(data)")
+                guard !data.msgArray.isEmpty else {
+                    let entry = placeholderEntry()
+                    let timeline = Timeline(entries: [entry], policy: .after(reloadDate))
+                    completion(timeline)
+                    return
+                }
                 var stockDatas = data.msgArray.map { priceData in
                     WidgetStockData(stockNo: priceData.stockNo,
                                     current: priceData.current,
@@ -94,25 +63,30 @@ struct Provider: TimelineProvider {
                     stockDatas = Array(stockDatas[0...2])
                 }
                 let entry = SimpleEntry(date: currentDate, stockList: stockDatas)
-                entries.append(entry)
-                // create timeline
-                let timeline = Timeline(entries: entries, policy: .after(reloadDate))
+                let timeline = Timeline(entries: [entry], policy: .after(reloadDate))
                 completion(timeline)
             case .failure(let error):
-                print(error)
-                
+                logger.error("Widget fetch failed: \(error.localizedDescription)")
+                let entry = placeholderEntry()
+                let timeline = Timeline(entries: [entry], policy: .after(reloadDate))
+                completion(timeline)
             }
         }
-        
+    }
 
-
-        
+    private func placeholderEntry() -> SimpleEntry {
+        SimpleEntry(date: Date(), stockList: [
+            WidgetStockData(stockNo: "請開啟App",
+                            current: "載入中",
+                            shortName: "",
+                            yesterDayPrice: "0")
+        ])
     }
     
     func retrieveStockNos() -> [String] {
         let userDefault = UserDefaults(suiteName: "group.a2006mike.myTaiwanStock")
         guard let stockNos = userDefault?.object(forKey: "stockNos") as? [String] else { return [] }
-        return stockNos
+        return stockNos.filter { !$0.isEmpty }
     }
 }
     
@@ -126,8 +100,6 @@ struct SimpleEntry: TimelineEntry {
 struct StockWidgetEntryView : View {
     var entry: Provider.Entry
 
-    @Environment(\.widgetFamily) var family
-    
     private let dateFormatter: DateFormatter = {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "yyyy/MM/dd hh:mm a"
@@ -144,41 +116,28 @@ struct StockWidgetEntryView : View {
                     VStack {
                         Text(item.stockNo)
                             .font(.body)
-                            .foregroundColor(Color.white)
+                            .foregroundColor(.primary)
                             .fontWeight(Font.Weight.bold)
                             .frame(maxWidth: .infinity)
                         
                         Text(item.shortName)
                             .font(Font.system(size: 12, weight: .regular, design: .default))
-                            .foregroundColor(Color.gray)
+                            .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
                     }
                     Spacer()
-                    switch family {
-                    case .systemSmall:
-                        Text(formatString(price:item.current))
-                            .font(Font.system(size: 15, weight: .bold, design: .default))
-                            .foregroundColor(Color.white)
-                            .frame(maxWidth: .infinity, alignment: .trailing)
-                            
-                        
-                    default:
-                        Text(formatString(price:item.current))
-                            .fontWeight(Font.Weight.bold)
-                            .foregroundColor(Color.white)
-                            .frame(maxWidth: .infinity, alignment: .trailing)
-                        
-                        Text(item.diff)
-                            .fontWeight(Font.Weight.bold)
-                            .frame(maxWidth: .infinity, alignment: .trailing)
-                            .foregroundColor(formatColor(diff: item.diff))
-                        
-                        
-                    }
-                    
+                    Text(formatString(price: item.current, fallback: item.yesterDayPrice))
+                        .fontWeight(Font.Weight.bold)
+                        .foregroundColor(.primary)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+
+                    Text(item.diff)
+                        .fontWeight(Font.Weight.bold)
+                        .frame(maxWidth: .infinity, alignment: .trailing)
+                        .foregroundColor(formatColor(diff: item.diff))
+
                 }
                 .padding(.trailing)
-                .background(Color.black)
                 .frame(maxWidth: .infinity)
                 
                 Divider()
@@ -187,18 +146,11 @@ struct StockWidgetEntryView : View {
             Spacer()
             HStack(){
                 Image(systemName: "clock")
-                switch family {
-                case .systemSmall:
-                    Text(entry.date, style: .time)
-                default:
-                    Text(dateFormatter.string(from: entry.date))
-                }
-                
+                Text(dateFormatter.string(from: entry.date))
             }
             .padding(.all, 5)
             .frame(maxWidth: .infinity, alignment: .leading)
-            .background(Color.black)
-            .foregroundColor(Color.white)
+            .foregroundColor(.secondary)
             .font(.system(size: 12))
             
            
@@ -206,23 +158,25 @@ struct StockWidgetEntryView : View {
                 
         }
         .frame(maxHeight: .infinity)
-        .widgetBackground(Color.black)
         .padding([.top,.bottom], 0)
         .padding([.horizontal], 10)
-        
+        .widgetBackground(Color(.systemBackground))
+
     }
     
-    func formatString(price: String) -> String {
+    func formatString(price: String, fallback: String) -> String {
 
         if let currentPrice = Float(price) {
             return String(format: "%.2f", currentPrice)
+        } else if let fallbackPrice = Float(fallback) {
+            return String(format: "%.2f", fallbackPrice)
         } else {
             return "-"
         }
     }
     func formatColor(diff: String) -> Color {
         if diff == "-" {
-            return Color.white
+            return .primary
         }
         if let floatDiff = Float(diff), floatDiff > 0.0 {
             return Color.red
@@ -236,18 +190,14 @@ struct StockWidgetEntryView : View {
 @main
 struct StockWidget: Widget {
     let kind: String = "StockWidget"
-    init() {
-        FirebaseApp.configure()
-    }
     var body: some WidgetConfiguration {
         StaticConfiguration(kind: kind, provider: Provider()) { entry in
             StockWidgetEntryView(entry: entry)
-                .frame( maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.black)
+                .frame(maxWidth: .infinity, maxHeight: .infinity)
         }
         .configurationDisplayName("即時股價")
         .description("檢閱追蹤清單的即時股價。")
-        .supportedFamilies([.systemSmall, .systemMedium])
+        .supportedFamilies([.systemMedium])
     }
 }
 
@@ -266,9 +216,5 @@ struct StockWidget_Previews: PreviewProvider {
         StockWidgetEntryView(
             entry: entryTemplate
         ).previewContext(WidgetPreviewContext(family: .systemMedium))
-        
-        StockWidgetEntryView(
-            entry: entryTemplate
-        ).previewContext(WidgetPreviewContext(family: .systemSmall))
     }
 }

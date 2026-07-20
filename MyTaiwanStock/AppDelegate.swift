@@ -23,6 +23,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
         FirebaseApp.configure()
         registerForPushNotifications()
         Messaging.messaging().delegate = self
+        UNUserNotificationCenter.current().delegate = self
         // 取得或生成裝置ID
         if let existingDeviceId = UserDefaults.standard.string(forKey: "deviceId") {
             deviceId = existingDeviceId
@@ -64,7 +65,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
             }
         }
     }
-
+    
     
     // Apple Messaging
     func application(_ application: UIApplication, didRegisterForRemoteNotificationsWithDeviceToken deviceToken: Data) {
@@ -78,25 +79,70 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
     func application(_ application: UIApplication, didFailToRegisterForRemoteNotificationsWithError error: Error) {
         print("Failed to register: \(error)")
     }
+    
     // MARK: UISceneSession Lifecycle
-
+    
     func application(_ application: UIApplication, configurationForConnecting connectingSceneSession: UISceneSession, options: UIScene.ConnectionOptions) -> UISceneConfiguration {
         // Called when a new scene session is being created.
         // Use this method to select a configuration to create the new scene with.
         return UISceneConfiguration(name: "Default Configuration", sessionRole: connectingSceneSession.role)
     }
-
+    
     func application(_ application: UIApplication, didDiscardSceneSessions sceneSessions: Set<UISceneSession>) {
         // Called when the user discards a scene session.
         // If any sessions were discarded while the application was not running, this will be called shortly after application:didFinishLaunchingWithOptions.
         // Use this method to release any resources that were specific to the discarded scenes, as they will not return.
     }
-
+    
     @available(iOS 9.0, *)
     func application(_ application: UIApplication, open url: URL, options: [UIApplication.OpenURLOptionsKey: Any])
-      -> Bool {
-      return GIDSignIn.sharedInstance.handle(url)
+    -> Bool {
+        return GIDSignIn.sharedInstance.handle(url)
     }
+    
+    
 }
 
-
+extension AppDelegate: UNUserNotificationCenterDelegate {
+    // 前台接收推播
+    func userNotificationCenter(
+        _ center: UNUserNotificationCenter,
+        willPresent notification: UNNotification,
+        withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void
+    ) {
+        print("前台收到訊息 \(notification)")
+        handleNotification(notification.request.content.userInfo)
+        completionHandler([.banner, .sound])
+    }
+    
+    // 後台接收推播
+    //    func application(
+    //        _ application: UIApplication,
+    //        didReceiveRemoteNotification userInfo: [AnyHashable: Any],
+    //        fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void
+    //    ) {
+    //        print("後台收到訊息 \(userInfo)")
+    //        handleNotification(userInfo)
+    //        completionHandler(.newData)
+    //    }
+    //    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any]) async -> UIBackgroundFetchResult {
+    //        print("後台收到訊息 \(userInfo)")
+    //        return UIBackgroundFetchResult.newData
+    //    }
+    
+    // 點擊控制中心通知觸發
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse) async {
+        let userInfo = response.notification.request.content.userInfo
+        
+        print("userNotificationCenter didreceive \(userInfo)")
+        handleNotification(userInfo)
+    }
+    private func handleNotification(_ userInfo: [AnyHashable: Any]) {
+        // 解析群組 ID
+        if let groupId = userInfo["group_id"] as? String {
+            // 增加未讀數量
+            UnreadManager.shared.incrementUnread(forGroup: groupId)
+            print("Group ID \(groupId)")
+        }
+    }
+}

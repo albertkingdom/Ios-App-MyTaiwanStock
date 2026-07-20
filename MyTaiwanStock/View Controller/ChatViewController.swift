@@ -15,7 +15,6 @@ import Combine
 class ChatViewController: MessagesViewController, MessagesDataSource, MessagesLayoutDelegate, MessagesDisplayDelegate {
     var subscription = Set<AnyCancellable>()
     var viewModel:ChatViewModel!
-    
 
     init(stockNo: String) {
         super.init(nibName: nil, bundle: nil)
@@ -42,7 +41,14 @@ class ChatViewController: MessagesViewController, MessagesDataSource, MessagesLa
         
         self.navigationItem.largeTitleDisplayMode = .never
     }
+    override func viewDidAppear(_ animated: Bool) {
+        if let stockNo = viewModel.stockNo {
+            let group = "channel_\(stockNo)"
+            print("group \(group)")
+            UnreadManager.shared.resetUnread(forGroup: group)
+        } else {return}
 
+    }
     func bindViewModel() {
 //        viewModel.messages.bind { [weak self] _ in
 //            //print("list \(list)")

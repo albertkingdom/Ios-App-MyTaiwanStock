@@ -31,9 +31,14 @@ class ChartService {
         self.stockNoObjects = stockNoObjects
     }
     func generateCandleData(stockInfoForCandleStickChart: [[String]], stockNo: String) -> CandleChartData {
-        let candleStickEntries = stockInfoForCandleStickChart.enumerated().map({ (index, day) in
-            return CandleChartDataEntry.init(x: Double(index), shadowH: Double(day[4])!, shadowL: Double(day[5])!, open: Double(day[3])!, close: Double(day[6])!)
-        })
+        let candleStickEntries = stockInfoForCandleStickChart.enumerated().map { (index, day) in
+
+            let shadowH = Double(day[4]) ?? 0.0
+            let shadowL = Double(day[5]) ?? 0.0
+            let open = Double(day[3]) ?? 0.0
+            let close = Double(day[6]) ?? 0.0
+            return CandleChartDataEntry.init(x: Double(index), shadowH: shadowH, shadowL: shadowL, open: open, close: close)
+        }
         
         
         
@@ -120,9 +125,10 @@ class ChartService {
         combinedData.isHighlightEnabled = true
         
         guard let stockInfoForCandleStickChart = stockInfoForCandleStickChart, let stockNo = stockNo else {return}
-        combinedData.candleData = self.generateCandleData(stockInfoForCandleStickChart: stockInfoForCandleStickChart, stockNo: stockNo)
+       
         combinedData.barData = self.generateBarData(stockInfoForCandleStickChart: stockInfoForCandleStickChart)
         let candleDatas: CandleChartData = self.generateCandleData(stockInfoForCandleStickChart: stockInfoForCandleStickChart, stockNo: stockNo)
+        combinedData.candleData = candleDatas
         if let candleData = combinedData.candleData {
             if let dataSet = candleData.dataSets.first as? CandleChartDataSet {
                 // Get all candle entries
@@ -153,8 +159,14 @@ class ChartService {
         combinedData.candleData.isHighlightEnabled = true
         combinedData.barData.isHighlightEnabled = false
         combinedChartView.data = combinedData
+        
         combinedChartView.notifyDataSetChanged()
         
+        // 顯示幾個數據點
+        combinedChartView.setVisibleXRangeMaximum(20) // 必須先有資料
+        
+        guard let totalCandleCount = combinedData.candleData.dataSets.first?.entryCount else {return}
+        combinedChartView.moveViewToX(Double(totalCandleCount-10))
     }
     
     func prepareForPieChart(pieChartView: PieChartView) {

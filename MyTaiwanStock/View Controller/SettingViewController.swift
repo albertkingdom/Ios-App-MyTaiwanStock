@@ -19,12 +19,16 @@ class SettingViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
-        navigationController?.navigationBar.prefersLargeTitles = true
-        navigationItem.largeTitleDisplayMode = .always
+        tableView.contentInsetAdjustmentBehavior = .automatic
         syncSwitch.isOn = UserPreferences.shared.syncPreference == .iCloud
-
+    }
+    override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
+        navigationController?.navigationBar.prefersLargeTitles = true
+        navigationItem.largeTitleDisplayMode = .never
     }
     override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
         initView()
     }
     @IBAction func syncSwitchChanged(_ sender: UISwitch) {

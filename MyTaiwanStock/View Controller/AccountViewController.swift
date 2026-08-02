@@ -108,6 +108,7 @@ class AccountViewController: UIViewController {
                 print("successfully login with email \(user.email ?? "")")
             }
             self?.updateUI()
+            self?.offerLocalDataImportIfNeeded()
         }
     }
     func startSignInWithAppleFlow() {
@@ -160,6 +161,75 @@ class AccountViewController: UIViewController {
 
 }
 
+// MARK: local data import on login
+extension AccountViewController {
+    /// Tracks whether the import prompt has already been shown once this app session, so
+    /// repeated login/logout of the same account within one session doesn't re-prompt and
+    /// re-upload local data that was already handled. Intentionally in-memory (not
+    /// persisted) — a fresh app launch is a new session and may legitimately prompt again.
+    private static var hasOfferedImportThisSession = false
+
+    /// Test-only hook: XCTest reruns test methods in the same process, so this static flag
+    /// must be reset between tests to keep them isolated from one another.
+    static func resetOfferedImportSessionStateForTesting() {
+        hasOfferedImportThisSession = false
+    }
+
+    /// Local Core Data and Firestore are never silently merged. If local data exists at
+    /// login time, the user must explicitly confirm the import (specs/account-login:
+    /// "Local data import confirmation on Firebase login"). The prompt is offered at most
+    /// once per app session to avoid re-prompting (and re-uploading) on repeated
+    /// login/logout of the same account.
+    func offerLocalDataImportIfNeeded(onlineDBService: OnlineDBUploading = OnlineDBService()) {
+        guard !Self.hasOfferedImportThisSession else { return }
+
+        let localLists = LocalDBService.shared.fetchAllListFromDB()
+        guard !localLists.isEmpty else { return }
+
+        Self.hasOfferedImportThisSession = true
+
+        let alert = UIAlertController(
+            title: "匯入本機資料",
+            message: "偵測到本機已有清單資料，是否要匯入到目前登入的帳號？",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: "匯入", style: .default) { [weak self] _ in
+            self?.importLocalDataToOnlineDB(lists: localLists, onlineDBService: onlineDBService)
+        })
+        alert.addAction(UIAlertAction(title: "不匯入", style: .cancel) { _ in
+            // Intentionally no-op: declining leaves local data untouched and uploads
+            // nothing. Kept as an explicit (rather than absent) handler so tests can
+            // invoke it directly to prove the decline path has no side effects.
+        })
+        present(alert, animated: true)
+    }
+
+    /// Internal (not private) so tests can exercise the upload fan-out directly with an
+    /// injected `OnlineDBUploading` mock, independent of driving the presented alert's
+    /// private action-handler storage.
+    func importLocalDataToOnlineDB(lists: [ListStruct], onlineDBService: OnlineDBUploading) {
+        for list in lists {
+            guard let listName = list.name else { continue }
+            onlineDBService.uploadListToOnlineDB(listName: listName)
+
+            for stockNoStruct in list.stockNos {
+                guard let stockNumber = stockNoStruct.stockNo else { continue }
+                onlineDBService.uploadNewStockNoToOnlineDB(stockNumber: stockNumber, listName: listName)
+
+                for history in LocalDBService.shared.fetchHistoryFromDB(with: stockNumber) {
+                    guard let date = history.date else { continue }
+                    onlineDBService.uploadHistoryToOnlineDB(
+                        stockNo: stockNumber,
+                        price: history.price,
+                        amount: Int(history.amount),
+                        date: date,
+                        status: Int(history.status)
+                    )
+                }
+            }
+        }
+    }
+}
 
 // MARK: apple signIn delegate
 extension AccountViewController: ASAuthorizationControllerDelegate {

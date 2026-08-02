@@ -11,66 +11,67 @@ import UIKit
 import CloudKit
 
 
+extension Notification.Name {
+    static let dataSaveDidFail = Notification.Name("LocalDBService.dataSaveDidFail")
+}
+
 class LocalDBService {
-    
+
+    static let appGroupIdentifier = "group.a2006mike.myTaiwanStock"
+    static let databaseName = "MyTaiwanStock"
+
     static let shared = LocalDBService()
     var container: NSPersistentContainer
+    private let iCloudAvailabilityChecking: ICloudAvailabilityChecking
 
     // MARK: - Core Data Saving support
-    
+
     func saveContext() {
         let context = container.viewContext
-        
+
         if self.context.hasChanges {
             do {
                 try context.save()
-                
+
             } catch {
                 let nserror = error as NSError
-                fatalError("Error: \(nserror), \(nserror.userInfo)")
+                print("LocalDBService.saveContext failed: \(nserror), \(nserror.userInfo)")
+                NotificationCenter.default.post(name: .dataSaveDidFail, object: nserror)
             }
         }
     }
-    
-    
+
+
     var context: NSManagedObjectContext {
         return self.container.viewContext
     }
-//    init(context: NSManagedObjectContext?) {
-//    
-//    }
-   
-    private init() {
 
-        let syncPreference = UserPreferences.shared.syncPreference
-        container = LocalDBService.configureContainer(syncPreference: syncPreference)
+    private init(iCloudAvailabilityChecking: ICloudAvailabilityChecking = DefaultICloudAvailabilityChecker()) {
+        self.iCloudAvailabilityChecking = iCloudAvailabilityChecking
+        container = LocalDBService.configureContainer()
         loadPersistentStores()
-    }
-    static func configureContainer(syncPreference: SyncPreference) -> NSPersistentContainer {
-        if syncPreference == .iCloud {
-            // setup for core data + icloud
-            let container = NSPersistentCloudKitContainer(name: "MyTaiwanStock")
-            let storeURL = URL.storeURL(for: "group.a2006mike.myTaiwanStock", databaseName: "MyTaiwanStock")
-            let storeDescription = NSPersistentStoreDescription(url: storeURL)
-            storeDescription.cloudKitContainerOptions = NSPersistentCloudKitContainerOptions(containerIdentifier: "iCloud.com.a2006mike.MyTaiwanStock2")
-            storeDescription.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
-            container.persistentStoreDescriptions = [storeDescription]
-            return container
-        } else {
-            // setup for local core data only
-            let container = NSPersistentContainer(name: "MyTaiwanStock")
-            let storeURL = URL.storeURL(for: "group.a2006mike.myTaiwanStock", databaseName: "MyTaiwanStock")
-            let storeDescription = NSPersistentStoreDescription(url: storeURL)
-            storeDescription.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
-            container.persistentStoreDescriptions = [storeDescription]
-            return container
+
+        if !iCloudAvailabilityChecking.isICloudAvailable() {
+            print("LocalDBService: iCloud is not available on this device; iCloud backup will be disabled but local Core Data continues to work normally.")
         }
     }
+
+    static func configureContainer() -> NSPersistentContainer {
+        let container = NSPersistentContainer(name: databaseName)
+        guard let storeURL = URL.storeURL(for: appGroupIdentifier, databaseName: databaseName) else {
+            fatalError("App group container '\(appGroupIdentifier)' could not be resolved. Check the application-groups entitlement configuration.")
+        }
+        let storeDescription = NSPersistentStoreDescription(url: storeURL)
+        storeDescription.setOption(true as NSNumber, forKey: NSPersistentHistoryTrackingKey)
+        container.persistentStoreDescriptions = [storeDescription]
+        return container
+    }
+
     func loadPersistentStores() {
         container.loadPersistentStores { (storeDescription, error) in
             if let error = error as NSError? {
-                if error.code == CKError.quotaExceeded.rawValue {
-                    print("iCloud storage is full")
+                if let ckErrorCode = Self.knownRecoverableCKErrorCode(for: error) {
+                    print("LocalDBService.loadPersistentStores: known CloudKit-related error \(ckErrorCode) — \(error.localizedDescription). Continuing without interrupting initialization.")
                 } else {
                     fatalError("Unresolved error \(error), \(error.userInfo)")
                 }
@@ -78,7 +79,11 @@ class LocalDBService {
         }
         container.viewContext.automaticallyMergesChangesFromParent = true
         container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
-        
+
+        // `loadPersistentStores` can run more than once (e.g. `reloadPersistentStore()`
+        // after an iCloud restore) — remove any prior registration first so the observer
+        // is never registered twice for the same coordinator.
+        NotificationCenter.default.removeObserver(self, name: .NSPersistentStoreRemoteChange, object: container.persistentStoreCoordinator)
         NotificationCenter.default.addObserver(
             self,
             selector: #selector(handleRemoteChangeNotification),
@@ -86,6 +91,39 @@ class LocalDBService {
             object: container.persistentStoreCoordinator
         )
     }
+
+    /// Removes the currently loaded persistent store(s) and reloads from disk. Must be
+    /// called after an iCloud restore replaces the underlying SQLite file out from under
+    /// an already-running `NSPersistentContainer` — otherwise the in-memory connection
+    /// keeps pointing at the old, now-replaced file handle, and the next write can corrupt
+    /// the freshly restored file.
+    func reloadPersistentStore() throws {
+        for store in container.persistentStoreCoordinator.persistentStores {
+            try container.persistentStoreCoordinator.remove(store)
+        }
+        loadPersistentStores()
+    }
+
+    /// CKError codes that are known, recoverable conditions and must not crash initialization.
+    static let knownRecoverableCKErrorCodes: Set<CKError.Code> = [
+        .notAuthenticated,
+        .networkUnavailable,
+        .serverRecordChanged,
+        .zoneNotFound,
+        .partialFailure,
+        .quotaExceeded,
+    ]
+
+    /// Returns the matching `CKError.Code` when `error` is a known, recoverable CloudKit
+    /// error (domain `CKErrorDomain` and a code in `knownRecoverableCKErrorCodes`), else `nil`.
+    /// Extracted as a pure function so the classification logic is unit-testable without
+    /// triggering real store loading or `fatalError`.
+    static func knownRecoverableCKErrorCode(for error: NSError) -> CKError.Code? {
+        guard error.domain == CKError.errorDomain else { return nil }
+        guard let code = CKError.Code(rawValue: error.code) else { return nil }
+        return knownRecoverableCKErrorCodes.contains(code) ? code : nil
+    }
+
     @objc private func handleRemoteChangeNotification(_ notification: Notification) {
         // Handle the notification to update your UI or state
         print("Data from iCloud has been synced.")
@@ -381,10 +419,3 @@ class LocalDBService {
     
 }
 
-extension LocalDBService {
-    // after user switch to (not) enable icloud sync
-    func reset(syncPreference: SyncPreference) {
-        container = LocalDBService.configureContainer(syncPreference: syncPreference)
-        loadPersistentStores()
-    }
-}

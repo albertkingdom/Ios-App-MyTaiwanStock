@@ -6,6 +6,7 @@
 //
 
 import UIKit
+import FirebaseAuth
 
 class SettingViewController: UITableViewController {
 
@@ -15,6 +16,9 @@ class SettingViewController: UITableViewController {
     @IBOutlet weak var syncSwitch: UISwitch!
     var pickerView = UIPickerView()
     var fee: Fee = Fee()
+    /// Injectable so tests can simulate "device not signed into iCloud" without touching
+    /// the real `FileManager.default.ubiquityIdentityToken`.
+    var iCloudAvailabilityChecking: ICloudAvailabilityChecking = DefaultICloudAvailabilityChecker()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -33,14 +37,21 @@ class SettingViewController: UITableViewController {
     }
     @IBAction func syncSwitchChanged(_ sender: UISwitch) {
         UserPreferences.shared.syncPreference = sender.isOn ? .iCloud : .local
-        LocalDBService.shared.reset(syncPreference: UserPreferences.shared.syncPreference)
     }
     func setup() {
         navigationItem.title = "設定"
-        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(
+            title: "立即備份",
+            style: .plain,
+            target: self,
+            action: #selector(manualBackupTapped)
+        )
+
         tableView.backgroundColor = .secondarySystemBackground
         tableView.separatorStyle = .none
-        
+        tableView.estimatedSectionFooterHeight = 80
+        tableView.sectionFooterHeight = UITableView.automaticDimension
+
         feeDiscountTextfield.inputView = pickerView
         feeDiscountTextfield.borderStyle = .none
         feeDiscountTextfield.delegate = self
@@ -48,6 +59,38 @@ class SettingViewController: UITableViewController {
         feeDiscountTextfield.inputAccessoryView = toolBar()
         pickerView.delegate = self
         pickerView.dataSource = self
+    }
+
+    @objc private func manualBackupTapped() {
+        navigationItem.rightBarButtonItem?.isEnabled = false
+        Task { [weak self] in
+            do {
+                try await DefaultICloudBackupService.shared.manualBackupNow()
+                guard let self else { return }
+                await MainActor.run {
+                    self.navigationItem.rightBarButtonItem?.isEnabled = true
+                    self.presentBackupResultAlert(message: "已完成備份到 iCloud。")
+                }
+            } catch ICloudBackupServiceError.iCloudUnavailable {
+                guard let self else { return }
+                await MainActor.run {
+                    self.navigationItem.rightBarButtonItem?.isEnabled = true
+                    self.presentBackupResultAlert(message: "尚未登入 iCloud，無法備份。請至「設定」App 登入 iCloud 帳號後再試一次。")
+                }
+            } catch {
+                guard let self else { return }
+                await MainActor.run {
+                    self.navigationItem.rightBarButtonItem?.isEnabled = true
+                    self.presentBackupResultAlert(message: "備份失敗：\(error.localizedDescription)")
+                }
+            }
+        }
+    }
+
+    private func presentBackupResultAlert(message: String) {
+        let alert = UIAlertController(title: "iCloud 備份", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alert, animated: true)
     }
     
     func initView() {
@@ -66,7 +109,51 @@ class SettingViewController: UITableViewController {
         default: return nil
         }
     }
-    
+
+    func section0FooterText() -> String {
+        var text = "iCloud 備份：開啟後，App 會定期將你的持股清單與交易紀錄備份到 iCloud，供你日後在新裝置上復原。此備份非即時同步，多裝置間可能會有些微延遲。\n\n帳號登入：登入後，你的資料會即時同步到雲端，並可在 Android 版本上使用相同帳號查看。"
+
+        let iCloudBackupEnabled = UserPreferences.shared.syncPreference == .iCloud
+        let hasFirebaseLogin = Auth.auth().currentUser != nil
+        let iCloudActuallyAvailable = iCloudAvailabilityChecking.isICloudAvailable()
+
+        if !iCloudBackupEnabled && !hasFirebaseLogin {
+            text += "\n\n你目前未啟用任何備份或跨裝置同步，若刪除 App 或更換裝置，資料將無法復原。"
+        } else if iCloudBackupEnabled && !iCloudActuallyAvailable && !hasFirebaseLogin {
+            text += "\n\n你目前未啟用任何備份或跨裝置同步，若刪除 App 或更換裝置，資料將無法復原。iCloud 備份要求裝置需先登入 iCloud，請至「設定」App 登入後再試一次。"
+        }
+        return text
+    }
+
+    // A plain `titleForFooterInSection` string can render as a single truncated line
+    // in this static table view; a custom footer view with an explicit multi-line
+    // label guarantees the explanatory text wraps in full.
+    override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
+        guard section == 0 else { return nil }
+
+        let container = UIView()
+        let label = UILabel()
+        label.text = section0FooterText()
+        label.numberOfLines = 0
+        label.font = .preferredFont(forTextStyle: .footnote)
+        label.textColor = .secondaryLabel
+        label.translatesAutoresizingMaskIntoConstraints = false
+
+        container.addSubview(label)
+        NSLayoutConstraint.activate([
+            label.leadingAnchor.constraint(equalTo: container.layoutMarginsGuide.leadingAnchor),
+            label.trailingAnchor.constraint(equalTo: container.layoutMarginsGuide.trailingAnchor),
+            label.topAnchor.constraint(equalTo: container.topAnchor, constant: 4),
+            label.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -12),
+        ])
+        return container
+    }
+
+    override func tableView(_ tableView: UITableView, heightForFooterInSection section: Int) -> CGFloat {
+        section == 0 ? UITableView.automaticDimension : 0
+    }
+
+
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.section == 1 && indexPath.row == 0 {
             let vc = self.storyboard?.instantiateViewController(withIdentifier: "editFeeVC") as! EditFeeViewController

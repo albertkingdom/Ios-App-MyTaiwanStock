@@ -8,9 +8,13 @@
 import Foundation
 
 extension URL {
-    static func storeURL(for appGroup: String, databaseName: String) -> URL {
+    /// Returns `nil` when the app group container cannot be resolved (e.g. missing
+    /// `com.apple.security.application-groups` entitlement). Callers that require the
+    /// store to exist should treat `nil` as a configuration error.
+    static func storeURL(for appGroup: String, databaseName: String) -> URL? {
         guard let fileContainer = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: appGroup) else {
-            fatalError("Shared file container could not be created.")
+            print("URL.storeURL: app group container '\(appGroup)' could not be resolved. Check the application-groups entitlement.")
+            return nil
         }
         return fileContainer.appendingPathComponent("\(databaseName).sqlite")
     }

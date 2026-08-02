@@ -91,7 +91,9 @@ actor DefaultICloudBackupService: ICloudBackupService {
     }
 
     func manualBackupNow() async throws {
-        guard availabilityChecking.isICloudAvailable() else { return }
+        guard availabilityChecking.isICloudAvailable() else {
+            throw ICloudBackupServiceError.iCloudUnavailable
+        }
         guard let storeURL = sourceStoreURL(), FileManager.default.fileExists(atPath: storeURL.path) else { return }
         try destination.write(snapshotAt: storeURL)
         lastBackupDate = clock.now()

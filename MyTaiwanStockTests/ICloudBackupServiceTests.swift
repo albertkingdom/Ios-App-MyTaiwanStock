@@ -198,6 +198,25 @@ final class ICloudBackupServiceTests: XCTestCase {
         XCTAssertEqual(destination.lastWrittenURL, tempStoreURL)
     }
 
+    // MARK: - manual backup fails when iCloud is unavailable
+
+    func test_manualBackupNow_throwsICloudUnavailable_whenICloudUnavailable() async {
+        let destination = FakeBackupDestination()
+        let clock = FakeBackupClock(fixedNow: Date())
+        let service = makeService(clock: clock, available: false, destination: destination, userDefaults: freshUserDefaults())
+
+        do {
+            try await service.manualBackupNow()
+            XCTFail("expected manualBackupNow to throw when iCloud is unavailable")
+        } catch ICloudBackupServiceError.iCloudUnavailable {
+            // expected
+        } catch {
+            XCTFail("expected .iCloudUnavailable, got \(error)")
+        }
+
+        XCTAssertEqual(destination.writeCallCount, 0, "must not write a snapshot when iCloud is unavailable")
+    }
+
     func test_restoreLatestSnapshot_copiesSnapshotOverStore() async throws {
         let destination = FakeBackupDestination()
         let snapshotURL = FileManager.default.temporaryDirectory

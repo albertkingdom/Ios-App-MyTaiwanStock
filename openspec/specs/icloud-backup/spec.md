@@ -36,35 +36,27 @@ The system SHALL back up the local Core Data store to the iCloud Drive ubiquity 
 
 #### Scenario: Manual backup from Settings
 - **WHEN** the user taps "Backup Now" in Settings
+- **AND** the device has an active iCloud account
 - **THEN** the system SHALL perform a backup immediately regardless of the throttle window
+- **AND** SHALL report success to the user only after the snapshot write completes
+
+#### Scenario: Manual backup fails when iCloud is unavailable
+- **WHEN** the user taps "Backup Now" in Settings
+- **AND** the device has no active iCloud account (`FileManager.default.ubiquityIdentityToken` is `nil`)
+- **THEN** the system SHALL NOT perform a backup
+- **AND** SHALL surface a failure to the caller (not a silent no-op)
+- **AND** the Settings screen SHALL display an error message to the user instead of a success message
 
 
 <!-- @trace
-source: rework-icloud-sync-to-backup
+source: fix-icloud-backup-not-signed-in
 updated: 2026-08-02
 code:
-  - MyTaiwanStock/Util/URL+Extension.swift
-  - MyTaiwanStock/Util/OnlineDBService.swift
-  - README.md
-  - MyTaiwanStock/Util/BackupDestination.swift
-  - MyTaiwanStock/View Controller/SettingViewController.swift
-  - CLAUDE.md
-  - MyTaiwanStock/en.lproj/Main.strings
-  - MyTaiwanStockTests/BackupDestinationTests.swift
-  - MyTaiwanStock/zh-Hant.lproj/Main.strings
-  - MyTaiwanStock/Util/SceneICloudCoordinator.swift
-  - MyTaiwanStock/Util/ICloudAvailabilityChecking.swift
-  - MyTaiwanStockTests/AccountViewControllerImportTests.swift
-  - MyTaiwanStock/Base.lproj/Main.storyboard
-  - MyTaiwanStock/Util/LocalDBService.swift
-  - MyTaiwanStockTests/LocalDBServiceCrashFixesTests.swift
-  - MyTaiwanStock/Util/StoreSchemaCompatibilityChecking.swift
   - MyTaiwanStock/Util/ICloudBackupService.swift
   - MyTaiwanStock.xcodeproj/project.pbxproj
-  - MyTaiwanStock/View Controller/AccountViewController.swift
-  - MyTaiwanStockTests/SceneICloudCoordinatorTests.swift
-  - MyTaiwanStock/SceneDelegate.swift
-  - MyTaiwanStock/Util/Clock.swift
+  - MyTaiwanStockTests/SettingViewControllerTests.swift
+  - MyTaiwanStock/View Controller/SettingViewController.swift
+  - README.md
   - MyTaiwanStockTests/ICloudBackupServiceTests.swift
 -->
 
@@ -173,7 +165,7 @@ code:
 ---
 ### Requirement: Independent optional toggles with combined-off warning
 
-Firebase login and iCloud backup SHALL remain independently optional and SHALL NOT be coupled to each other. The Settings screen SHALL display explanatory text for each toggle and SHALL display a warning (not a block) when both are disabled.
+Firebase login and iCloud backup SHALL remain independently optional and SHALL NOT be coupled to each other. The Settings screen SHALL display explanatory text for each toggle and SHALL display a warning (not a block) when both are disabled or otherwise not actually protecting the user's data.
 
 #### Scenario: Explanatory text shown per toggle
 - **WHEN** the user views the Settings screen
@@ -186,31 +178,22 @@ Firebase login and iCloud backup SHALL remain independently optional and SHALL N
 - **THEN** the system SHALL display a warning stating that data will be unrecoverable if the app is deleted or the device is replaced
 - **AND** SHALL NOT block the user from continuing to use the app
 
+#### Scenario: iCloud backup toggle enabled but device not signed into iCloud
+- **WHEN** the user has enabled the iCloud backup toggle in Settings
+- **AND** the device has no active iCloud account (`FileManager.default.ubiquityIdentityToken` is `nil`)
+- **AND** the user has no active Firebase login
+- **THEN** the system SHALL treat the data-protection state as equivalent to the toggle being disabled
+- **AND** SHALL display the same unrecoverable-data-loss warning as when the toggle is off
+- **AND** SHALL additionally state that iCloud backup will not run until the device is signed into iCloud
+
 <!-- @trace
-source: rework-icloud-sync-to-backup
+source: fix-icloud-backup-not-signed-in
 updated: 2026-08-02
 code:
-  - MyTaiwanStock/Util/URL+Extension.swift
-  - MyTaiwanStock/Util/OnlineDBService.swift
-  - README.md
-  - MyTaiwanStock/Util/BackupDestination.swift
-  - MyTaiwanStock/View Controller/SettingViewController.swift
-  - CLAUDE.md
-  - MyTaiwanStock/en.lproj/Main.strings
-  - MyTaiwanStockTests/BackupDestinationTests.swift
-  - MyTaiwanStock/zh-Hant.lproj/Main.strings
-  - MyTaiwanStock/Util/SceneICloudCoordinator.swift
-  - MyTaiwanStock/Util/ICloudAvailabilityChecking.swift
-  - MyTaiwanStockTests/AccountViewControllerImportTests.swift
-  - MyTaiwanStock/Base.lproj/Main.storyboard
-  - MyTaiwanStock/Util/LocalDBService.swift
-  - MyTaiwanStockTests/LocalDBServiceCrashFixesTests.swift
-  - MyTaiwanStock/Util/StoreSchemaCompatibilityChecking.swift
   - MyTaiwanStock/Util/ICloudBackupService.swift
   - MyTaiwanStock.xcodeproj/project.pbxproj
-  - MyTaiwanStock/View Controller/AccountViewController.swift
-  - MyTaiwanStockTests/SceneICloudCoordinatorTests.swift
-  - MyTaiwanStock/SceneDelegate.swift
-  - MyTaiwanStock/Util/Clock.swift
+  - MyTaiwanStockTests/SettingViewControllerTests.swift
+  - MyTaiwanStock/View Controller/SettingViewController.swift
+  - README.md
   - MyTaiwanStockTests/ICloudBackupServiceTests.swift
 -->

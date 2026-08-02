@@ -16,6 +16,9 @@ class SettingViewController: UITableViewController {
     @IBOutlet weak var syncSwitch: UISwitch!
     var pickerView = UIPickerView()
     var fee: Fee = Fee()
+    /// Injectable so tests can simulate "device not signed into iCloud" without touching
+    /// the real `FileManager.default.ubiquityIdentityToken`.
+    var iCloudAvailabilityChecking: ICloudAvailabilityChecking = DefaultICloudAvailabilityChecker()
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -68,6 +71,12 @@ class SettingViewController: UITableViewController {
                     self.navigationItem.rightBarButtonItem?.isEnabled = true
                     self.presentBackupResultAlert(message: "已完成備份到 iCloud。")
                 }
+            } catch ICloudBackupServiceError.iCloudUnavailable {
+                guard let self else { return }
+                await MainActor.run {
+                    self.navigationItem.rightBarButtonItem?.isEnabled = true
+                    self.presentBackupResultAlert(message: "尚未登入 iCloud，無法備份。請至「設定」App 登入 iCloud 帳號後再試一次。")
+                }
             } catch {
                 guard let self else { return }
                 await MainActor.run {
@@ -101,13 +110,17 @@ class SettingViewController: UITableViewController {
         }
     }
 
-    private func section0FooterText() -> String {
+    func section0FooterText() -> String {
         var text = "iCloud 備份：開啟後，App 會定期將你的持股清單與交易紀錄備份到 iCloud，供你日後在新裝置上復原。此備份非即時同步，多裝置間可能會有些微延遲。\n\n帳號登入：登入後，你的資料會即時同步到雲端，並可在 Android 版本上使用相同帳號查看。"
 
         let iCloudBackupEnabled = UserPreferences.shared.syncPreference == .iCloud
         let hasFirebaseLogin = Auth.auth().currentUser != nil
+        let iCloudActuallyAvailable = iCloudAvailabilityChecking.isICloudAvailable()
+
         if !iCloudBackupEnabled && !hasFirebaseLogin {
             text += "\n\n你目前未啟用任何備份或跨裝置同步，若刪除 App 或更換裝置，資料將無法復原。"
+        } else if iCloudBackupEnabled && !iCloudActuallyAvailable && !hasFirebaseLogin {
+            text += "\n\n你目前未啟用任何備份或跨裝置同步，若刪除 App 或更換裝置，資料將無法復原。iCloud 備份要求裝置需先登入 iCloud，請至「設定」App 登入後再試一次。"
         }
         return text
     }

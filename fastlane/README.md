@@ -31,6 +31,14 @@ Sync code signing assets via match (type: development|adhoc|appstore)
 
 Build and upload a new TestFlight beta build
 
+### ios set_testflight_notes
+
+```sh
+[bundle exec] fastlane ios set_testflight_notes
+```
+
+Set TestFlight 'What to Test' notes on the latest build of a version (usage: fastlane set_testflight_notes version:1.19 notes_file:/path/to/notes.txt)
+
 ----
 
 This README.md is auto-generated and will be re-generated every time [_fastlane_](https://fastlane.tools) is run.

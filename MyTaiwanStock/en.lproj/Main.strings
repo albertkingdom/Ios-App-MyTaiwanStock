@@ -83,8 +83,8 @@
 /* Class = "UILabel"; text = "買賣理由"; ObjectID = "cwG-R8-Nc9"; */
 "cwG-R8-Nc9.text" = "買賣理由";
 
-/* Class = "UILabel"; text = "同步iCloud"; ObjectID = "eP3-C0-Scr"; */
-"eP3-C0-Scr.text" = "同步iCloud";
+/* Class = "UILabel"; text = "啟用iCloud備份"; ObjectID = "eP3-C0-Scr"; */
+"eP3-C0-Scr.text" = "啟用iCloud備份";
 
 /* Class = "UILabel"; text = "Label"; ObjectID = "eXj-90-ex9"; */
 "eXj-90-ex9.text" = "Label";

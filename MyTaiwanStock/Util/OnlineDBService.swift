@@ -12,7 +12,13 @@ import FirebaseFirestoreSwift
 import CoreData
 
 
-class OnlineDBService {
+protocol OnlineDBUploading {
+    func uploadListToOnlineDB(listName: String)
+    func uploadNewStockNoToOnlineDB(stockNumber: String, listName: String)
+    func uploadHistoryToOnlineDB(stockNo: String, price: Float, amount: Int, date: Date, status: Int)
+}
+
+class OnlineDBService: OnlineDBUploading {
     //static let shared = OnlineDBService()
     private let followingList = "followingList"
     private let history = "history"

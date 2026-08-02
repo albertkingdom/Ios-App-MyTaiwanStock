@@ -10,6 +10,7 @@ import UIKit
 class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
+    private let iCloudCoordinator = SceneICloudCoordinator()
 
     private func setInitialViewController(in window: UIWindow) {
         // 主畫面
@@ -62,6 +63,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         setInitialViewController(in: window)
         window.makeKeyAndVisible()
 
+        triggerICloudBackupIfEnabled(reason: .appLaunch)
+        offerICloudRestoreIfApplicable(presentingWindow: window)
+
         //let masterTabBarController = window?.rootViewController as! UITabBarController
         //let topNavController = masterTabBarController.viewControllers?.first as! UINavigationController
 
@@ -90,15 +94,50 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneWillEnterForeground(_ scene: UIScene) {
         // Called as the scene transitions from the background to the foreground.
         // Use this method to undo the changes made on entering the background.
-
+        triggerICloudBackupIfEnabled(reason: .didEnterForeground)
     }
 
     func sceneDidEnterBackground(_ scene: UIScene) {
         // Called as the scene transitions from the foreground to the background.
         // Use this method to save data, release shared resources, and store enough scene-specific state information
         // to restore the scene back to its current state.
+        triggerICloudBackupIfEnabled(reason: .didEnterBackground)
     }
 
+}
+
+extension SceneDelegate {
+    /// Runs the iCloud backup check within a background execution window, gated on the
+    /// user's iCloud backup preference. Actual gating/backup-due logic lives in
+    /// `SceneICloudCoordinator` so it's unit-testable without a real `UIApplication`.
+    fileprivate func triggerICloudBackupIfEnabled(reason: BackupTriggerReason) {
+        Task { [iCloudCoordinator] in
+            await iCloudCoordinator.triggerBackupIfEnabled(reason: reason)
+        }
+    }
+
+    /// Offers to restore from an iCloud backup snapshot only when the user has never
+    /// logged into Firebase and the local Core Data store is currently empty. Once a
+    /// Firebase login exists, Firestore is the sole authority for restore and this path
+    /// SHALL NOT run (see specs/account-login and specs/icloud-backup).
+    fileprivate func offerICloudRestoreIfApplicable(presentingWindow window: UIWindow) {
+        Task { [iCloudCoordinator] in
+            guard await iCloudCoordinator.shouldOfferRestore() else { return }
+
+            let alert = UIAlertController(
+                title: "偵測到 iCloud 備份",
+                message: "找到先前的 iCloud 備份，是否要還原？",
+                preferredStyle: .alert
+            )
+            alert.addAction(UIAlertAction(title: "還原", style: .default) { _ in
+                Task { try? await iCloudCoordinator.restore() }
+            })
+            alert.addAction(UIAlertAction(title: "不還原", style: .cancel))
+            await MainActor.run {
+                window.rootViewController?.present(alert, animated: true)
+            }
+        }
+    }
 }
 
 extension SceneDelegate {

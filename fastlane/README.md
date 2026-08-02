@@ -15,13 +15,21 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 ## iOS
 
+### ios sync_signing
+
+```sh
+[bundle exec] fastlane ios sync_signing
+```
+
+Sync code signing assets via match (type: development|adhoc|appstore)
+
 ### ios beta
 
 ```sh
 [bundle exec] fastlane ios beta
 ```
 
-Push a new beta build to TestFlight
+Build and upload a new TestFlight beta build
 
 ----
 

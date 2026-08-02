@@ -26,3 +26,13 @@ discuss? → propose → apply ⇄ ingest → archive
 Changes can be parked（暫存）— temporarily moved out of `openspec/changes/`. Parked changes won't appear in `spectra list` but can be found with `spectra list --parked`. To restore: `spectra unpark <name>`. The `/spectra-apply` and `/spectra-ingest` skills handle parked changes automatically.
 
 <!-- SPECTRA:END -->
+
+# Branch Convention
+
+新需求（feature）必須在 `feature/{版號}/{需求名稱}` 分支上實作，例如 `feature/1.19/icloud-backup-rework`。版號採下一個預計發布的 App 版本（對照 `MARKETING_VERSION`）。
+
+# Commit Message Convention
+
+Commit 時必須使用 `git-commit` skill 撰寫 commit message，並額外遵守（skill 本身未涵蓋）：
+
+- 不得提及 spectra task／change 名稱等 Spectra 內部追蹤資訊（例如 `Change: ...`、`Tasks: N/M complete`）

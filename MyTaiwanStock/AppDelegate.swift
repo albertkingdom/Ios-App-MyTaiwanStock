@@ -21,6 +21,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, MessagingDelegate {
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
         FirebaseApp.configure()
+        // 清理舊版本可能留下的重複清單與股票（曾造成 1.19 (14) 啟動 crash）
+        LocalDBService.shared.removeDuplicateListsAndStockNos()
         registerForPushNotifications()
         Messaging.messaging().delegate = self
         UNUserNotificationCenter.current().delegate = self

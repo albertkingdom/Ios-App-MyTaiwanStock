@@ -102,6 +102,10 @@ class LocalDBService {
             try container.persistentStoreCoordinator.remove(store)
         }
         loadPersistentStores()
+        // 還原進來的舊備份可能含重複資料。還原在 actor 上執行，要切到 viewContext 的 queue
+        container.viewContext.performAndWait {
+            removeDuplicateListsAndStockNos()
+        }
     }
 
     /// CKError codes that are known, recoverable conditions and must not crash initialization.
@@ -273,7 +277,11 @@ class LocalDBService {
     }
     // MARK: Core Data - save list
     func saveNewListToDB(listName: String) -> List? {
-        
+        // 同名清單已存在就直接回傳，避免建立重複清單
+        if let existingList = fetchListMO(withName: listName) {
+            return existingList
+        }
+
         let newList = List(context: context)
         newList.name = listName
         
@@ -284,6 +292,11 @@ class LocalDBService {
     func saveNewStockNumberToDB(stockNumber: String, currentFollowingList: ListStruct) {
         
         if let listMO = fetchListMO(withName: currentFollowingList.name) {
+                // 1. 已在清單中就不重複寫入
+                let existingStockNos = (listMO.stockNo as? Set<NSManagedObject> ?? [])
+                    .compactMap { $0.value(forKey: "stockNo") as? String }
+                if existingStockNos.contains(stockNumber) { return }
+
                 // 2. 創建新的 StockNo Core Data 物件
                 let newStockNoMO = StockNo(context: context)
                 newStockNoMO.stockNo = stockNumber
@@ -360,7 +373,7 @@ class LocalDBService {
     }
     
     // MARK: Core Data - delete
-    func deleteStockNumberInDB(stockNoObject: StockNoStruct) {
+    func deleteStockNumberInDB(stockNoObject: StockNoStruct, listName: String) {
 //        context.delete(stockNoObject)
 //        
 //        let result = checkIfRemainingStockNoObject(with: stockNoObject.stockNo!)
@@ -370,9 +383,44 @@ class LocalDBService {
 //        }
 //        // TODO: show the UIAlert
 //        saveContext()
-        StockNo.delete(with: stockNoObject, in: context)
+        StockNo.delete(with: stockNoObject, listName: listName, in: context)
         
     }
+    // MARK: Core Data - remove duplicates
+    /// 清理舊版本留下的重複資料：合併同名清單、移除清單內重複的 stockNo
+    func removeDuplicateListsAndStockNos() {
+        let request = NSFetchRequest<NSManagedObject>(entityName: "List")
+        guard let lists = try? context.fetch(request) else { return }
+
+        var keptListsByName: [String: NSManagedObject] = [:]
+        for list in lists {
+            guard let name = list.value(forKey: "name") as? String else { continue }
+            guard let keptList = keptListsByName[name] else {
+                keptListsByName[name] = list
+                continue
+            }
+            // 同名清單：把股票移到保留的清單後刪除
+            let stockNoObjects = list.value(forKey: "stockNo") as? Set<NSManagedObject> ?? []
+            for stockNoObject in stockNoObjects {
+                stockNoObject.setValue(keptList, forKey: "ofList")
+            }
+            context.delete(list)
+        }
+
+        for list in keptListsByName.values {
+            var seenStockNos = Set<String>()
+            let stockNoObjects = list.value(forKey: "stockNo") as? Set<NSManagedObject> ?? []
+            for stockNoObject in stockNoObjects {
+                guard let stockNo = stockNoObject.value(forKey: "stockNo") as? String else { continue }
+                if !seenStockNos.insert(stockNo).inserted {
+                    context.delete(stockNoObject)
+                }
+            }
+        }
+
+        saveContext()
+    }
+
     func deleteHistoryInDB(historyObject: InvestHistory) {
         context.delete(historyObject)
         saveContext()
@@ -411,10 +459,15 @@ class LocalDBService {
         List.delete(with: list, in: context)
     }
     
-    func updateListName(newName: String, oldName: String) {
+    /// 回傳是否有改名，讓呼叫端決定要不要同步到 Firestore
+    @discardableResult
+    func updateListName(newName: String, oldName: String) -> Bool {
+        // 新名稱已被其他清單使用就不改，避免產生同名清單
+        guard newName == oldName || fetchListMO(withName: newName) == nil else { return false }
         let updatedListInfo = ListStruct(name: newName, stockNos: []) // stockNos 在這裡通常不需要
 
         List.updateName(with: updatedListInfo, in: context, currentName: oldName)
+        return true
     }
     
 }

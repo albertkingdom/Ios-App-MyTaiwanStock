@@ -69,12 +69,6 @@ protocol NetworkService {
     // update
     func updateStockNoInDBwithPrice(stockNos: [String], cellViewModels: [StockCellViewModel])
     
-    // get all list from online DB
-    func getAllListAndStocksFromOnlineDBAndSaveToLocal(completion: (() -> Void)?)
-    
-    // get all history from online DB
-    func getAllHistoryFromOnlineDBAndSaveToLocal()
-    
     // 發送ID和FCM令牌到server(server要記錄每個裝置目前的badge count)
     func sendDeviceIdToServer(deviceId: String, token: String)
     

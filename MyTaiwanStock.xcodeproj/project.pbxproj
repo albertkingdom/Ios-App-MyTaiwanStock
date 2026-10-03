@@ -17,6 +17,8 @@
 		6668EF90813808B0AF082831 /* TWSEStockInfoFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E5B53D701FA2A0250ACBA2 /* TWSEStockInfoFetcher.swift */; };
 		684966E6923F08AE3890C7BB /* ICloudAvailabilityChecking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 957B7DA882FDC55B06E94968 /* ICloudAvailabilityChecking.swift */; };
 		85022264D8C3DC74598DFBC5 /* LocalDBServiceCrashFixesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000A994999CDE40E7C0CAD6 /* LocalDBServiceCrashFixesTests.swift */; };
+		D0B1C2A3E4F5061728394A5B /* DuplicateStockNoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0B1C2A3E4F5061728394A5C /* DuplicateStockNoTests.swift */; };
+		D0B1C2A3E4F5061728394A5D /* ListNameTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0B1C2A3E4F5061728394A5E /* ListNameTests.swift */; };
 		88BEE1E19FFE04C57D16DB7A /* ICloudBackupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35BE1FA033A9EAAAD45D552C /* ICloudBackupService.swift */; };
 		9079AA8B35002B8DED3B7894 /* ICloudBackupServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F24890FEBA8232DE81E0095 /* ICloudBackupServiceTests.swift */; };
 		A1065AD22C21CEF30033A319 /* WalkthroughViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1065AD12C21CEF30033A319 /* WalkthroughViewController.swift */; };
@@ -312,6 +314,8 @@
 		A1E1724C2BED0E6500ED5916 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		A1F168322BDE11400080F57E /* UIColor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
 		B000A994999CDE40E7C0CAD6 /* LocalDBServiceCrashFixesTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LocalDBServiceCrashFixesTests.swift; sourceTree = "<group>"; };
+		D0B1C2A3E4F5061728394A5C /* DuplicateStockNoTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DuplicateStockNoTests.swift; sourceTree = "<group>"; };
+		D0B1C2A3E4F5061728394A5E /* ListNameTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ListNameTests.swift; sourceTree = "<group>"; };
 		DF06F2F727097F2C0031D6FE /* MyTaiwanStock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyTaiwanStock.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DF06F2FA27097F2C0031D6FE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DF06F2FC27097F2C0031D6FE /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -429,6 +433,8 @@
 				A11E046C2CF2EBE700138497 /* testOverViewCalculator.swift */,
 				1F24890FEBA8232DE81E0095 /* ICloudBackupServiceTests.swift */,
 				B000A994999CDE40E7C0CAD6 /* LocalDBServiceCrashFixesTests.swift */,
+				D0B1C2A3E4F5061728394A5C /* DuplicateStockNoTests.swift */,
+				D0B1C2A3E4F5061728394A5E /* ListNameTests.swift */,
 				3E6F2F5D3CC3519CA29412D1 /* AccountViewControllerImportTests.swift */,
 				0A260454FDA074BE16F88EFA /* BackupDestinationTests.swift */,
 				3CDB14A33624A6CC60E64BDD /* SettingViewControllerTests.swift */,
@@ -913,6 +919,8 @@
 				A1DE92752DBCC68600D743C7 /* List+CoreDataProperties.swift in Sources */,
 				9079AA8B35002B8DED3B7894 /* ICloudBackupServiceTests.swift in Sources */,
 				85022264D8C3DC74598DFBC5 /* LocalDBServiceCrashFixesTests.swift in Sources */,
+				D0B1C2A3E4F5061728394A5B /* DuplicateStockNoTests.swift in Sources */,
+				D0B1C2A3E4F5061728394A5D /* ListNameTests.swift in Sources */,
 				51173F9563FCAF475F0372BA /* AccountViewControllerImportTests.swift in Sources */,
 				F2607ED17B7E71EFFE5207C9 /* BackupDestinationTests.swift in Sources */,
 				1E8A00E46BCF4BED4A7F6C9B /* SceneICloudCoordinatorTests.swift in Sources */,

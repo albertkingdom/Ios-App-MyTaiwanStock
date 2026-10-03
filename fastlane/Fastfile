@@ -77,4 +77,34 @@ platform :ios do
       skip_waiting_for_build_processing: true
     )
   end
+
+  desc "Set TestFlight 'What to Test' notes on the latest build of a version (usage: fastlane set_testflight_notes version:1.19 notes_file:/path/to/notes.txt)"
+  lane :set_testflight_notes do |options|
+    api_key = fetch_app_store_api_key
+
+    version = options[:version]
+    UI.user_error!("Missing version: pass version:1.19") if version.nil?
+
+    notes = options[:notes]
+    notes = File.read(options[:notes_file]) if notes.nil? && options[:notes_file]
+    UI.user_error!("Missing notes: pass notes:\"...\" or notes_file:/path/to/notes.txt") if notes.nil?
+
+    require 'spaceship'
+    Spaceship::ConnectAPI.token = Spaceship::ConnectAPI::Token.from(hash: api_key)
+    asc_app = Spaceship::ConnectAPI::App.find("com.a2006mike.MyTaiwanStock")
+
+    build = Spaceship::ConnectAPI::Build.all(app_id: asc_app.id, version: version, sort: "-uploadedDate", limit: 1).first
+    UI.user_error!("No build found for version #{version}") if build.nil?
+
+    localizations = build.get_beta_build_localizations
+    if localizations.empty?
+      Spaceship::ConnectAPI.post_beta_build_localizations(build_id: build.id, attributes: { whatsNew: notes, locale: "zh-Hant" })
+    else
+      localizations.each do |localization|
+        Spaceship::ConnectAPI.patch_beta_build_localizations(localization_id: localization.id, attributes: { whatsNew: notes })
+      end
+    end
+
+    UI.success("Updated What to Test for build #{build.version} (version #{version})")
+  end
 end

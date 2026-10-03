@@ -31,3 +31,7 @@ openspec/.vector-search.db*
 
 # fastlane local secrets (DO NOT COMMIT)
 fastlane/.env
+
+# 工作中的 review 與交接紀錄，不加入版控
+docs/reviews/
+docs/handoff/

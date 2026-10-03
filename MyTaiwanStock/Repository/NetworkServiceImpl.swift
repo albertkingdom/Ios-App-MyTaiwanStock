@@ -15,7 +15,12 @@ class NetworkServiceImpl: NetworkService {
 
     var subscription = Set<AnyCancellable>()
     lazy var localDBService = LocalDBService.shared
-    lazy var onLineDBService = OnlineDBService()
+    lazy var onLineDBService: OnlineDBSyncing = makeOnlineDBService()
+    private let makeOnlineDBService: () -> OnlineDBSyncing
+
+    init(onLineDBService: @escaping @autoclosure () -> OnlineDBSyncing = OnlineDBService()) {
+        makeOnlineDBService = onLineDBService
+    }
 
     func fetchOneDayStockInfo(
         stockList: [String],
@@ -257,7 +262,10 @@ class NetworkServiceImpl: NetworkService {
         listName: String,
         stockNumber: String
     ) {
-        localDBService.deleteStockNumberInDB(stockNoObject: stockNoObject)
+        localDBService.deleteStockNumberInDB(
+            stockNoObject: stockNoObject,
+            listName: listName
+        )
 
         onLineDBService.deleteStockNoFromOnlineDB(
             stockNo: stockNumber,
@@ -287,17 +295,6 @@ class NetworkServiceImpl: NetworkService {
         )
     }
 
-    func getAllListAndStocksFromOnlineDBAndSaveToLocal(
-        completion: (() -> Void)?
-    ) {
-        onLineDBService.getAllListAndStocksFromOnlineDBAndSaveToLocal(
-            completion: completion
-        )
-    }
-
-    func getAllHistoryFromOnlineDBAndSaveToLocal() {
-        onLineDBService.getAllHistoryFromOnlineDBAndSaveToLocal()
-    }
     // 發送ID和FCM令牌到server(server要記錄每個裝置目前的badge count)
     func sendDeviceIdToServer(deviceId: String, token: String) {
         let url = URL(
@@ -377,6 +374,7 @@ class NetworkServiceImpl: NetworkService {
         return lastmonth
     }
     func updateListName(newName: String, oldName: String) {
-        localDBService.updateListName(newName: newName, oldName: oldName)
+        guard localDBService.updateListName(newName: newName, oldName: oldName) else { return }
+        onLineDBService.renameListInOnlineDB(oldName: oldName, newName: newName)
     }
 }

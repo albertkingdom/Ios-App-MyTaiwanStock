@@ -77,8 +77,12 @@ class AddListViewController: UIViewController {
         let okAction = UIAlertAction(title: "Save", style: .default) { [weak self] _ in
             // save to core data
             guard let newListName = alertVC.textFields?[0].text else {return}
-            
-            self?.viewModel.saveNewList(listName: newListName)
+
+            do {
+                try self?.viewModel.saveNewList(listName: newListName)
+            } catch {
+                self?.showListNameError(error)
+            }
         }
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in
             // cancel
@@ -86,6 +90,13 @@ class AddListViewController: UIViewController {
         alertVC.addAction(okAction)
         alertVC.addAction(cancelAction)
         self.present(alertVC, animated: true, completion: nil)
+    }
+
+    private func showListNameError(_ error: Error) {
+        let alertVC = UIAlertController(
+            title: error.localizedDescription, message: nil, preferredStyle: .alert)
+        alertVC.addAction(UIAlertAction(title: "OK", style: .default))
+        present(alertVC, animated: true)
     }
 }
 
@@ -144,7 +155,11 @@ extension AddListViewController: UITableViewDelegate {
             // save to core data
             guard let newListName = alertVC.textFields?[0].text else {return}
 
-            self.viewModel.updateListName(at: indexPath.row, with: newListName)
+            do {
+                try self.viewModel.updateListName(at: indexPath.row, with: newListName)
+            } catch {
+                self.showListNameError(error)
+            }
         }
         let cancelAction = UIAlertAction(title: "Cancel", style: .cancel) { _ in
             // cancel

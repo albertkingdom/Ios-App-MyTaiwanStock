@@ -220,9 +220,10 @@ class StockListViewModel: ObservableObject {
             }
             .map { list -> [String] in
                 let setOfStockNoObjects = list.stockNos
-                return setOfStockNoObjects.compactMap {
+                // DB 內可能已存在重複的 stockNo，去重避免重複請求
+                return Set(setOfStockNoObjects.compactMap {
                     $0.stockNo
-                }.sorted()
+                }).sorted()
             }
             .sink { [weak self] stockNos in
                 guard let self else { return }
@@ -289,8 +290,10 @@ class StockListViewModel: ObservableObject {
             }
             .flatMap { stockInfoDetails -> AnyPublisher<[StockCellViewModel], Error> in
                 // 建立一個映射，用於快速查找股票資訊
+                // API 可能回傳重複的 stockNo，保留第一筆避免 crash
                 let stockInfoMap = Dictionary(
-                    uniqueKeysWithValues: stockInfoDetails.map { ($0.stockNo, $0) }
+                    stockInfoDetails.map { ($0.stockNo, $0) },
+                    uniquingKeysWith: { first, _ in first }
                 )
                 
                 // 根據傳入的 stockNos 順序建立 ViewModel
@@ -337,18 +340,20 @@ class StockListViewModel: ObservableObject {
 
     func deleteStockNumber(stockNo: String) {
         guard
-            let stockIndex = stockCellDatasCombine.value.firstIndex(where: {
+            stockCellDatasCombine.value.contains(where: {
                 $0.stockNo == stockNo
             })
         else { return }
         // find the stockNo object to be deleted
-        guard let stockNoSet = currentFollowingListCombine.value?.stockNos
+        // 清單的 stockNos 來自無序的 Core Data Set，不能用畫面上的 index 對位
+        guard
+            let currentList = currentFollowingListCombine.value,
+            let currentListName = currentList.name,
+            let stockNoObjectToDel = currentList.stockNos
+                .first(where: { $0.stockNo == stockNo })
         else {
             return
         }
-        
-        
-        let stockNoObjectToDel = stockNoSet[stockIndex]
 
         // delete stockNo from online DB
         print("delete stockNo string \(stockNo)")
@@ -358,7 +363,8 @@ class StockListViewModel: ObservableObject {
         
         repository.deleteStockNumber(
             stockNoObject: stockNoObjectToDel,
-            listName: menuTitleCombine.value,
+            // menuTitle 在有空字串名稱的清單時不會更新，要用目前顯示的清單
+            listName: currentListName,
             stockNumber: stockNo
         )
         followingListObjectFromDB[currentIndex].stockNos = followingListObjectFromDB[currentIndex]
@@ -397,12 +403,6 @@ class StockListViewModel: ObservableObject {
         repeatFetch(stockNos: updatedStockNos)
     }
 
-    //MARK: online DB
-    func getOnlineDBDataAndInsertLocal(completion: (() -> Void)?) {
-        repository.getAllListAndStocksFromOnlineDBAndSaveToLocal(
-            completion: completion)
-        repository.getAllHistoryFromOnlineDBAndSaveToLocal()
-    }
     func cancelTimer() {
         timer?.invalidate()
     }

@@ -60,20 +60,23 @@ extension StockNo {
             return newStockNo
         }
     
-    static func delete(with stockNoStruct: StockNoStruct, in context: NSManagedObjectContext) {
+    static func delete(with stockNoStruct: StockNoStruct, listName: String, in context: NSManagedObjectContext) {
             guard let stockNoToDelete = stockNoStruct.stockNo else {
                 print("錯誤：StockNoStruct 的 stockNo 為空，無法刪除。")
                 return
             }
 
-            let fetchRequest: NSFetchRequest<StockNo> = StockNo.fetchRequest()
-            fetchRequest.predicate = NSPredicate(format: "stockNo == %@", stockNoToDelete) // 假設 stockNo 是唯一的
+            // 同一股票可能在多個清單，或因舊資料在同一清單重複，因此限定清單並刪除全部符合的物件
+            let fetchRequest = NSFetchRequest<NSManagedObject>(entityName: "StockNo")
+            fetchRequest.predicate = NSPredicate(
+                format: "stockNo == %@ AND ofList.name == %@", stockNoToDelete, listName
+            )
 
             do {
                 let results = try context.fetch(fetchRequest)
-                if let stockNoToDeleteMO = results.first {
+                if !results.isEmpty {
                     // 從上下文中刪除找到的 StockNo 物件
-                    context.delete(stockNoToDeleteMO)
+                    results.forEach { context.delete($0) }
 
                     // 保存上下文的變更
                     do {

@@ -95,6 +95,101 @@ struct TestStockListViewModel {
         assert(filteredResults[1].count == 2)  // 搜尋"23"後應該剩2個股票
     }
 
+    // Regression: TestFlight 1.19 (14) crashed on launch with
+    // "Duplicate values for key" when the TWSE API returned the same stockNo
+    // more than once in msgArray.
+    @available(iOS 16.0, *)
+    @Test(.timeLimit(.minutes(1)))
+    @MainActor
+    func test_repeatFetch_whenResponseHasDuplicateStockNo_shouldNotCrash()
+        async
+    {
+        // Given
+        let mockRepository = MockNetworkService()
+        let sut = makeIsolatedSUT(repository: mockRepository)
+        let detail = makeOneDayStockInfoDetail(
+            stockNo: "2330", open: "500", low: "495", high: "505",
+            fullName: "台灣積體電路製造股份有限公司", current: "500",
+            shortName: "台積電", yesterDayPrice: "490", time: "13:30:00"
+        )
+        mockRepository.mockOneDayStockInfo = OneDayStockInfo(msgArray: [
+            detail, detail,
+        ])
+
+        // When
+        sut.repeatFetch(stockNos: ["2330", "2317"])
+        let cells = await firstNonEmptyCells(of: sut)
+
+        // Then
+        #expect(cells.map(\.stockNo) == ["2330", "2317"])
+        #expect(cells.first?.stockShortName == "台積電")
+    }
+
+    // Lists already saved with duplicate stockNos must not send the same
+    // stock to the API twice.
+    @Test
+    func test_viewDidLoad_whenListHasDuplicateStockNos_shouldFetchEachOnce() {
+        let mockRepository = MockNetworkService()
+        let sut = makeIsolatedSUT(repository: mockRepository)
+        let input = makeInput()
+        mockRepository.mockStockList = [
+            makeListStruct(name: "自選", stockNos: ["2330", "2330", "0050"])
+        ]
+
+        _ = sut.transform(input: input)
+        input.viewDidLoad.send()
+
+        #expect(mockRepository.lastFetchedStockList == ["0050", "2330"])
+    }
+
+    // The list's stockNos come from an unordered Core Data set, so the row
+    // index on screen must not be used to pick the object to delete.
+    @available(iOS 16.0, *)
+    @Test(.timeLimit(.minutes(1)))
+    @MainActor
+    func test_deleteStockNumber_shouldDeleteMatchingStockNoNotRowIndex() async {
+        let mockRepository = MockNetworkService()
+        let sut = makeIsolatedSUT(repository: mockRepository)
+        let input = makeInput()
+        mockRepository.mockStockList = [
+            makeListStruct(name: "自選", stockNos: ["2330", "0050"])
+        ]
+        _ = sut.transform(input: input)
+        input.viewDidLoad.send()
+        let cells = await firstNonEmptyCells(of: sut)
+        #expect(cells.map(\.stockNo) == ["0050", "2330"])
+
+        sut.deleteStockNumber(stockNo: "0050")
+
+        #expect(mockRepository.deletedStockNoObject?.stockNo == "0050")
+        #expect(mockRepository.deletedStockNumber == "0050")
+    }
+
+    // Older versions allowed saving a list named "". The menu title never
+    // updates while such a list exists, so the delete must target the list
+    // currently shown, not the menu title.
+    @available(iOS 16.0, *)
+    @Test(.timeLimit(.minutes(1)))
+    @MainActor
+    func test_deleteStockNumber_whenBlankListNameExists_shouldDeleteFromCurrentList() async {
+        let mockRepository = MockNetworkService()
+        let sut = makeIsolatedSUT(repository: mockRepository)
+        let input = makeInput()
+        mockRepository.mockStockList = [
+            makeListStruct(name: "自選", stockNos: ["2330"]),
+            makeListStruct(name: "", stockNos: ["0050"]),
+        ]
+        _ = sut.transform(input: input)
+        input.viewDidLoad.send()
+        let cells = await firstNonEmptyCells(of: sut)
+        #expect(cells.map(\.stockNo) == ["2330"])
+
+        sut.deleteStockNumber(stockNo: "2330")
+
+        #expect(mockRepository.deletedStockNumber == "2330")
+        #expect(mockRepository.deletedListName == "自選")
+    }
+
 //        @Test
 //            func testPriceDiffFormatToggle() {
 //                // Given
@@ -207,6 +302,44 @@ struct TestStockListViewModel {
 }
 
 extension TestStockListViewModel {
+    /// SUT that writes to a throwaway UserDefaults suite instead of the real App Group.
+    private func makeIsolatedSUT(repository: MockNetworkService) -> StockListViewModel {
+        let sut = StockListViewModel(
+            repository: repository, coordinator: mockCoordinator)
+        sut.userDefault = UserDefaults(suiteName: "test-\(UUID().uuidString)")
+        return sut
+    }
+
+    private func makeInput() -> StockListViewModel.Input {
+        StockListViewModel.Input(
+            didRefresh: PassthroughSubject<Void, Never>(),
+            viewDidLoad: PassthroughSubject<Void, Never>(),
+            togglePriceDiffFormat: PassthroughSubject<Void, Never>()
+        )
+    }
+
+    private func makeListStruct(name: String, stockNos: [String])
+        -> MyTaiwanStock.ListStruct
+    {
+        MyTaiwanStock.ListStruct(
+            name: name,
+            stockNos: stockNos.map {
+                MyTaiwanStock.StockNoStruct(currentPrice: 0, stockNo: $0)
+            }
+        )
+    }
+
+    /// Waits for the fetch result delivered via `receive(on: main)`.
+    @MainActor
+    private func firstNonEmptyCells(of sut: StockListViewModel) async
+        -> [StockCellViewModel]
+    {
+        for await cells in sut.stockCellDatasCombine.values where !cells.isEmpty {
+            return cells
+        }
+        return []
+    }
+
     // OneDayStockInfoDetail only exposes `init(from decoder:)`, so build test
     // instances by round-tripping through its own CodingKeys instead of a
     // memberwise initializer that no longer exists.
@@ -349,22 +482,21 @@ class MockNetworkService: NetworkService {
     ) {
     }
 
+    var deletedStockNoObject: MyTaiwanStock.StockNoStruct?
+    var deletedStockNumber: String?
+    var deletedListName: String?
     func deleteStockNumber(
         stockNoObject: MyTaiwanStock.StockNoStruct, listName: String,
         stockNumber: String
-    ) {}
+    ) {
+        deletedStockNoObject = stockNoObject
+        deletedStockNumber = stockNumber
+        deletedListName = listName
+    }
 
     func updateStockNoInDBwithPrice(
         stockNos: [String], cellViewModels: [StockCellViewModel]
     ) {}
-
-    func getAllListAndStocksFromOnlineDBAndSaveToLocal(
-        completion: (() -> Void)?
-    ) {
-        completion?()
-    }
-
-    func getAllHistoryFromOnlineDBAndSaveToLocal() {}
 
     // MARK: - Unused Protocol Requirements
     func fetchOneDayStockInfo(

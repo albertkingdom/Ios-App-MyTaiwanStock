@@ -18,17 +18,33 @@ protocol OnlineDBUploading {
     func uploadHistoryToOnlineDB(stockNo: String, price: Float, amount: Int, date: Date, status: Int)
 }
 
-class OnlineDBService: OnlineDBUploading {
+/// NetworkServiceImpl 用到的所有 Firestore 操作，抽出來讓測試能注入 mock，不碰正式 Firestore
+protocol OnlineDBSyncing: OnlineDBUploading {
+    func deleteListFromOnlineDB(listName: String)
+    func renameListInOnlineDB(oldName: String, newName: String)
+    func deleteStockNoFromOnlineDB(stockNo: String, listName: String)
+    func deleteHistoryFromOnlineDB(where historyObject: InvestHistory)
+}
+
+struct OnlineListDocument {
+    let id: String
+    let name: String
+    let stocks: [String]
+}
+
+struct OnlineListRenamePlan: Equatable {
+    let targetID: String
+    let stocks: [String]
+    let deleteIDs: [String]
+}
+
+class OnlineDBService: OnlineDBSyncing {
     //static let shared = OnlineDBService()
     private let followingList = "followingList"
     private let history = "history"
     private let db = Firestore.firestore()
-    var context: NSManagedObjectContext = LocalDBService.shared.context
-    
-    
+
     init() {
-//        let appDelegate = UIApplication.shared.delegate as! AppDelegate
-//        self.context = appDelegate.persistentContainer.viewContext
     }
     func getLoginAccountEmail() -> String? {
         guard let email = Auth.auth().currentUser?.email else {return nil}
@@ -116,6 +132,62 @@ class OnlineDBService: OnlineDBUploading {
                 }
             }
     }
+    /// 決定 Firestore 改名要怎麼做。iOS 不會從 Firestore 拉清單，Android 建的同名清單
+    /// 本機看不到，所以新名稱已存在時要合併進去；舊名稱若有多份文件也一併合併。
+    static func makeRenamePlan(
+        documents: [OnlineListDocument], oldName: String, newName: String
+    ) -> OnlineListRenamePlan? {
+        let oldDocuments = documents.filter { $0.name == oldName }
+        guard let firstOld = oldDocuments.first else { return nil }
+        let target = documents.first(where: { $0.name == newName }) ?? firstOld
+
+        var stocks: [String] = []
+        for document in [target] + oldDocuments {
+            for stock in document.stocks where !stocks.contains(stock) {
+                stocks.append(stock)
+            }
+        }
+        let deleteIDs = oldDocuments.map(\.id).filter { $0 != target.id }
+        return OnlineListRenamePlan(targetID: target.id, stocks: stocks, deleteIDs: deleteIDs)
+    }
+    func renameListInOnlineDB(oldName: String, newName: String) {
+        guard let email = getLoginAccountEmail() else {return}
+        print("renameListInOnlineDB list \(oldName) -> \(newName)")
+        db.collection(followingList)
+            .whereField("email", isEqualTo: email)
+            .whereField("name", in: [oldName, newName])
+            .getDocuments() { (querySnapshot, err) in
+                if let err = err {
+                    print("Error getting documents: \(err)")
+                    return
+                }
+                let documents = (querySnapshot?.documents ?? []).map {
+                    OnlineListDocument(
+                        id: $0.documentID,
+                        name: $0.data()["name"] as? String ?? "",
+                        stocks: $0.data()["stocks"] as? [String] ?? []
+                    )
+                }
+                guard let plan = Self.makeRenamePlan(
+                    documents: documents, oldName: oldName, newName: newName
+                ) else { return }
+
+                let collection = self.db.collection(self.followingList)
+                let batch = self.db.batch()
+                batch.updateData(
+                    ["name": newName, "stocks": plan.stocks],
+                    forDocument: collection.document(plan.targetID)
+                )
+                for id in plan.deleteIDs {
+                    batch.deleteDocument(collection.document(id))
+                }
+                batch.commit { error in
+                    if let error = error {
+                        print("renameListInOnlineDB error \(error)")
+                    }
+                }
+            }
+    }
     func deleteStockNoFromOnlineDB(stockNo: String, listName: String) {
         guard let email = getLoginAccountEmail() else {return}
         print("deleteStockNoFromOnlineDB list \(listName) stockNo \(stockNo)")
@@ -150,162 +222,6 @@ class OnlineDBService: OnlineDBUploading {
             print("upload history to db \(error)")
         }
     }
-    func getLocalListByListNameOrNull(listName: String) -> List? {
-        let lists = fetchAllListFromDB()
-        if let list = lists.first(where: { $0.name == listName }) {
-            return list
-        }
-        return nil
-    }
-    func isStockNumberInLocalList(stockNumber: String, list: List) -> Bool {
-        if let setOfStockNoObjects = list.stockNo {
-            let stockNoStringArray:[String] = setOfStockNoObjects.map { ele -> String in
-                guard let stockNo = (ele as? StockNo)?.stockNo else { return "" }
-                //print(" \(stockNo)")
-                return stockNo
-            }
-            if stockNoStringArray.contains(stockNumber) {
-                return true
-            }
-            
-        }
-        return false
-    }
-    func getAllListAndStocksFromOnlineDBAndSaveToLocal(completion: (() -> Void)?) {
-        guard let email = getLoginAccountEmail() else {return}
-        db.collection(followingList)
-            .whereField("email", isEqualTo: email)
-            .getDocuments() { (querySnapshot, err) in
-                if let err = err {
-                    print("Error getting documents: \(err)")
-                } else {
-            
-                    for document in querySnapshot!.documents {
-                        print("\(document.documentID) => \(document.data())")
-                        do {
-                            let favList: FavList = try document.data(as: FavList.self)
-                            print("getAllListAndStocksFromOnlineDBAndSaveToLocal favList \(favList)")
-                            // list name existed in local
-                            if let localList = self.getLocalListByListNameOrNull(listName: favList.name),
-                               let stockNos = favList.stocks {
-                                print("list name existed in local")
-                                for stockNo in stockNos {
-                                    if self.isStockNumberInLocalList(stockNumber: stockNo, list: localList) {
-                                        return
-                                    }
-                                    // save new stockNo to local DB
-                                    self.saveNewStockNumberToDB(stockNumber: stockNo, list: localList)
-                                }
-                                return
-                            }
-                            
-                            // list name not existed in local, write lists and stocks to core data
-                            self.saveOnlineDataToLocalDB(listName: favList.name, stockNoStrings: favList.stocks)
-                            completion?()
-                        } catch let error {
-                            print(error)
-                        }
-                    }
-                   
-                }
-                
-            }
-    }
-    func getAllHistoryFromOnlineDBAndSaveToLocal() {
-        guard let email = getLoginAccountEmail() else {return}
-        db.collection(history)
-            .whereField("email", isEqualTo: email)
-            .getDocuments() { (querySnapshot, err) in
-                if let err = err {
-                    print("Error getting documents: \(err)")
-                } else {
-            
-                    for document in querySnapshot!.documents {
-                        print("\(document.documentID) => \(document.data())")
-                        do {
-                            let history = try document.data(as: HistoryOnline.self)
-                            print("getAllHistoryFromOnlineDBAndSaveToLocal history \(history)")
-                            // write  to core data
-                            self.saveOnlineHistoryToLocalDB(history: history)
-                        } catch let error {
-                            print(error)
-                        }
-                    }
-                   
-                }
-                
-            }
-    }
-    
-    func saveOnlineDataToLocalDB(listName: String, stockNoStrings: [String]?) {
-        //guard let context = context else { return }
-        let newList = List(context: context)
-        newList.name = listName
-        if let stockNoStrings = stockNoStrings {
-            for stockNoString in stockNoStrings {
-                let newStockNo = StockNo(context: context)
-                newStockNo.stockNo = stockNoString
-                newStockNo.ofList = newList
-            }
-        }
-       
-        do {
-            try context.save()
-         
-        } catch {
-            print("error, \(error.localizedDescription)")
-        }
-        
-    }
-    func saveOnlineHistoryToLocalDB(history: HistoryOnline) {
-        //guard let context = context else { return }
-
-        let newInvestHistory = InvestHistory(context: context)
-        newInvestHistory.stockNo = history.stockNo
-        newInvestHistory.price = Float(history.price)
-        newInvestHistory.amount = Int16(history.amount)
-        newInvestHistory.date = Date(timeIntervalSince1970: Double(history.time)/1000)
-        newInvestHistory.status = Int16(history.status)
-        
-        
-        do {
-            try context.save()
-        } catch {
-            fatalError("\(error.localizedDescription)")
-        }
-
-    }
-    
-    func fetchAllListFromDB() -> [List]{
-        let fetchRequest: NSFetchRequest<List> = List.fetchRequest()
-        var lists: [List] = []
-        do {
-            let result = try context.fetch(fetchRequest)
-            //print("lists \(result)")
-
-            lists = result
-        } catch let error {
-            print(error.localizedDescription)
-        }
-        return lists
-    }
-    
-    func saveNewStockNumberToDB(stockNumber: String, list: List) {
-        //print("saveNewStockNumberToDB...\(stockNumber)")
-        //guard let context = self.context else { return }
-
-        
-        let newStockNo = StockNo(context: context)
-        newStockNo.stockNo = stockNumber
-        newStockNo.ofList = list // set the relationship between list and stockNo
-        do {
-            try context.save()
-        } catch {
-            print("error, \(error.localizedDescription)")
-        }
- 
-    }
-    
     func deleteHistoryFromOnlineDB(where historyObject: InvestHistory) {
         guard let email = getLoginAccountEmail(),
               let date = historyObject.date

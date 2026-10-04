@@ -162,7 +162,6 @@
 		DF3873A227ECC8DC000E2EAF /* LargeValueFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF3873A127ECC8DC000E2EAF /* LargeValueFormatter.swift */; };
 		DF715D722809140300DD92F4 /* AddListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF715D712809140300DD92F4 /* AddListViewController.swift */; };
 		DF793AD727DF8C36007C9442 /* AddStockNoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF793AD627DF8C36007C9442 /* AddStockNoViewController.swift */; };
-		DF793AD927DF8E29007C9442 /* StockNoList.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF793AD827DF8E29007C9442 /* StockNoList.swift */; };
 		DF793ADB27E03258007C9442 /* AddStockTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF793ADA27E03258007C9442 /* AddStockTableViewCell.swift */; };
 		DF944EE92807DB04005157A9 /* ChartService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF944EE82807DB04005157A9 /* ChartService.swift */; };
 		DFD239DD270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DFD239DB270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodeld */; };
@@ -363,7 +362,6 @@
 		DF3873A127ECC8DC000E2EAF /* LargeValueFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LargeValueFormatter.swift; sourceTree = "<group>"; };
 		DF715D712809140300DD92F4 /* AddListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddListViewController.swift; sourceTree = "<group>"; };
 		DF793AD627DF8C36007C9442 /* AddStockNoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddStockNoViewController.swift; sourceTree = "<group>"; };
-		DF793AD827DF8E29007C9442 /* StockNoList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockNoList.swift; sourceTree = "<group>"; };
 		DF793ADA27E03258007C9442 /* AddStockTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddStockTableViewCell.swift; sourceTree = "<group>"; };
 		DF944EE82807DB04005157A9 /* ChartService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartService.swift; sourceTree = "<group>"; };
 		DFD239DC270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MyTaiwanStock.xcdatamodel; sourceTree = "<group>"; };
@@ -628,7 +626,6 @@
 				DF06F325270D50000031D6FE /* History.swift */,
 				DFD239DB270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodeld */,
 				DF14417F27869C200038D05D /* StockStatistic.swift */,
-				DF793AD827DF8E29007C9442 /* StockNoList.swift */,
 				DFFEB04B27E1D68C00C85A53 /* Sender.swift */,
 				DFFEB04D27E1D6C400C85A53 /* Message.swift */,
 				DFFEB04F27E1E37D00C85A53 /* Channel.swift */,
@@ -1074,7 +1071,6 @@
 				A127051E283201D700ED92F2 /* AddListViewModel.swift in Sources */,
 				A1270520283209FD00ED92F2 /* StockDetailViewModel.swift in Sources */,
 				A11E046F2CFAC2AE00138497 /* Date+Extension.swift in Sources */,
-				DF793AD927DF8E29007C9442 /* StockNoList.swift in Sources */,
 				A1C2E5E728B71F55009D8D9B /* ViewController+extension.swift in Sources */,
 				A1DE925E2DB39EFC00D743C7 /* StockListCoordinator.swift in Sources */,
 				A168E09E27146EF600C75064 /* NewsAPI.swift in Sources */,

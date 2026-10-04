@@ -13,13 +13,13 @@
 		323D9FD28FA5AB52C615B5F9 /* StoreSchemaCompatibilityChecking.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBFA9181BDA2CA0B0071FFE /* StoreSchemaCompatibilityChecking.swift */; };
 		49271FFED761C7C5C12A698F /* TWSEStockInfoFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E5B53D701FA2A0250ACBA2 /* TWSEStockInfoFetcher.swift */; };
 		51173F9563FCAF475F0372BA /* AccountViewControllerImportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6F2F5D3CC3519CA29412D1 /* AccountViewControllerImportTests.swift */; };
-		C7D0C0DA9EE8A573A19E1C83 /* SettingViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CDB14A33624A6CC60E64BDD /* SettingViewControllerTests.swift */; };
+		5DDC80DB77B2FF395CC1D293 /* StockListFilteringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9954537E9A152ABDC0F28B /* StockListFilteringTests.swift */; };
+		6221AE4A3041F498D01AB86E /* StockList.json in Resources */ = {isa = PBXBuildFile; fileRef = 8F775A826F44136978F59060 /* StockList.json */; };
 		6668EF90813808B0AF082831 /* TWSEStockInfoFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E5B53D701FA2A0250ACBA2 /* TWSEStockInfoFetcher.swift */; };
 		684966E6923F08AE3890C7BB /* ICloudAvailabilityChecking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 957B7DA882FDC55B06E94968 /* ICloudAvailabilityChecking.swift */; };
 		85022264D8C3DC74598DFBC5 /* LocalDBServiceCrashFixesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000A994999CDE40E7C0CAD6 /* LocalDBServiceCrashFixesTests.swift */; };
-		D0B1C2A3E4F5061728394A5B /* DuplicateStockNoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0B1C2A3E4F5061728394A5C /* DuplicateStockNoTests.swift */; };
-		D0B1C2A3E4F5061728394A5D /* ListNameTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0B1C2A3E4F5061728394A5E /* ListNameTests.swift */; };
 		88BEE1E19FFE04C57D16DB7A /* ICloudBackupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35BE1FA033A9EAAAD45D552C /* ICloudBackupService.swift */; };
+		8D01BEDFCDF2898AF0DEDA92 /* StockListEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD93EF53658832306E290E9C /* StockListEntry.swift */; };
 		9079AA8B35002B8DED3B7894 /* ICloudBackupServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F24890FEBA8232DE81E0095 /* ICloudBackupServiceTests.swift */; };
 		A1065AD22C21CEF30033A319 /* WalkthroughViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1065AD12C21CEF30033A319 /* WalkthroughViewController.swift */; };
 		A10CD2D028B9D1BB00B37AA4 /* CustomTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10CD2CF28B9D1BB00B37AA4 /* CustomTabBarViewController.swift */; };
@@ -130,6 +130,10 @@
 		A1F168292BDD4FF30080F57E /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = A1F168282BDD4FF30080F57E /* FirebaseFirestore */; };
 		A1F1682F2BDD51E60080F57E /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = A1F1682E2BDD51E60080F57E /* FirebaseFirestoreSwift */; };
 		A1F168332BDE11400080F57E /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F168322BDE11400080F57E /* UIColor+Extension.swift */; };
+		B433722D03E984B1E7F44AE7 /* StockListParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D06AAFE532A45BB2550AE10 /* StockListParser.swift */; };
+		C7D0C0DA9EE8A573A19E1C83 /* SettingViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CDB14A33624A6CC60E64BDD /* SettingViewControllerTests.swift */; };
+		D0B1C2A3E4F5061728394A5B /* DuplicateStockNoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0B1C2A3E4F5061728394A5C /* DuplicateStockNoTests.swift */; };
+		D0B1C2A3E4F5061728394A5D /* ListNameTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0B1C2A3E4F5061728394A5E /* ListNameTests.swift */; };
 		DF06F2FB27097F2C0031D6FE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F2FA27097F2C0031D6FE /* AppDelegate.swift */; };
 		DF06F2FD27097F2C0031D6FE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F2FC27097F2C0031D6FE /* SceneDelegate.swift */; };
 		DF06F2FF27097F2C0031D6FE /* StockListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F2FE27097F2C0031D6FE /* StockListViewController.swift */; };
@@ -221,12 +225,14 @@
 		1F24890FEBA8232DE81E0095 /* ICloudBackupServiceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ICloudBackupServiceTests.swift; sourceTree = "<group>"; };
 		26E5B53D701FA2A0250ACBA2 /* TWSEStockInfoFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TWSEStockInfoFetcher.swift; sourceTree = "<group>"; };
 		35BE1FA033A9EAAAD45D552C /* ICloudBackupService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ICloudBackupService.swift; sourceTree = "<group>"; };
-		3E6F2F5D3CC3519CA29412D1 /* AccountViewControllerImportTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AccountViewControllerImportTests.swift; sourceTree = "<group>"; };
 		3CDB14A33624A6CC60E64BDD /* SettingViewControllerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SettingViewControllerTests.swift; sourceTree = "<group>"; };
+		3E6F2F5D3CC3519CA29412D1 /* AccountViewControllerImportTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AccountViewControllerImportTests.swift; sourceTree = "<group>"; };
 		4527BB5764FC0481AAFCE3E6 /* SceneICloudCoordinatorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SceneICloudCoordinatorTests.swift; sourceTree = "<group>"; };
 		5336FBA6B104EF2D3C240B32 /* BackupDestination.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BackupDestination.swift; sourceTree = "<group>"; };
 		728B8AFF86C937E2E8BECCB9 /* SceneICloudCoordinator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SceneICloudCoordinator.swift; sourceTree = "<group>"; };
+		8F775A826F44136978F59060 /* StockList.json */ = {isa = PBXFileReference; includeInIndex = 1; path = StockList.json; sourceTree = "<group>"; };
 		957B7DA882FDC55B06E94968 /* ICloudAvailabilityChecking.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ICloudAvailabilityChecking.swift; sourceTree = "<group>"; };
+		9D06AAFE532A45BB2550AE10 /* StockListParser.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockListParser.swift; sourceTree = "<group>"; };
 		A1065ACF2C21C4560033A319 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Main.strings"; sourceTree = "<group>"; };
 		A1065AD02C21C4560033A319 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
 		A1065AD12C21CEF30033A319 /* WalkthroughViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalkthroughViewController.swift; sourceTree = "<group>"; };
@@ -313,6 +319,8 @@
 		A1E172492BED087200ED5916 /* View+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extension.swift"; sourceTree = "<group>"; };
 		A1E1724C2BED0E6500ED5916 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		A1F168322BDE11400080F57E /* UIColor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
+		AC9954537E9A152ABDC0F28B /* StockListFilteringTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockListFilteringTests.swift; sourceTree = "<group>"; };
+		AD93EF53658832306E290E9C /* StockListEntry.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockListEntry.swift; sourceTree = "<group>"; };
 		B000A994999CDE40E7C0CAD6 /* LocalDBServiceCrashFixesTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LocalDBServiceCrashFixesTests.swift; sourceTree = "<group>"; };
 		D0B1C2A3E4F5061728394A5C /* DuplicateStockNoTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DuplicateStockNoTests.swift; sourceTree = "<group>"; };
 		D0B1C2A3E4F5061728394A5E /* ListNameTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ListNameTests.swift; sourceTree = "<group>"; };
@@ -400,6 +408,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2E8016544C5C1DBE0E2915A1 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				8F775A826F44136978F59060 /* StockList.json */,
+			);
+			name = Resources;
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		A12705102830AE7C00ED92F2 /* View Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -439,6 +456,7 @@
 				0A260454FDA074BE16F88EFA /* BackupDestinationTests.swift */,
 				3CDB14A33624A6CC60E64BDD /* SettingViewControllerTests.swift */,
 				4527BB5764FC0481AAFCE3E6 /* SceneICloudCoordinatorTests.swift */,
+				AC9954537E9A152ABDC0F28B /* StockListFilteringTests.swift */,
 			);
 			path = MyTaiwanStockTests;
 			sourceTree = "<group>";
@@ -570,6 +588,7 @@
 				A1CD75D12CD388F1000A0A7A /* DependencyContainer.swift */,
 				A11E04672CF2DB6B00138497 /* OverViewCaculator.swift */,
 				A1C03DE327C1D8571005AB268 /* ActivityKit */,
+				2E8016544C5C1DBE0E2915A1 /* Resources */,
 			);
 			path = MyTaiwanStock;
 			sourceTree = "<group>";
@@ -592,6 +611,7 @@
 				DFFEB04F27E1E37D00C85A53 /* Channel.swift */,
 				A17C2A7828D80C99007508D0 /* FeeType.swift */,
 				A17C2A7A28D81303007508D0 /* Fee.swift */,
+				AD93EF53658832306E290E9C /* StockListEntry.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -669,6 +689,7 @@
 				35BE1FA033A9EAAAD45D552C /* ICloudBackupService.swift */,
 				EDBFA9181BDA2CA0B0071FFE /* StoreSchemaCompatibilityChecking.swift */,
 				728B8AFF86C937E2E8BECCB9 /* SceneICloudCoordinator.swift */,
+				9D06AAFE532A45BB2550AE10 /* StockListParser.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -866,6 +887,7 @@
 				A12705182830F4AB00ED92F2 /* GoogleService-Info.plist in Resources */,
 				A1BB04D7293098F0002F983B /* NewHistoryTableViewCell.xib in Resources */,
 				A1CD75CE2CD325E3000A0A7A /* Localizable.xcstrings in Resources */,
+				6221AE4A3041F498D01AB86E /* StockList.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -925,6 +947,7 @@
 				F2607ED17B7E71EFFE5207C9 /* BackupDestinationTests.swift in Sources */,
 				1E8A00E46BCF4BED4A7F6C9B /* SceneICloudCoordinatorTests.swift in Sources */,
 				C7D0C0DA9EE8A573A19E1C83 /* SettingViewControllerTests.swift in Sources */,
+				5DDC80DB77B2FF395CC1D293 /* StockListFilteringTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1038,6 +1061,8 @@
 				88BEE1E19FFE04C57D16DB7A /* ICloudBackupService.swift in Sources */,
 				323D9FD28FA5AB52C615B5F9 /* StoreSchemaCompatibilityChecking.swift in Sources */,
 				043375401A165B414B28A950 /* SceneICloudCoordinator.swift in Sources */,
+				8D01BEDFCDF2898AF0DEDA92 /* StockListEntry.swift in Sources */,
+				B433722D03E984B1E7F44AE7 /* StockListParser.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -61,6 +61,19 @@ fastlane sync_signing type:appstore force:true  # 強制重新產生 provisionin
 fastlane beta                              # 完整流程：同步簽署 + build + 上傳 TestFlight
 ```
 
+### 設定 TestFlight「What to Test」
+
+build 上傳並在 App Store Connect 處理完成後，可用 `set_testflight_notes` lane 設定測試說明（需要上面的 `fastlane/.env`）：
+
+```bash
+bundle exec fastlane set_testflight_notes version:1.20 notes_file:/path/to/notes.txt
+# 或直接帶入文字：notes:"..."
+```
+
+- `version` 填 `MARKETING_VERSION`（`1.20`），不是 tag 名稱（`v1.20.0`）
+- 會寫入該版本最新一個 build，語系為 `zh-Hant`；若 build 還在處理中、找不到時會報錯，稍後重跑即可
+- 已有備註的 build 會被覆蓋
+
 ### 所需 GitHub Secrets（Settings → Secrets and variables → Actions）
 
 | Secret | 用途 |

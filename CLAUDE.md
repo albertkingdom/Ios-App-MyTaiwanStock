@@ -33,6 +33,28 @@ Changes can be parked（暫存）— temporarily moved out of `openspec/changes/
 
 Bug 修正必須在 `fix/{版號}/{問題名稱}` 分支上實作，例如 `fix/1.19/duplicate-stockno-crash`。
 
+## 版號規則
+
+- 分支前綴的版號用 `MARKETING_VERSION` 寫法（`1.20`），不用 tag 寫法（`1.20.0`）
+- 版號指「該分支預計隨哪個版本發布」：
+  - 新需求：下一個尚未發布的版本。上一版（含 tag）已上傳後，改用下一版，例如 1.20 發版後開 `feature/1.21/...`，並把 `MARKETING_VERSION` 改為 1.21
+  - 修正尚在 TestFlight 測試、未上架的版本：沿用該版號，例如 `fix/1.20/...`，只遞增 build number
+  - 修正已上架版本的緊急 bug：用修訂版號，例如 `fix/1.20.1/...`，並把 `MARKETING_VERSION` 改為 1.20.1
+- 已發版的分支不需要改名
+
+## Tag 規則
+
+- 格式 `v{MARKETING_VERSION}.{修訂}`，例如 `MARKETING_VERSION = 1.20` 對應 `v1.20.0`，1.20.1 對應 `v1.20.1`
+- 只在 `release` 分支上打 tag；push `v*` tag 會觸發 `testflight.yml` 上傳 TestFlight（詳見 README「發版流程」）
+- 同一版本因 TestFlight 問題重新上傳，用 GitHub Actions 的 Re-run，不要重打或移動 tag
+
+## PR Merge 規則
+
+- PR 一律用 **Merge commit**（`gh pr merge <N> --merge`），不用 squash 或 rebase，保留 feature／fix 分支上的 commit 歷史
+- 合併前確認 CI（`build-and-test`）通過
+- feature／fix 分支合併進 `mvvm`；發版時再把 `mvvm` merge 進 `release`（同樣用 merge commit）
+- 上一個 PR 合併後，才從最新的 `mvvm` 切下一個分支，避免把未合併的 commit 帶進新分支
+
 # Bug Fix Workflow
 
 修 bug（含 crash report、tester 回報）必須依序：

@@ -27,7 +27,9 @@ class AddStockNoViewModel {
             .removeDuplicates()
             .map { str -> [AddStockCellViewModel] in
                 
-                return stockNoList
+                // The search text is always sent from the main thread (UI input).
+                let stockStrings = MainActor.assumeIsolated { StockListRepository.shared.searchStrings }
+                return stockStrings
                     .filter({ string in
                         string.contains(str)
                     })

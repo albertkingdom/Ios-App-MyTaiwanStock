@@ -11,8 +11,10 @@
 		1E8A00E46BCF4BED4A7F6C9B /* SceneICloudCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4527BB5764FC0481AAFCE3E6 /* SceneICloudCoordinatorTests.swift */; };
 		248A663993B36BBA068B4D84 /* BackupDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5336FBA6B104EF2D3C240B32 /* BackupDestination.swift */; };
 		323D9FD28FA5AB52C615B5F9 /* StoreSchemaCompatibilityChecking.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBFA9181BDA2CA0B0071FFE /* StoreSchemaCompatibilityChecking.swift */; };
+		3A6D87882A7C77A152C0187A /* StockListRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D79600CCD9F096BA52ED45 /* StockListRepositoryTests.swift */; };
 		49271FFED761C7C5C12A698F /* TWSEStockInfoFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E5B53D701FA2A0250ACBA2 /* TWSEStockInfoFetcher.swift */; };
 		51173F9563FCAF475F0372BA /* AccountViewControllerImportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6F2F5D3CC3519CA29412D1 /* AccountViewControllerImportTests.swift */; };
+		5BD264306AF3DC9F99F487D9 /* StockListRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E689875DDDAF313A6EC4313 /* StockListRepository.swift */; };
 		5DDC80DB77B2FF395CC1D293 /* StockListFilteringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9954537E9A152ABDC0F28B /* StockListFilteringTests.swift */; };
 		6221AE4A3041F498D01AB86E /* StockList.json in Resources */ = {isa = PBXBuildFile; fileRef = 8F775A826F44136978F59060 /* StockList.json */; };
 		6668EF90813808B0AF082831 /* TWSEStockInfoFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E5B53D701FA2A0250ACBA2 /* TWSEStockInfoFetcher.swift */; };
@@ -130,6 +132,7 @@
 		A1F168292BDD4FF30080F57E /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = A1F168282BDD4FF30080F57E /* FirebaseFirestore */; };
 		A1F1682F2BDD51E60080F57E /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = A1F1682E2BDD51E60080F57E /* FirebaseFirestoreSwift */; };
 		A1F168332BDE11400080F57E /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F168322BDE11400080F57E /* UIColor+Extension.swift */; };
+		ABC9643CA67C9DCE06519683 /* AddStockNoViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35EDD97E7F23FFCC4B3C4D8D /* AddStockNoViewModelTests.swift */; };
 		B433722D03E984B1E7F44AE7 /* StockListParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D06AAFE532A45BB2550AE10 /* StockListParser.swift */; };
 		C7D0C0DA9EE8A573A19E1C83 /* SettingViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CDB14A33624A6CC60E64BDD /* SettingViewControllerTests.swift */; };
 		D0B1C2A3E4F5061728394A5B /* DuplicateStockNoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0B1C2A3E4F5061728394A5C /* DuplicateStockNoTests.swift */; };
@@ -224,11 +227,14 @@
 		0A260454FDA074BE16F88EFA /* BackupDestinationTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BackupDestinationTests.swift; sourceTree = "<group>"; };
 		1F24890FEBA8232DE81E0095 /* ICloudBackupServiceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ICloudBackupServiceTests.swift; sourceTree = "<group>"; };
 		26E5B53D701FA2A0250ACBA2 /* TWSEStockInfoFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TWSEStockInfoFetcher.swift; sourceTree = "<group>"; };
+		2E689875DDDAF313A6EC4313 /* StockListRepository.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockListRepository.swift; sourceTree = "<group>"; };
 		35BE1FA033A9EAAAD45D552C /* ICloudBackupService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ICloudBackupService.swift; sourceTree = "<group>"; };
+		35EDD97E7F23FFCC4B3C4D8D /* AddStockNoViewModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddStockNoViewModelTests.swift; sourceTree = "<group>"; };
 		3CDB14A33624A6CC60E64BDD /* SettingViewControllerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SettingViewControllerTests.swift; sourceTree = "<group>"; };
 		3E6F2F5D3CC3519CA29412D1 /* AccountViewControllerImportTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AccountViewControllerImportTests.swift; sourceTree = "<group>"; };
 		4527BB5764FC0481AAFCE3E6 /* SceneICloudCoordinatorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SceneICloudCoordinatorTests.swift; sourceTree = "<group>"; };
 		5336FBA6B104EF2D3C240B32 /* BackupDestination.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BackupDestination.swift; sourceTree = "<group>"; };
+		61D79600CCD9F096BA52ED45 /* StockListRepositoryTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockListRepositoryTests.swift; sourceTree = "<group>"; };
 		728B8AFF86C937E2E8BECCB9 /* SceneICloudCoordinator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SceneICloudCoordinator.swift; sourceTree = "<group>"; };
 		8F775A826F44136978F59060 /* StockList.json */ = {isa = PBXFileReference; includeInIndex = 1; path = StockList.json; sourceTree = "<group>"; };
 		957B7DA882FDC55B06E94968 /* ICloudAvailabilityChecking.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ICloudAvailabilityChecking.swift; sourceTree = "<group>"; };
@@ -457,6 +463,8 @@
 				3CDB14A33624A6CC60E64BDD /* SettingViewControllerTests.swift */,
 				4527BB5764FC0481AAFCE3E6 /* SceneICloudCoordinatorTests.swift */,
 				AC9954537E9A152ABDC0F28B /* StockListFilteringTests.swift */,
+				61D79600CCD9F096BA52ED45 /* StockListRepositoryTests.swift */,
+				35EDD97E7F23FFCC4B3C4D8D /* AddStockNoViewModelTests.swift */,
 			);
 			path = MyTaiwanStockTests;
 			sourceTree = "<group>";
@@ -690,6 +698,7 @@
 				EDBFA9181BDA2CA0B0071FFE /* StoreSchemaCompatibilityChecking.swift */,
 				728B8AFF86C937E2E8BECCB9 /* SceneICloudCoordinator.swift */,
 				9D06AAFE532A45BB2550AE10 /* StockListParser.swift */,
+				2E689875DDDAF313A6EC4313 /* StockListRepository.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -948,6 +957,8 @@
 				1E8A00E46BCF4BED4A7F6C9B /* SceneICloudCoordinatorTests.swift in Sources */,
 				C7D0C0DA9EE8A573A19E1C83 /* SettingViewControllerTests.swift in Sources */,
 				5DDC80DB77B2FF395CC1D293 /* StockListFilteringTests.swift in Sources */,
+				3A6D87882A7C77A152C0187A /* StockListRepositoryTests.swift in Sources */,
+				ABC9643CA67C9DCE06519683 /* AddStockNoViewModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1063,6 +1074,7 @@
 				043375401A165B414B28A950 /* SceneICloudCoordinator.swift in Sources */,
 				8D01BEDFCDF2898AF0DEDA92 /* StockListEntry.swift in Sources */,
 				B433722D03E984B1E7F44AE7 /* StockListParser.swift in Sources */,
+				5BD264306AF3DC9F99F487D9 /* StockListRepository.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

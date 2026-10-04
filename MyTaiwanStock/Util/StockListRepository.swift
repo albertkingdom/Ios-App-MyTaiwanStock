@@ -53,6 +53,9 @@ final class StockListRepository {
         apply(newEntries)
     }
 
+    /// Whether a refreshed list has been stored locally (the bundled list does not count).
+    var hasCache: Bool { FileManager.default.fileExists(atPath: cacheURL.path) }
+
     /// Entries in the "code name" form used by the add-stock search.
     var searchStrings: [String] { entries.map(\.searchString) }
 

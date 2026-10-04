@@ -72,7 +72,8 @@ final class StockListRefresherTests: XCTestCase {
         try JSONEncoder().encode(StockListFile(entries: Self.entries(tse: 1380, otc: 1007))).write(to: bundledURL)
         repository = StockListRepository(
             cacheURL: directory.appendingPathComponent("cache/StockList.json"),
-            bundledURL: bundledURL)
+            bundledURL: bundledURL,
+            marketLookupURL: nil)
     }
 
     override func tearDownWithError() throws {

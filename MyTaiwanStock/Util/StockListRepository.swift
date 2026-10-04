@@ -19,13 +19,16 @@ final class StockListRepository {
 
     private let cacheURL: URL
     private let bundledURL: URL?
+    private let marketLookupURL: URL?
 
     init(
         cacheURL: URL = StockListRepository.defaultCacheURL,
-        bundledURL: URL? = Bundle.main.url(forResource: "StockList", withExtension: "json")
+        bundledURL: URL? = Bundle.main.url(forResource: "StockList", withExtension: "json"),
+        marketLookupURL: URL? = StockMarketLookup.defaultFileURL
     ) {
         self.cacheURL = cacheURL
         self.bundledURL = bundledURL
+        self.marketLookupURL = marketLookupURL
         reload()
     }
 
@@ -66,6 +69,19 @@ final class StockListRepository {
     private func apply(_ newEntries: [StockListEntry]) {
         entries = newEntries
         marketByCode = Dictionary(newEntries.map { ($0.code, $0.market) }, uniquingKeysWith: { first, _ in first })
+        shareMarketLookup()
+    }
+
+    /// Shares the code-to-market lookup with the widget through the App Group container.
+    /// The file is only rewritten when its content changes, and a failure is not fatal:
+    /// the widget then queries every code with the `tse_` prefix.
+    private func shareMarketLookup() {
+        guard let marketLookupURL else { return }
+        do {
+            try StockMarketLookup.write(marketByCode, to: marketLookupURL)
+        } catch {
+            print("stock market lookup could not be shared: \(error)")
+        }
     }
 
     private static func load(from url: URL) -> [StockListEntry]? {

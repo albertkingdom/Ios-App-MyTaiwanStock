@@ -12,6 +12,7 @@ final class StockListRepositoryTests: XCTestCase {
     private var directory: URL!
     private var cacheURL: URL!
     private var bundledURL: URL!
+    private var lookupURL: URL!
 
     private let bundledEntries = [StockListEntry(code: "2330", name: "台積電", market: .tse)]
     private let cachedEntries = [
@@ -25,6 +26,7 @@ final class StockListRepositoryTests: XCTestCase {
         try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
         cacheURL = directory.appendingPathComponent("cache/StockList.json")
         bundledURL = directory.appendingPathComponent("bundled.json")
+        lookupURL = directory.appendingPathComponent(StockMarketLookup.fileName)
         try write(bundledEntries, to: bundledURL)
     }
 
@@ -39,7 +41,7 @@ final class StockListRepositoryTests: XCTestCase {
     }
 
     private func makeRepository() -> StockListRepository {
-        StockListRepository(cacheURL: cacheURL, bundledURL: bundledURL)
+        StockListRepository(cacheURL: cacheURL, bundledURL: bundledURL, marketLookupURL: lookupURL)
     }
 
     func test_valid_cache_is_used() throws {
@@ -90,11 +92,38 @@ final class StockListRepositoryTests: XCTestCase {
     }
 
     func test_real_bundled_list_contains_otc_stock_and_new_etf() {
-        let repository = StockListRepository(cacheURL: cacheURL)
+        let repository = StockListRepository(cacheURL: cacheURL, marketLookupURL: lookupURL)
 
         XCTAssertTrue(repository.searchStrings.contains("6488 環球晶"))
         XCTAssertEqual(repository.market(forCode: "6488"), .otc)
         XCTAssertTrue(repository.contains(code: "00929"))
         XCTAssertEqual(repository.market(forCode: "2330"), .tse)
+    }
+
+    // MARK: market lookup shared with the widget
+
+    func test_loading_writes_the_market_of_every_entry_for_the_widget() throws {
+        try write(cachedEntries, to: cacheURL)
+
+        _ = makeRepository()
+
+        let lookup = StockMarketLookup(contentsOf: lookupURL)
+        XCTAssertEqual(lookup.market(forCode: "6488"), .otc)
+        XCTAssertEqual(lookup.market(forCode: "9999"), .tse)
+    }
+
+    func test_bundled_fallback_also_writes_the_lookup() {
+        _ = makeRepository()
+
+        XCTAssertEqual(StockMarketLookup(contentsOf: lookupURL).market(forCode: "2330"), .tse)
+        XCTAssertTrue(FileManager.default.fileExists(atPath: lookupURL.path))
+    }
+
+    func test_replace_updates_the_lookup() throws {
+        let repository = makeRepository()
+
+        try repository.replace(with: cachedEntries)
+
+        XCTAssertEqual(StockMarketLookup(contentsOf: lookupURL).market(forCode: "6488"), .otc)
     }
 }

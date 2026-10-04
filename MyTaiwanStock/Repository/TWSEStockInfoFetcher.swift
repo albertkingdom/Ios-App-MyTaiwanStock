@@ -10,25 +10,27 @@
 import Foundation
 
 struct TWSEStockInfoFetcher {
+    /// Builds the quote request. Listed codes use `tse_`, OTC codes use `otc_`.
+    static func requestURL(
+        stockList: [String],
+        lookup: StockMarketLookup = .current()
+    ) -> URL? {
+        guard var urlComponents = URLComponents(
+            string: "https://mis.twse.com.tw/stock/api/getStockInfo.jsp"
+        ) else { return nil }
+        let stockListQuerys = lookup.exChannelQuery(forCodes: stockList)
+        urlComponents.queryItems = ["ex_ch": stockListQuerys, "json": "1"].map({
+            URLQueryItem(name: $0.key, value: $0.value)
+        })
+        return urlComponents.url
+    }
+
+
     func fetchOneDayStockInfo(
         stockList: [String],
         completionHandler: @escaping (Result<OneDayStockInfo, Error>) -> Void
     ) {
-        guard var urlComponents = URLComponents(
-            string: "https://mis.twse.com.tw/stock/api/getStockInfo.jsp"
-        ) else {
-            completionHandler(.failure(URLError(.badURL)))
-            return
-        }
-
-        let stockListQuerys = stockList.map { "tse_\($0).tw" }.joined(separator: "|")
-
-        // tse_2330.tw|tse_0050.tw
-        urlComponents.queryItems = ["ex_ch": stockListQuerys, "json": "1"].map({
-            URLQueryItem(name: $0.key, value: $0.value)
-        })
-
-        guard let url = urlComponents.url else {
+        guard let url = Self.requestURL(stockList: stockList) else {
             completionHandler(.failure(URLError(.badURL)))
             return
         }

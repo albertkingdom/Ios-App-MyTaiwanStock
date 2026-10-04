@@ -55,6 +55,29 @@ jobs:
       - name: Resolve Swift Package dependencies
         run: xcodebuild -resolvePackageDependencies -project MyTaiwanStock.xcodeproj
 
+      # 只提醒不擋：tag 名稱不影響 App 版本，但兩者一致才能從 tag 對回 TestFlight 上的版本
+      - name: Check tag matches MARKETING_VERSION
+        if: github.event_name == 'push'
+        run: |
+          # 1.20 與 1.20.0 視為相同版本
+          normalize() {
+            local v="${1#v}"
+            while [[ "$v" =~ ^[0-9]+\.[0-9]+(\.[0-9]+)*\.0$ ]]; do v="${v%.0}"; done
+            echo "$v"
+          }
+          marketing_version=$(xcodebuild -showBuildSettings -project MyTaiwanStock.xcodeproj \
+            -target MyTaiwanStock -configuration Release 2>/dev/null \
+            | awk '$1=="MARKETING_VERSION"{print $3; exit}')
+          if [[ -z "$marketing_version" ]]; then
+            echo "::warning::Could not read MARKETING_VERSION; skipping tag version check."
+          elif [[ "$(normalize "$GITHUB_REF_NAME")" != "$(normalize "$marketing_version")" ]]; then
+            message="Tag $GITHUB_REF_NAME does not match MARKETING_VERSION $marketing_version. The build will still upload as $marketing_version."
+            echo "::warning::$message"
+            echo "⚠️ $message" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "Tag $GITHUB_REF_NAME matches MARKETING_VERSION $marketing_version."
+          fi
+
       - name: Install fastlane
         run: gem install fastlane
 

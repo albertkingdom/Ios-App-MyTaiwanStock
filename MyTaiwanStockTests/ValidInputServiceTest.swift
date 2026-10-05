@@ -88,4 +88,24 @@ class ValidInputServiceTest: XCTestCase {
         
         XCTAssertEqual(error?.errorDescription, expectedError.errorDescription)
     }
+
+    // MARK: exact match against the stock list
+
+    func test_partial_code_is_invalid_stockNo() {
+        XCTAssertThrowsError(try validation.validStockNo("23")) { error in
+            XCTAssertEqual(error as? ValidationError, .invalidStockNo)
+        }
+    }
+
+    func test_listed_and_otc_codes_are_valid_stockNo() {
+        XCTAssertNoThrow(try validation.validStockNo("2330"))
+        XCTAssertNoThrow(try validation.validStockNo("6488"))
+    }
+
+    func test_empty_code_is_invalid_stockNo() {
+        XCTAssertThrowsError(try validation.validStockNo("")) { error in
+            XCTAssertEqual(error as? ValidationError, .invalidStockNo)
+        }
+        XCTAssertThrowsError(try validation.validStockNo(nil))
+    }
 }

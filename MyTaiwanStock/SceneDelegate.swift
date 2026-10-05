@@ -84,6 +84,9 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
     func sceneDidBecomeActive(_ scene: UIScene) {
         // Called when the scene has moved from an inactive state to an active state.
         // Use this method to restart any tasks that were paused (or not yet started) when the scene was inactive.
+        // The only place the stock list refresh is triggered. It runs in the background and
+        // returns immediately when the list is fresh or a refresh is already in progress.
+        Task { await StockListRefresher.shared.refreshIfNeeded() }
     }
 
     func sceneWillResignActive(_ scene: UIScene) {

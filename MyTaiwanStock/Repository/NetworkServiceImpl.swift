@@ -35,20 +35,12 @@ class NetworkServiceImpl: NetworkService {
     func fetchOneDayStockInfoCombine(stockList: [String]) -> AnyPublisher<
         OneDayStockInfo, Error
     > {
-        var urlComponents = URLComponents(
-            string: "https://mis.twse.com.tw/stock/api/getStockInfo.jsp"
-        )!
-
-        let stockListQuerys = stockList.map { "tse_\($0).tw" }.joined(
-            separator: "|"
-        )
-
-        // tse_2330.tw|tse_0050.tw
-        urlComponents.queryItems = ["ex_ch": stockListQuerys, "json": "1"].map({
-            URLQueryItem(name: $0.key, value: $0.value)
-        })
+        // Same request builder as the widget path, so both use the market prefix.
+        guard let requestURL = TWSEStockInfoFetcher.requestURL(stockList: stockList) else {
+            return Fail(error: URLError(.badURL)).eraseToAnyPublisher()
+        }
         return Future { promise in
-            URLSession.shared.dataTaskPublisher(for: urlComponents.url!)
+            URLSession.shared.dataTaskPublisher(for: requestURL)
                 .tryMap { data, response in
                     guard let httpResponse = response as? HTTPURLResponse,
                         httpResponse.statusCode == 200

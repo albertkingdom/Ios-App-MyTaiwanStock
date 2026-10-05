@@ -8,13 +8,15 @@ import UIKit
 /// Shows every trade recognized from the screenshots before anything is written. The user picks
 /// the trades to import, fixes values, and chooses the list the stocks are added to.
 final class TradeImportPreviewViewController: UIViewController {
+    private enum Section: Int, CaseIterable {
+        case list
+        case trades
+    }
+
     private let viewModel: TradeImportViewModel
     private let onImported: () -> Void
 
-    private let listButton = UIButton(type: .system)
-    private let noticeLabel = UILabel()
-    private let summaryLabel = UILabel()
-    private let tableView = UITableView(frame: .zero, style: .plain)
+    private let tableView = UITableView(frame: .zero, style: .insetGrouped)
     private let importButton = UIButton(type: .system)
 
     init(viewModel: TradeImportViewModel, onImported: @escaping () -> Void) {
@@ -29,7 +31,7 @@ final class TradeImportPreviewViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         title = "確認匯入"
-        view.backgroundColor = .systemBackground
+        view.backgroundColor = .systemGroupedBackground
         setUpViews()
         refresh()
     }
@@ -37,64 +39,47 @@ final class TradeImportPreviewViewController: UIViewController {
     // MARK: layout
 
     private func setUpViews() {
-        listButton.contentHorizontalAlignment = .leading
-        listButton.showsMenuAsPrimaryAction = true
-
-        noticeLabel.font = .preferredFont(forTextStyle: .footnote)
-        noticeLabel.textColor = .systemOrange
-        noticeLabel.numberOfLines = 0
-        noticeLabel.text = "選擇「不加入清單」時，匯入的買賣紀錄無法從首頁進入該股票的詳細頁查看。"
-
-        summaryLabel.font = .preferredFont(forTextStyle: .footnote)
-        summaryLabel.textColor = .secondaryLabel
-
         tableView.dataSource = self
         tableView.delegate = self
-        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "trade")
+        tableView.register(UITableViewCell.self, forCellReuseIdentifier: "cell")
 
         var configuration = UIButton.Configuration.filled()
-        configuration.cornerStyle = .large
+        configuration.cornerStyle = .capsule
+        configuration.contentInsets = NSDirectionalEdgeInsets(top: 14, leading: 24, bottom: 14, trailing: 24)
+        configuration.titleTextAttributesTransformer = UIConfigurationTextAttributesTransformer { attributes in
+            var attributes = attributes
+            attributes.font = UIFont.preferredFont(forTextStyle: .headline)
+            return attributes
+        }
         importButton.configuration = configuration
         importButton.addTarget(self, action: #selector(importTapped), for: .touchUpInside)
 
-        let header = UIStackView(arrangedSubviews: [listButton, noticeLabel, summaryLabel])
-        header.axis = .vertical
-        header.spacing = 6
-        header.layoutMargins = UIEdgeInsets(top: 8, left: 16, bottom: 8, right: 16)
-        header.isLayoutMarginsRelativeArrangement = true
+        // The button is inset from the screen edges and kept clear of the floating tab bar.
+        let buttonBar = UIView()
+        buttonBar.backgroundColor = .systemGroupedBackground
+        importButton.translatesAutoresizingMaskIntoConstraints = false
+        buttonBar.addSubview(importButton)
+        NSLayoutConstraint.activate([
+            importButton.topAnchor.constraint(equalTo: buttonBar.topAnchor, constant: 8),
+            importButton.leadingAnchor.constraint(equalTo: buttonBar.leadingAnchor, constant: 20),
+            importButton.trailingAnchor.constraint(equalTo: buttonBar.trailingAnchor, constant: -20),
+            importButton.bottomAnchor.constraint(equalTo: buttonBar.bottomAnchor, constant: -88),
+            importButton.heightAnchor.constraint(equalToConstant: 52),
+        ])
 
-        let root = UIStackView(arrangedSubviews: [header, tableView, importButton])
+        let root = UIStackView(arrangedSubviews: [tableView, buttonBar])
         root.axis = .vertical
-        root.spacing = 8
         root.translatesAutoresizingMaskIntoConstraints = false
         view.addSubview(root)
         NSLayoutConstraint.activate([
-            root.topAnchor.constraint(equalTo: view.safeAreaLayoutGuide.topAnchor),
+            root.topAnchor.constraint(equalTo: view.topAnchor),
             root.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             root.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            root.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -8),
-            importButton.heightAnchor.constraint(equalToConstant: 48),
+            root.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
     }
 
     private func refresh() {
-        let listTitle = viewModel.selectedListName ?? "不加入清單"
-        listButton.setTitle("加入清單：\(listTitle) ▾", for: .normal)
-        listButton.menu = UIMenu(children: viewModel.selectableLists.map { name in
-            UIAction(
-                title: name ?? "不加入清單",
-                state: name == viewModel.selectedListName ? .on : .off
-            ) { [weak self] _ in
-                self?.viewModel.selectList(name)
-                self?.refresh()
-            }
-        })
-        noticeLabel.isHidden = !viewModel.showsNoListNotice
-
-        let counts = Dictionary(grouping: viewModel.items, by: \.status).mapValues(\.count)
-        summaryLabel.text = "辨識 \(viewModel.items.count) 筆　可匯入 \(counts[.importable] ?? 0)　重複 \(counts[.duplicate] ?? 0)　"
-            + "需補資料 \(counts[.incomplete] ?? 0)　不支援 \(counts[.unsupported] ?? 0)"
-
         let selected = viewModel.items.filter(\.isSelected).count
         importButton.configuration?.title = "匯入 \(selected) 筆"
         importButton.isEnabled = viewModel.isImportEnabled
@@ -131,7 +116,7 @@ final class TradeImportPreviewViewController: UIViewController {
         navigationController?.pushViewController(editor, animated: true)
     }
 
-    // MARK: row text
+    // MARK: row content
 
     private static let dateFormatter: DateFormatter = {
         let formatter = DateFormatter()
@@ -140,60 +125,134 @@ final class TradeImportPreviewViewController: UIViewController {
         return formatter
     }()
 
-    private static func statusText(_ status: TradePreviewStatus) -> String {
+    private static func statusText(_ status: TradePreviewStatus) -> String? {
         switch status {
-        case .importable: return ""
+        case .importable: return nil
         case .duplicate: return "重複"
         case .incomplete: return "需補資料"
         case .unsupported: return "不支援"
         }
     }
+
+    private static func statusColor(_ status: TradePreviewStatus) -> UIColor {
+        status == .duplicate ? .systemOrange : .systemRed
+    }
+
+    private func listPickerButton() -> UIButton {
+        var configuration = UIButton.Configuration.plain()
+        configuration.title = viewModel.selectedListName ?? "不加入清單"
+        configuration.image = UIImage(systemName: "chevron.up.chevron.down")
+        configuration.imagePlacement = .trailing
+        configuration.imagePadding = 6
+        configuration.preferredSymbolConfigurationForImage = UIImage.SymbolConfiguration(scale: .small)
+        let button = UIButton(configuration: configuration)
+        button.menu = UIMenu(children: viewModel.selectableLists.map { name in
+            UIAction(title: name ?? "不加入清單", state: name == viewModel.selectedListName ? .on : .off) { [weak self] _ in
+                self?.viewModel.selectList(name)
+                self?.refresh()
+            }
+        })
+        button.showsMenuAsPrimaryAction = true
+        return button
+    }
+
+    /// A table cell's accessory view is laid out by frame, so give it its natural size.
+    private func fitted(_ view: UIView) -> UIView {
+        view.frame.size = view.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize)
+        return view
+    }
+
+    private func summaryText() -> String {
+        let counts = Dictionary(grouping: viewModel.items, by: \.status).mapValues(\.count)
+        var parts = ["可匯入 \(counts[.importable] ?? 0)"]
+        if let duplicates = counts[.duplicate] { parts.append("重複 \(duplicates)") }
+        if let incomplete = counts[.incomplete] { parts.append("需補資料 \(incomplete)") }
+        if let unsupported = counts[.unsupported] { parts.append("不支援 \(unsupported)") }
+        return parts.joined(separator: "　")
+    }
 }
 
 extension TradeImportPreviewViewController: UITableViewDataSource, UITableViewDelegate {
+    func numberOfSections(in tableView: UITableView) -> Int { Section.allCases.count }
+
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        viewModel.items.count
+        Section(rawValue: section) == .list ? 1 : viewModel.items.count
+    }
+
+    func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
+        Section(rawValue: section) == .trades ? "辨識到 \(viewModel.items.count) 筆成交紀錄" : nil
+    }
+
+    func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {
+        switch Section(rawValue: section) {
+        case .list:
+            return viewModel.showsNoListNotice ? "選擇「不加入清單」時，匯入的買賣紀錄無法從首頁進入該股票的詳細頁查看。" : nil
+        case .trades:
+            return summaryText()
+        case nil:
+            return nil
+        }
     }
 
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath)
+        cell.accessoryView = nil
+
+        if Section(rawValue: indexPath.section) == .list {
+            var content = cell.defaultContentConfiguration()
+            content.text = "加入清單"
+            cell.contentConfiguration = content
+            cell.accessoryView = fitted(listPickerButton())
+            cell.selectionStyle = .none
+            return cell
+        }
+
         let item = viewModel.items[indexPath.row]
-        let cell = tableView.dequeueReusableCell(withIdentifier: "trade", for: indexPath)
+        let selectable = item.status == .importable || item.status == .duplicate
 
         var content = UIListContentConfiguration.subtitleCell()
-        let code = item.stockNo ?? "？？？"
+        content.text = [item.stockName, item.stockNo].compactMap { $0 }.filter { !$0.isEmpty }.joined(separator: "　")
+        if content.text?.isEmpty ?? true { content.text = "未辨識" }
+        if item.stockNo == nil { content.text = (content.text ?? "") + "　股號？" }
         let side = item.side == .buy ? "買" : "賣"
-        let status = Self.statusText(item.status)
-        content.text = "\(code) \(item.stockName)　\(side)" + (status.isEmpty ? "" : "　【\(status)】")
         let date = item.date.map(Self.dateFormatter.string(from:)) ?? "日期？"
         let amount = item.amount.map { "\($0) 股" } ?? "股數？"
         let price = item.price.map { String(format: "%.2f", $0) } ?? "價格？"
-        content.secondaryText = "\(date) · \(amount) · \(price)"
-        let selectable = item.status == .importable || item.status == .duplicate
-        content.image = UIImage(systemName: item.isSelected ? "checkmark.square.fill" : (selectable ? "square" : "exclamationmark.triangle"))
-        content.imageProperties.tintColor = selectable ? .systemBlue : .systemRed
+        content.secondaryText = "\(side) ・ \(amount) ・ \(price) ・ \(date)"
+        content.secondaryTextProperties.color = .secondaryLabel
+        content.image = UIImage(systemName: item.isSelected ? "checkmark.circle.fill" : (selectable ? "circle" : "exclamationmark.circle"))
+        content.imageProperties.tintColor = item.isSelected ? .systemBlue : (selectable ? .tertiaryLabel : Self.statusColor(item.status))
         cell.contentConfiguration = content
 
-        switch item.status {
-        case .incomplete, .unsupported:
-            cell.backgroundColor = UIColor.systemRed.withAlphaComponent(0.12)
-        case .duplicate:
-            cell.backgroundColor = UIColor.systemYellow.withAlphaComponent(0.15)
-        case .importable:
-            cell.backgroundColor = .systemBackground
+        var accessoryViews: [UIView] = []
+        if let text = Self.statusText(item.status) {
+            let label = UILabel()
+            label.text = text
+            label.font = .preferredFont(forTextStyle: .footnote)
+            label.textColor = Self.statusColor(item.status)
+            accessoryViews.append(label)
         }
-
-        let edit = UIButton(type: .system)
-        edit.setImage(UIImage(systemName: "pencil"), for: .normal)
-        edit.frame = CGRect(x: 0, y: 0, width: 44, height: 44)
-        edit.addAction(UIAction { [weak self] _ in self?.presentEditor(for: item) }, for: .touchUpInside)
-        edit.isEnabled = item.status != .unsupported
-        cell.accessoryView = edit
+        if item.status != .unsupported {
+            let info = UIButton(type: .system)
+            info.setImage(UIImage(systemName: "info.circle"), for: .normal)
+            info.addAction(UIAction { [weak self] _ in self?.presentEditor(for: item) }, for: .touchUpInside)
+            accessoryViews.append(info)
+        }
+        let stack = UIStackView(arrangedSubviews: accessoryViews)
+        stack.spacing = 10
+        stack.alignment = .center
+        cell.accessoryView = accessoryViews.isEmpty ? nil : fitted(stack)
         return cell
     }
 
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         tableView.deselectRow(at: indexPath, animated: true)
+        guard Section(rawValue: indexPath.section) == .trades else { return }
         viewModel.toggleSelection(id: viewModel.items[indexPath.row].id)
         refresh()
+    }
+
+    func tableView(_ tableView: UITableView, shouldHighlightRowAt indexPath: IndexPath) -> Bool {
+        Section(rawValue: indexPath.section) == .trades
     }
 }

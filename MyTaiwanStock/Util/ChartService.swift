@@ -106,6 +106,8 @@ class ChartService {
         guard !rows.isEmpty else {
             combinedChartView.data = nil
             combinedChartView.noDataText = "無資料"
+            // The chart was already drawn with its default text; redraw so the new text shows.
+            combinedChartView.setNeedsDisplay()
             return
         }
         self.stockInfoForCandleStickChart = rows

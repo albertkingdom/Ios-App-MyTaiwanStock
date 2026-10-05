@@ -168,6 +168,11 @@ class FloatingButtonManager {
         let pills = pillsFromButton.filter { !$0.isHidden || !expanded }
         let hiddenOffset = CGAffineTransform(translationX: 0, y: 24).scaledBy(x: 0.85, y: 0.85)
 
+        // Finish any pending layout now. Otherwise the first layout pass happens inside the
+        // animation blocks below and the pills' subviews (such as the round icon badges)
+        // animate from a zero frame, which shows up as squashed ellipses mid-animation.
+        parentView?.layoutIfNeeded()
+
         let apply = {
             self.dimView.alpha = expanded ? 1 : 0
             self.floatingButton.transform = expanded ? CGAffineTransform(rotationAngle: .pi / 4) : .identity

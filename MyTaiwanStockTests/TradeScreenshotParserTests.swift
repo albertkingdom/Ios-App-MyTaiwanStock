@@ -145,5 +145,25 @@ final class TradeScreenshotParserTests: XCTestCase {
         XCTAssertNil(trades[0].date)
         XCTAssertEqual(trades[0].amount, 5)
     }
+
+    // MARK: text boxes exactly as Vision returned them for the real screenshots
+
+    func test_vision_output_of_the_collapsed_screenshot() {
+        let trades = TradeScreenshotParser.parse(boxes: TradeScreenshotVisionFixtures.collapsed)
+
+        XCTAssertEqual(trades.map(summary), [
+            "元大台灣50 買 5 112.55 2026-09-30",
+            "華邦電 買 3 179.5 2026-10-01",
+        ])
+    }
+
+    func test_vision_output_of_the_expanded_screenshot() {
+        let trades = TradeScreenshotParser.parse(boxes: TradeScreenshotVisionFixtures.expanded)
+
+        XCTAssertEqual(trades.map(summary), [
+            "台積電 買 1 2470.0 2026-09-22",
+            "瑞昱 賣 10 757.0 2026-09-23",
+        ])
+    }
 }
 

@@ -15,6 +15,7 @@
 		323D9FD28FA5AB52C615B5F9 /* StoreSchemaCompatibilityChecking.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBFA9181BDA2CA0B0071FFE /* StoreSchemaCompatibilityChecking.swift */; };
 		3A6D87882A7C77A152C0187A /* StockListRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D79600CCD9F096BA52ED45 /* StockListRepositoryTests.swift */; };
 		41C9C9FA491B5D0FF9B38E23 /* StockNameResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DB2A925F8B659FCD4C126CC /* StockNameResolverTests.swift */; };
+		445A9A8D102EA7F2879A8B18 /* TradeImportViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86BBB438DF5F34BD6DC11451 /* TradeImportViewModel.swift */; };
 		49271FFED761C7C5C12A698F /* TWSEStockInfoFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E5B53D701FA2A0250ACBA2 /* TWSEStockInfoFetcher.swift */; };
 		498CA584FCE709CAE8FD5ED1 /* StockMarketLookupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7468712F972AC4EDD765663 /* StockMarketLookupTests.swift */; };
 		4B8F4402BE2EBE7BA3678CFA /* TradeScreenshotFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 444B2D36B63AFE2189A450B6 /* TradeScreenshotFixtures.swift */; };
@@ -183,6 +184,7 @@
 		E3406917F5E402DFC7F860FA /* TradeImportModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8640D09D97E976868D167E4D /* TradeImportModels.swift */; };
 		E37B32A9594CB1AA519D0A7F /* Clock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07B67B026858954D2F414D94 /* Clock.swift */; };
 		E3B120D3A6D124AADD99A68D /* TradeScreenshotParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1FE0B62189FEF6B2F8D6214 /* TradeScreenshotParser.swift */; };
+		EA296C98AFD3A91A19F7E58F /* TradeImportViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F984A9E41163688F362D7882 /* TradeImportViewModelTests.swift */; };
 		EBA091E719AE8600D49AC49B /* StockNameResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = A40356AAFB24898C0EE3E32C /* StockNameResolver.swift */; };
 		ED32AB085E98375A5BEF3BA2 /* StockMarketLookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344EF2A4392E0936741F7193 /* StockMarketLookup.swift */; };
 		F2607ED17B7E71EFFE5207C9 /* BackupDestinationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A260454FDA074BE16F88EFA /* BackupDestinationTests.swift */; };
@@ -259,6 +261,7 @@
 		61D79600CCD9F096BA52ED45 /* StockListRepositoryTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockListRepositoryTests.swift; sourceTree = "<group>"; };
 		728B8AFF86C937E2E8BECCB9 /* SceneICloudCoordinator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SceneICloudCoordinator.swift; sourceTree = "<group>"; };
 		8640D09D97E976868D167E4D /* TradeImportModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeImportModels.swift; sourceTree = "<group>"; };
+		86BBB438DF5F34BD6DC11451 /* TradeImportViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeImportViewModel.swift; sourceTree = "<group>"; };
 		86E56EE9FEDB8EF9AEEA8030 /* TradeTextRecognizerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeTextRecognizerTests.swift; sourceTree = "<group>"; };
 		8F775A826F44136978F59060 /* StockList.json */ = {isa = PBXFileReference; includeInIndex = 1; path = StockList.json; sourceTree = "<group>"; };
 		957B7DA882FDC55B06E94968 /* ICloudAvailabilityChecking.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ICloudAvailabilityChecking.swift; sourceTree = "<group>"; };
@@ -396,6 +399,7 @@
 		DFFEB04D27E1D6C400C85A53 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		DFFEB04F27E1E37D00C85A53 /* Channel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Channel.swift; sourceTree = "<group>"; };
 		EDBFA9181BDA2CA0B0071FFE /* StoreSchemaCompatibilityChecking.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StoreSchemaCompatibilityChecking.swift; sourceTree = "<group>"; };
+		F984A9E41163688F362D7882 /* TradeImportViewModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeImportViewModelTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -462,6 +466,7 @@
 				A1270527283241D700ED92F2 /* ChatViewModel.swift */,
 				A127052928335E6C00ED92F2 /* NewsListViewModel.swift */,
 				A16321532954B05D0011F295 /* AddDividendViewModel.swift */,
+				86BBB438DF5F34BD6DC11451 /* TradeImportViewModel.swift */,
 			);
 			path = "View Model";
 			sourceTree = "<group>";
@@ -501,6 +506,7 @@
 				4DB2A925F8B659FCD4C126CC /* StockNameResolverTests.swift */,
 				86E56EE9FEDB8EF9AEEA8030 /* TradeTextRecognizerTests.swift */,
 				36DAE738BFD46BF3EF2FD877 /* TradeScreenshotVisionFixtures.swift */,
+				F984A9E41163688F362D7882 /* TradeImportViewModelTests.swift */,
 			);
 			path = MyTaiwanStockTests;
 			sourceTree = "<group>";
@@ -1008,6 +1014,7 @@
 				41C9C9FA491B5D0FF9B38E23 /* StockNameResolverTests.swift in Sources */,
 				946C3CBE6A927A9A24FF46C4 /* TradeTextRecognizerTests.swift in Sources */,
 				BB75C1370ABD7A9BA4A5A409 /* TradeScreenshotVisionFixtures.swift in Sources */,
+				EA296C98AFD3A91A19F7E58F /* TradeImportViewModelTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1129,6 +1136,7 @@
 				E3B120D3A6D124AADD99A68D /* TradeScreenshotParser.swift in Sources */,
 				EBA091E719AE8600D49AC49B /* StockNameResolver.swift in Sources */,
 				9E54B0369028A1C694D3FFBA /* TradeTextRecognizer.swift in Sources */,
+				445A9A8D102EA7F2879A8B18 /* TradeImportViewModel.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

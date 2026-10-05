@@ -11,6 +11,7 @@
 		1AC6F2BCB3902075CD524F37 /* StockListRefresherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AC4FF1C38A3B38F1BFAD283 /* StockListRefresherTests.swift */; };
 		1E8A00E46BCF4BED4A7F6C9B /* SceneICloudCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4527BB5764FC0481AAFCE3E6 /* SceneICloudCoordinatorTests.swift */; };
 		248A663993B36BBA068B4D84 /* BackupDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5336FBA6B104EF2D3C240B32 /* BackupDestination.swift */; };
+		265BE16534A679FBA91D9952 /* DefaultTradeImportStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100C2DECF966B15FA78301FC /* DefaultTradeImportStoreTests.swift */; };
 		3122640CD819354A381D89C3 /* StockMarketLookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344EF2A4392E0936741F7193 /* StockMarketLookup.swift */; };
 		323D9FD28FA5AB52C615B5F9 /* StoreSchemaCompatibilityChecking.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBFA9181BDA2CA0B0071FFE /* StoreSchemaCompatibilityChecking.swift */; };
 		3A6D87882A7C77A152C0187A /* StockListRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D79600CCD9F096BA52ED45 /* StockListRepositoryTests.swift */; };
@@ -181,6 +182,7 @@
 		DFFEB04C27E1D68C00C85A53 /* Sender.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFFEB04B27E1D68C00C85A53 /* Sender.swift */; };
 		DFFEB04E27E1D6C400C85A53 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFFEB04D27E1D6C400C85A53 /* Message.swift */; };
 		DFFEB05027E1E37D00C85A53 /* Channel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFFEB04F27E1E37D00C85A53 /* Channel.swift */; };
+		E08ACE5903018780A51F9280 /* DefaultTradeImportStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76A7E78A7574E60C81D3350 /* DefaultTradeImportStore.swift */; };
 		E3406917F5E402DFC7F860FA /* TradeImportModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8640D09D97E976868D167E4D /* TradeImportModels.swift */; };
 		E37B32A9594CB1AA519D0A7F /* Clock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07B67B026858954D2F414D94 /* Clock.swift */; };
 		E3B120D3A6D124AADD99A68D /* TradeScreenshotParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1FE0B62189FEF6B2F8D6214 /* TradeScreenshotParser.swift */; };
@@ -242,6 +244,7 @@
 /* Begin PBXFileReference section */
 		07B67B026858954D2F414D94 /* Clock.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Clock.swift; sourceTree = "<group>"; };
 		0A260454FDA074BE16F88EFA /* BackupDestinationTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BackupDestinationTests.swift; sourceTree = "<group>"; };
+		100C2DECF966B15FA78301FC /* DefaultTradeImportStoreTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DefaultTradeImportStoreTests.swift; sourceTree = "<group>"; };
 		15A4206DDD948FB6376369D3 /* TradeScreenshotParserTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeScreenshotParserTests.swift; sourceTree = "<group>"; };
 		1F24890FEBA8232DE81E0095 /* ICloudBackupServiceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ICloudBackupServiceTests.swift; sourceTree = "<group>"; };
 		26E5B53D701FA2A0250ACBA2 /* TWSEStockInfoFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TWSEStockInfoFetcher.swift; sourceTree = "<group>"; };
@@ -357,6 +360,7 @@
 		AD93EF53658832306E290E9C /* StockListEntry.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockListEntry.swift; sourceTree = "<group>"; };
 		B000A994999CDE40E7C0CAD6 /* LocalDBServiceCrashFixesTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LocalDBServiceCrashFixesTests.swift; sourceTree = "<group>"; };
 		C1FE0B62189FEF6B2F8D6214 /* TradeScreenshotParser.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeScreenshotParser.swift; sourceTree = "<group>"; };
+		C76A7E78A7574E60C81D3350 /* DefaultTradeImportStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DefaultTradeImportStore.swift; sourceTree = "<group>"; };
 		D0B1C2A3E4F5061728394A5C /* DuplicateStockNoTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DuplicateStockNoTests.swift; sourceTree = "<group>"; };
 		D0B1C2A3E4F5061728394A5E /* ListNameTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ListNameTests.swift; sourceTree = "<group>"; };
 		D58D87D037B5D9470F5316F8 /* StockListRefresher.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockListRefresher.swift; sourceTree = "<group>"; };
@@ -507,6 +511,7 @@
 				86E56EE9FEDB8EF9AEEA8030 /* TradeTextRecognizerTests.swift */,
 				36DAE738BFD46BF3EF2FD877 /* TradeScreenshotVisionFixtures.swift */,
 				F984A9E41163688F362D7882 /* TradeImportViewModelTests.swift */,
+				100C2DECF966B15FA78301FC /* DefaultTradeImportStoreTests.swift */,
 			);
 			path = MyTaiwanStockTests;
 			sourceTree = "<group>";
@@ -746,6 +751,7 @@
 				C1FE0B62189FEF6B2F8D6214 /* TradeScreenshotParser.swift */,
 				A40356AAFB24898C0EE3E32C /* StockNameResolver.swift */,
 				DCB4ED896BEF3DDC8FABEF46 /* TradeTextRecognizer.swift */,
+				C76A7E78A7574E60C81D3350 /* DefaultTradeImportStore.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -1015,6 +1021,7 @@
 				946C3CBE6A927A9A24FF46C4 /* TradeTextRecognizerTests.swift in Sources */,
 				BB75C1370ABD7A9BA4A5A409 /* TradeScreenshotVisionFixtures.swift in Sources */,
 				EA296C98AFD3A91A19F7E58F /* TradeImportViewModelTests.swift in Sources */,
+				265BE16534A679FBA91D9952 /* DefaultTradeImportStoreTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1137,6 +1144,7 @@
 				EBA091E719AE8600D49AC49B /* StockNameResolver.swift in Sources */,
 				9E54B0369028A1C694D3FFBA /* TradeTextRecognizer.swift in Sources */,
 				445A9A8D102EA7F2879A8B18 /* TradeImportViewModel.swift in Sources */,
+				E08ACE5903018780A51F9280 /* DefaultTradeImportStore.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

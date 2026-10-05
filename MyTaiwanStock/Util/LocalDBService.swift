@@ -180,6 +180,17 @@ class LocalDBService {
         return lists
     }
     
+    /// The date of every buy/sell record, across all stocks.
+    func fetchAllHistoryDates() -> [Date] {
+        let fetchRequest: NSFetchRequest<InvestHistory> = InvestHistory.fetchRequest()
+        do {
+            return try context.fetch(fetchRequest).compactMap(\.date)
+        } catch let error {
+            print(error.localizedDescription)
+            return []
+        }
+    }
+
     // MARK: fetch stock dividend
     func fetchAllStockDividend() -> [StockDividend] {
         

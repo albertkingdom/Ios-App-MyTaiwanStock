@@ -242,4 +242,128 @@ final class TradeImportViewModelTests: XCTestCase {
         XCTAssertNil(viewModel.selectedListName)
         XCTAssertTrue(viewModel.showsNoListNotice)
     }
+
+    // MARK: writing
+
+    private func millis(_ date: Date) -> Int64 { Int64(date.timeIntervalSince1970 * 1000) }
+
+    func test_confirm_writes_only_the_selected_trades() throws {
+        let viewModel = makeViewModel([parsed(), parsed("華邦電", price: 179.5, amount: 3), parsed("台積電", price: 2470, amount: 1)])
+        viewModel.toggleSelection(id: viewModel.items[2].id) // deselect 台積電
+
+        let submitted = try viewModel.confirmImport()
+
+        XCTAssertEqual(submitted, 2)
+        XCTAssertEqual(store.saved.map(\.stockNo), ["0050", "2344"])
+    }
+
+    func test_odd_lot_buy_is_stored_in_shares_at_noon_taipei() throws {
+        let viewModel = makeViewModel([parsed()])
+
+        _ = try viewModel.confirmImport()
+
+        let record = try XCTUnwrap(store.saved.first)
+        XCTAssertEqual(record.stockNo, "0050")
+        XCTAssertEqual(record.side, .buy)
+        XCTAssertEqual(record.amount, 5)
+        XCTAssertEqual(record.price, 112.55)
+        XCTAssertEqual(millis(record.date), millis(taipei(2026, 9, 30, hour: 12)))
+    }
+
+    func test_same_day_trades_get_distinct_timestamps_on_the_same_taipei_day() throws {
+        let viewModel = makeViewModel([parsed(), parsed("華邦電", price: 179.5, amount: 3)])
+
+        _ = try viewModel.confirmImport()
+
+        let times = store.saved.map { millis($0.date) }
+        let noon = millis(taipei(2026, 9, 30, hour: 12))
+        XCTAssertEqual(times, [noon, noon + 1])
+        XCTAssertTrue(TaipeiCalendar.calendar.isDate(store.saved[0].date, inSameDayAs: store.saved[1].date))
+    }
+
+    func test_timestamp_already_used_by_a_stored_record_is_skipped() throws {
+        let noon = millis(taipei(2026, 9, 30, hour: 12))
+        store.timestamps = [noon, noon + 1]
+        let viewModel = makeViewModel([parsed()])
+
+        _ = try viewModel.confirmImport()
+
+        XCTAssertEqual(millis(store.saved[0].date), noon + 2)
+    }
+
+    func test_one_invalid_selected_trade_blocks_the_whole_import() {
+        let viewModel = makeViewModel([parsed(), parsed("華邦電", price: 179.5, amount: 33000)])
+        viewModel.items[1].isSelected = true // not reachable through the UI; confirm must still refuse
+
+        XCTAssertThrowsError(try viewModel.confirmImport()) { error in
+            XCTAssertEqual(error as? TradeImportViewModel.ImportError, .invalidSelection)
+        }
+        XCTAssertTrue(store.saved.isEmpty)
+        XCTAssertTrue(store.addedStocks.isEmpty)
+    }
+
+    func test_a_duplicate_selected_by_hand_is_written() throws {
+        store.existing["0050"] = [ExistingTrade(date: taipei(2026, 9, 30), price: 112.55, amount: 5, side: .buy)]
+        let viewModel = makeViewModel([parsed()])
+        viewModel.toggleSelection(id: viewModel.items[0].id)
+
+        let submitted = try viewModel.confirmImport()
+
+        XCTAssertEqual(submitted, 1)
+        XCTAssertEqual(store.saved.count, 1)
+    }
+
+    // MARK: adding stocks to the list
+
+    func test_only_stocks_missing_from_the_selected_list_are_added() throws {
+        store.lists["我的清單"] = ["0050"]
+        let viewModel = makeViewModel([parsed(), parsed("華邦電", price: 179.5, amount: 3)])
+
+        _ = try viewModel.confirmImport()
+
+        XCTAssertEqual(store.addedStocks.map(\.stockNo), ["2344"])
+        XCTAssertEqual(store.addedStocks.map(\.listName), ["我的清單"])
+    }
+
+    func test_a_stock_with_two_trades_is_added_once() throws {
+        let viewModel = makeViewModel([
+            parsed("瑞昱", price: 757, amount: 10, side: .sell, type: "盤中零股賣出"),
+            parsed("瑞昱", price: 750, amount: 10),
+        ])
+
+        _ = try viewModel.confirmImport()
+
+        XCTAssertEqual(store.addedStocks.map(\.stockNo), ["2379"])
+    }
+
+    func test_deselected_trades_do_not_add_their_stock() throws {
+        store.lists["我的清單"] = ["2344"]
+        let viewModel = makeViewModel([parsed("台積電", price: 2470, amount: 1), parsed("華邦電", price: 179.5, amount: 3)])
+        viewModel.toggleSelection(id: viewModel.items[0].id)
+
+        _ = try viewModel.confirmImport()
+
+        XCTAssertTrue(store.addedStocks.isEmpty)
+        XCTAssertEqual(store.saved.map(\.stockNo), ["2344"])
+    }
+
+    func test_choosing_no_list_writes_records_but_changes_no_list() throws {
+        let viewModel = makeViewModel([parsed()])
+        viewModel.selectList(nil)
+
+        _ = try viewModel.confirmImport()
+
+        XCTAssertEqual(store.saved.count, 1)
+        XCTAssertTrue(store.addedStocks.isEmpty)
+    }
+
+    func test_records_are_saved_before_stocks_are_added() throws {
+        let viewModel = makeViewModel([parsed()])
+
+        _ = try viewModel.confirmImport()
+
+        XCTAssertEqual(store.saved.count, 1)
+        XCTAssertEqual(store.addedStocks.count, 1)
+    }
 }
+

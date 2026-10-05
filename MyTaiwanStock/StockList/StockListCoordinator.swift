@@ -15,6 +15,11 @@ protocol StockListCoordinatorProtocol: AnyObject {
     func showAddStock(
         followingStockNoList: Set<String>, listName: String,
         addNewStockToDB: @escaping (String) -> Void)
+    /// Starts the screenshot import: pick screenshots, review the recognized trades, import.
+    /// `onImported` runs after trades were written, so the home screen can reload.
+    func showImportTrades(
+        listNames: [String], currentListName: String?,
+        onImported: @escaping () -> Void)
 }
 
 final class StockListCoordinator: Coordinator {
@@ -50,6 +55,11 @@ final class StockListCoordinator: Coordinator {
 }
 
 extension StockListCoordinator: StockListCoordinatorProtocol {
+    func showImportTrades(
+        listNames: [String], currentListName: String?,
+        onImported: @escaping () -> Void
+    ) {}
+
     func showStockDetail(
         stockNo: String, currentStockPrice: String, stockName: String,
         stockPriceDiff: String, timeString: String

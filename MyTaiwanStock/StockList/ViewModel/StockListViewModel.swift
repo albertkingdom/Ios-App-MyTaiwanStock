@@ -510,6 +510,24 @@ extension StockListViewModel {
         coordinator.showAddList()
     }
 
+    func navigateToImportTrades() {
+        coordinator.showImportTrades(
+            listNames: listNames,
+            currentListName: currentFollowingListCombine.value?.name,
+            onImported: { [weak self] in self?.reloadAfterImport() }
+        )
+    }
+
+    /// Reloads the lists from the database after an import added stocks to one of them.
+    /// Re-sending the current index runs the same pipeline as switching lists: it refreshes the
+    /// shown stocks, shares the stock numbers with the widget and reloads the widget timelines.
+    func reloadAfterImport() {
+        guard let lists = fetchListFromDB() else { return }
+        followingListObjectFromDB = lists
+        followingListNames.send(lists.compactMap { $0.name })
+        currentMenuIndex.send(min(currentMenuIndex.value, lists.count - 1))
+    }
+
     func navigateToAddStock() {
         coordinator.showAddStock(
             followingStockNoList: stockNameStringSetCombine.value,

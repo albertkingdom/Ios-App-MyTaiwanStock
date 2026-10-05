@@ -25,6 +25,7 @@
 		6668EF90813808B0AF082831 /* TWSEStockInfoFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E5B53D701FA2A0250ACBA2 /* TWSEStockInfoFetcher.swift */; };
 		684966E6923F08AE3890C7BB /* ICloudAvailabilityChecking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 957B7DA882FDC55B06E94968 /* ICloudAvailabilityChecking.swift */; };
 		85022264D8C3DC74598DFBC5 /* LocalDBServiceCrashFixesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000A994999CDE40E7C0CAD6 /* LocalDBServiceCrashFixesTests.swift */; };
+		88959627407C403447D285E5 /* TradeScreenshotParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A4206DDD948FB6376369D3 /* TradeScreenshotParserTests.swift */; };
 		88BEE1E19FFE04C57D16DB7A /* ICloudBackupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35BE1FA033A9EAAAD45D552C /* ICloudBackupService.swift */; };
 		8D01BEDFCDF2898AF0DEDA92 /* StockListEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD93EF53658832306E290E9C /* StockListEntry.swift */; };
 		9079AA8B35002B8DED3B7894 /* ICloudBackupServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F24890FEBA8232DE81E0095 /* ICloudBackupServiceTests.swift */; };
@@ -177,6 +178,7 @@
 		DFFEB05027E1E37D00C85A53 /* Channel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFFEB04F27E1E37D00C85A53 /* Channel.swift */; };
 		E3406917F5E402DFC7F860FA /* TradeImportModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8640D09D97E976868D167E4D /* TradeImportModels.swift */; };
 		E37B32A9594CB1AA519D0A7F /* Clock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07B67B026858954D2F414D94 /* Clock.swift */; };
+		E3B120D3A6D124AADD99A68D /* TradeScreenshotParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1FE0B62189FEF6B2F8D6214 /* TradeScreenshotParser.swift */; };
 		ED32AB085E98375A5BEF3BA2 /* StockMarketLookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344EF2A4392E0936741F7193 /* StockMarketLookup.swift */; };
 		F2607ED17B7E71EFFE5207C9 /* BackupDestinationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A260454FDA074BE16F88EFA /* BackupDestinationTests.swift */; };
 /* End PBXBuildFile section */
@@ -233,6 +235,7 @@
 /* Begin PBXFileReference section */
 		07B67B026858954D2F414D94 /* Clock.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Clock.swift; sourceTree = "<group>"; };
 		0A260454FDA074BE16F88EFA /* BackupDestinationTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BackupDestinationTests.swift; sourceTree = "<group>"; };
+		15A4206DDD948FB6376369D3 /* TradeScreenshotParserTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeScreenshotParserTests.swift; sourceTree = "<group>"; };
 		1F24890FEBA8232DE81E0095 /* ICloudBackupServiceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ICloudBackupServiceTests.swift; sourceTree = "<group>"; };
 		26E5B53D701FA2A0250ACBA2 /* TWSEStockInfoFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TWSEStockInfoFetcher.swift; sourceTree = "<group>"; };
 		273217F8284584EE8DAE887B /* ChartServiceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ChartServiceTests.swift; sourceTree = "<group>"; };
@@ -341,6 +344,7 @@
 		AC9954537E9A152ABDC0F28B /* StockListFilteringTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockListFilteringTests.swift; sourceTree = "<group>"; };
 		AD93EF53658832306E290E9C /* StockListEntry.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockListEntry.swift; sourceTree = "<group>"; };
 		B000A994999CDE40E7C0CAD6 /* LocalDBServiceCrashFixesTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LocalDBServiceCrashFixesTests.swift; sourceTree = "<group>"; };
+		C1FE0B62189FEF6B2F8D6214 /* TradeScreenshotParser.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeScreenshotParser.swift; sourceTree = "<group>"; };
 		D0B1C2A3E4F5061728394A5C /* DuplicateStockNoTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DuplicateStockNoTests.swift; sourceTree = "<group>"; };
 		D0B1C2A3E4F5061728394A5E /* ListNameTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ListNameTests.swift; sourceTree = "<group>"; };
 		D58D87D037B5D9470F5316F8 /* StockListRefresher.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockListRefresher.swift; sourceTree = "<group>"; };
@@ -483,6 +487,7 @@
 				D7468712F972AC4EDD765663 /* StockMarketLookupTests.swift */,
 				273217F8284584EE8DAE887B /* ChartServiceTests.swift */,
 				444B2D36B63AFE2189A450B6 /* TradeScreenshotFixtures.swift */,
+				15A4206DDD948FB6376369D3 /* TradeScreenshotParserTests.swift */,
 			);
 			path = MyTaiwanStockTests;
 			sourceTree = "<group>";
@@ -719,6 +724,7 @@
 				2E689875DDDAF313A6EC4313 /* StockListRepository.swift */,
 				D58D87D037B5D9470F5316F8 /* StockListRefresher.swift */,
 				344EF2A4392E0936741F7193 /* StockMarketLookup.swift */,
+				C1FE0B62189FEF6B2F8D6214 /* TradeScreenshotParser.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -983,6 +989,7 @@
 				498CA584FCE709CAE8FD5ED1 /* StockMarketLookupTests.swift in Sources */,
 				CC3A8FD7743632B5AAE2AEDB /* ChartServiceTests.swift in Sources */,
 				4B8F4402BE2EBE7BA3678CFA /* TradeScreenshotFixtures.swift in Sources */,
+				88959627407C403447D285E5 /* TradeScreenshotParserTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1101,6 +1108,7 @@
 				D508D05EB0149A48570D3F9F /* StockListRefresher.swift in Sources */,
 				ED32AB085E98375A5BEF3BA2 /* StockMarketLookup.swift in Sources */,
 				E3406917F5E402DFC7F860FA /* TradeImportModels.swift in Sources */,
+				E3B120D3A6D124AADD99A68D /* TradeScreenshotParser.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

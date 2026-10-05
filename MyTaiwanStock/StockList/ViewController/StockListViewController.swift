@@ -78,7 +78,6 @@ class StockListViewController: UIViewController, Navigator {
         makeDataSource()
         dataSource?.apply(snapshot, animatingDifferences: animatingDifferences)
     }
-    private var floatingButtonManager: FloatingButtonManager!
     var didRefresh = PassthroughSubject<Void, Never>()
     var getData = PassthroughSubject<Void, Never>()
     private var output: StockListViewModel.Output?
@@ -114,7 +113,6 @@ class StockListViewController: UIViewController, Navigator {
         navigationController?.navigationBar.prefersLargeTitles = true
         navigationItem.largeTitleDisplayMode = .never
 
-        floatingButtonManager.resetFloatingButtonState()
         getData.send()
 
     }
@@ -208,8 +206,6 @@ class StockListViewController: UIViewController, Navigator {
     private func setupWithViewModel() {
         guard let viewModel = viewModel else { return }
         //        viewModel.handleFetchListFromDB()
-        floatingButton.addTarget(
-            self, action: #selector(goToAddStockNoVC), for: .touchUpInside)
         // Bind view model
         bindViewModel()
 
@@ -229,12 +225,26 @@ class StockListViewController: UIViewController, Navigator {
         didRefresh.send()
     }
 
-    @objc private func goToAddStockNoVC() {
-        let hasMoreThanOneList = self.viewModel.listNames.count >= 1  // 是否有建立清單
-        floatingButtonManager.toggleSecondaryButtons(
-            hasMoreThanOneList: hasMoreThanOneList,
-            parentFloatingButton: floatingButton
-        )
+    /// The pull-down menu of the plus button. It is rebuilt every time it opens, so
+    /// 「新增股票」 only appears once at least one list exists.
+    private func floatingMenuElements() -> [UIMenuElement] {
+        guard let viewModel else { return [] }
+        var elements: [UIMenuElement] = []
+        if !viewModel.listNames.isEmpty {
+            elements.append(
+                UIAction(title: "新增股票", image: UIImage(systemName: "plus.circle")) { _ in
+                    viewModel.navigateToAddStock()
+                })
+        }
+        elements.append(
+            UIAction(title: "截圖匯入", image: UIImage(systemName: "photo.on.rectangle.angled")) { _ in
+                viewModel.navigateToImportTrades()
+            })
+        elements.append(
+            UIAction(title: "新增清單", image: UIImage(systemName: "list.bullet")) { _ in
+                viewModel.navigateToAddList()
+            })
+        return elements
     }
 
     private func configureMenu(actionList: [UIAction]?) {
@@ -264,19 +274,19 @@ class StockListViewController: UIViewController, Navigator {
         view.addSubview(floatingButton)
 
         NSLayoutConstraint.activate([
-            floatingButton.widthAnchor.constraint(equalToConstant: 50),
-            floatingButton.heightAnchor.constraint(equalToConstant: 50),
+            floatingButton.widthAnchor.constraint(equalToConstant: FloatingButton.diameter),
+            floatingButton.heightAnchor.constraint(equalToConstant: FloatingButton.diameter),
             floatingButton.trailingAnchor.constraint(
                 equalTo: view.trailingAnchor, constant: -20),
             floatingButton.bottomAnchor.constraint(
                 equalTo: view.bottomAnchor, constant: -100),
         ])
 
-        floatingButtonManager = FloatingButtonManager(
-            parentView: self.view,
-            floatingButton: floatingButton,
-            delegate: self
-        )
+        floatingButton.menu = UIMenu(children: [
+            UIDeferredMenuElement.uncached { [weak self] completion in
+                completion(self?.floatingMenuElements() ?? [])
+            }
+        ])
     }
 
     func initView() {
@@ -484,32 +494,4 @@ extension StockListViewController {
                 false, forKey: UserDefaults.isFirstTimeOpenApp)
         }
     }
-}
-
-extension StockListViewController: FloatingButtonManagerDelegate {
-    func didTapSecondaryButton1() {
-        guard let viewModel = viewModel else {
-            logger.debug("ViewModel is nil in didTapSecondaryButton1")
-            return
-        }
-        viewModel.navigateToAddList()
-    }
-
-    func didTapSecondaryButton2() {
-        guard let viewModel = viewModel else {
-            logger.debug("ViewModel is nil in didTapSecondaryButton1")
-            return
-        }
-        viewModel.navigateToAddStock()
-    }
-
-    func didTapSecondaryButton3() {
-        guard let viewModel = viewModel else {
-            logger.debug("ViewModel is nil in didTapSecondaryButton3")
-            return
-        }
-        floatingButtonManager.resetFloatingButtonState()
-        viewModel.navigateToImportTrades()
-    }
-
 }

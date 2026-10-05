@@ -224,30 +224,42 @@ class OnlineDBService: OnlineDBSyncing {
     }
     func deleteHistoryFromOnlineDB(where historyObject: InvestHistory) {
         guard let email = getLoginAccountEmail(),
-              let date = historyObject.date
+              let date = historyObject.date,
+              let stockNo = historyObject.stockNo
         else {return}
-       
+
         let timeInMillis = UInt64(date.timeIntervalSince1970*1000)
-        
+        let deleted = DeletedHistoryRecord(
+            stockNo: stockNo,
+            status: Int(historyObject.status),
+            price: Double(historyObject.price),
+            amount: Int(historyObject.amount))
+
         db.collection(history)
             .whereField("email", isEqualTo: email)
             .whereField("time", isEqualTo: timeInMillis)
             .getDocuments() { (querySnapshot, err) in
                 if let err = err {
                     print("Error getting documents: \(err)")
-                } else {
-
-                    for document in querySnapshot!.documents {
-                        print("\(document.documentID) => \(document.data())")
-
-                    }
-                    if let documents = querySnapshot?.documents,
-                       !documents.isEmpty {
-                        let documentID = documents[0].documentID
-                        let ref = self.db.collection(self.history).document(documentID)
-                        ref.delete()
-                    }
+                    return
                 }
+                // Records written in the same millisecond share email and time, so pick the
+                // document of this stock and direction instead of the first one returned.
+                let documents = (querySnapshot?.documents ?? []).compactMap { document -> OnlineHistoryDocument? in
+                    let data = document.data()
+                    guard let stockNo = data["stockNo"] as? String,
+                          let status = data["status"] as? Int,
+                          let price = data["price"] as? Double,
+                          let amount = data["amount"] as? Int
+                    else { return nil }
+                    return OnlineHistoryDocument(
+                        id: document.documentID, stockNo: stockNo, status: status, price: price, amount: amount)
+                }
+                guard let documentID = HistoryDocumentSelector.documentID(toDelete: deleted, among: documents) else {
+                    print("No online history document matches \(stockNo); nothing deleted")
+                    return
+                }
+                self.db.collection(self.history).document(documentID).delete()
             }
     }
 }

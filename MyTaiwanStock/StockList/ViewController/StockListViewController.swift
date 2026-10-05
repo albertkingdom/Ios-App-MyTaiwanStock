@@ -503,4 +503,13 @@ extension StockListViewController: FloatingButtonManagerDelegate {
         viewModel.navigateToAddStock()
     }
 
+    func didTapSecondaryButton3() {
+        guard let viewModel = viewModel else {
+            logger.debug("ViewModel is nil in didTapSecondaryButton3")
+            return
+        }
+        floatingButtonManager.resetFloatingButtonState()
+        viewModel.navigateToImportTrades()
+    }
+
 }

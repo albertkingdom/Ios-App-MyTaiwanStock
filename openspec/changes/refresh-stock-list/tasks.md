@@ -18,7 +18,7 @@
 
 - [x] 3.1 先寫 StockListRefresherTests（修改前會失敗，抓取器、快取與時鐘皆注入）：上次成功 6 天前不更新、7 天更新、沒有快取立即更新；上櫃抓回 700 筆（低於 1,007 的 80%，即 805.6）時不採用上櫃、上市照常更新；逾時、HTTP 錯誤、解析失敗時保留舊資料且不記錄時間；同時呼叫兩次 refreshIfNeeded 只抓取一次；更新成功後 StockListRepository 立即回傳新清單，驗證：執行並確認先失敗。
 - [x] 3.2 實作 StockListRefresher，即「更新策略為過期才在背景更新，兩個市場獨立防呆」：兩個市場各自套用 80% 防呆，至少一個市場被採用才以原子替換寫入快取並記錄時間（Protect the list from bad refresh results），並以 single-flight 保證同時只有一個更新（Run at most one refresh at a time），在 main actor 上替換 repository 內容，驗證：3.1 測試全部通過，且 Protect the list from bad refresh results 的防呆範例表格四列都有對應斷言。
-- [ ] 3.3 在 SceneDelegate 的 sceneDidBecomeActive 呼叫更新檢查（Refresh the list in the background when stale），且只在這一處觸發，在背景執行不阻塞畫面，驗證：在模擬器關閉網路後開啟 app，畫面正常且清單仍可搜尋；開啟網路後回到前景，Xcode console 出現一行「stock list refreshed: tse=N otc=M」（N 大於 1,300、M 介於 1,000 到 1,100）；冷啟動時該行只出現一次。
+- [x] 3.3 在 SceneDelegate 的 sceneDidBecomeActive 呼叫更新檢查（Refresh the list in the background when stale），且只在這一處觸發，在背景執行不阻塞畫面，驗證：在模擬器關閉網路後開啟 app，畫面正常且清單仍可搜尋；開啟網路後回到前景，Xcode console 出現一行「stock list refreshed: tse=N otc=M」（N 大於 1,300、M 介於 1,000 到 1,100）；冷啟動時該行只出現一次。
 
 ## 4. 輸入驗證（Validate stock numbers by exact match）
 
@@ -40,5 +40,5 @@
 
 - [x] 7.1 確認已沒有任何程式碼引用 stockNoList（grep 結果為零），再移除 MyTaiwanStock/Model/StockNoList.swift，驗證：grep stockNoList 沒有結果，xcodebuild build 通過。
 - [x] 7.2 把新增檔案、StockList.json 資源與 StockMarketLookup 的小工具 target 成員資格加入 MyTaiwanStock.xcodeproj/project.pbxproj，驗證：xcodebuild build 與 test 通過，CI 的 build-and-test 可編譯。
-- [ ] 7.3 端到端驗證：在模擬器新增 6488 環球晶與 00929，首頁、小工具與 Live Activity 顯示報價；執行整個 MyTaiwanStockTests 全部通過；git diff 不含 xcdatamodeld（沒有改 Core Data schema）。
+- [x] 7.3 端到端驗證：在模擬器新增 6488 環球晶與 00929，首頁、小工具與 Live Activity 顯示報價；執行整個 MyTaiwanStockTests 全部通過；git diff 不含 xcdatamodeld（沒有改 Core Data schema）。
 - [ ] 7.4 驗證 Android：在 iPhone 把 6488 加入清單並確認已同步到 Firestore，開啟 Android app，記錄 6488 是否出現、有無報價、有無異常（崩潰或空白列），驗證：結論寫入 design.md 的 Risks；若有問題，在 PR 說明列為已知限制。

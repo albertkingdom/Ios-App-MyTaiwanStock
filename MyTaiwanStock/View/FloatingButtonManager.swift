@@ -25,15 +25,24 @@ private final class ActionPill: UIControl {
         blur.translatesAutoresizingMaskIntoConstraints = false
         addSubview(blur)
 
-        let badge = UIImageView(image: UIImage(
-            systemName: symbol,
-            withConfiguration: UIImage.SymbolConfiguration(pointSize: 16, weight: .semibold)))
-        badge.tintColor = .white
-        badge.contentMode = .center
+        // A plain view is the colored circle and the symbol sits inside it. An image view used
+        // directly as the circle adds its own fixed-size constraints that fight the 36-point
+        // size, so each badge ended up a slightly different, non-round height.
+        let badge = UIView()
         badge.backgroundColor = color
         badge.layer.cornerRadius = 18
-        badge.clipsToBounds = true
         badge.translatesAutoresizingMaskIntoConstraints = false
+
+        let icon = UIImageView(image: UIImage(
+            systemName: symbol,
+            withConfiguration: UIImage.SymbolConfiguration(pointSize: 16, weight: .semibold)))
+        icon.tintColor = .white
+        icon.translatesAutoresizingMaskIntoConstraints = false
+        badge.addSubview(icon)
+        NSLayoutConstraint.activate([
+            icon.centerXAnchor.constraint(equalTo: badge.centerXAnchor),
+            icon.centerYAnchor.constraint(equalTo: badge.centerYAnchor),
+        ])
 
         let label = UILabel()
         label.text = title

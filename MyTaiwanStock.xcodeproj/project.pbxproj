@@ -9,6 +9,7 @@
 /* Begin PBXBuildFile section */
 		043375401A165B414B28A950 /* SceneICloudCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728B8AFF86C937E2E8BECCB9 /* SceneICloudCoordinator.swift */; };
 		1AC6F2BCB3902075CD524F37 /* StockListRefresherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AC4FF1C38A3B38F1BFAD283 /* StockListRefresherTests.swift */; };
+		1DF2999F7508FF3072EEEE47 /* FloatingButtonManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DA45FEE2F5F881A51DBD9ED /* FloatingButtonManagerTests.swift */; };
 		1E8A00E46BCF4BED4A7F6C9B /* SceneICloudCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4527BB5764FC0481AAFCE3E6 /* SceneICloudCoordinatorTests.swift */; };
 		248A663993B36BBA068B4D84 /* BackupDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5336FBA6B104EF2D3C240B32 /* BackupDestination.swift */; };
 		265BE16534A679FBA91D9952 /* DefaultTradeImportStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100C2DECF966B15FA78301FC /* DefaultTradeImportStoreTests.swift */; };
@@ -249,6 +250,7 @@
 		0A260454FDA074BE16F88EFA /* BackupDestinationTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BackupDestinationTests.swift; sourceTree = "<group>"; };
 		100C2DECF966B15FA78301FC /* DefaultTradeImportStoreTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DefaultTradeImportStoreTests.swift; sourceTree = "<group>"; };
 		15A4206DDD948FB6376369D3 /* TradeScreenshotParserTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeScreenshotParserTests.swift; sourceTree = "<group>"; };
+		1DA45FEE2F5F881A51DBD9ED /* FloatingButtonManagerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FloatingButtonManagerTests.swift; sourceTree = "<group>"; };
 		1F24890FEBA8232DE81E0095 /* ICloudBackupServiceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ICloudBackupServiceTests.swift; sourceTree = "<group>"; };
 		26E5B53D701FA2A0250ACBA2 /* TWSEStockInfoFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TWSEStockInfoFetcher.swift; sourceTree = "<group>"; };
 		273217F8284584EE8DAE887B /* ChartServiceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ChartServiceTests.swift; sourceTree = "<group>"; };
@@ -518,6 +520,7 @@
 				36DAE738BFD46BF3EF2FD877 /* TradeScreenshotVisionFixtures.swift */,
 				F984A9E41163688F362D7882 /* TradeImportViewModelTests.swift */,
 				100C2DECF966B15FA78301FC /* DefaultTradeImportStoreTests.swift */,
+				1DA45FEE2F5F881A51DBD9ED /* FloatingButtonManagerTests.swift */,
 			);
 			path = MyTaiwanStockTests;
 			sourceTree = "<group>";
@@ -1031,6 +1034,7 @@
 				BB75C1370ABD7A9BA4A5A409 /* TradeScreenshotVisionFixtures.swift in Sources */,
 				EA296C98AFD3A91A19F7E58F /* TradeImportViewModelTests.swift in Sources */,
 				265BE16534A679FBA91D9952 /* DefaultTradeImportStoreTests.swift in Sources */,
+				1DF2999F7508FF3072EEEE47 /* FloatingButtonManagerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

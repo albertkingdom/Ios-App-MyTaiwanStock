@@ -102,7 +102,12 @@ The system SHALL resolve the stock number from the stock name by exact match aga
 
 ### Requirement: Restrict scope to supported trade types
 
-The system SHALL support these trade type texts: 現股買進, 現股賣出, 盤中零股買進, 盤中零股賣出, 盤後零股買進 and 盤後零股賣出. A row whose type text ends in "買進" or "賣出" but is not one of the supported texts, such as day trading, margin, short selling or regular investment plan rows, SHALL still be recognized as a trade, SHALL be shown in the preview as unsupported, SHALL NOT be selectable, and SHALL NOT stop the other trades from being processed.
+The system SHALL support these trade type texts: 盤中零股買進, 盤中零股賣出, 盤後零股買進 and 盤後零股賣出, whose share column is in shares. A row whose type text ends in "買進" or "賣出" but is not one of the supported texts, such as whole-lot (現股), day trading, margin, short selling or regular investment plan rows, SHALL still be recognized as a trade, SHALL be shown in the preview as unsupported, SHALL NOT be selectable, and SHALL NOT stop the other trades from being processed.
+
+#### Scenario: Whole-lot trade
+
+- **WHEN** a screenshot contains a row whose type text is "現股買進"
+- **THEN** the preview SHALL list that row as unsupported and not selectable
 
 #### Scenario: Unsupported type in a batch
 

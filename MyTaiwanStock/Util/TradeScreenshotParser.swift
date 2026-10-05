@@ -21,8 +21,11 @@ enum TradeScreenshotParser {
         "日期", "名稱", "價格/股數", "應收付/損益",
     ]
 
+    /// Odd-lot trades only. Their share column is in shares, which is what `InvestHistory.amount`
+    /// stores. Whole-lot rows ("現股買進"/"現股賣出") are recognized but flagged unsupported: no
+    /// whole-lot screenshot exists, so it is unknown whether that column shows shares or lots.
     static let supportedTradeTypes: Set<String> = [
-        "現股買進", "現股賣出", "盤中零股買進", "盤中零股賣出", "盤後零股買進", "盤後零股賣出",
+        "盤中零股買進", "盤中零股賣出", "盤後零股買進", "盤後零股賣出",
     ]
 
     /// The upper line must lie this many type-box heights above the lower line.

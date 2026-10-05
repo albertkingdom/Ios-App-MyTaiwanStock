@@ -3,7 +3,7 @@
 - [x] 1.1 從 refresh-stock-list 分支切出分支 feature/1.21/import-trades-from-screenshot（疊在 refresh 分支上，這是對「合併後才切新分支」規則的例外，PR 要標明相依；refresh 以 Merge commit 合併進 mvvm 後，再把 mvvm 合併進本分支），驗證：git branch --show-current 顯示該分支名稱，且 git log 含 StockListRepository 的 commit。
 - [x] 1.2 若 mvvm 上的 MARKETING_VERSION 仍是 1.20，在該分支把 App、StockWidget、LiveActivity 三個 target 原本是 1.20 的 6 處改為 1.21（不動測試 target 的 1.0 共 2 處），單獨 commit；若已是 1.21 則略過，驗證：grep MARKETING_VERSION 顯示 1.21 共 6 處、1.0 共 2 處。
 - [x] 1.3 若 mvvm 上的 IPHONEOS_DEPLOYMENT_TARGET 尚未全部為 18.0，在該分支把所有 target 改為 18.0，單獨 commit；已是 18.0 則略過，驗證：grep IPHONEOS_DEPLOYMENT_TARGET 的每一處都是 18.0，且 xcodebuild build 通過。
-- [ ] 1.4 取得一張投資先生「現股」成交的截圖（解決 design 的 Open Questions：現股股數欄以股或張顯示），並記錄結論到 design.md 的 Open Questions；若以張顯示，在 spec 與 tasks 補上乘以 1000 的規則，驗證：design.md 的 Open Questions 已有明確結論。
+- [x] 1.4 現股（整股）的股數單位無法取得樣本確認，改為決定第一版把現股列標為「不支援」，並把結論記錄在 design.md 的 Open Questions；測試先確認「現股買進」「現股賣出」的 isSupportedType 為 false（修改前會失敗），驗證：TradeScreenshotParserTests 的 test_whole_lot_trades_are_unsupported_until_the_share_unit_is_confirmed 通過。
 - [x] 1.5 建立測試資料：把樣本截圖（收合的元大台灣50、華邦電；展開的台積電、瑞昱；以及頂部被切掉、含「融資買進」列、含合併文字框的變體）整理成 RecognizedTextBox 清單（文字加標準化座標，採 Vision 的左下原點，y 越大越靠上），放在 MyTaiwanStockTests 內的測試輔助檔，驗證：測試輔助檔可載入，且四筆樣本交易的文字框包含展開區塊的「委託書號」、「手續費」、「交易稅」標籤與摘要列文字。
 
 ## 2. 解析器（Parse two-line trade rows by position、Ignore expanded detail block、Restrict scope to supported trade types）

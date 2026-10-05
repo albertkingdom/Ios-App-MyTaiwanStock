@@ -48,7 +48,7 @@ final class TradeScreenshotParserTests: XCTestCase {
         let pixels: [Fixtures.PixelBox] = [
             ("2026/", 40, 500, 158, 550), ("元大台灣50", 205, 500, 435, 550),
             ("1,125.50", 540, 500, 688, 550), ("-1,125,500", 840, 500, 960, 550),
-            ("09/30", 40, 585, 158, 632), ("現股買進", 215, 585, 425, 632),
+            ("09/30", 40, 585, 158, 632), ("盤中零股買進", 197, 585, 443, 632),
             ("1,000", 600, 585, 688, 632), ("--", 936, 585, 960, 632),
         ]
 
@@ -104,8 +104,25 @@ final class TradeScreenshotParserTests: XCTestCase {
         XCTAssertEqual(summary(trades[1]), "長榮 買 100 200.0 2026-10-02")
     }
 
+    func test_whole_lot_trades_are_unsupported_until_the_share_unit_is_confirmed() {
+        // Only odd-lot screenshots exist, so it is unknown whether a whole-lot row shows shares or lots.
+        for type in ["現股買進", "現股賣出"] {
+            let pixels: [Fixtures.PixelBox] = [
+                ("2026/", 40, 500, 158, 550), ("台積電", 205, 500, 435, 550),
+                ("2470.00", 552, 500, 688, 550), ("-2,472,000", 830, 500, 960, 550),
+                ("09/22", 40, 585, 158, 632), (type, 215, 585, 425, 632),
+                ("1", 665, 585, 688, 632), ("--", 936, 585, 960, 632),
+            ]
+
+            let trades = TradeScreenshotParser.parse(boxes: Fixtures.boxes(pixels, on: Fixtures.collapsedPage))
+
+            XCTAssertEqual(trades.map(\.isSupportedType), [false], type)
+            XCTAssertEqual(trades.map(\.tradeTypeText), [type])
+        }
+    }
+
     func test_all_supported_trade_types() {
-        let types = ["現股買進", "現股賣出", "盤中零股買進", "盤中零股賣出", "盤後零股買進", "盤後零股賣出"]
+        let types = ["盤中零股買進", "盤中零股賣出", "盤後零股買進", "盤後零股賣出"]
         for type in types {
             let pixels: [Fixtures.PixelBox] = [
                 ("2026/", 40, 500, 158, 550), ("台積電", 205, 500, 435, 550),

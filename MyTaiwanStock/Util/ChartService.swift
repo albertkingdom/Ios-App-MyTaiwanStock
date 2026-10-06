@@ -62,6 +62,9 @@ class ChartService {
     
     private func calculateAverageEntries(candleEntries: [CandleChartDataEntry], windowSize: Int=5) -> [ChartDataEntry] {
         var averageEntries = [ChartDataEntry]()
+        // Newly listed securities (and OTC stocks, whose candle data is unsupported) can have
+        // fewer rows than the window; the range below would then be invalid and trap.
+        guard candleEntries.count >= windowSize else { return averageEntries }
 
         for i in (windowSize - 1)..<candleEntries.count {
             let start = i - windowSize + 1
@@ -79,7 +82,7 @@ class ChartService {
             formatter.numberStyle = .decimal
             let number = formatter.number(from: day[2])
             
-            return BarChartDataEntry(x: Double(index), y: Double(truncating: number!))
+            return BarChartDataEntry(x: Double(index), y: Double(truncating: number ?? 0))
             
         })
         let barDataSet = BarChartDataSet(entries: barEntries, label: "volume")
@@ -98,7 +101,17 @@ class ChartService {
         }
     }
     func prepareForCombinedChart(combinedChartView: CombinedChartView) {
-        let xLabels: [String] = generateXLabel(data: self.stockInfoForCandleStickChart!)
+        // Rows need the date plus open/high/low/close columns (index 0 to 6).
+        let rows = (self.stockInfoForCandleStickChart ?? []).filter { $0.count >= 7 }
+        guard !rows.isEmpty else {
+            combinedChartView.data = nil
+            combinedChartView.noDataText = "無資料"
+            // The chart was already drawn with its default text; redraw so the new text shows.
+            combinedChartView.setNeedsDisplay()
+            return
+        }
+        self.stockInfoForCandleStickChart = rows
+        let xLabels: [String] = generateXLabel(data: rows)
         
         
         combinedChartView.xAxis.valueFormatter = IndexAxisValueFormatter(values: xLabels)
@@ -166,7 +179,7 @@ class ChartService {
         combinedChartView.setVisibleXRangeMaximum(20) // 必須先有資料
         
         guard let totalCandleCount = combinedData.candleData.dataSets.first?.entryCount else {return}
-        combinedChartView.moveViewToX(Double(totalCandleCount-10))
+        combinedChartView.moveViewToX(Double(max(0, totalCandleCount - 10)))
     }
     
     func prepareForPieChart(pieChartView: PieChartView) {

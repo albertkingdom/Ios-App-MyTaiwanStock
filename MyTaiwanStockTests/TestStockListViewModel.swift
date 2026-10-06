@@ -190,6 +190,62 @@ struct TestStockListViewModel {
         #expect(mockRepository.deletedListName == "自選")
     }
 
+    // MARK: screenshot import entry
+
+    @Test
+    @MainActor
+    func test_navigateToImportTrades_passesListsAndCurrentListToCoordinator() {
+        let coordinator = MockStockListCoordinator()
+        let sut = StockListViewModel(repository: mockRepository, coordinator: coordinator)
+        sut.userDefault = UserDefaults(suiteName: "test-\(UUID().uuidString)")
+        let input = makeInput()
+        mockRepository.mockStockList = [
+            makeListStruct(name: "自選", stockNos: ["2330"]),
+            makeListStruct(name: "長期", stockNos: ["0050"]),
+        ]
+        _ = sut.transform(input: input)
+        input.viewDidLoad.send()
+        sut.currentMenuIndex.send(1)
+
+        sut.navigateToImportTrades()
+
+        #expect(coordinator.importTradesRequests.count == 1)
+        #expect(coordinator.importTradesRequests.first?.listNames == ["自選", "長期"])
+        #expect(coordinator.importTradesRequests.first?.currentListName == "長期")
+    }
+
+    @Test
+    @MainActor
+    func test_navigateToImportTrades_withoutLists_passesNoCurrentList() {
+        let coordinator = MockStockListCoordinator()
+        let sut = StockListViewModel(repository: mockRepository, coordinator: coordinator)
+        mockRepository.mockStockList = []
+
+        sut.navigateToImportTrades()
+
+        #expect(coordinator.importTradesRequests.first?.listNames == [])
+        #expect(coordinator.importTradesRequests.first?.currentListName == nil)
+    }
+
+    @Test
+    @MainActor
+    func test_reloadAfterImport_showsStocksAddedByTheImport() {
+        let repository = MockNetworkService()
+        let sut = makeIsolatedSUT(repository: repository)
+        let input = makeInput()
+        repository.mockStockList = [makeListStruct(name: "自選", stockNos: ["2330"])]
+        _ = sut.transform(input: input)
+        input.viewDidLoad.send()
+        #expect(sut.stockNameStringSetCombine.value == ["2330"])
+
+        // The import adds 2379 to the database behind the screen's back.
+        repository.mockStockList = [makeListStruct(name: "自選", stockNos: ["2330", "2379"])]
+        sut.reloadAfterImport()
+
+        #expect(sut.stockNameStringSetCombine.value == ["2330", "2379"])
+        #expect(sut.userDefault?.stringArray(forKey: "stockNos") == ["2330", "2379"])
+    }
+
 //        @Test
 //            func testPriceDiffFormatToggle() {
 //                // Given
@@ -549,4 +605,14 @@ class MockStockListCoordinator: StockListCoordinatorProtocol {
         followingStockNoList: Set<String>, listName: String,
         addNewStockToDB: @escaping (String) -> Void
     ) {}
+
+    private(set) var importTradesRequests: [(listNames: [String], currentListName: String?)] = []
+    private(set) var onImported: (() -> Void)?
+    func showImportTrades(
+        listNames: [String], currentListName: String?,
+        onImported: @escaping () -> Void
+    ) {
+        importTradesRequests.append((listNames, currentListName))
+        self.onImported = onImported
+    }
 }

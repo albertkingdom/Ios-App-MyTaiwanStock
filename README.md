@@ -23,6 +23,7 @@ mvvm (日常開發)  →  release (待發版)  →  打 tag v*  →  自動上�
 - 日常開發在 `mvvm` 分支，push / PR 會觸發 `ci.yml`（build + 跑 unit tests，不簽署）
 - 要發版時，把 `mvvm` merge 進 `release` 分支
 - 在 `release` 分支上打一個 `v*` 格式的 tag（例如 `v1.19.0`）並 push，會自動觸發 `testflight.yml`
+- tag 版號應與 `MARKETING_VERSION` 一致（`v1.20.0` 對應 `1.20`）。不一致時 workflow 會顯示警告，但不會中止，App 仍以 `MARKETING_VERSION` 上傳
 - `testflight.yml` 有保護機制：若 tag 指向的 commit 不在 `release` 分支歷史裡，會直接失敗中止，不會誤發版
 
 ### 自動化流程做的事（`.github/workflows/testflight.yml`）
@@ -59,6 +60,19 @@ fastlane sync_signing type:appstore        # 只同步簽署資產
 fastlane sync_signing type:appstore force:true  # 強制重新產生 provisioning profile
 fastlane beta                              # 完整流程：同步簽署 + build + 上傳 TestFlight
 ```
+
+### 設定 TestFlight「What to Test」
+
+build 上傳並在 App Store Connect 處理完成後，可用 `set_testflight_notes` lane 設定測試說明（需要上面的 `fastlane/.env`）：
+
+```bash
+bundle exec fastlane set_testflight_notes version:1.20 notes_file:/path/to/notes.txt
+# 或直接帶入文字：notes:"..."
+```
+
+- `version` 填 `MARKETING_VERSION`（`1.20`），不是 tag 名稱（`v1.20.0`）
+- 會寫入該版本最新一個 build，語系為 `zh-Hant`；若 build 還在處理中、找不到時會報錯，稍後重跑即可
+- 已有備註的 build 會被覆蓋
 
 ### 所需 GitHub Secrets（Settings → Secrets and variables → Actions）
 

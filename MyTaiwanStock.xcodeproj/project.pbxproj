@@ -8,19 +8,37 @@
 
 /* Begin PBXBuildFile section */
 		043375401A165B414B28A950 /* SceneICloudCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728B8AFF86C937E2E8BECCB9 /* SceneICloudCoordinator.swift */; };
+		1AC6F2BCB3902075CD524F37 /* StockListRefresherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AC4FF1C38A3B38F1BFAD283 /* StockListRefresherTests.swift */; };
+		1DF2999F7508FF3072EEEE47 /* FloatingButtonManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DA45FEE2F5F881A51DBD9ED /* FloatingButtonManagerTests.swift */; };
 		1E8A00E46BCF4BED4A7F6C9B /* SceneICloudCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4527BB5764FC0481AAFCE3E6 /* SceneICloudCoordinatorTests.swift */; };
 		248A663993B36BBA068B4D84 /* BackupDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5336FBA6B104EF2D3C240B32 /* BackupDestination.swift */; };
+		265BE16534A679FBA91D9952 /* DefaultTradeImportStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 100C2DECF966B15FA78301FC /* DefaultTradeImportStoreTests.swift */; };
+		3122640CD819354A381D89C3 /* StockMarketLookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344EF2A4392E0936741F7193 /* StockMarketLookup.swift */; };
 		323D9FD28FA5AB52C615B5F9 /* StoreSchemaCompatibilityChecking.swift in Sources */ = {isa = PBXBuildFile; fileRef = EDBFA9181BDA2CA0B0071FFE /* StoreSchemaCompatibilityChecking.swift */; };
+		3A6D87882A7C77A152C0187A /* StockListRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D79600CCD9F096BA52ED45 /* StockListRepositoryTests.swift */; };
+		41C9C9FA491B5D0FF9B38E23 /* StockNameResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DB2A925F8B659FCD4C126CC /* StockNameResolverTests.swift */; };
+		445A9A8D102EA7F2879A8B18 /* TradeImportViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86BBB438DF5F34BD6DC11451 /* TradeImportViewModel.swift */; };
 		49271FFED761C7C5C12A698F /* TWSEStockInfoFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E5B53D701FA2A0250ACBA2 /* TWSEStockInfoFetcher.swift */; };
+		498CA584FCE709CAE8FD5ED1 /* StockMarketLookupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7468712F972AC4EDD765663 /* StockMarketLookupTests.swift */; };
+		4B393869E11CA6331D0E4219 /* HistoryDocumentSelectorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 02FECA27A0D552A9EB23F939 /* HistoryDocumentSelectorTests.swift */; };
+		4B8F4402BE2EBE7BA3678CFA /* TradeScreenshotFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 444B2D36B63AFE2189A450B6 /* TradeScreenshotFixtures.swift */; };
+		4D30204624F67012F81DAE1D /* StockListEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD93EF53658832306E290E9C /* StockListEntry.swift */; };
 		51173F9563FCAF475F0372BA /* AccountViewControllerImportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3E6F2F5D3CC3519CA29412D1 /* AccountViewControllerImportTests.swift */; };
-		C7D0C0DA9EE8A573A19E1C83 /* SettingViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CDB14A33624A6CC60E64BDD /* SettingViewControllerTests.swift */; };
+		5BD264306AF3DC9F99F487D9 /* StockListRepository.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2E689875DDDAF313A6EC4313 /* StockListRepository.swift */; };
+		5DDC80DB77B2FF395CC1D293 /* StockListFilteringTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = AC9954537E9A152ABDC0F28B /* StockListFilteringTests.swift */; };
+		60FD508D8A09B5530001CB9B /* HistoryDocumentSelector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 44CFEAF3C949085344714127 /* HistoryDocumentSelector.swift */; };
+		6221AE4A3041F498D01AB86E /* StockList.json in Resources */ = {isa = PBXBuildFile; fileRef = 8F775A826F44136978F59060 /* StockList.json */; };
 		6668EF90813808B0AF082831 /* TWSEStockInfoFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E5B53D701FA2A0250ACBA2 /* TWSEStockInfoFetcher.swift */; };
 		684966E6923F08AE3890C7BB /* ICloudAvailabilityChecking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 957B7DA882FDC55B06E94968 /* ICloudAvailabilityChecking.swift */; };
+		6B205E7A0A6FD4747735BD26 /* TradeEditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 808890ADBB223AD086D933A4 /* TradeEditViewController.swift */; };
+		6CA4838BE5F3B45B986BE572 /* TradeImportFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38636568B743F70FE246F6FE /* TradeImportFlow.swift */; };
 		85022264D8C3DC74598DFBC5 /* LocalDBServiceCrashFixesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000A994999CDE40E7C0CAD6 /* LocalDBServiceCrashFixesTests.swift */; };
-		D0B1C2A3E4F5061728394A5B /* DuplicateStockNoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0B1C2A3E4F5061728394A5C /* DuplicateStockNoTests.swift */; };
-		D0B1C2A3E4F5061728394A5D /* ListNameTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0B1C2A3E4F5061728394A5E /* ListNameTests.swift */; };
+		88959627407C403447D285E5 /* TradeScreenshotParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A4206DDD948FB6376369D3 /* TradeScreenshotParserTests.swift */; };
 		88BEE1E19FFE04C57D16DB7A /* ICloudBackupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35BE1FA033A9EAAAD45D552C /* ICloudBackupService.swift */; };
+		8D01BEDFCDF2898AF0DEDA92 /* StockListEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD93EF53658832306E290E9C /* StockListEntry.swift */; };
 		9079AA8B35002B8DED3B7894 /* ICloudBackupServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F24890FEBA8232DE81E0095 /* ICloudBackupServiceTests.swift */; };
+		946C3CBE6A927A9A24FF46C4 /* TradeTextRecognizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86E56EE9FEDB8EF9AEEA8030 /* TradeTextRecognizerTests.swift */; };
+		9E54B0369028A1C694D3FFBA /* TradeTextRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCB4ED896BEF3DDC8FABEF46 /* TradeTextRecognizer.swift */; };
 		A1065AD22C21CEF30033A319 /* WalkthroughViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1065AD12C21CEF30033A319 /* WalkthroughViewController.swift */; };
 		A10CD2D028B9D1BB00B37AA4 /* CustomTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10CD2CF28B9D1BB00B37AA4 /* CustomTabBarViewController.swift */; };
 		A1164EFC2CD268220036C275 /* UnreadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1164EFB2CD268220036C275 /* UnreadManager.swift */; };
@@ -130,6 +148,15 @@
 		A1F168292BDD4FF30080F57E /* FirebaseFirestore in Frameworks */ = {isa = PBXBuildFile; productRef = A1F168282BDD4FF30080F57E /* FirebaseFirestore */; };
 		A1F1682F2BDD51E60080F57E /* FirebaseFirestoreSwift in Frameworks */ = {isa = PBXBuildFile; productRef = A1F1682E2BDD51E60080F57E /* FirebaseFirestoreSwift */; };
 		A1F168332BDE11400080F57E /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F168322BDE11400080F57E /* UIColor+Extension.swift */; };
+		ABC9643CA67C9DCE06519683 /* AddStockNoViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35EDD97E7F23FFCC4B3C4D8D /* AddStockNoViewModelTests.swift */; };
+		B433722D03E984B1E7F44AE7 /* StockListParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D06AAFE532A45BB2550AE10 /* StockListParser.swift */; };
+		BB75C1370ABD7A9BA4A5A409 /* TradeScreenshotVisionFixtures.swift in Sources */ = {isa = PBXBuildFile; fileRef = 36DAE738BFD46BF3EF2FD877 /* TradeScreenshotVisionFixtures.swift */; };
+		C7D0C0DA9EE8A573A19E1C83 /* SettingViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CDB14A33624A6CC60E64BDD /* SettingViewControllerTests.swift */; };
+		C87A5097F1D1788BA69DA442 /* TradeImportPreviewViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 39AD27A74F9DF2F3D0E2701C /* TradeImportPreviewViewController.swift */; };
+		CC3A8FD7743632B5AAE2AEDB /* ChartServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273217F8284584EE8DAE887B /* ChartServiceTests.swift */; };
+		D0B1C2A3E4F5061728394A5B /* DuplicateStockNoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0B1C2A3E4F5061728394A5C /* DuplicateStockNoTests.swift */; };
+		D0B1C2A3E4F5061728394A5D /* ListNameTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0B1C2A3E4F5061728394A5E /* ListNameTests.swift */; };
+		D508D05EB0149A48570D3F9F /* StockListRefresher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D58D87D037B5D9470F5316F8 /* StockListRefresher.swift */; };
 		DF06F2FB27097F2C0031D6FE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F2FA27097F2C0031D6FE /* AppDelegate.swift */; };
 		DF06F2FD27097F2C0031D6FE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F2FC27097F2C0031D6FE /* SceneDelegate.swift */; };
 		DF06F2FF27097F2C0031D6FE /* StockListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F2FE27097F2C0031D6FE /* StockListViewController.swift */; };
@@ -149,7 +176,6 @@
 		DF3873A227ECC8DC000E2EAF /* LargeValueFormatter.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF3873A127ECC8DC000E2EAF /* LargeValueFormatter.swift */; };
 		DF715D722809140300DD92F4 /* AddListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF715D712809140300DD92F4 /* AddListViewController.swift */; };
 		DF793AD727DF8C36007C9442 /* AddStockNoViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF793AD627DF8C36007C9442 /* AddStockNoViewController.swift */; };
-		DF793AD927DF8E29007C9442 /* StockNoList.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF793AD827DF8E29007C9442 /* StockNoList.swift */; };
 		DF793ADB27E03258007C9442 /* AddStockTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF793ADA27E03258007C9442 /* AddStockTableViewCell.swift */; };
 		DF944EE92807DB04005157A9 /* ChartService.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF944EE82807DB04005157A9 /* ChartService.swift */; };
 		DFD239DD270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = DFD239DB270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodeld */; };
@@ -162,7 +188,13 @@
 		DFFEB04C27E1D68C00C85A53 /* Sender.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFFEB04B27E1D68C00C85A53 /* Sender.swift */; };
 		DFFEB04E27E1D6C400C85A53 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFFEB04D27E1D6C400C85A53 /* Message.swift */; };
 		DFFEB05027E1E37D00C85A53 /* Channel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFFEB04F27E1E37D00C85A53 /* Channel.swift */; };
+		E08ACE5903018780A51F9280 /* DefaultTradeImportStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = C76A7E78A7574E60C81D3350 /* DefaultTradeImportStore.swift */; };
+		E3406917F5E402DFC7F860FA /* TradeImportModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8640D09D97E976868D167E4D /* TradeImportModels.swift */; };
 		E37B32A9594CB1AA519D0A7F /* Clock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07B67B026858954D2F414D94 /* Clock.swift */; };
+		E3B120D3A6D124AADD99A68D /* TradeScreenshotParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1FE0B62189FEF6B2F8D6214 /* TradeScreenshotParser.swift */; };
+		EA296C98AFD3A91A19F7E58F /* TradeImportViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F984A9E41163688F362D7882 /* TradeImportViewModelTests.swift */; };
+		EBA091E719AE8600D49AC49B /* StockNameResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = A40356AAFB24898C0EE3E32C /* StockNameResolver.swift */; };
+		ED32AB085E98375A5BEF3BA2 /* StockMarketLookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344EF2A4392E0936741F7193 /* StockMarketLookup.swift */; };
 		F2607ED17B7E71EFFE5207C9 /* BackupDestinationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A260454FDA074BE16F88EFA /* BackupDestinationTests.swift */; };
 /* End PBXBuildFile section */
 
@@ -216,17 +248,39 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		02FECA27A0D552A9EB23F939 /* HistoryDocumentSelectorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HistoryDocumentSelectorTests.swift; sourceTree = "<group>"; };
 		07B67B026858954D2F414D94 /* Clock.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = Clock.swift; sourceTree = "<group>"; };
 		0A260454FDA074BE16F88EFA /* BackupDestinationTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BackupDestinationTests.swift; sourceTree = "<group>"; };
+		100C2DECF966B15FA78301FC /* DefaultTradeImportStoreTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DefaultTradeImportStoreTests.swift; sourceTree = "<group>"; };
+		15A4206DDD948FB6376369D3 /* TradeScreenshotParserTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeScreenshotParserTests.swift; sourceTree = "<group>"; };
+		1DA45FEE2F5F881A51DBD9ED /* FloatingButtonManagerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FloatingButtonManagerTests.swift; sourceTree = "<group>"; };
 		1F24890FEBA8232DE81E0095 /* ICloudBackupServiceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ICloudBackupServiceTests.swift; sourceTree = "<group>"; };
 		26E5B53D701FA2A0250ACBA2 /* TWSEStockInfoFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TWSEStockInfoFetcher.swift; sourceTree = "<group>"; };
+		273217F8284584EE8DAE887B /* ChartServiceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ChartServiceTests.swift; sourceTree = "<group>"; };
+		2E689875DDDAF313A6EC4313 /* StockListRepository.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockListRepository.swift; sourceTree = "<group>"; };
+		344EF2A4392E0936741F7193 /* StockMarketLookup.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockMarketLookup.swift; sourceTree = "<group>"; };
 		35BE1FA033A9EAAAD45D552C /* ICloudBackupService.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ICloudBackupService.swift; sourceTree = "<group>"; };
-		3E6F2F5D3CC3519CA29412D1 /* AccountViewControllerImportTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AccountViewControllerImportTests.swift; sourceTree = "<group>"; };
+		35EDD97E7F23FFCC4B3C4D8D /* AddStockNoViewModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddStockNoViewModelTests.swift; sourceTree = "<group>"; };
+		36DAE738BFD46BF3EF2FD877 /* TradeScreenshotVisionFixtures.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeScreenshotVisionFixtures.swift; sourceTree = "<group>"; };
+		38636568B743F70FE246F6FE /* TradeImportFlow.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeImportFlow.swift; sourceTree = "<group>"; };
+		39AD27A74F9DF2F3D0E2701C /* TradeImportPreviewViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeImportPreviewViewController.swift; sourceTree = "<group>"; };
 		3CDB14A33624A6CC60E64BDD /* SettingViewControllerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SettingViewControllerTests.swift; sourceTree = "<group>"; };
+		3E6F2F5D3CC3519CA29412D1 /* AccountViewControllerImportTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AccountViewControllerImportTests.swift; sourceTree = "<group>"; };
+		444B2D36B63AFE2189A450B6 /* TradeScreenshotFixtures.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeScreenshotFixtures.swift; sourceTree = "<group>"; };
+		44CFEAF3C949085344714127 /* HistoryDocumentSelector.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HistoryDocumentSelector.swift; sourceTree = "<group>"; };
 		4527BB5764FC0481AAFCE3E6 /* SceneICloudCoordinatorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SceneICloudCoordinatorTests.swift; sourceTree = "<group>"; };
+		4DB2A925F8B659FCD4C126CC /* StockNameResolverTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockNameResolverTests.swift; sourceTree = "<group>"; };
 		5336FBA6B104EF2D3C240B32 /* BackupDestination.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BackupDestination.swift; sourceTree = "<group>"; };
+		5AC4FF1C38A3B38F1BFAD283 /* StockListRefresherTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockListRefresherTests.swift; sourceTree = "<group>"; };
+		61D79600CCD9F096BA52ED45 /* StockListRepositoryTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockListRepositoryTests.swift; sourceTree = "<group>"; };
 		728B8AFF86C937E2E8BECCB9 /* SceneICloudCoordinator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SceneICloudCoordinator.swift; sourceTree = "<group>"; };
+		808890ADBB223AD086D933A4 /* TradeEditViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeEditViewController.swift; sourceTree = "<group>"; };
+		8640D09D97E976868D167E4D /* TradeImportModels.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeImportModels.swift; sourceTree = "<group>"; };
+		86BBB438DF5F34BD6DC11451 /* TradeImportViewModel.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeImportViewModel.swift; sourceTree = "<group>"; };
+		86E56EE9FEDB8EF9AEEA8030 /* TradeTextRecognizerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeTextRecognizerTests.swift; sourceTree = "<group>"; };
+		8F775A826F44136978F59060 /* StockList.json */ = {isa = PBXFileReference; includeInIndex = 1; path = StockList.json; sourceTree = "<group>"; };
 		957B7DA882FDC55B06E94968 /* ICloudAvailabilityChecking.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ICloudAvailabilityChecking.swift; sourceTree = "<group>"; };
+		9D06AAFE532A45BB2550AE10 /* StockListParser.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockListParser.swift; sourceTree = "<group>"; };
 		A1065ACF2C21C4560033A319 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Main.strings"; sourceTree = "<group>"; };
 		A1065AD02C21C4560033A319 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
 		A1065AD12C21CEF30033A319 /* WalkthroughViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalkthroughViewController.swift; sourceTree = "<group>"; };
@@ -313,9 +367,17 @@
 		A1E172492BED087200ED5916 /* View+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extension.swift"; sourceTree = "<group>"; };
 		A1E1724C2BED0E6500ED5916 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = text; path = .gitignore; sourceTree = "<group>"; };
 		A1F168322BDE11400080F57E /* UIColor+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Extension.swift"; sourceTree = "<group>"; };
+		A40356AAFB24898C0EE3E32C /* StockNameResolver.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockNameResolver.swift; sourceTree = "<group>"; };
+		AC9954537E9A152ABDC0F28B /* StockListFilteringTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockListFilteringTests.swift; sourceTree = "<group>"; };
+		AD93EF53658832306E290E9C /* StockListEntry.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockListEntry.swift; sourceTree = "<group>"; };
 		B000A994999CDE40E7C0CAD6 /* LocalDBServiceCrashFixesTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LocalDBServiceCrashFixesTests.swift; sourceTree = "<group>"; };
+		C1FE0B62189FEF6B2F8D6214 /* TradeScreenshotParser.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeScreenshotParser.swift; sourceTree = "<group>"; };
+		C76A7E78A7574E60C81D3350 /* DefaultTradeImportStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DefaultTradeImportStore.swift; sourceTree = "<group>"; };
 		D0B1C2A3E4F5061728394A5C /* DuplicateStockNoTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DuplicateStockNoTests.swift; sourceTree = "<group>"; };
 		D0B1C2A3E4F5061728394A5E /* ListNameTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ListNameTests.swift; sourceTree = "<group>"; };
+		D58D87D037B5D9470F5316F8 /* StockListRefresher.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockListRefresher.swift; sourceTree = "<group>"; };
+		D7468712F972AC4EDD765663 /* StockMarketLookupTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockMarketLookupTests.swift; sourceTree = "<group>"; };
+		DCB4ED896BEF3DDC8FABEF46 /* TradeTextRecognizer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeTextRecognizer.swift; sourceTree = "<group>"; };
 		DF06F2F727097F2C0031D6FE /* MyTaiwanStock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyTaiwanStock.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DF06F2FA27097F2C0031D6FE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DF06F2FC27097F2C0031D6FE /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -337,7 +399,6 @@
 		DF3873A127ECC8DC000E2EAF /* LargeValueFormatter.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LargeValueFormatter.swift; sourceTree = "<group>"; };
 		DF715D712809140300DD92F4 /* AddListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddListViewController.swift; sourceTree = "<group>"; };
 		DF793AD627DF8C36007C9442 /* AddStockNoViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddStockNoViewController.swift; sourceTree = "<group>"; };
-		DF793AD827DF8E29007C9442 /* StockNoList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StockNoList.swift; sourceTree = "<group>"; };
 		DF793ADA27E03258007C9442 /* AddStockTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddStockTableViewCell.swift; sourceTree = "<group>"; };
 		DF944EE82807DB04005157A9 /* ChartService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartService.swift; sourceTree = "<group>"; };
 		DFD239DC270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MyTaiwanStock.xcdatamodel; sourceTree = "<group>"; };
@@ -354,6 +415,7 @@
 		DFFEB04D27E1D6C400C85A53 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		DFFEB04F27E1E37D00C85A53 /* Channel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Channel.swift; sourceTree = "<group>"; };
 		EDBFA9181BDA2CA0B0071FFE /* StoreSchemaCompatibilityChecking.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StoreSchemaCompatibilityChecking.swift; sourceTree = "<group>"; };
+		F984A9E41163688F362D7882 /* TradeImportViewModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeImportViewModelTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -400,6 +462,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		2E8016544C5C1DBE0E2915A1 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				8F775A826F44136978F59060 /* StockList.json */,
+			);
+			name = Resources;
+			path = Resources;
+			sourceTree = "<group>";
+		};
 		A12705102830AE7C00ED92F2 /* View Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -411,6 +482,7 @@
 				A1270527283241D700ED92F2 /* ChatViewModel.swift */,
 				A127052928335E6C00ED92F2 /* NewsListViewModel.swift */,
 				A16321532954B05D0011F295 /* AddDividendViewModel.swift */,
+				86BBB438DF5F34BD6DC11451 /* TradeImportViewModel.swift */,
 			);
 			path = "View Model";
 			sourceTree = "<group>";
@@ -439,6 +511,21 @@
 				0A260454FDA074BE16F88EFA /* BackupDestinationTests.swift */,
 				3CDB14A33624A6CC60E64BDD /* SettingViewControllerTests.swift */,
 				4527BB5764FC0481AAFCE3E6 /* SceneICloudCoordinatorTests.swift */,
+				AC9954537E9A152ABDC0F28B /* StockListFilteringTests.swift */,
+				61D79600CCD9F096BA52ED45 /* StockListRepositoryTests.swift */,
+				35EDD97E7F23FFCC4B3C4D8D /* AddStockNoViewModelTests.swift */,
+				5AC4FF1C38A3B38F1BFAD283 /* StockListRefresherTests.swift */,
+				D7468712F972AC4EDD765663 /* StockMarketLookupTests.swift */,
+				273217F8284584EE8DAE887B /* ChartServiceTests.swift */,
+				444B2D36B63AFE2189A450B6 /* TradeScreenshotFixtures.swift */,
+				15A4206DDD948FB6376369D3 /* TradeScreenshotParserTests.swift */,
+				4DB2A925F8B659FCD4C126CC /* StockNameResolverTests.swift */,
+				86E56EE9FEDB8EF9AEEA8030 /* TradeTextRecognizerTests.swift */,
+				36DAE738BFD46BF3EF2FD877 /* TradeScreenshotVisionFixtures.swift */,
+				F984A9E41163688F362D7882 /* TradeImportViewModelTests.swift */,
+				100C2DECF966B15FA78301FC /* DefaultTradeImportStoreTests.swift */,
+				1DA45FEE2F5F881A51DBD9ED /* FloatingButtonManagerTests.swift */,
+				02FECA27A0D552A9EB23F939 /* HistoryDocumentSelectorTests.swift */,
 			);
 			path = MyTaiwanStockTests;
 			sourceTree = "<group>";
@@ -477,6 +564,7 @@
 				A1DE925C2DB39A7400D743C7 /* ViewModel */,
 				A1DE925B2DB39A4400D743C7 /* View */,
 				A1DE925A2DB3999500D743C7 /* ViewController */,
+				38636568B743F70FE246F6FE /* TradeImportFlow.swift */,
 			);
 			path = StockList;
 			sourceTree = "<group>";
@@ -570,6 +658,7 @@
 				A1CD75D12CD388F1000A0A7A /* DependencyContainer.swift */,
 				A11E04672CF2DB6B00138497 /* OverViewCaculator.swift */,
 				A1C03DE327C1D8571005AB268 /* ActivityKit */,
+				2E8016544C5C1DBE0E2915A1 /* Resources */,
 			);
 			path = MyTaiwanStock;
 			sourceTree = "<group>";
@@ -586,12 +675,13 @@
 				DF06F325270D50000031D6FE /* History.swift */,
 				DFD239DB270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodeld */,
 				DF14417F27869C200038D05D /* StockStatistic.swift */,
-				DF793AD827DF8E29007C9442 /* StockNoList.swift */,
 				DFFEB04B27E1D68C00C85A53 /* Sender.swift */,
 				DFFEB04D27E1D6C400C85A53 /* Message.swift */,
 				DFFEB04F27E1E37D00C85A53 /* Channel.swift */,
 				A17C2A7828D80C99007508D0 /* FeeType.swift */,
 				A17C2A7A28D81303007508D0 /* Fee.swift */,
+				AD93EF53658832306E290E9C /* StockListEntry.swift */,
+				8640D09D97E976868D167E4D /* TradeImportModels.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -616,6 +706,8 @@
 				A163216D2956A52F0011F295 /* DividendDetailViewController.swift */,
 				A12515632C16076F001BFC53 /* MemoViewController.swift */,
 				A1065AD12C21CEF30033A319 /* WalkthroughViewController.swift */,
+				808890ADBB223AD086D933A4 /* TradeEditViewController.swift */,
+				39AD27A74F9DF2F3D0E2701C /* TradeImportPreviewViewController.swift */,
 			);
 			path = "View Controller";
 			sourceTree = "<group>";
@@ -669,6 +761,15 @@
 				35BE1FA033A9EAAAD45D552C /* ICloudBackupService.swift */,
 				EDBFA9181BDA2CA0B0071FFE /* StoreSchemaCompatibilityChecking.swift */,
 				728B8AFF86C937E2E8BECCB9 /* SceneICloudCoordinator.swift */,
+				9D06AAFE532A45BB2550AE10 /* StockListParser.swift */,
+				2E689875DDDAF313A6EC4313 /* StockListRepository.swift */,
+				D58D87D037B5D9470F5316F8 /* StockListRefresher.swift */,
+				344EF2A4392E0936741F7193 /* StockMarketLookup.swift */,
+				C1FE0B62189FEF6B2F8D6214 /* TradeScreenshotParser.swift */,
+				A40356AAFB24898C0EE3E32C /* StockNameResolver.swift */,
+				DCB4ED896BEF3DDC8FABEF46 /* TradeTextRecognizer.swift */,
+				C76A7E78A7574E60C81D3350 /* DefaultTradeImportStore.swift */,
+				44CFEAF3C949085344714127 /* HistoryDocumentSelector.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -866,6 +967,7 @@
 				A12705182830F4AB00ED92F2 /* GoogleService-Info.plist in Resources */,
 				A1BB04D7293098F0002F983B /* NewHistoryTableViewCell.xib in Resources */,
 				A1CD75CE2CD325E3000A0A7A /* Localizable.xcstrings in Resources */,
+				6221AE4A3041F498D01AB86E /* StockList.json in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -925,6 +1027,21 @@
 				F2607ED17B7E71EFFE5207C9 /* BackupDestinationTests.swift in Sources */,
 				1E8A00E46BCF4BED4A7F6C9B /* SceneICloudCoordinatorTests.swift in Sources */,
 				C7D0C0DA9EE8A573A19E1C83 /* SettingViewControllerTests.swift in Sources */,
+				5DDC80DB77B2FF395CC1D293 /* StockListFilteringTests.swift in Sources */,
+				3A6D87882A7C77A152C0187A /* StockListRepositoryTests.swift in Sources */,
+				ABC9643CA67C9DCE06519683 /* AddStockNoViewModelTests.swift in Sources */,
+				1AC6F2BCB3902075CD524F37 /* StockListRefresherTests.swift in Sources */,
+				498CA584FCE709CAE8FD5ED1 /* StockMarketLookupTests.swift in Sources */,
+				CC3A8FD7743632B5AAE2AEDB /* ChartServiceTests.swift in Sources */,
+				4B8F4402BE2EBE7BA3678CFA /* TradeScreenshotFixtures.swift in Sources */,
+				88959627407C403447D285E5 /* TradeScreenshotParserTests.swift in Sources */,
+				41C9C9FA491B5D0FF9B38E23 /* StockNameResolverTests.swift in Sources */,
+				946C3CBE6A927A9A24FF46C4 /* TradeTextRecognizerTests.swift in Sources */,
+				BB75C1370ABD7A9BA4A5A409 /* TradeScreenshotVisionFixtures.swift in Sources */,
+				EA296C98AFD3A91A19F7E58F /* TradeImportViewModelTests.swift in Sources */,
+				265BE16534A679FBA91D9952 /* DefaultTradeImportStoreTests.swift in Sources */,
+				1DF2999F7508FF3072EEEE47 /* FloatingButtonManagerTests.swift in Sources */,
+				4B393869E11CA6331D0E4219 /* HistoryDocumentSelectorTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1020,7 +1137,6 @@
 				A127051E283201D700ED92F2 /* AddListViewModel.swift in Sources */,
 				A1270520283209FD00ED92F2 /* StockDetailViewModel.swift in Sources */,
 				A11E046F2CFAC2AE00138497 /* Date+Extension.swift in Sources */,
-				DF793AD927DF8E29007C9442 /* StockNoList.swift in Sources */,
 				A1C2E5E728B71F55009D8D9B /* ViewController+extension.swift in Sources */,
 				A1DE925E2DB39EFC00D743C7 /* StockListCoordinator.swift in Sources */,
 				A168E09E27146EF600C75064 /* NewsAPI.swift in Sources */,
@@ -1038,6 +1154,21 @@
 				88BEE1E19FFE04C57D16DB7A /* ICloudBackupService.swift in Sources */,
 				323D9FD28FA5AB52C615B5F9 /* StoreSchemaCompatibilityChecking.swift in Sources */,
 				043375401A165B414B28A950 /* SceneICloudCoordinator.swift in Sources */,
+				8D01BEDFCDF2898AF0DEDA92 /* StockListEntry.swift in Sources */,
+				B433722D03E984B1E7F44AE7 /* StockListParser.swift in Sources */,
+				5BD264306AF3DC9F99F487D9 /* StockListRepository.swift in Sources */,
+				D508D05EB0149A48570D3F9F /* StockListRefresher.swift in Sources */,
+				ED32AB085E98375A5BEF3BA2 /* StockMarketLookup.swift in Sources */,
+				E3406917F5E402DFC7F860FA /* TradeImportModels.swift in Sources */,
+				E3B120D3A6D124AADD99A68D /* TradeScreenshotParser.swift in Sources */,
+				EBA091E719AE8600D49AC49B /* StockNameResolver.swift in Sources */,
+				9E54B0369028A1C694D3FFBA /* TradeTextRecognizer.swift in Sources */,
+				445A9A8D102EA7F2879A8B18 /* TradeImportViewModel.swift in Sources */,
+				E08ACE5903018780A51F9280 /* DefaultTradeImportStore.swift in Sources */,
+				6B205E7A0A6FD4747735BD26 /* TradeEditViewController.swift in Sources */,
+				C87A5097F1D1788BA69DA442 /* TradeImportPreviewViewController.swift in Sources */,
+				6CA4838BE5F3B45B986BE572 /* TradeImportFlow.swift in Sources */,
+				60FD508D8A09B5530001CB9B /* HistoryDocumentSelector.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1059,6 +1190,8 @@
 				DFFB337327F858830018F3A4 /* StockWidget.swift in Sources */,
 				A128BB7F28524570007F7645 /* WidgetStockData.swift in Sources */,
 				6668EF90813808B0AF082831 /* TWSEStockInfoFetcher.swift in Sources */,
+				3122640CD819354A381D89C3 /* StockMarketLookup.swift in Sources */,
+				4D30204624F67012F81DAE1D /* StockListEntry.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1113,7 +1246,7 @@
 				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = UZ2Z639589;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.a2006mike.MyTaiwanStockTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1133,7 +1266,7 @@
 				CURRENT_PROJECT_VERSION = 9;
 				DEVELOPMENT_TEAM = UZ2Z639589;
 				GENERATE_INFOPLIST_FILE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MARKETING_VERSION = 1.0;
 				PRODUCT_BUNDLE_IDENTIFIER = com.a2006mike.MyTaiwanStockTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -1156,13 +1289,13 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = LiveActivity/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = LiveActivity;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.20;
+				MARKETING_VERSION = 1.21;
 				PRODUCT_BUNDLE_IDENTIFIER = com.a2006mike.MyTaiwanStock.LiveActivity;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "match Development com.a2006mike.MyTaiwanStock.LiveActivity";
@@ -1185,13 +1318,13 @@
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = LiveActivity/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = LiveActivity;
-				IPHONEOS_DEPLOYMENT_TARGET = 16.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.20;
+				MARKETING_VERSION = 1.21;
 				PRODUCT_BUNDLE_IDENTIFIER = com.a2006mike.MyTaiwanStock.LiveActivity;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "match AppStore com.a2006mike.MyTaiwanStock.LiveActivity";
@@ -1254,7 +1387,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -1310,7 +1443,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 14.5;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
@@ -1332,12 +1465,12 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				DEVELOPMENT_TEAM = UZ2Z639589;
 				INFOPLIST_FILE = MyTaiwanStock/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.20;
+				MARKETING_VERSION = 1.21;
 				PRODUCT_BUNDLE_IDENTIFIER = com.a2006mike.MyTaiwanStock;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "match Development com.a2006mike.MyTaiwanStock";
@@ -1360,12 +1493,12 @@
 				CODE_SIGN_STYLE = Manual;
 				DEVELOPMENT_TEAM = UZ2Z639589;
 				INFOPLIST_FILE = MyTaiwanStock/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 15.0;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.20;
+				MARKETING_VERSION = 1.21;
 				PRODUCT_BUNDLE_IDENTIFIER = com.a2006mike.MyTaiwanStock;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "match AppStore com.a2006mike.MyTaiwanStock";
@@ -1392,13 +1525,13 @@
 				INFOPLIST_FILE = StockWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = StockWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.7;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.20;
+				MARKETING_VERSION = 1.21;
 				PRODUCT_BUNDLE_IDENTIFIER = com.a2006mike.MyTaiwanStock.StockWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "match Development com.a2006mike.MyTaiwanStock.StockWidget";
@@ -1424,13 +1557,13 @@
 				INFOPLIST_FILE = StockWidget/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = StockWidget;
 				INFOPLIST_KEY_NSHumanReadableCopyright = "";
-				IPHONEOS_DEPLOYMENT_TARGET = 14.7;
+				IPHONEOS_DEPLOYMENT_TARGET = 18.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.20;
+				MARKETING_VERSION = 1.21;
 				PRODUCT_BUNDLE_IDENTIFIER = com.a2006mike.MyTaiwanStock.StockWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "match AppStore com.a2006mike.MyTaiwanStock.StockWidget";

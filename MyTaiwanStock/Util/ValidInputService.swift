@@ -30,8 +30,10 @@ struct ValidInputService {
     }
     
     func validStockNo(_ stockNo: String?) throws -> String {
+        // Exact match on the code; a partial code such as "23" is not a stock number.
+        // Validation is driven from UI input, so this always runs on the main thread.
         guard let stockNoText = stockNo,
-              stockNoList.contains(where: { string in string.contains(stockNoText) })
+              MainActor.assumeIsolated({ StockListRepository.shared.contains(code: stockNoText) })
         else {
             throw ValidationError.invalidStockNo
         }

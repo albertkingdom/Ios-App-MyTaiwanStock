@@ -15,12 +15,18 @@ protocol StockListCoordinatorProtocol: AnyObject {
     func showAddStock(
         followingStockNoList: Set<String>, listName: String,
         addNewStockToDB: @escaping (String) -> Void)
+    /// Starts the screenshot import: pick screenshots, review the recognized trades, import.
+    /// `onImported` runs after trades were written, so the home screen can reload.
+    func showImportTrades(
+        listNames: [String], currentListName: String?,
+        onImported: @escaping () -> Void)
 }
 
 final class StockListCoordinator: Coordinator {
     var navigationController: UINavigationController
     var parentCoordinator: Coordinator?
     var childCoordinators: [Coordinator] = []
+    private var importFlow: TradeImportFlow?
 
     init(navigationController: UINavigationController) {
         self.navigationController = navigationController
@@ -50,6 +56,23 @@ final class StockListCoordinator: Coordinator {
 }
 
 extension StockListCoordinator: StockListCoordinatorProtocol {
+    func showImportTrades(
+        listNames: [String], currentListName: String?,
+        onImported: @escaping () -> Void
+    ) {
+        // Called from a button tap, so already on the main thread.
+        MainActor.assumeIsolated {
+            let flow = TradeImportFlow(
+                navigationController: navigationController,
+                listNames: listNames,
+                currentListName: currentListName,
+                onImported: onImported,
+                onFinished: { [weak self] in self?.importFlow = nil })
+            importFlow = flow  // the flow is its own picker's delegate, so something must keep it alive
+            flow.start()
+        }
+    }
+
     func showStockDetail(
         stockNo: String, currentStockPrice: String, stockName: String,
         stockPriceDiff: String, timeString: String

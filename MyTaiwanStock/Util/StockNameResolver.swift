@@ -30,9 +30,15 @@ struct StockNameResolver {
         return codes[0]
     }
 
+    /// Vision often reads the character 一 (as in 統一) as a long dash. The ASCII hyphen is left
+    /// alone: it is a real character in names like 富邦美債1-3.
+    private static let dashLookalikes = CharacterSet(charactersIn: "\u{2013}\u{2014}\u{2015}\u{2500}\u{30FC}")
+
     private static func normalize(_ name: String) -> String {
         name.precomposedStringWithCompatibilityMapping
             .components(separatedBy: .whitespacesAndNewlines)
             .joined()
+            .components(separatedBy: dashLookalikes)
+            .joined(separator: "一")
     }
 }

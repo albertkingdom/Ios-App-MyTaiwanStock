@@ -131,6 +131,9 @@ enum TradeScreenshotParser {
                     numbers.append(text)
                 } else if name.isEmpty {
                     name = text
+                } else if isNameSuffix(text) {
+                    // Vision can split the "+" of a name like "統一FANG+" into its own box.
+                    name += text
                 }
             }
             // Columns are price, then net amount; the net amount is not needed.
@@ -185,6 +188,11 @@ enum TradeScreenshotParser {
 
     private static func isNumber(_ text: String) -> Bool {
         text.range(of: #"^[-+]?[\d,]+(\.\d+)?$"#, options: .regularExpression) != nil
+    }
+
+    /// A box holding only plus signs, which belongs to the stock name before it.
+    private static func isNameSuffix(_ text: String) -> Bool {
+        text.range(of: #"^[+＋]+$"#, options: .regularExpression) != nil
     }
 
     /// "2026/" or "2026/元大台灣50" (a merged text box).

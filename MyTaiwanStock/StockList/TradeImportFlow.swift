@@ -51,6 +51,7 @@ final class TradeImportFlow: NSObject {
 
     private func process(_ results: [PHPickerResult]) {
         showLoading()
+        let started = ContinuousClock.now
         Task {
             do {
                 var trades: [ParsedTrade] = []
@@ -59,11 +60,22 @@ final class TradeImportFlow: NSObject {
                     let boxes = try await recognizer.recognize(imageData: data)
                     trades += TradeScreenshotParser.parse(boxes: boxes)
                 }
+                await keepLoadingVisible(since: started)
                 hideLoading { self.showPreview(trades) }
             } catch {
+                await keepLoadingVisible(since: started)
                 hideLoading { self.showMessage(title: "無法讀取圖片", message: "圖片載入或辨識失敗，請換一張截圖再試。") }
             }
         }
+    }
+
+    /// Recognition often finishes in a fraction of a second, which would make the loading screen
+    /// flash away before its animation is seen. Hold it for one scan sweep at least.
+    private static let minimumLoadingDuration = Duration.milliseconds(1500)
+
+    private func keepLoadingVisible(since started: ContinuousClock.Instant) async {
+        let remaining = Self.minimumLoadingDuration - (ContinuousClock.now - started)
+        if remaining > .zero { try? await Task.sleep(for: remaining) }
     }
 
     private static func imageData(of result: PHPickerResult) async throws -> Data {
@@ -137,7 +149,10 @@ extension TradeImportFlow: PHPickerViewControllerDelegate {
 /// Shown while Vision reads the screenshots: a frosted card over a dimmed screen.
 private final class TradeImportLoadingViewController: UIViewController {
 
-    private let iconView = UIImageView()
+    private static let scannerSize: CGFloat = 72
+    private static let scanTravel: CGFloat = 20
+
+    private let scanLine = UIView()
 
     init() {
         super.init(nibName: nil, bundle: nil)
@@ -157,10 +172,29 @@ private final class TradeImportLoadingViewController: UIViewController {
         card.layer.cornerCurve = .continuous
         card.clipsToBounds = true
 
-        iconView.image = UIImage(systemName: "text.viewfinder")
-        iconView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: 48, weight: .regular)
+        let iconView = UIImageView(image: UIImage(systemName: "viewfinder"))
+        iconView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: 64, weight: .ultraLight)
         iconView.tintColor = .tintColor
         iconView.contentMode = .scaleAspectFit
+        iconView.translatesAutoresizingMaskIntoConstraints = false
+
+        scanLine.backgroundColor = .tintColor
+        scanLine.layer.cornerRadius = 1
+        scanLine.translatesAutoresizingMaskIntoConstraints = false
+
+        let scanner = UIView()
+        scanner.addSubview(iconView)
+        scanner.addSubview(scanLine)
+        NSLayoutConstraint.activate([
+            scanner.widthAnchor.constraint(equalToConstant: Self.scannerSize),
+            scanner.heightAnchor.constraint(equalToConstant: Self.scannerSize),
+            iconView.centerXAnchor.constraint(equalTo: scanner.centerXAnchor),
+            iconView.centerYAnchor.constraint(equalTo: scanner.centerYAnchor),
+            scanLine.centerXAnchor.constraint(equalTo: scanner.centerXAnchor),
+            scanLine.centerYAnchor.constraint(equalTo: scanner.centerYAnchor),
+            scanLine.widthAnchor.constraint(equalToConstant: Self.scannerSize - 24),
+            scanLine.heightAnchor.constraint(equalToConstant: 2),
+        ])
 
         let titleLabel = UILabel()
         titleLabel.text = "辨識截圖中…"
@@ -176,11 +210,11 @@ private final class TradeImportLoadingViewController: UIViewController {
         detailLabel.textAlignment = .center
         detailLabel.numberOfLines = 0
 
-        let stack = UIStackView(arrangedSubviews: [iconView, titleLabel, detailLabel])
+        let stack = UIStackView(arrangedSubviews: [scanner, titleLabel, detailLabel])
         stack.axis = .vertical
-        stack.alignment = .fill
+        stack.alignment = .center
         stack.spacing = 8
-        stack.setCustomSpacing(16, after: iconView)
+        stack.setCustomSpacing(16, after: scanner)
         stack.translatesAutoresizingMaskIntoConstraints = false
 
         view.addSubview(card)
@@ -203,6 +237,12 @@ private final class TradeImportLoadingViewController: UIViewController {
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         guard !UIAccessibility.isReduceMotionEnabled else { return }
-        iconView.addSymbolEffect(.pulse, options: .repeating)
+        scanLine.transform = CGAffineTransform(translationX: 0, y: -Self.scanTravel)
+        UIView.animate(
+            withDuration: 1.1, delay: 0,
+            options: [.repeat, .autoreverse, .curveEaseInOut]
+        ) {
+            self.scanLine.transform = CGAffineTransform(translationX: 0, y: Self.scanTravel)
+        }
     }
 }

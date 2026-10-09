@@ -19,7 +19,7 @@ final class TradeImportFlow: NSObject {
     private let recognizer: TradeTextRecognizing
     private let onFinished: () -> Void
 
-    private var loadingAlert: UIAlertController?
+    private var loadingScreen: TradeImportLoadingViewController?
 
     init(
         navigationController: UINavigationController,
@@ -103,23 +103,15 @@ final class TradeImportFlow: NSObject {
     }
 
     private func showLoading() {
-        let alert = UIAlertController(title: "辨識截圖中…", message: "\n", preferredStyle: .alert)
-        let spinner = UIActivityIndicatorView(style: .medium)
-        spinner.translatesAutoresizingMaskIntoConstraints = false
-        spinner.startAnimating()
-        alert.view.addSubview(spinner)
-        NSLayoutConstraint.activate([
-            spinner.centerXAnchor.constraint(equalTo: alert.view.centerXAnchor),
-            spinner.bottomAnchor.constraint(equalTo: alert.view.bottomAnchor, constant: -20),
-        ])
-        loadingAlert = alert
-        navigationController.present(alert, animated: true)
+        let loading = TradeImportLoadingViewController()
+        loadingScreen = loading
+        navigationController.present(loading, animated: true)
     }
 
     private func hideLoading(then completion: @escaping () -> Void) {
-        guard let alert = loadingAlert else { return completion() }
-        loadingAlert = nil
-        alert.dismiss(animated: true, completion: completion)
+        guard let loading = loadingScreen else { return completion() }
+        loadingScreen = nil
+        loading.dismiss(animated: true, completion: completion)
     }
 
     private func showMessage(title: String, message: String) {
@@ -139,5 +131,78 @@ extension TradeImportFlow: PHPickerViewControllerDelegate {
                 process(results)
             }
         }
+    }
+}
+
+/// Shown while Vision reads the screenshots: a frosted card over a dimmed screen.
+private final class TradeImportLoadingViewController: UIViewController {
+
+    private let iconView = UIImageView()
+
+    init() {
+        super.init(nibName: nil, bundle: nil)
+        modalPresentationStyle = .overFullScreen
+        modalTransitionStyle = .crossDissolve
+    }
+
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = UIColor.black.withAlphaComponent(0.35)
+
+        let card = UIVisualEffectView(effect: UIBlurEffect(style: .systemThinMaterial))
+        card.translatesAutoresizingMaskIntoConstraints = false
+        card.layer.cornerRadius = 24
+        card.layer.cornerCurve = .continuous
+        card.clipsToBounds = true
+
+        iconView.image = UIImage(systemName: "text.viewfinder")
+        iconView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: 48, weight: .regular)
+        iconView.tintColor = .tintColor
+        iconView.contentMode = .scaleAspectFit
+
+        let titleLabel = UILabel()
+        titleLabel.text = "辨識截圖中…"
+        titleLabel.font = .preferredFont(forTextStyle: .headline)
+        titleLabel.adjustsFontForContentSizeCategory = true
+        titleLabel.textAlignment = .center
+
+        let detailLabel = UILabel()
+        detailLabel.text = "在手機上處理，不會上傳"
+        detailLabel.font = .preferredFont(forTextStyle: .footnote)
+        detailLabel.adjustsFontForContentSizeCategory = true
+        detailLabel.textColor = .secondaryLabel
+        detailLabel.textAlignment = .center
+        detailLabel.numberOfLines = 0
+
+        let stack = UIStackView(arrangedSubviews: [iconView, titleLabel, detailLabel])
+        stack.axis = .vertical
+        stack.alignment = .fill
+        stack.spacing = 8
+        stack.setCustomSpacing(16, after: iconView)
+        stack.translatesAutoresizingMaskIntoConstraints = false
+
+        view.addSubview(card)
+        card.contentView.addSubview(stack)
+        NSLayoutConstraint.activate([
+            card.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            card.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            card.widthAnchor.constraint(lessThanOrEqualTo: view.widthAnchor, constant: -64),
+            card.widthAnchor.constraint(greaterThanOrEqualToConstant: 220),
+            stack.topAnchor.constraint(equalTo: card.contentView.topAnchor, constant: 28),
+            stack.bottomAnchor.constraint(equalTo: card.contentView.bottomAnchor, constant: -24),
+            stack.leadingAnchor.constraint(equalTo: card.contentView.leadingAnchor, constant: 24),
+            stack.trailingAnchor.constraint(equalTo: card.contentView.trailingAnchor, constant: -24),
+        ])
+
+        view.isAccessibilityElement = true
+        view.accessibilityLabel = "辨識截圖中"
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        guard !UIAccessibility.isReduceMotionEnabled else { return }
+        iconView.addSymbolEffect(.pulse, options: .repeating)
     }
 }

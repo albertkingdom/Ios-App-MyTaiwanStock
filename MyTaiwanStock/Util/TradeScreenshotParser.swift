@@ -28,6 +28,10 @@ enum TradeScreenshotParser {
         "盤中零股買進", "盤中零股賣出", "盤後零股買進", "盤後零股賣出",
     ]
 
+    /// A "+" box belongs to the name only when it starts within this share of the page width
+    /// after the name box ends. Positions are normalized, so this is a fraction of the width.
+    private static let nameSuffixGap: CGFloat = 0.03
+
     /// The upper line must lie this many type-box heights above the lower line.
     private static let upperLineDistance = 0.5...2.5
 
@@ -120,6 +124,7 @@ enum TradeScreenshotParser {
 
         if let upper {
             var numbers: [String] = []
+            var nameBox: RecognizedTextBox?
             for box in upper.boxes {
                 var text = stripped(box.text)
                 if let found = yearFragment(in: text) {
@@ -131,9 +136,12 @@ enum TradeScreenshotParser {
                     numbers.append(text)
                 } else if name.isEmpty {
                     name = text
-                } else if isNameSuffix(text) {
+                    nameBox = box
+                } else if isNameSuffix(text), let last = nameBox,
+                          box.boundingBox.minX - last.boundingBox.maxX <= nameSuffixGap {
                     // Vision can split the "+" of a name like "統一FANG+" into its own box.
                     name += text
+                    nameBox = box
                 }
             }
             // Columns are price, then net amount; the net amount is not needed.

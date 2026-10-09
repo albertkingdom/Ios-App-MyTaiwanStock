@@ -96,6 +96,16 @@ final class TradeScreenshotParserTests: XCTestCase {
         XCTAssertEqual(TradeScreenshotParser.parse(boxes: boxes).map(summary), ["統一FANG+ 買 5 112.55 2026-09-30"])
     }
 
+    func test_plus_sign_box_far_from_the_name_is_not_part_of_it() {
+        let page = Fixtures.collapsedPage
+        let boxes = Fixtures.boxes(Fixtures.collapsedHeader + [
+            ("2026/", 40, 500, 158, 550), ("元大台灣50", 205, 500, 435, 550), ("+", 500, 500, 520, 550),
+            ("112.55", 552, 500, 688, 550), ("1,234", 870, 500, 960, 550),
+        ] + Fixtures.row0Lower, on: page)
+
+        XCTAssertEqual(TradeScreenshotParser.parse(boxes: boxes).map(summary), ["元大台灣50 買 5 112.55 2026-09-30"])
+    }
+
     // MARK: ignored text
 
     func test_summary_and_header_rows_alone_produce_no_trade() {

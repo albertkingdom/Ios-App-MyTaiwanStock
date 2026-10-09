@@ -53,6 +53,7 @@ final class TradeImportFlow: NSObject {
         showLoading()
         let started = ContinuousClock.now
         Task {
+            let outcome: Result<[ParsedTrade], Error>
             do {
                 var trades: [ParsedTrade] = []
                 for result in results {
@@ -60,20 +61,29 @@ final class TradeImportFlow: NSObject {
                     let boxes = try await recognizer.recognize(imageData: data)
                     trades += TradeScreenshotParser.parse(boxes: boxes)
                 }
-                await keepLoadingVisible(since: started)
-                hideLoading { self.showPreview(trades) }
+                outcome = .success(trades)
             } catch {
-                await keepLoadingVisible(since: started)
-                hideLoading { self.showMessage(title: "無法讀取圖片", message: "圖片載入或辨識失敗，請換一張截圖再試。") }
+                outcome = .failure(error)
+            }
+            await keepLoadingVisible(since: started)
+            hideLoading {
+                switch outcome {
+                case .success(let trades):
+                    self.showPreview(trades)
+                case .failure:
+                    self.showMessage(title: "無法讀取圖片", message: "圖片載入或辨識失敗，請換一張截圖再試。")
+                }
             }
         }
     }
 
     /// Recognition often finishes in a fraction of a second, which would make the loading screen
-    /// flash away before its animation is seen. Hold it for one scan sweep at least.
+    /// flash away before its animation is seen. Hold it for one scan sweep at least, unless
+    /// Reduce Motion is on and there is no animation to wait for.
     private static let minimumLoadingDuration = Duration.milliseconds(1500)
 
     private func keepLoadingVisible(since started: ContinuousClock.Instant) async {
+        guard !UIAccessibility.isReduceMotionEnabled else { return }
         let remaining = Self.minimumLoadingDuration - (ContinuousClock.now - started)
         if remaining > .zero { try? await Task.sleep(for: remaining) }
     }
@@ -147,6 +157,10 @@ extension TradeImportFlow: PHPickerViewControllerDelegate {
 }
 
 /// Shown while Vision reads the screenshots: a frosted card over a dimmed screen.
+///
+/// Separate from `showLoadingIcon()` in ViewController+extension.swift on purpose: that one is a
+/// small spinner added to a screen while it loads data, while this is a full-screen modal that
+/// blocks the import flow and carries a message about the work being done on the device.
 private final class TradeImportLoadingViewController: UIViewController {
 
     private static let scannerSize: CGFloat = 72
@@ -232,11 +246,20 @@ private final class TradeImportLoadingViewController: UIViewController {
 
         view.isAccessibilityElement = true
         view.accessibilityLabel = "辨識截圖中"
+
+        // UIKit drops running animations when the app goes to the background.
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(startScanning), name: UIApplication.didBecomeActiveNotification, object: nil)
     }
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        guard !UIAccessibility.isReduceMotionEnabled else { return }
+        startScanning()
+    }
+
+    @objc private func startScanning() {
+        guard !UIAccessibility.isReduceMotionEnabled, view.window != nil else { return }
+        scanLine.layer.removeAllAnimations()
         scanLine.transform = CGAffineTransform(translationX: 0, y: -Self.scanTravel)
         UIView.animate(
             withDuration: 1.1, delay: 0,

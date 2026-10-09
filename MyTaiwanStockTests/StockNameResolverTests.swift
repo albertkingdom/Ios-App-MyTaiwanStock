@@ -100,4 +100,18 @@ final class StockNameResolverTests: XCTestCase {
 
         XCTAssertEqual(resolver.resolve(name: "富邦美債1-3"), "1")
     }
+
+    func test_ascii_hyphen_read_for_the_character_one_resolves_when_nothing_else_matches() {
+        let resolver = StockNameResolver(entries: [entry("00757", "統一FANG+"), entry("1", "富邦美債1-3")])
+
+        XCTAssertEqual(resolver.resolve(name: "統-FANG+"), "00757")
+        XCTAssertEqual(resolver.resolve(name: "富邦美債1-3"), "1")
+    }
+
+    func test_hyphen_retry_does_not_resolve_an_ambiguous_name() {
+        let resolver = StockNameResolver(entries: [entry("1", "甲一乙"), entry("2", "甲-乙")])
+
+        XCTAssertEqual(resolver.resolve(name: "甲-乙"), "2")
+        XCTAssertEqual(resolver.resolve(name: "甲一乙"), "1")
+    }
 }

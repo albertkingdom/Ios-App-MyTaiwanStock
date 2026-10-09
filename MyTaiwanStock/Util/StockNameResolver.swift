@@ -26,7 +26,13 @@ struct StockNameResolver {
     /// The stock code for `name`, or nil when the name is unknown or ambiguous.
     func resolve(name: String) -> String? {
         let normalized = Self.normalize(name)
-        guard !normalized.isEmpty, let codes = codesByName[normalized], codes.count == 1 else { return nil }
+        guard !normalized.isEmpty else { return nil }
+        if let codes = codesByName[normalized] { return codes.count == 1 ? codes[0] : nil }
+
+        // Vision may also read 一 as an ASCII hyphen. That hyphen is a real character in some
+        // names, so it is only reinterpreted when nothing matches as written.
+        let asCharacterOne = normalized.replacingOccurrences(of: "-", with: "一")
+        guard asCharacterOne != normalized, let codes = codesByName[asCharacterOne], codes.count == 1 else { return nil }
         return codes[0]
     }
 

@@ -69,4 +69,49 @@ final class StockNameResolverTests: XCTestCase {
         XCTAssertEqual(resolver.resolve(name: "環球晶"), "6488")
         XCTAssertEqual(resolver.resolve(name: "台積電"), "2330")
     }
+
+    @MainActor
+    func test_real_list_resolves_a_name_ending_with_plus_sign() {
+        let repository = StockListRepository(
+            cacheURL: FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString),
+            marketLookupURL: nil)
+
+        let resolver = StockNameResolver(entries: repository.entries)
+
+        XCTAssertEqual(resolver.resolve(name: "統一FANG+"), "00757")
+        XCTAssertEqual(resolver.resolve(name: "統一FANG＋"), "00757")
+    }
+
+    @MainActor
+    func test_ocr_reading_the_character_one_as_a_dash_still_resolves() {
+        let repository = StockListRepository(
+            cacheURL: FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString),
+            marketLookupURL: nil)
+
+        let resolver = StockNameResolver(entries: repository.entries)
+
+        for dash in ["\u{2014}", "\u{2013}", "\u{2015}", "\u{2500}", "\u{30FC}"] {
+            XCTAssertEqual(resolver.resolve(name: "統\(dash)FANG+"), "00757", "dash U+\(dash.unicodeScalars.first!.value)")
+        }
+    }
+
+    func test_ascii_hyphen_is_not_treated_as_the_character_one() {
+        let resolver = StockNameResolver(entries: [entry("1", "富邦美債1-3"), entry("2", "富邦美債1一3")])
+
+        XCTAssertEqual(resolver.resolve(name: "富邦美債1-3"), "1")
+    }
+
+    func test_ascii_hyphen_read_for_the_character_one_resolves_when_nothing_else_matches() {
+        let resolver = StockNameResolver(entries: [entry("00757", "統一FANG+"), entry("1", "富邦美債1-3")])
+
+        XCTAssertEqual(resolver.resolve(name: "統-FANG+"), "00757")
+        XCTAssertEqual(resolver.resolve(name: "富邦美債1-3"), "1")
+    }
+
+    func test_hyphen_retry_does_not_resolve_an_ambiguous_name() {
+        let resolver = StockNameResolver(entries: [entry("1", "甲一乙"), entry("2", "甲-乙")])
+
+        XCTAssertEqual(resolver.resolve(name: "甲-乙"), "2")
+        XCTAssertEqual(resolver.resolve(name: "甲一乙"), "1")
+    }
 }

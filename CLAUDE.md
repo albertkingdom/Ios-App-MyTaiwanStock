@@ -67,6 +67,18 @@ Bug 修正必須在 `fix/{版號}/{問題名稱}` 分支上實作，例如 `fix/
 
 # Code Review Workflow
 
+## 執行時機
+
+實作完成、使用者確認功能沒問題後，**在 commit 之前**必須先對尚未 commit 的改動執行 code review（`/code-review`），不等使用者開口要求：
+
+1. 流程順序：實作 → 手動／自動測試 → code review → 修復 review 發現 → commit → push → 開 PR
+2. 修復之後必須再次 code review，重複「review → 修復」直到沒有嚴重度中（含）以上的發現為止；低嚴重度的項目由使用者決定修或不修（不修需註明原因）
+3. 純文件、純設定（不影響 App 行為）的改動可以略過，但需在回報中說明略過
+4. 尚未執行 code review 時，不得 commit，也不得提議 push 或開 PR
+5. 若發現 commit 時漏審（例如已 commit 才想到），立即補審整個分支相對 `mvvm` 的差異，修復後才能 push
+
+## 記錄方式
+
 Code review（含 subagent review）的結果必須記錄成 Markdown：
 
 1. 存放於 `docs/reviews/{YYYY-MM-DD}-{主題}.md`，內容包含背景、依嚴重度分類的發現（附檔案位置與失敗情境）、已確認無問題的項目

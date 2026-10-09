@@ -19,7 +19,7 @@ final class TradeImportFlow: NSObject {
     private let recognizer: TradeTextRecognizing
     private let onFinished: () -> Void
 
-    private var loadingAlert: UIAlertController?
+    private var loadingScreen: TradeImportLoadingViewController?
 
     init(
         navigationController: UINavigationController,
@@ -51,7 +51,9 @@ final class TradeImportFlow: NSObject {
 
     private func process(_ results: [PHPickerResult]) {
         showLoading()
+        let started = ContinuousClock.now
         Task {
+            let outcome: Result<[ParsedTrade], Error>
             do {
                 var trades: [ParsedTrade] = []
                 for result in results {
@@ -59,11 +61,31 @@ final class TradeImportFlow: NSObject {
                     let boxes = try await recognizer.recognize(imageData: data)
                     trades += TradeScreenshotParser.parse(boxes: boxes)
                 }
-                hideLoading { self.showPreview(trades) }
+                outcome = .success(trades)
             } catch {
-                hideLoading { self.showMessage(title: "無法讀取圖片", message: "圖片載入或辨識失敗，請換一張截圖再試。") }
+                outcome = .failure(error)
+            }
+            await keepLoadingVisible(since: started)
+            hideLoading {
+                switch outcome {
+                case .success(let trades):
+                    self.showPreview(trades)
+                case .failure:
+                    self.showMessage(title: "無法讀取圖片", message: "圖片載入或辨識失敗，請換一張截圖再試。")
+                }
             }
         }
+    }
+
+    /// Recognition often finishes in a fraction of a second, which would make the loading screen
+    /// flash away before its animation is seen. Hold it for one scan sweep at least, unless
+    /// Reduce Motion is on and there is no animation to wait for.
+    private static let minimumLoadingDuration = Duration.milliseconds(1500)
+
+    private func keepLoadingVisible(since started: ContinuousClock.Instant) async {
+        guard !UIAccessibility.isReduceMotionEnabled else { return }
+        let remaining = Self.minimumLoadingDuration - (ContinuousClock.now - started)
+        if remaining > .zero { try? await Task.sleep(for: remaining) }
     }
 
     private static func imageData(of result: PHPickerResult) async throws -> Data {
@@ -103,23 +125,15 @@ final class TradeImportFlow: NSObject {
     }
 
     private func showLoading() {
-        let alert = UIAlertController(title: "辨識截圖中…", message: "\n", preferredStyle: .alert)
-        let spinner = UIActivityIndicatorView(style: .medium)
-        spinner.translatesAutoresizingMaskIntoConstraints = false
-        spinner.startAnimating()
-        alert.view.addSubview(spinner)
-        NSLayoutConstraint.activate([
-            spinner.centerXAnchor.constraint(equalTo: alert.view.centerXAnchor),
-            spinner.bottomAnchor.constraint(equalTo: alert.view.bottomAnchor, constant: -20),
-        ])
-        loadingAlert = alert
-        navigationController.present(alert, animated: true)
+        let loading = TradeImportLoadingViewController()
+        loadingScreen = loading
+        navigationController.present(loading, animated: true)
     }
 
     private func hideLoading(then completion: @escaping () -> Void) {
-        guard let alert = loadingAlert else { return completion() }
-        loadingAlert = nil
-        alert.dismiss(animated: true, completion: completion)
+        guard let loading = loadingScreen else { return completion() }
+        loadingScreen = nil
+        loading.dismiss(animated: true, completion: completion)
     }
 
     private func showMessage(title: String, message: String) {
@@ -138,6 +152,120 @@ extension TradeImportFlow: PHPickerViewControllerDelegate {
             } else {
                 process(results)
             }
+        }
+    }
+}
+
+/// Shown while Vision reads the screenshots: a frosted card over a dimmed screen.
+///
+/// Separate from `showLoadingIcon()` in ViewController+extension.swift on purpose: that one is a
+/// small spinner added to a screen while it loads data, while this is a full-screen modal that
+/// blocks the import flow and carries a message about the work being done on the device.
+private final class TradeImportLoadingViewController: UIViewController {
+
+    private static let scannerSize: CGFloat = 72
+    private static let scanTravel: CGFloat = 20
+
+    private let scanLine = UIView()
+
+    init() {
+        super.init(nibName: nil, bundle: nil)
+        modalPresentationStyle = .overFullScreen
+        modalTransitionStyle = .crossDissolve
+    }
+
+    required init?(coder: NSCoder) { fatalError("init(coder:) has not been implemented") }
+
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        view.backgroundColor = UIColor.black.withAlphaComponent(0.35)
+
+        let card = UIVisualEffectView(effect: UIBlurEffect(style: .systemThinMaterial))
+        card.translatesAutoresizingMaskIntoConstraints = false
+        card.layer.cornerRadius = 24
+        card.layer.cornerCurve = .continuous
+        card.clipsToBounds = true
+
+        let iconView = UIImageView(image: UIImage(systemName: "viewfinder"))
+        iconView.preferredSymbolConfiguration = UIImage.SymbolConfiguration(pointSize: 64, weight: .ultraLight)
+        iconView.tintColor = .tintColor
+        iconView.contentMode = .scaleAspectFit
+        iconView.translatesAutoresizingMaskIntoConstraints = false
+
+        scanLine.backgroundColor = .tintColor
+        scanLine.layer.cornerRadius = 1
+        scanLine.translatesAutoresizingMaskIntoConstraints = false
+
+        let scanner = UIView()
+        scanner.addSubview(iconView)
+        scanner.addSubview(scanLine)
+        NSLayoutConstraint.activate([
+            scanner.widthAnchor.constraint(equalToConstant: Self.scannerSize),
+            scanner.heightAnchor.constraint(equalToConstant: Self.scannerSize),
+            iconView.centerXAnchor.constraint(equalTo: scanner.centerXAnchor),
+            iconView.centerYAnchor.constraint(equalTo: scanner.centerYAnchor),
+            scanLine.centerXAnchor.constraint(equalTo: scanner.centerXAnchor),
+            scanLine.centerYAnchor.constraint(equalTo: scanner.centerYAnchor),
+            scanLine.widthAnchor.constraint(equalToConstant: Self.scannerSize - 24),
+            scanLine.heightAnchor.constraint(equalToConstant: 2),
+        ])
+
+        let titleLabel = UILabel()
+        titleLabel.text = "辨識截圖中…"
+        titleLabel.font = .preferredFont(forTextStyle: .headline)
+        titleLabel.adjustsFontForContentSizeCategory = true
+        titleLabel.textAlignment = .center
+
+        let detailLabel = UILabel()
+        detailLabel.text = "在手機上處理，不會上傳"
+        detailLabel.font = .preferredFont(forTextStyle: .footnote)
+        detailLabel.adjustsFontForContentSizeCategory = true
+        detailLabel.textColor = .secondaryLabel
+        detailLabel.textAlignment = .center
+        detailLabel.numberOfLines = 0
+
+        let stack = UIStackView(arrangedSubviews: [scanner, titleLabel, detailLabel])
+        stack.axis = .vertical
+        stack.alignment = .center
+        stack.spacing = 8
+        stack.setCustomSpacing(16, after: scanner)
+        stack.translatesAutoresizingMaskIntoConstraints = false
+
+        view.addSubview(card)
+        card.contentView.addSubview(stack)
+        NSLayoutConstraint.activate([
+            card.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            card.centerYAnchor.constraint(equalTo: view.centerYAnchor),
+            card.widthAnchor.constraint(lessThanOrEqualTo: view.widthAnchor, constant: -64),
+            card.widthAnchor.constraint(greaterThanOrEqualToConstant: 220),
+            stack.topAnchor.constraint(equalTo: card.contentView.topAnchor, constant: 28),
+            stack.bottomAnchor.constraint(equalTo: card.contentView.bottomAnchor, constant: -24),
+            stack.leadingAnchor.constraint(equalTo: card.contentView.leadingAnchor, constant: 24),
+            stack.trailingAnchor.constraint(equalTo: card.contentView.trailingAnchor, constant: -24),
+        ])
+
+        view.isAccessibilityElement = true
+        view.accessibilityLabel = "辨識截圖中"
+
+        // UIKit drops running animations when the app goes to the background.
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(startScanning), name: UIApplication.didBecomeActiveNotification, object: nil)
+    }
+
+    override func viewDidAppear(_ animated: Bool) {
+        super.viewDidAppear(animated)
+        startScanning()
+    }
+
+    @objc private func startScanning() {
+        guard !UIAccessibility.isReduceMotionEnabled, view.window != nil else { return }
+        scanLine.layer.removeAllAnimations()
+        scanLine.transform = CGAffineTransform(translationX: 0, y: -Self.scanTravel)
+        UIView.animate(
+            withDuration: 1.1, delay: 0,
+            options: [.repeat, .autoreverse, .curveEaseInOut]
+        ) {
+            self.scanLine.transform = CGAffineTransform(translationX: 0, y: Self.scanTravel)
         }
     }
 }

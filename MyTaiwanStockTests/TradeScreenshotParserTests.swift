@@ -76,6 +76,98 @@ final class TradeScreenshotParserTests: XCTestCase {
         XCTAssertEqual(trades.map(summary), ["元大台灣50 買 5 112.55 2026-09-30"])
     }
 
+    func test_name_ending_with_plus_sign_parses() {
+        let page = Fixtures.collapsedPage
+        let boxes = Fixtures.boxes(Fixtures.collapsedHeader + [
+            ("2026/", 40, 500, 158, 550), ("統一FANG+", 205, 500, 435, 550),
+            ("112.55", 552, 500, 688, 550), ("-563", 870, 500, 960, 550),
+        ] + Fixtures.row0Lower, on: page)
+
+        XCTAssertEqual(TradeScreenshotParser.parse(boxes: boxes).map(summary), ["統一FANG+ 買 5 112.55 2026-09-30"])
+    }
+
+    func test_plus_sign_split_into_its_own_text_box_stays_in_the_name() {
+        let page = Fixtures.collapsedPage
+        let boxes = Fixtures.boxes(Fixtures.collapsedHeader + [
+            ("2026/", 40, 500, 158, 550), ("統一FANG", 205, 500, 400, 550), ("+", 402, 500, 435, 550),
+            ("112.55", 552, 500, 688, 550), ("-563", 870, 500, 960, 550),
+        ] + Fixtures.row0Lower, on: page)
+
+        XCTAssertEqual(TradeScreenshotParser.parse(boxes: boxes).map(summary), ["統一FANG+ 買 5 112.55 2026-09-30"])
+    }
+
+    func test_plus_sign_box_far_from_the_name_is_not_part_of_it() {
+        let page = Fixtures.collapsedPage
+        let boxes = Fixtures.boxes(Fixtures.collapsedHeader + [
+            ("2026/", 40, 500, 158, 550), ("元大台灣50", 205, 500, 435, 550), ("+", 500, 500, 520, 550),
+            ("112.55", 552, 500, 688, 550), ("1,234", 870, 500, 960, 550),
+        ] + Fixtures.row0Lower, on: page)
+
+        XCTAssertEqual(TradeScreenshotParser.parse(boxes: boxes).map(summary), ["元大台灣50 買 5 112.55 2026-09-30"])
+    }
+
+    func test_split_chinese_and_latin_name_fragments_resolve_to_the_stock_code() {
+        let cases: [[Fixtures.PixelBox]] = [
+            [("統一", 205, 500, 300, 550), ("FANG", 305, 500, 400, 550), ("+", 402, 500, 435, 550)],
+            [("統", 205, 500, 250, 550), ("—", 252, 500, 290, 550), ("FANG+", 292, 500, 435, 550)],
+            [("統一", 205, 500, 300, 550), ("FANG+", 305, 500, 435, 550)],
+        ]
+        for fragments in cases {
+            let boxes = Fixtures.boxes([
+                ("2026/", 40, 500, 158, 550),
+                ("144.20", 552, 500, 688, 550), ("-722", 870, 500, 960, 550),
+            ] + fragments + Fixtures.row0Lower, on: Fixtures.collapsedPage)
+            let trades = TradeScreenshotParser.parse(boxes: boxes)
+            XCTAssertEqual(trades.count, 1)
+            let resolver = StockNameResolver(entries: [StockListEntry(code: "00757", name: "統一FANG+", market: .tse)])
+            XCTAssertEqual(trades.first.flatMap { resolver.resolve(name: $0.stockName) }, "00757")
+            XCTAssertEqual(trades.first?.price, 144.2)
+            XCTAssertEqual(trades.first?.amount, 5)
+        }
+    }
+
+    func test_numeric_name_fragment_does_not_replace_the_price() {
+        let boxes = Fixtures.boxes([
+            ("2026/", 40, 500, 158, 550), ("元大台灣", 205, 500, 380, 550), ("50", 382, 500, 435, 550),
+            ("112", 450, 500, 688, 550), ("-563", 870, 500, 960, 550),
+        ] + Fixtures.row0Lower, on: Fixtures.collapsedPage)
+        let trades = TradeScreenshotParser.parse(boxes: boxes)
+        XCTAssertEqual(trades.first?.stockName, "元大台灣50")
+        XCTAssertEqual(trades.first?.price, 112)
+    }
+
+    func test_user_fang_screenshot_vision_output_does_not_take_profit_loss_as_shares() {
+        let boxes = TradeScreenshotVisionFixtures.fangMissingShares
+        let trades = TradeScreenshotParser.parse(boxes: boxes)
+        XCTAssertEqual(trades.count, 1)
+        XCTAssertEqual(trades.first?.stockName, "統一FANG+")
+        XCTAssertEqual(trades.first?.price, 144.2)
+        XCTAssertEqual(trades.first.flatMap { day($0.date) }, "2026-10-20")
+        XCTAssertNil(trades.first?.amount, "Vision missed 5 and read the profit/loss placeholder as 11")
+    }
+
+    func test_wide_share_count_under_a_narrow_price_stays_in_the_share_column() {
+        let boxes = Fixtures.boxes([
+            ("2026/", 40, 500, 158, 550), ("台積電", 205, 500, 435, 550),
+            ("9", 665, 500, 688, 550), ("9,000", 840, 500, 960, 550),
+            ("10/20", 40, 585, 158, 632), ("盤中零股賣出", 197, 585, 443, 632),
+            ("1,000", 560, 585, 688, 632), ("100", 870, 585, 960, 632),
+        ], on: Fixtures.collapsedPage)
+        let trades = TradeScreenshotParser.parse(boxes: boxes)
+        XCTAssertEqual(trades.first?.price, 9)
+        XCTAssertEqual(trades.first?.amount, 1000)
+    }
+
+    func test_missing_share_count_with_a_positive_profit_stays_incomplete() {
+        let boxes = Fixtures.boxes([
+            ("2026/", 40, 500, 158, 550), ("台積電", 205, 500, 435, 550),
+            ("9", 665, 500, 688, 550), ("9,000", 840, 500, 960, 550),
+            ("10/20", 40, 585, 158, 632), ("盤中零股賣出", 197, 585, 443, 632),
+            ("100", 870, 585, 960, 632),
+        ], on: Fixtures.collapsedPage)
+        XCTAssertNil(TradeScreenshotParser.parse(boxes: boxes).first?.amount)
+    }
+
     // MARK: ignored text
 
     func test_summary_and_header_rows_alone_produce_no_trade() {
@@ -164,6 +256,41 @@ final class TradeScreenshotParserTests: XCTestCase {
     }
 
     // MARK: text boxes exactly as Vision returned them for the real screenshots
+
+    func test_complete_six_trade_screenshot_resolves_all_names_and_upper_row_fields() {
+        let trades = TradeScreenshotParser.parse(boxes: TradeScreenshotVisionFixtures.fullSixTrades)
+
+        XCTAssertEqual(trades.map(summary), [
+            "元大台灣50 買 9 108.15 2026-10-19",
+            "元大台灣50 買 10 107.9 2026-10-19",
+            "元大台灣50 買 10 107.2 2026-10-20",
+            "統一FANG+ 買 5 144.2 2026-10-20",
+            "元大台灣50 買 10 107.05 2026-10-22",
+            "華邦電 買 5 155.5 2026-10-22",
+        ])
+        let resolver = StockNameResolver(entries: [
+            StockListEntry(code: "0050", name: "元大台灣50", market: .tse),
+            StockListEntry(code: "00757", name: "統一FANG+", market: .tse),
+            StockListEntry(code: "2344", name: "華邦電", market: .tse),
+        ])
+        XCTAssertEqual(trades.map { resolver.resolve(name: $0.stockName) }, ["0050", "0050", "0050", "00757", "0050", "2344"])
+    }
+
+    func test_upper_row_search_does_not_cross_a_previous_trade_type() {
+        let boxes = Fixtures.boxes(Fixtures.row0Upper + [
+            ("09/30", 40, 555, 158, 602), ("盤中零股買進", 197, 555, 443, 602),
+            ("5", 665, 555, 688, 602),
+            ("10/01", 40, 608, 158, 655), ("盤中零股買進", 197, 608, 443, 655),
+            ("3", 665, 608, 688, 655),
+        ], on: Fixtures.collapsedPage)
+        let trades = TradeScreenshotParser.parse(boxes: boxes)
+        XCTAssertEqual(trades.count, 2)
+        XCTAssertEqual(trades[0].stockName, "元大台灣50")
+        XCTAssertEqual(trades[1].stockName, "")
+        XCTAssertNil(trades[1].date)
+        XCTAssertNil(trades[1].price)
+        XCTAssertEqual(trades[1].amount, 3)
+    }
 
     func test_vision_output_of_the_collapsed_screenshot() {
         let trades = TradeScreenshotParser.parse(boxes: TradeScreenshotVisionFixtures.collapsed)

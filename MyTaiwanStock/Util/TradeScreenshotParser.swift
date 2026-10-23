@@ -28,6 +28,10 @@ enum TradeScreenshotParser {
         "盤中零股買進", "盤中零股賣出", "盤後零股買進", "盤後零股賣出",
     ]
 
+    /// Adjacent OCR fragments can form one name within the name column.
+    /// Positions are normalized, so this is a fraction of the page width.
+    private static let nameFragmentGap: CGFloat = 0.03
+
     /// The upper line must lie this many type-box heights above the lower line.
     private static let upperLineDistance = 0.5...2.5
 
@@ -99,16 +103,25 @@ enum TradeScreenshotParser {
         return nil
     }
 
-    /// The line directly above the anchor line, if it is close enough and has a year fragment.
+    /// The nearest upper line, ignoring disclosure arrows outside the trade columns.
     private static func upperLine(above index: Int, in lines: [Line], anchorHeight: CGFloat) -> Line? {
         guard index > 0 else { return nil }
         let lower = lines[index]
-        let candidate = lines[index - 1]
-        let distance = (candidate.midY - lower.midY) / anchorHeight
-        guard upperLineDistance.contains(Double(distance)),
-              candidate.boxes.contains(where: { yearFragment(in: $0.text) != nil })
-        else { return nil }
-        return candidate
+        let dataRightEdge = lower.boxes.map { $0.boundingBox.maxX }.max() ?? 1
+        for candidate in lines[..<index].reversed() {
+            let distance = Double((candidate.midY - lower.midY) / anchorHeight)
+            guard distance <= upperLineDistance.upperBound else { return nil }
+            // Vision can recognize the row's right-hand chevron as a separate line of "V".
+            // Only skip arrow-only lines beyond the data columns; never skip another trade.
+            if candidate.boxes.allSatisfy({
+                $0.boundingBox.minX > dataRightEdge && ["V", "v", "^", "∨", "∧", "⌄", "⌃"].contains(stripped($0.text))
+            }) { continue }
+            guard upperLineDistance.contains(distance),
+                  candidate.boxes.contains(where: { yearFragment(in: $0.text) != nil })
+            else { return nil }
+            return candidate
+        }
+        return nil
     }
 
     // MARK: building a trade
@@ -117,24 +130,44 @@ enum TradeScreenshotParser {
         var name = ""
         var price: Float?
         var year: Int?
+        var shareColumnRightEdge: CGFloat?
 
         if let upper {
-            var numbers: [String] = []
+            var numbers: [(text: String, box: RecognizedTextBox)] = []
+            var nameBox: RecognizedTextBox?
             for box in upper.boxes {
                 var text = stripped(box.text)
                 if let found = yearFragment(in: text) {
                     year = found.year
-                    text = String(text[found.remainder...])
+                    // Vision sometimes appends a stray enumeration comma to the year slash.
+                    text = String(text[found.remainder...]).trimmingCharacters(in: CharacterSet(charactersIn: "、"))
                 }
                 guard !text.isEmpty else { continue }
-                if isNumber(text) {
-                    numbers.append(text)
+                if let last = nameBox, numbers.isEmpty,
+                   box.boundingBox.minX - last.boundingBox.maxX <= nameFragmentGap,
+                   box.boundingBox.maxX <= anchor.box.boundingBox.maxX + nameFragmentGap,
+                   isNameFragment(text) {
+                    // Keep split Chinese, Latin, numeric and sign fragments in the name column.
+                    name += text
+                    nameBox = box
+                } else if isNumber(text) {
+                    numbers.append((text, box))
                 } else if name.isEmpty {
                     name = text
+                    nameBox = box
                 }
             }
             // Columns are price, then net amount; the net amount is not needed.
-            price = numbers.first.flatMap { Float(removingSeparators($0)) }
+            price = numbers.first.flatMap { Float(removingSeparators($0.text)) }
+            if let priceBox = numbers.first?.box {
+                // Shares are right-aligned below the price, but can be wider than its text.
+                // Separate their column from profit/loss using the gap between upper columns.
+                if numbers.count > 1 {
+                    shareColumnRightEdge = (priceBox.boundingBox.maxX + numbers[1].box.boundingBox.minX) / 2
+                } else {
+                    shareColumnRightEdge = priceBox.boundingBox.maxX
+                }
+            }
         }
 
         var monthDay: (month: Int, day: Int)?
@@ -148,6 +181,9 @@ enum TradeScreenshotParser {
                 continue
             }
             if afterType, shares == nil, isNumber(text), !text.contains(".") {
+                if let rightEdge = shareColumnRightEdge {
+                    guard box.midX > anchor.box.boundingBox.maxX, box.midX <= rightEdge else { continue }
+                }
                 shares = Int(removingSeparators(text))
             }
         }
@@ -185,6 +221,11 @@ enum TradeScreenshotParser {
 
     private static func isNumber(_ text: String) -> Bool {
         text.range(of: #"^[-+]?[\d,]+(\.\d+)?$"#, options: .regularExpression) != nil
+    }
+
+    /// Stock-name characters, including the dash variants already handled by the resolver.
+    private static func isNameFragment(_ text: String) -> Bool {
+        text.range(of: #"^[\p{L}\p{N}+＋\-–—―─]+$"#, options: .regularExpression) != nil
     }
 
     /// "2026/" or "2026/元大台灣50" (a merged text box).

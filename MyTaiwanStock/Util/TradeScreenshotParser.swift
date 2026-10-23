@@ -103,16 +103,25 @@ enum TradeScreenshotParser {
         return nil
     }
 
-    /// The line directly above the anchor line, if it is close enough and has a year fragment.
+    /// The nearest upper line, ignoring disclosure arrows outside the trade columns.
     private static func upperLine(above index: Int, in lines: [Line], anchorHeight: CGFloat) -> Line? {
         guard index > 0 else { return nil }
         let lower = lines[index]
-        let candidate = lines[index - 1]
-        let distance = (candidate.midY - lower.midY) / anchorHeight
-        guard upperLineDistance.contains(Double(distance)),
-              candidate.boxes.contains(where: { yearFragment(in: $0.text) != nil })
-        else { return nil }
-        return candidate
+        let dataRightEdge = lower.boxes.map { $0.boundingBox.maxX }.max() ?? 1
+        for candidate in lines[..<index].reversed() {
+            let distance = Double((candidate.midY - lower.midY) / anchorHeight)
+            guard distance <= upperLineDistance.upperBound else { return nil }
+            // Vision can recognize the row's right-hand chevron as a separate line of "V".
+            // Only skip arrow-only lines beyond the data columns; never skip another trade.
+            if candidate.boxes.allSatisfy({
+                $0.boundingBox.minX > dataRightEdge && ["V", "v", "^", "∨", "∧", "⌄", "⌃"].contains(stripped($0.text))
+            }) { continue }
+            guard upperLineDistance.contains(distance),
+                  candidate.boxes.contains(where: { yearFragment(in: $0.text) != nil })
+            else { return nil }
+            return candidate
+        }
+        return nil
     }
 
     // MARK: building a trade
@@ -130,7 +139,8 @@ enum TradeScreenshotParser {
                 var text = stripped(box.text)
                 if let found = yearFragment(in: text) {
                     year = found.year
-                    text = String(text[found.remainder...])
+                    // Vision sometimes appends a stray enumeration comma to the year slash.
+                    text = String(text[found.remainder...]).trimmingCharacters(in: CharacterSet(charactersIn: "、"))
                 }
                 guard !text.isEmpty else { continue }
                 if let last = nameBox, numbers.isEmpty,

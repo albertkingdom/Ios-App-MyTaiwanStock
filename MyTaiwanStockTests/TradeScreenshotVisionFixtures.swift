@@ -57,6 +57,19 @@ enum TradeScreenshotVisionFixtures {
         ])
     }
 
+    /// User-provided cropped 統一FANG+ row. Vision misses the share count 5 and reads -- as 11.
+    static var fangMissingShares: [RecognizedTextBox] {
+        boxes([
+            ("2026/", 0.018242, 0.451613, 0.117745, 0.258065),
+            ("10/20", 0.019568, 0.112479, 0.110118, 0.280419),
+            ("統一FANG+", 0.147595, 0.505376, 0.227197, 0.290323),
+            ("盤中零股買進", 0.149254, 0.043011, 0.218905, 0.247312),
+            ("144.20", 0.469133, 0.512187, 0.133045, 0.276701),
+            ("-722", 0.824096, 0.556936, 0.096418, 0.219460),
+            ("11", 0.878939, 0.107527, 0.046434, 0.118280),
+        ])
+    }
+
     /// Expanded rows: 台積電 buy and 瑞昱 sell, with the detail block open.
     static var expanded: [RecognizedTextBox] {
         boxes([

@@ -28,9 +28,9 @@ enum TradeScreenshotParser {
         "盤中零股買進", "盤中零股賣出", "盤後零股買進", "盤後零股賣出",
     ]
 
-    /// A "+" box belongs to the name only when it starts within this share of the page width
-    /// after the name box ends. Positions are normalized, so this is a fraction of the width.
-    private static let nameSuffixGap: CGFloat = 0.03
+    /// Adjacent OCR fragments can form one name within the name column.
+    /// Positions are normalized, so this is a fraction of the page width.
+    private static let nameFragmentGap: CGFloat = 0.03
 
     /// The upper line must lie this many type-box heights above the lower line.
     private static let upperLineDistance = 0.5...2.5
@@ -121,9 +121,10 @@ enum TradeScreenshotParser {
         var name = ""
         var price: Float?
         var year: Int?
+        var shareColumnRightEdge: CGFloat?
 
         if let upper {
-            var numbers: [String] = []
+            var numbers: [(text: String, box: RecognizedTextBox)] = []
             var nameBox: RecognizedTextBox?
             for box in upper.boxes {
                 var text = stripped(box.text)
@@ -132,20 +133,31 @@ enum TradeScreenshotParser {
                     text = String(text[found.remainder...])
                 }
                 guard !text.isEmpty else { continue }
-                if isNumber(text) {
-                    numbers.append(text)
+                if let last = nameBox, numbers.isEmpty,
+                   box.boundingBox.minX - last.boundingBox.maxX <= nameFragmentGap,
+                   box.boundingBox.maxX <= anchor.box.boundingBox.maxX + nameFragmentGap,
+                   isNameFragment(text) {
+                    // Keep split Chinese, Latin, numeric and sign fragments in the name column.
+                    name += text
+                    nameBox = box
+                } else if isNumber(text) {
+                    numbers.append((text, box))
                 } else if name.isEmpty {
                     name = text
-                    nameBox = box
-                } else if isNameSuffix(text), let last = nameBox,
-                          box.boundingBox.minX - last.boundingBox.maxX <= nameSuffixGap {
-                    // Vision can split the "+" of a name like "統一FANG+" into its own box.
-                    name += text
                     nameBox = box
                 }
             }
             // Columns are price, then net amount; the net amount is not needed.
-            price = numbers.first.flatMap { Float(removingSeparators($0)) }
+            price = numbers.first.flatMap { Float(removingSeparators($0.text)) }
+            if let priceBox = numbers.first?.box {
+                // Shares are right-aligned below the price, but can be wider than its text.
+                // Separate their column from profit/loss using the gap between upper columns.
+                if numbers.count > 1 {
+                    shareColumnRightEdge = (priceBox.boundingBox.maxX + numbers[1].box.boundingBox.minX) / 2
+                } else {
+                    shareColumnRightEdge = priceBox.boundingBox.maxX
+                }
+            }
         }
 
         var monthDay: (month: Int, day: Int)?
@@ -159,6 +171,9 @@ enum TradeScreenshotParser {
                 continue
             }
             if afterType, shares == nil, isNumber(text), !text.contains(".") {
+                if let rightEdge = shareColumnRightEdge {
+                    guard box.midX > anchor.box.boundingBox.maxX, box.midX <= rightEdge else { continue }
+                }
                 shares = Int(removingSeparators(text))
             }
         }
@@ -198,9 +213,9 @@ enum TradeScreenshotParser {
         text.range(of: #"^[-+]?[\d,]+(\.\d+)?$"#, options: .regularExpression) != nil
     }
 
-    /// A box holding only plus signs, which belongs to the stock name before it.
-    private static func isNameSuffix(_ text: String) -> Bool {
-        text.range(of: #"^[+＋]+$"#, options: .regularExpression) != nil
+    /// Stock-name characters, including the dash variants already handled by the resolver.
+    private static func isNameFragment(_ text: String) -> Bool {
+        text.range(of: #"^[\p{L}\p{N}+＋\-–—―─]+$"#, options: .regularExpression) != nil
     }
 
     /// "2026/" or "2026/元大台灣50" (a merged text box).

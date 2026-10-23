@@ -36,10 +36,17 @@ class DividendDetailViewController: UIViewController {
     }
     
     func setupLayout(){
-        tableView = UITableView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.height))
-        
+        tableView = UITableView(frame: .zero)
+        tableView.translatesAutoresizingMaskIntoConstraints = false
+
         view.addSubview(tableView)
-        
+        NSLayoutConstraint.activate([
+            tableView.topAnchor.constraint(equalTo: view.topAnchor),
+            tableView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
+            tableView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            tableView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
+        ])
+
         tableView.register(UINib(nibName: "DividendDetailTableViewCell", bundle: nil), forCellReuseIdentifier: DividendDetailTableViewCell.identifier)
         tableView.dataSource = self
         tableView.rowHeight = 120

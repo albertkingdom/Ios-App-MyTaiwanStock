@@ -21,13 +21,18 @@ class StatisticViewController: UIViewController {
     var tableView1: UITableView! = UITableView() //庫存
     var tableView2: UITableView! = UITableView() //股利
     
+    /// Page the scroll view is on (0 inventory, 1 dividend). A resize changes the page width, so the
+    /// offset is rebuilt from this instead of being read back from the old offset, which UIKit may
+    /// already have clamped to the old content size.
+    private var currentPage = 0
+    private var alignedPageWidth: CGFloat = 0
+
     @IBAction func tapSegment(_ sender: UISegmentedControl) {
-       
+
         switch sender.selectedSegmentIndex {
-        case 0:
-            scrollView.contentOffset.x = 0
-        case 1:
-            scrollView.contentOffset.x = view.frame.width
+        case 0, 1:
+            currentPage = sender.selectedSegmentIndex
+            scrollView.contentOffset.x = CGFloat(currentPage) * scrollView.bounds.width
         default:
             break
         }
@@ -48,8 +53,17 @@ class StatisticViewController: UIViewController {
 
         viewModel.fetchData(to: pieChartView)
         viewModel.fetchDividendAndClassify()
-        
-        
+
+
+    }
+
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        // Keep the current page in view when the page width changes (scene resized or rotated).
+        let width = scrollView.bounds.width
+        guard abs(width - alignedPageWidth) > 0.5 else { return }
+        alignedPageWidth = width
+        scrollView.contentOffset.x = CGFloat(currentPage) * width
     }
     
     func setupLayout() {
@@ -61,17 +75,21 @@ class StatisticViewController: UIViewController {
             scrollView.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor),
             scrollView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             scrollView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            stackView.topAnchor.constraint(equalTo: scrollView.topAnchor),
-            stackView.heightAnchor.constraint(equalTo: scrollView.heightAnchor, constant: 0),
-            stackView.leadingAnchor.constraint(equalTo: scrollView.leadingAnchor),
-            stackView.widthAnchor.constraint(equalTo: scrollView.widthAnchor, multiplier: 2.0)
+            // Two pages side by side. The content guide gives the scroll view its content size, so it
+            // follows the page size whenever the scene resizes.
+            stackView.topAnchor.constraint(equalTo: scrollView.contentLayoutGuide.topAnchor),
+            stackView.bottomAnchor.constraint(equalTo: scrollView.contentLayoutGuide.bottomAnchor),
+            stackView.leadingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.leadingAnchor),
+            stackView.trailingAnchor.constraint(equalTo: scrollView.contentLayoutGuide.trailingAnchor),
+            stackView.heightAnchor.constraint(equalTo: scrollView.frameLayoutGuide.heightAnchor),
+            stackView.widthAnchor.constraint(equalTo: scrollView.frameLayoutGuide.widthAnchor, multiplier: 2.0)
         ])
         scrollView.translatesAutoresizingMaskIntoConstraints = false
         stackView.translatesAutoresizingMaskIntoConstraints = false
 
-        scrollView.contentSize = CGSize(width: view.frame.size.width*2.0, height: scrollView.frame.height)
         scrollView.isPagingEnabled = true
-        
+        scrollView.delegate = self
+
         tableView1.tag = 1
 
         tableView2.tag = 2
@@ -128,7 +146,25 @@ class StatisticViewController: UIViewController {
 }
 
 extension StatisticViewController: ChartViewDelegate {
-    
+
+}
+
+// The dividend table also uses this controller as its delegate, so every handler checks which scroll view called.
+extension StatisticViewController {
+    func scrollViewDidEndDecelerating(_ scrollView: UIScrollView) {
+        updateCurrentPage(from: scrollView)
+    }
+
+    func scrollViewDidEndDragging(_ scrollView: UIScrollView, willDecelerate decelerate: Bool) {
+        if !decelerate {
+            updateCurrentPage(from: scrollView)
+        }
+    }
+
+    private func updateCurrentPage(from scrollView: UIScrollView) {
+        guard scrollView === self.scrollView, scrollView.bounds.width > 0 else { return }
+        currentPage = min(max(Int((scrollView.contentOffset.x / scrollView.bounds.width).rounded()), 0), 1)
+    }
 }
 
 extension StatisticViewController: UITableViewDataSource, UITableViewDelegate {

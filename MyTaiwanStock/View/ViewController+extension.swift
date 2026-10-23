@@ -9,6 +9,17 @@ import Foundation
 import UIKit
 
 extension UIViewController {
+    /// The app draws its navigation bars white. On a page with another background colour that leaves a
+    /// white band at the top, which also runs under a vertical bar, so at the scroll edge the bar takes
+    /// the page's colour. The bar still turns white once the content scrolls under it.
+    func matchNavigationBarToPageBackground(_ color: UIColor) {
+        let appearance = UINavigationBarAppearance()
+        appearance.configureWithOpaqueBackground()
+        appearance.backgroundColor = color
+        appearance.shadowColor = .clear
+        navigationItem.scrollEdgeAppearance = appearance
+    }
+
     func showToast(message: String) {
 
       

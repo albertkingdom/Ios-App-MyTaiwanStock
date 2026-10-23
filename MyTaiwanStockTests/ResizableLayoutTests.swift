@@ -1,0 +1,183 @@
+//
+//  ResizableLayoutTests.swift
+//  MyTaiwanStockTests
+//
+
+import XCTest
+@testable import MyTaiwanStock
+
+/// The scene can change size while the app runs (iPhone Duo folding, Split View, Stage Manager) and
+/// can put a vertical bar on a leading or trailing edge. Layout has to follow the current bounds and
+/// safe area instead of the size the view had when it loaded.
+@MainActor
+final class ResizableLayoutTests: XCTestCase {
+
+    private var window: UIWindow?
+
+    override func tearDown() {
+        window?.isHidden = true
+        window = nil
+        super.tearDown()
+    }
+
+    private func mainStoryboard() -> UIStoryboard {
+        UIStoryboard(name: "Main", bundle: Bundle(for: AddListViewController.self))
+    }
+
+    /// Loads the view and lays it out at `size`. No window, so the controller never appears and
+    /// never starts its network work.
+    private func layout(_ controller: UIViewController, size: CGSize) {
+        controller.loadViewIfNeeded()
+        controller.view.frame = CGRect(origin: .zero, size: size)
+        controller.view.setNeedsLayout()
+        controller.view.layoutIfNeeded()
+    }
+
+    // MARK: - AddListViewController
+
+    func test_addList_floatingButton_stays_clear_of_a_trailing_vertical_bar() {
+        let controller = mainStoryboard().instantiateViewController(withIdentifier: "addListVC") as! AddListViewController
+        controller.additionalSafeAreaInsets = UIEdgeInsets(top: 0, left: 0, bottom: 34, right: 60)
+        let window = UIWindow(frame: CGRect(x: 0, y: 0, width: 440, height: 956))
+        window.rootViewController = controller
+        window.makeKeyAndVisible()
+        self.window = window
+        window.layoutIfNeeded()
+
+        let button = controller.floatingButton
+        let view = controller.view!
+        XCTAssertLessThanOrEqual(button.frame.maxX, view.bounds.width - view.safeAreaInsets.right,
+                                 "button \(button.frame) sits under the trailing bar")
+        XCTAssertLessThanOrEqual(button.frame.maxY, view.bounds.height - view.safeAreaInsets.bottom,
+                                 "button \(button.frame) sits under the bottom inset")
+    }
+
+    // MARK: - DividendDetailViewController
+
+    func test_dividendDetail_tableView_fills_the_view_after_it_resizes() {
+        let controller = DividendDetailViewController(stockNo: "2330")
+
+        layout(controller, size: CGSize(width: 400, height: 800))
+        XCTAssertEqual(controller.tableView.frame, controller.view.bounds)
+
+        layout(controller, size: CGSize(width: 700, height: 400))
+        XCTAssertEqual(controller.tableView.frame, controller.view.bounds)
+    }
+
+    // MARK: - StockViewController
+
+    func test_stockDetail_tableHeader_keeps_every_row_readable_at_any_size() {
+        let viewModel = StockDetailViewModel(stockNo: "2330", currentStockPrice: "100", repository: NetworkServiceImpl())
+        let controller = mainStoryboard().instantiateViewController(withIdentifier: "stockViewController") as! StockViewController
+        controller.configure(with: viewModel)
+        controller.stockName = "台積電"
+        controller.stockPrice = "100"
+        controller.timeString = "10-23"
+
+        let sizes = [
+            CGSize(width: 400, height: 800),     // portrait phone
+            CGSize(width: 800, height: 400),     // landscape phone
+            CGSize(width: 932, height: 430),     // landscape Pro Max
+            CGSize(width: 1024, height: 1366),   // tall iPad window
+        ]
+        for size in sizes {
+            layout(controller, size: size)
+            let header = controller.containerTableView.tableHeaderView!
+            header.layoutIfNeeded()
+            let label = "at \(size)"
+
+            // The overview block keeps the height its labels need.
+            let overviewNeeds = controller.overviewInfo.systemLayoutSizeFitting(UIView.layoutFittingCompressedSize).height
+            XCTAssertGreaterThanOrEqual(controller.overviewInfo.frame.height, overviewNeeds - 0.5,
+                                        "overview row is squeezed \(label)")
+            // The plot info row keeps its fixed height instead of being stretched to fill the header.
+            XCTAssertEqual(controller.plotInfo.frame.height, 30, accuracy: 0.5, "plot info row is stretched \(label)")
+            // The header is as tall as its content, no more and no less.
+            let fitting = header.systemLayoutSizeFitting(
+                CGSize(width: header.bounds.width, height: UIView.layoutFittingCompressedSize.height),
+                withHorizontalFittingPriority: .required,
+                verticalFittingPriority: .fittingSizeLevel).height
+            XCTAssertEqual(header.frame.height, fitting, accuracy: 1, "header height does not match its content \(label)")
+        }
+    }
+
+    // MARK: - StatisticViewController
+
+    private func statisticController() throws -> StatisticViewController {
+        let tabBar = mainStoryboard().instantiateViewController(withIdentifier: "customTabVC") as! UITabBarController
+        return try XCTUnwrap(
+            tabBar.viewControllers?
+                .compactMap { ($0 as? UINavigationController)?.viewControllers.first ?? $0 }
+                .compactMap { $0 as? StatisticViewController }
+                .first)
+    }
+
+    func test_statistic_scrollView_holds_two_pages_of_the_current_width() throws {
+        let controller = try statisticController()
+
+        layout(controller, size: CGSize(width: 400, height: 800))
+        XCTAssertEqual(controller.scrollView.contentSize.width, 800, accuracy: 0.5)
+
+        layout(controller, size: CGSize(width: 700, height: 400))
+        XCTAssertEqual(controller.scrollView.contentSize.width, 1400, accuracy: 0.5)
+    }
+
+    func test_statistic_second_page_stays_in_view_after_a_swipe_and_a_resize() throws {
+        let controller = try statisticController()
+        layout(controller, size: CGSize(width: 400, height: 800))
+        // UIKit only calls the handlers it can see through the Objective-C runtime.
+        let delegate = try XCTUnwrap(controller.scrollView.delegate)
+        XCTAssertTrue(delegate.responds(to: #selector(UIScrollViewDelegate.scrollViewDidEndDecelerating(_:))))
+        XCTAssertTrue(delegate.responds(to: #selector(UIScrollViewDelegate.scrollViewDidEndDragging(_:willDecelerate:))))
+
+        controller.scrollView.contentOffset.x = 400            // the user swiped to the dividend page
+        controller.scrollViewDidEndDecelerating(controller.scrollView)
+
+        layout(controller, size: CGSize(width: 700, height: 400))
+        XCTAssertEqual(controller.scrollView.contentOffset.x, 700, accuracy: 0.5, "wider: offset is not on the second page")
+
+        layout(controller, size: CGSize(width: 300, height: 600))
+        XCTAssertEqual(controller.scrollView.contentOffset.x, 300, accuracy: 0.5, "narrower: offset is not on the second page")
+    }
+
+    func test_statistic_second_page_stays_in_view_after_a_segment_tap_and_a_resize() throws {
+        let controller = try statisticController()
+        layout(controller, size: CGSize(width: 400, height: 800))
+        controller.segment.selectedSegmentIndex = 1
+        controller.tapSegment(controller.segment)
+
+        layout(controller, size: CGSize(width: 700, height: 400))
+        XCTAssertEqual(controller.scrollView.contentOffset.x, 700, accuracy: 0.5)
+    }
+
+    func test_statistic_scrolling_the_dividend_table_does_not_change_the_page() throws {
+        let controller = try statisticController()
+        layout(controller, size: CGSize(width: 400, height: 800))
+        controller.segment.selectedSegmentIndex = 1
+        controller.tapSegment(controller.segment)
+
+        // The dividend table uses the controller as its delegate too; its own scrolling ends at x = 0.
+        controller.scrollViewDidEndDecelerating(controller.tableView2)
+
+        layout(controller, size: CGSize(width: 700, height: 400))
+        XCTAssertEqual(controller.scrollView.contentOffset.x, 700, accuracy: 0.5)
+    }
+
+    func test_statistic_first_page_stays_in_view_after_it_resizes() throws {
+        let controller = try statisticController()
+        layout(controller, size: CGSize(width: 400, height: 800))
+
+        layout(controller, size: CGSize(width: 700, height: 400))
+        XCTAssertEqual(controller.scrollView.contentOffset.x, 0, accuracy: 0.5)
+    }
+
+    func test_statistic_segment_scrolls_to_the_second_page_of_the_current_width() throws {
+        let controller = try statisticController()
+        layout(controller, size: CGSize(width: 700, height: 400))
+
+        controller.segment.selectedSegmentIndex = 1
+        controller.tapSegment(controller.segment)
+
+        XCTAssertEqual(controller.scrollView.contentOffset.x, controller.scrollView.bounds.width, accuracy: 0.5)
+    }
+}

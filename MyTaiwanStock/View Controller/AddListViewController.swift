@@ -60,12 +60,13 @@ class AddListViewController: UIViewController {
     func initView() {
         view.addSubview(floatingButton)
         floatingButton.addTarget(self, action: #selector(tapFabButton), for: .touchUpInside)
-    }
-    override func viewDidLayoutSubviews() {
-        super.viewDidLayoutSubviews()
-        floatingButton.frame = CGRect(x: view.frame.width - 80,
-                                      y: view.frame.height - 80 - view.safeAreaInsets.bottom,
-                                      width: 50, height: 50)
+        floatingButton.translatesAutoresizingMaskIntoConstraints = false
+        NSLayoutConstraint.activate([
+            floatingButton.widthAnchor.constraint(equalToConstant: 50),
+            floatingButton.heightAnchor.constraint(equalToConstant: 50),
+            floatingButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -30),
+            floatingButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30),
+        ])
     }
 
     @objc func tapFabButton() {

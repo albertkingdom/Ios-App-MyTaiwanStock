@@ -48,6 +48,8 @@ class SettingViewController: UITableViewController {
         )
 
         tableView.backgroundColor = .secondarySystemBackground
+        matchNavigationBarToPageBackground(.secondarySystemBackground)
+        pinSwitchToContentViewTrailing()
         tableView.separatorStyle = .none
         tableView.estimatedSectionFooterHeight = 80
         tableView.sectionFooterHeight = UITableView.automaticDimension
@@ -59,6 +61,17 @@ class SettingViewController: UITableViewController {
         feeDiscountTextfield.inputAccessoryView = toolBar()
         pickerView.delegate = self
         pickerView.dataSource = self
+    }
+
+    /// The storyboard pins the switch to the content view's trailing layout margin. Under a vertical bar the
+    /// table's right margin is the whole safe area, so once the content view is inset by it no margin is
+    /// left and the switch sits on the content view's edge and is clipped. A fixed offset keeps its 20pt.
+    private func pinSwitchToContentViewTrailing() {
+        guard let contentView = syncSwitch.superview else { return }
+        contentView.constraints
+            .filter { $0.firstAttribute == .trailingMargin && $0.secondItem === syncSwitch }
+            .forEach { $0.isActive = false }
+        syncSwitch.trailingAnchor.constraint(equalTo: contentView.trailingAnchor, constant: -20).isActive = true
     }
 
     @objc private func manualBackupTapped() {
@@ -127,7 +140,9 @@ class SettingViewController: UITableViewController {
 
     // A plain `titleForFooterInSection` string can render as a single truncated line
     // in this static table view; a custom footer view with an explicit multi-line
-    // label guarantees the explanatory text wraps in full.
+    // label guarantees the explanatory text wraps in full. The layout margins are zero on the leading side
+    // under a vertical bar, so the text keeps at least 8pt there. The trailing side stays on the layout
+    // margins: they include the safe area while the table measures the footer, the safe area guide does not.
     override func tableView(_ tableView: UITableView, viewForFooterInSection section: Int) -> UIView? {
         guard section == 0 else { return nil }
 
@@ -140,8 +155,11 @@ class SettingViewController: UITableViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
 
         container.addSubview(label)
+        let leading = label.leadingAnchor.constraint(equalTo: container.layoutMarginsGuide.leadingAnchor)
+        leading.priority = .defaultHigh
         NSLayoutConstraint.activate([
-            label.leadingAnchor.constraint(equalTo: container.layoutMarginsGuide.leadingAnchor),
+            label.leadingAnchor.constraint(greaterThanOrEqualTo: container.leadingAnchor, constant: 8),
+            leading,
             label.trailingAnchor.constraint(equalTo: container.layoutMarginsGuide.trailingAnchor),
             label.topAnchor.constraint(equalTo: container.topAnchor, constant: 4),
             label.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -12),

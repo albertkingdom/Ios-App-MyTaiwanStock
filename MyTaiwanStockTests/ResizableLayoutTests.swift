@@ -107,6 +107,60 @@ final class ResizableLayoutTests: XCTestCase {
         }
     }
 
+    // MARK: - SettingViewController
+
+    private func makeSettings() throws -> SettingViewController {
+        let tab = mainStoryboard().instantiateViewController(withIdentifier: "customTabVC") as! UITabBarController
+        let nav = try XCTUnwrap(tab.viewControllers?.compactMap { $0 as? UINavigationController }
+            .first { $0.viewControllers.first is SettingViewController })
+        let settings = try XCTUnwrap(nav.viewControllers.first as? SettingViewController)
+        settings.loadViewIfNeeded()
+        return settings
+    }
+
+    func test_settings_navigationBar_matches_the_grey_page_at_the_scroll_edge() throws {
+        let settings = try makeSettings()
+
+        let appearance = try XCTUnwrap(settings.navigationItem.scrollEdgeAppearance)
+        XCTAssertEqual(appearance.backgroundColor, settings.tableView.backgroundColor)
+    }
+
+    /// Under a vertical bar the table's right layout margin is the whole safe area. The content view is
+    /// already inset by it, so no margin is left, and a switch pinned to that margin sits on the content
+    /// view's edge and is clipped. Checked through the constraints because the margins only collapse under a
+    /// system-provided safe area, which a test window cannot give.
+    func test_settings_syncSwitch_is_not_pinned_to_the_collapsing_trailing_margin() throws {
+        let settings = try makeSettings()
+        let contentView = try XCTUnwrap(settings.syncSwitch.superview)
+
+        let pinnedToMargin = contentView.constraints.contains {
+            $0.isActive && $0.firstAttribute == .trailingMargin && $0.secondItem === settings.syncSwitch
+        }
+        XCTAssertFalse(pinnedToMargin, "the switch is pinned to the content view's trailing layout margin")
+        let trailing = try XCTUnwrap(contentView.constraints.first {
+            $0.isActive && $0.firstItem === settings.syncSwitch && $0.firstAttribute == .trailing && $0.secondItem === contentView
+        })
+        XCTAssertEqual(trailing.constant, -20)
+    }
+
+    /// The footer's layout margins are zero on the leading side under a vertical bar (the phone's is 8), so
+    /// the text needs its own minimum margin. The trailing side keeps the layout margins on purpose: they
+    /// include the safe area while the table measures the footer, which the safe area guide does not, and
+    /// without it the footer is measured too short and the text is cut off.
+    func test_settings_footer_text_keeps_a_leading_margin_when_the_layout_margins_are_zero() throws {
+        let settings = try makeSettings()
+        let footer = try XCTUnwrap(settings.tableView(settings.tableView, viewForFooterInSection: 0))
+        let label = try XCTUnwrap(footer.subviews.compactMap { $0 as? UILabel }.first)
+
+        let minimum = try XCTUnwrap(footer.constraints.first {
+            $0.firstItem === label && $0.firstAttribute == .leading && $0.relation == .greaterThanOrEqual && $0.secondItem === footer
+        })
+        XCTAssertEqual(minimum.constant, 8)
+        XCTAssertEqual(minimum.priority, .required)
+        let usesSafeAreaGuide = footer.constraints.contains { $0.firstItem === label && $0.secondItem === footer.safeAreaLayoutGuide }
+        XCTAssertFalse(usesSafeAreaGuide, "the safe area guide is zero while the table measures the footer, so the footer comes out too short")
+    }
+
     // MARK: - DividendDetailViewController
 
     func test_dividendDetail_tableView_fills_the_view_after_it_resizes() {

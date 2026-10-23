@@ -5,7 +5,7 @@
 ## 2. Share Extension target
 
 - [x] 2.1 新增 ShareExtension target 與版號：Debug 與 Release 都照小工具 extension 設定（手動簽署、開發團隊、簽署身分、PROVISIONING_PROFILE_SPECIFIER 為 match AppStore 或 match Development 加 bundle id、SKIP_INSTALL、CODE_SIGN_ENTITLEMENTS 指向 ShareExtension/ShareExtension.entitlements、INFOPLIST_FILE 指向 ShareExtension/Info.plist、LD_RUNPATH_SEARCH_PATHS、部署版本 18.0），entitlements 宣告既有 App Group，target 嵌入主 App，Info.plist 不寫版本字面值。MARKETING_VERSION 在主 App、小工具、Live Activity、ShareExtension 四個 target 都改為 1.23，這個版號改動獨立成一個 commit。驗證：模擬器 build MyTaiwanStock scheme 成功，產物的 PlugIns 內有 ShareExtension.appex；xcodebuild 的 showBuildSettings 顯示四個 target 的 MARKETING_VERSION 都是 1.23，且 ShareExtension 的簽署設定與小工具逐項一致。
-- [ ] 2.2 Extension 的介面、啟用規則與顯示名稱：Info.plist 設定 NSExtensionPointIdentifier 為 com.apple.share-services、NSExtensionPrincipalClass 為 $(PRODUCT_MODULE_NAME).ShareViewController、NSExtensionActivationRule 為只含 NSExtensionActivationSupportsImageWithMaxCount（值 10）的字典；顯示名稱設為 MyTaiwanStock；裝置家族只支援 iPhone。驗證：在模擬器的照片 App 選一張圖片開啟分享選單可看到「MyTaiwanStock」，在 Safari 分享網頁時看不到，一次選 11 張圖片時也看不到。
+- [x] 2.2 Extension 的介面、啟用規則與顯示名稱：Info.plist 設定 NSExtensionPointIdentifier 為 com.apple.share-services、NSExtensionPrincipalClass 為 $(PRODUCT_MODULE_NAME).ShareViewController、NSExtensionActivationRule 為只含 NSExtensionActivationSupportsImageWithMaxCount（值 10）的字典；顯示名稱設為 MyTaiwanStock；裝置家族只支援 iPhone。驗證：在模擬器的照片 App 選一張圖片開啟分享選單可看到「MyTaiwanStock」，在 Safari 分享網頁時看不到，一次選 11 張圖片時也看不到。
 - [ ] 2.3 簽署乾跑與 CI 建置檢查：在 ci.yml 加入 ShareExtension 的 target 建置步驟（和小工具、Live Activity 一樣），並在本機以 match 唯讀加 fastlane 的 build_app（不上傳）完整乾跑封存與匯出。驗證：乾跑成功且匯出的 IPA 內含簽署過的 ShareExtension.appex；ci.yml 的 ShareExtension 建置步驟在 CI 通過；這一關通過之前不開始第 3 組。
 
 ## 3. 待匯入資料夾與存取物件
@@ -26,5 +26,5 @@
 
 ## 6. 驗證與發版前檢查
 
-- [ ] 6.1 手動驗證清單：在 iPhone 17 Pro 與 iPhone Duo 模擬器各跑一次「照片 App 分享圖片 → 開啟本 App → 詢問 → 現在匯入 → 載入畫面 → 確認預覽 → 按匯入」，匯入前資料庫沒有新紀錄、辨識完成後待匯入資料夾為空、匯入後紀錄寫入；再跑「選稍後」「預覽頁返回」「辨識途中進入背景」三個情境，確認批次的保留與刪除符合規格。驗證：兩個模擬器的結果記錄在 PR 描述。
+- [ ] 6.1 手動驗證清單：在 iPhone 17 Pro 與 iPhone Duo 模擬器各跑一次「照片 App 分享圖片 → 開啟本 App → 詢問 → 現在匯入 → 載入畫面 → 確認預覽 → 按匯入」，匯入前資料庫沒有新紀錄、辨識完成後待匯入資料夾為空、匯入後紀錄寫入；再跑「選稍後」「預覽頁返回」「辨識途中進入背景」三個情境，確認批次的保留與刪除符合規格；另外確認在網頁分享與一次選 11 張圖片時分享選單不會出現本 App（2.2 在模擬器只驗證了選一張圖片時會出現）。驗證：兩個模擬器的結果記錄在 PR 描述。
 - [ ] 6.2 發版前檢查：TestFlight 建置安裝到真機後，分享選單出現「MyTaiwanStock」，分享一張券商截圖後開啟 App 能完成匯入，鎖屏後再解鎖批次仍可讀。驗證：在真機實際操作並把結果寫進 PR 描述；若 fastlane 或 testflight workflow 因新 target 失敗，修正後再上傳。

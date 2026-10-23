@@ -229,6 +229,32 @@ struct TestStockListViewModel {
 
     @Test
     @MainActor
+    func test_navigateToImportTrades_ofSource_passesTheSourceListsAndCurrentListToCoordinator() {
+        let coordinator = MockStockListCoordinator()
+        let sut = StockListViewModel(repository: mockRepository, coordinator: coordinator)
+        sut.userDefault = UserDefaults(suiteName: "test-\(UUID().uuidString)")
+        let input = makeInput()
+        mockRepository.mockStockList = [
+            makeListStruct(name: "自選", stockNos: ["2330"]),
+            makeListStruct(name: "長期", stockNos: ["0050"]),
+        ]
+        _ = sut.transform(input: input)
+        input.viewDidLoad.send()
+        sut.currentMenuIndex.send(1)
+        let source = PendingBatchImageSource(
+            batch: PendingImportBatch(folderURL: URL(fileURLWithPath: "/tmp/none"), createdAt: Date(), imageURLs: []),
+            store: PendingImportStore(containerURL: URL(fileURLWithPath: "/tmp/none")))
+
+        sut.navigateToImportTrades(of: source)
+
+        #expect(coordinator.importedSources.count == 1)
+        #expect(coordinator.importedSources.first === source)
+        #expect(coordinator.importTradesRequests.first?.listNames == ["自選", "長期"])
+        #expect(coordinator.importTradesRequests.first?.currentListName == "長期")
+    }
+
+    @Test
+    @MainActor
     func test_reloadAfterImport_showsStocksAddedByTheImport() {
         let repository = MockNetworkService()
         let sut = makeIsolatedSUT(repository: repository)

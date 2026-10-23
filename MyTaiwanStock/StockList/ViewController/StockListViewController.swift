@@ -24,6 +24,9 @@ class StockListViewController: UIViewController, Navigator {
 
     var subscription = Set<AnyCancellable>()
 
+    /// Runs each time the list has appeared, so pending screenshots can be offered once nothing covers it.
+    var onDidAppear: (() -> Void)?
+
     private var viewModel: StockListViewModel!
 
     var refreshControl: UIRefreshControl!
@@ -135,6 +138,7 @@ class StockListViewController: UIViewController, Navigator {
 
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        onDidAppear?()
         // 只有初次打開才顯示教學
 
         if UserDefaults.standard.bool(
@@ -501,6 +505,15 @@ extension StockListViewController: FloatingButtonManagerDelegate {
             return
         }
         viewModel.navigateToAddStock()
+    }
+
+    /// Runs the screenshot import on images that are already at hand instead of asking for them.
+    func startImport(of source: TradeImageSource) {
+        guard let viewModel = viewModel else {
+            logger.debug("ViewModel is nil in startImport")
+            return
+        }
+        viewModel.navigateToImportTrades(of: source)
     }
 
     func didTapSecondaryButton3() {

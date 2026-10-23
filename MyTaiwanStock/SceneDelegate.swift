@@ -11,6 +11,8 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
 
     var window: UIWindow?
     private let iCloudCoordinator = SceneICloudCoordinator()
+    private var pendingImportCoordinator: PendingImportCoordinator?
+    private var appCoordinator: AppCoordinator?
 
     private func setInitialViewController(in window: UIWindow) {
         // 主畫面
@@ -43,9 +45,27 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         }
         let appCoordinator = AppCoordinator(
             navigationController: stockListNavController)
+        self.appCoordinator = appCoordinator
         window.rootViewController = tabBarController
         appCoordinator.start()
+        setUpPendingImports(
+            in: window, tabBarController: tabBarController,
+            stockListCoordinator: appCoordinator.stockListCoordinator)
+    }
 
+    /// Screenshots shared to the app wait in a shared folder; this offers them when the app is opened.
+    private func setUpPendingImports(
+        in window: UIWindow, tabBarController: UITabBarController,
+        stockListCoordinator: StockListCoordinator?
+    ) {
+        guard let stockListCoordinator else { return }
+        let coordinator = PendingImportCoordinator.make(
+            window: window, tabBarController: tabBarController, stockListCoordinator: stockListCoordinator)
+        pendingImportCoordinator = coordinator
+        stockListCoordinator.onImportFinished = { [weak coordinator] in coordinator?.importDidFinish() }
+        if let list = stockListCoordinator.navigationController.viewControllers.first as? StockListViewController {
+            list.onDidAppear = { [weak coordinator] in coordinator?.check() }
+        }
     }
     func scene(
         _ scene: UIScene, willConnectTo session: UISceneSession,
@@ -87,6 +107,7 @@ class SceneDelegate: UIResponder, UIWindowSceneDelegate {
         // The only place the stock list refresh is triggered. It runs in the background and
         // returns immediately when the list is fresh or a refresh is already in progress.
         Task { await StockListRefresher.shared.refreshIfNeeded() }
+        pendingImportCoordinator?.appDidBecomeActive()
     }
 
     func sceneWillResignActive(_ scene: UIScene) {

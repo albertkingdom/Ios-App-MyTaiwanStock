@@ -122,13 +122,8 @@ final class TradeImportFlowTests: XCTestCase {
         navigation.presentedViewController as? UIAlertController
     }
 
-    /// Runs what the alert's button does, as a tap would.
     private func tap(_ title: String, in alert: UIAlertController, file: StaticString = #filePath, line: UInt = #line) {
-        guard let action = alert.actions.first(where: { $0.title == title }),
-              let block = action.value(forKey: "handler")
-        else { return XCTFail("no \(title) button", file: file, line: line) }
-        typealias Handler = @convention(block) (UIAlertAction) -> Void
-        unsafeBitCast(block as AnyObject, to: Handler.self)(action)
+        XCTAssertTrue(alert.tapButton(titled: title), "no \(title) button", file: file, line: line)
     }
 
     private func summary(_ trades: [ParsedTrade]) -> [String] {

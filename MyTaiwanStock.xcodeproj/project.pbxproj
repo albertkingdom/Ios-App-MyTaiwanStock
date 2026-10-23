@@ -1346,7 +1346,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.22;
+				MARKETING_VERSION = 1.23;
 				PRODUCT_BUNDLE_IDENTIFIER = com.a2006mike.MyTaiwanStock.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "match Development com.a2006mike.MyTaiwanStock.ShareExtension";
@@ -1415,7 +1415,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.22;
+				MARKETING_VERSION = 1.23;
 				PRODUCT_BUNDLE_IDENTIFIER = com.a2006mike.MyTaiwanStock.LiveActivity;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "match Development com.a2006mike.MyTaiwanStock.LiveActivity";
@@ -1444,7 +1444,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.22;
+				MARKETING_VERSION = 1.23;
 				PRODUCT_BUNDLE_IDENTIFIER = com.a2006mike.MyTaiwanStock.LiveActivity;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "match AppStore com.a2006mike.MyTaiwanStock.LiveActivity";
@@ -1590,7 +1590,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.22;
+				MARKETING_VERSION = 1.23;
 				PRODUCT_BUNDLE_IDENTIFIER = com.a2006mike.MyTaiwanStock;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "match Development com.a2006mike.MyTaiwanStock";
@@ -1618,7 +1618,7 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				MARKETING_VERSION = 1.22;
+				MARKETING_VERSION = 1.23;
 				PRODUCT_BUNDLE_IDENTIFIER = com.a2006mike.MyTaiwanStock;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "match AppStore com.a2006mike.MyTaiwanStock";
@@ -1651,7 +1651,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.22;
+				MARKETING_VERSION = 1.23;
 				PRODUCT_BUNDLE_IDENTIFIER = com.a2006mike.MyTaiwanStock.StockWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "match Development com.a2006mike.MyTaiwanStock.StockWidget";
@@ -1683,7 +1683,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.22;
+				MARKETING_VERSION = 1.23;
 				PRODUCT_BUNDLE_IDENTIFIER = com.a2006mike.MyTaiwanStock.StockWidget;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "match AppStore com.a2006mike.MyTaiwanStock.StockWidget";
@@ -1713,7 +1713,7 @@
 					"@executable_path/Frameworks",
 					"@executable_path/../../Frameworks",
 				);
-				MARKETING_VERSION = 1.22;
+				MARKETING_VERSION = 1.23;
 				PRODUCT_BUNDLE_IDENTIFIER = com.a2006mike.MyTaiwanStock.ShareExtension;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "match AppStore com.a2006mike.MyTaiwanStock.ShareExtension";

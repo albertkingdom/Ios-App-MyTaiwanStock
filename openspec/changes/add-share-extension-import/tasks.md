@@ -15,7 +15,7 @@
 
 ## 4. Extension 實作
 
-- [ ] 4.1 Extension 讀取與複製圖片的方式：新增 ShareExtension/ShareViewController.swift，把所有分享項目的附件攤平、只處理圖片，用 loadFileRepresentation 並在回呼內經 PendingImportStore 寫成一批，檔名依附件索引、副檔名取自交付的檔案；載入期間顯示載入狀態，全部完成才顯示「已加入待匯入，請開啟 MyTaiwanStock 確認」並結束（Share sheet accepts images and stores them for later import）；任何一張失敗就刪除該批次並顯示錯誤，不做辨識、不寫任何紀錄。驗證：模擬器分享 2 張圖，App Group 容器出現含 2 個依序命名的檔案的批次資料夾且資料庫沒有新紀錄；用唯讀的資料夾模擬複製失敗時看到錯誤且沒有批次；分享一張尚未下載的 iCloud 照片時有載入狀態且最後成功。
+- [x] 4.1 Extension 讀取與複製圖片的方式：新增 ShareExtension/ShareViewController.swift，把所有分享項目的附件攤平、只處理圖片，用 loadFileRepresentation 並在回呼內經 PendingImportStore 寫成一批，檔名依附件索引、副檔名取自交付的檔案；載入期間顯示載入狀態，全部完成才顯示「已加入待匯入，請開啟 MyTaiwanStock 確認」並結束（Share sheet accepts images and stores them for later import）；任何一張失敗就刪除該批次並顯示錯誤，不做辨識、不寫任何紀錄。驗證：模擬器分享 2 張圖，App Group 容器出現含 2 個依序命名的檔案的批次資料夾且資料庫沒有新紀錄；用唯讀的資料夾模擬複製失敗時看到錯誤且沒有批次；分享一張尚未下載的 iCloud 照片時有載入狀態且最後成功。
 
 ## 5. 匯入流程與主 App 接手
 

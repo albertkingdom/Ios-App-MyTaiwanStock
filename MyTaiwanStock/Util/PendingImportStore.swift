@@ -135,12 +135,13 @@ final class PendingImportStore {
         }
         try protect(draftFolder)
 
-        let createdAt = now()
-        let folderURL = rootURL.appendingPathComponent(Self.folderName(for: createdAt), isDirectory: true)
+        let name = Self.folderName(for: now())
+        let folderURL = rootURL.appendingPathComponent(name, isDirectory: true)
         try fileManager.moveItem(at: draftFolder, to: folderURL)
         return PendingImportBatch(
             folderURL: folderURL,
-            createdAt: createdAt,
+            // Read back from the name, like `batches()` does, so both report the same batch.
+            createdAt: Self.date(fromFolderName: name) ?? now(),
             imageURLs: images.map { folderURL.appendingPathComponent($0.url.lastPathComponent) })
     }
 

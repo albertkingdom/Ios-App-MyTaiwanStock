@@ -56,6 +56,14 @@ final class PendingImportStoreTests: XCTestCase {
         XCTAssertEqual(listed[0].imageURLs.map(\.lastPathComponent), ["0.png", "1.jpeg", "2"])
     }
 
+    func test_a_committed_batch_equals_the_same_batch_listed_later_with_a_clock_finer_than_a_millisecond() throws {
+        clock = Date(timeIntervalSince1970: 1_800_000_000.123456)
+
+        let written = try writeBatch([("a.png", "x")])
+
+        XCTAssertEqual(store.batches(), [written])
+    }
+
     func test_images_added_out_of_order_are_listed_by_index() throws {
         let draft = try store.beginDraft()
         try draft.addImage(copying: try sourceFile("x.png", contents: "second"), at: 1)

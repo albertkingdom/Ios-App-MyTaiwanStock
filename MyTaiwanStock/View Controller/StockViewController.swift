@@ -26,6 +26,7 @@ class StockViewController: UIViewController {
     
     var combinedChartView = CombinedChartView()
     private var lastContentOffset: Double = 0
+    private var fittedHeaderWidth: CGFloat = 0
     var stockInfoForCandleStickChart: [[String]]! {
         didSet {
             if let stockPriceDiffString = stockInfoForCandleStickChart.last?[7],
@@ -246,7 +247,7 @@ class StockViewController: UIViewController {
         stockPriceLabel.text = stockPrice
         timeLabel.text = timeString
         timeLabel.textColor = .systemGray
-        let header = UIView(frame: CGRect(x: 0, y: 0, width: view.frame.width, height: view.frame.size.height*0.5))
+        let header = UIView()
         header.addSubview(priceContainerView)
         header.addSubview(combinedChartView)
         header.addSubview(overviewInfo)
@@ -264,7 +265,9 @@ class StockViewController: UIViewController {
         combinedChartView.translatesAutoresizingMaskIntoConstraints = false
         overviewInfo.translatesAutoresizingMaskIntoConstraints = false
         plotInfo.translatesAutoresizingMaskIntoConstraints = false
-        
+
+        let chartHeight = combinedChartView.heightAnchor.constraint(equalTo: combinedChartView.widthAnchor, multiplier: 0.75)
+        chartHeight.priority = .defaultHigh
         NSLayoutConstraint.activate([ priceContainerView.leadingAnchor.constraint(equalTo: header.leadingAnchor),
                                       priceContainerView.trailingAnchor.constraint(equalTo: header.trailingAnchor),
                                       priceContainerView.topAnchor.constraint(equalTo: header.topAnchor),
@@ -280,8 +283,9 @@ class StockViewController: UIViewController {
                                       combinedChartView.leadingAnchor.constraint(equalTo: header.leadingAnchor),
                                       combinedChartView.trailingAnchor.constraint(equalTo: header.trailingAnchor),
                                       combinedChartView.topAnchor.constraint(equalTo: priceContainerView.bottomAnchor),
-                                      //                                      combinedChartView.heightAnchor.constraint(equalToConstant: 300),
-                                      combinedChartView.heightAnchor.constraint(equalTo: header.heightAnchor, multiplier: 0.7),
+                                      // Three quarters of the width, capped so a wide window does not get a huge chart.
+                                      chartHeight,
+                                      combinedChartView.heightAnchor.constraint(lessThanOrEqualToConstant: 320),
                                       plotInfo.topAnchor.constraint(equalTo: combinedChartView.bottomAnchor),
                                       plotInfo.leadingAnchor.constraint(equalTo: header.leadingAnchor),
                                       plotInfo.trailingAnchor.constraint(equalTo: header.trailingAnchor),
@@ -290,10 +294,31 @@ class StockViewController: UIViewController {
                                       overviewInfo.bottomAnchor.constraint(equalTo: header.bottomAnchor),
                                       overviewInfo.leadingAnchor.constraint(equalTo: header.leadingAnchor),
                                       overviewInfo.trailingAnchor.constraint(equalTo: header.trailingAnchor),
-                                      overviewInfo.heightAnchor.constraint(lessThanOrEqualTo: header.heightAnchor, multiplier: 0.2),
-                                      
                                     ])
+        fitTableHeader(header, width: containerTableView.bounds.width)
         containerTableView.tableHeaderView = header
+    }
+    override func viewDidLayoutSubviews() {
+        super.viewDidLayoutSubviews()
+        refitTableHeaderIfWidthChanged()
+    }
+    /// The header is as tall as its content needs at the table's width, so it only has to be measured
+    /// again when the width changes (the scene resized or rotated), not on every layout pass.
+    private func refitTableHeaderIfWidthChanged() {
+        guard let header = containerTableView?.tableHeaderView else { return }
+        let width = containerTableView.bounds.width
+        guard abs(width - fittedHeaderWidth) > 0.5 else { return }
+        fitTableHeader(header, width: width)
+        // Reassigning is what makes the table lay out again around the new header height.
+        containerTableView.tableHeaderView = header
+    }
+    private func fitTableHeader(_ header: UIView, width: CGFloat) {
+        let size = header.systemLayoutSizeFitting(
+            CGSize(width: width, height: UIView.layoutFittingCompressedSize.height),
+            withHorizontalFittingPriority: .required,
+            verticalFittingPriority: .fittingSizeLevel)
+        header.frame = CGRect(x: 0, y: 0, width: width, height: size.height)
+        fittedHeaderWidth = width
     }
     class MyCustomSectionHeader: UITableViewHeaderFooterView {
         let title: UILabel = {

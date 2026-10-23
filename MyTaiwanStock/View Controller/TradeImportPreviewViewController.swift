@@ -32,7 +32,15 @@ final class TradeImportPreviewViewController: UIViewController {
         super.viewDidLoad()
         title = "確認匯入"
         view.backgroundColor = .systemGroupedBackground
+        // The app draws its navigation bars white. On this grey page that leaves a white band, which
+        // also runs under a vertical bar, so at the scroll edge the bar takes the page's colour.
+        let scrollEdgeAppearance = UINavigationBarAppearance()
+        scrollEdgeAppearance.configureWithOpaqueBackground()
+        scrollEdgeAppearance.backgroundColor = .systemGroupedBackground
+        scrollEdgeAppearance.shadowColor = .clear
+        navigationItem.scrollEdgeAppearance = scrollEdgeAppearance
         setUpViews()
+        setContentScrollView(tableView, for: .top)
         refresh()
     }
 

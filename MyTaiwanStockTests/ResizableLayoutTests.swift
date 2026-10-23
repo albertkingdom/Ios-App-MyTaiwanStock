@@ -72,12 +72,27 @@ final class ResizableLayoutTests: XCTestCase {
 
     /// Same limit as the stock list test: without a shown window there is no safe area to measure, so the
     /// button's side constraints are checked instead.
-    func test_tradeImportPreview_importButton_is_pinned_to_the_safe_area_sides() throws {
+    private func makeTradeImportPreview() -> TradeImportPreviewViewController {
         let viewModel = TradeImportViewModel(
             trades: [], resolver: StockNameResolver(entries: []), isKnownCode: { _ in true },
             store: FakeTradeImportStore(), listNames: ["我的清單"], currentListName: "我的清單")
         let controller = TradeImportPreviewViewController(viewModel: viewModel, onImported: {})
         controller.loadViewIfNeeded()
+        return controller
+    }
+
+    /// The app draws its navigation bars white. On this grey grouped page that leaves a white band, which
+    /// also runs under a vertical bar, so at the scroll edge the bar has to take the page's colour.
+    func test_tradeImportPreview_navigationBar_matches_the_grey_page_at_the_scroll_edge() throws {
+        let controller = makeTradeImportPreview()
+
+        let appearance = try XCTUnwrap(controller.navigationItem.scrollEdgeAppearance)
+        XCTAssertEqual(appearance.backgroundColor, UIColor.systemGroupedBackground)
+        XCTAssertEqual(controller.view.backgroundColor, UIColor.systemGroupedBackground)
+    }
+
+    func test_tradeImportPreview_importButton_is_pinned_to_the_safe_area_sides() throws {
+        let controller = makeTradeImportPreview()
 
         func descendants(of view: UIView) -> [UIView] { view.subviews + view.subviews.flatMap(descendants) }
         let button = try XCTUnwrap(descendants(of: controller.view)

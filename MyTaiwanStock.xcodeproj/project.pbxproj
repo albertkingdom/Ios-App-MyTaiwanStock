@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		043375401A165B414B28A950 /* SceneICloudCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728B8AFF86C937E2E8BECCB9 /* SceneICloudCoordinator.swift */; };
+		0D167E329D9CEAA8EBE189F8 /* TradeImageSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F52713E23FB475C1000B61D /* TradeImageSource.swift */; };
 		15FA80AF2F7FFD81C59C2D6A /* PendingImportStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A85EF8C7AC718A80C1BD8B4 /* PendingImportStoreTests.swift */; };
 		1AC6F2BCB3902075CD524F37 /* StockListRefresherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AC4FF1C38A3B38F1BFAD283 /* StockListRefresherTests.swift */; };
 		1DF2999F7508FF3072EEEE47 /* FloatingButtonManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DA45FEE2F5F881A51DBD9ED /* FloatingButtonManagerTests.swift */; };
@@ -38,6 +39,7 @@
 		684966E6923F08AE3890C7BB /* ICloudAvailabilityChecking.swift in Sources */ = {isa = PBXBuildFile; fileRef = 957B7DA882FDC55B06E94968 /* ICloudAvailabilityChecking.swift */; };
 		6B205E7A0A6FD4747735BD26 /* TradeEditViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 808890ADBB223AD086D933A4 /* TradeEditViewController.swift */; };
 		6CA4838BE5F3B45B986BE572 /* TradeImportFlow.swift in Sources */ = {isa = PBXBuildFile; fileRef = 38636568B743F70FE246F6FE /* TradeImportFlow.swift */; };
+		84DCFCD5BB027276DCE4C524 /* TradeImportFlowTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9EBA9C7EE00012BE30C66789 /* TradeImportFlowTests.swift */; };
 		85022264D8C3DC74598DFBC5 /* LocalDBServiceCrashFixesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000A994999CDE40E7C0CAD6 /* LocalDBServiceCrashFixesTests.swift */; };
 		88959627407C403447D285E5 /* TradeScreenshotParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A4206DDD948FB6376369D3 /* TradeScreenshotParserTests.swift */; };
 		88BEE1E19FFE04C57D16DB7A /* ICloudBackupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35BE1FA033A9EAAAD45D552C /* ICloudBackupService.swift */; };
@@ -299,6 +301,7 @@
 		5AC4FF1C38A3B38F1BFAD283 /* StockListRefresherTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockListRefresherTests.swift; sourceTree = "<group>"; };
 		61D79600CCD9F096BA52ED45 /* StockListRepositoryTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockListRepositoryTests.swift; sourceTree = "<group>"; };
 		66AE85FAF8E9F25E155D5D12 /* ShareImageImporter.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ShareImageImporter.swift; sourceTree = "<group>"; };
+		6F52713E23FB475C1000B61D /* TradeImageSource.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeImageSource.swift; sourceTree = "<group>"; };
 		728B8AFF86C937E2E8BECCB9 /* SceneICloudCoordinator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SceneICloudCoordinator.swift; sourceTree = "<group>"; };
 		7B24E0A8C5D13F96B2A4E871 /* ResizableLayoutTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ResizableLayoutTests.swift; sourceTree = "<group>"; };
 		808890ADBB223AD086D933A4 /* TradeEditViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeEditViewController.swift; sourceTree = "<group>"; };
@@ -309,6 +312,7 @@
 		8F775A826F44136978F59060 /* StockList.json */ = {isa = PBXFileReference; includeInIndex = 1; path = StockList.json; sourceTree = "<group>"; };
 		957B7DA882FDC55B06E94968 /* ICloudAvailabilityChecking.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ICloudAvailabilityChecking.swift; sourceTree = "<group>"; };
 		9D06AAFE532A45BB2550AE10 /* StockListParser.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockListParser.swift; sourceTree = "<group>"; };
+		9EBA9C7EE00012BE30C66789 /* TradeImportFlowTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeImportFlowTests.swift; sourceTree = "<group>"; };
 		A1065ACF2C21C4560033A319 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/Main.strings"; sourceTree = "<group>"; };
 		A1065AD02C21C4560033A319 /* zh-Hant */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = "zh-Hant"; path = "zh-Hant.lproj/LaunchScreen.strings"; sourceTree = "<group>"; };
 		A1065AD12C21CEF30033A319 /* WalkthroughViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WalkthroughViewController.swift; sourceTree = "<group>"; };
@@ -584,6 +588,7 @@
 				7B24E0A8C5D13F96B2A4E871 /* ResizableLayoutTests.swift */,
 				8A85EF8C7AC718A80C1BD8B4 /* PendingImportStoreTests.swift */,
 				3CDAEB62A83001F3502AC082 /* ShareImageImporterTests.swift */,
+				9EBA9C7EE00012BE30C66789 /* TradeImportFlowTests.swift */,
 			);
 			path = MyTaiwanStockTests;
 			sourceTree = "<group>";
@@ -623,6 +628,7 @@
 				A1DE925B2DB39A4400D743C7 /* View */,
 				A1DE925A2DB3999500D743C7 /* ViewController */,
 				38636568B743F70FE246F6FE /* TradeImportFlow.swift */,
+				6F52713E23FB475C1000B61D /* TradeImageSource.swift */,
 			);
 			path = StockList;
 			sourceTree = "<group>";
@@ -1144,6 +1150,7 @@
 				5C3A9E71D4B20F86A1E7C3D9 /* ResizableLayoutTests.swift in Sources */,
 				15FA80AF2F7FFD81C59C2D6A /* PendingImportStoreTests.swift in Sources */,
 				32C8EB43E9C759186EC1851C /* ShareImageImporterTests.swift in Sources */,
+				84DCFCD5BB027276DCE4C524 /* TradeImportFlowTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1273,6 +1280,7 @@
 				60FD508D8A09B5530001CB9B /* HistoryDocumentSelector.swift in Sources */,
 				2335557E326A324692DE5F9D /* PendingImportStore.swift in Sources */,
 				E46FC5736898EFB4F516FDE7 /* ShareImageImporter.swift in Sources */,
+				0D167E329D9CEAA8EBE189F8 /* TradeImageSource.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

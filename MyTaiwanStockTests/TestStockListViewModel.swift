@@ -615,4 +615,15 @@ class MockStockListCoordinator: StockListCoordinatorProtocol {
         importTradesRequests.append((listNames, currentListName))
         self.onImported = onImported
     }
+
+    private(set) var importedSources: [TradeImageSource] = []
+    var isImportInProgress = false
+    func showImportTrades(
+        of source: TradeImageSource, listNames: [String], currentListName: String?,
+        onImported: @escaping () -> Void
+    ) {
+        importedSources.append(source)
+        importTradesRequests.append((listNames, currentListName))
+        self.onImported = onImported
+    }
 }

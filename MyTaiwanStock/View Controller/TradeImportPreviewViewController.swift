@@ -61,8 +61,8 @@ final class TradeImportPreviewViewController: UIViewController {
         buttonBar.addSubview(importButton)
         NSLayoutConstraint.activate([
             importButton.topAnchor.constraint(equalTo: buttonBar.topAnchor, constant: 8),
-            importButton.leadingAnchor.constraint(equalTo: buttonBar.leadingAnchor, constant: 20),
-            importButton.trailingAnchor.constraint(equalTo: buttonBar.trailingAnchor, constant: -20),
+            importButton.leadingAnchor.constraint(equalTo: buttonBar.safeAreaLayoutGuide.leadingAnchor, constant: 20),
+            importButton.trailingAnchor.constraint(equalTo: buttonBar.safeAreaLayoutGuide.trailingAnchor, constant: -20),
             importButton.bottomAnchor.constraint(equalTo: buttonBar.bottomAnchor, constant: -88),
             importButton.heightAnchor.constraint(equalToConstant: 52),
         ])

@@ -267,7 +267,7 @@ class StockListViewController: UIViewController, Navigator {
             floatingButton.widthAnchor.constraint(equalToConstant: 50),
             floatingButton.heightAnchor.constraint(equalToConstant: 50),
             floatingButton.trailingAnchor.constraint(
-                equalTo: view.trailingAnchor, constant: -20),
+                equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
             floatingButton.bottomAnchor.constraint(
                 equalTo: view.bottomAnchor, constant: -100),
         ])

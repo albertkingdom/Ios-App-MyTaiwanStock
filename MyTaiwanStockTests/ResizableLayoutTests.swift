@@ -52,6 +52,46 @@ final class ResizableLayoutTests: XCTestCase {
                                  "button \(button.frame) sits under the bottom inset")
     }
 
+    // MARK: - StockListViewController
+
+    /// Checked through the constraint instead of a measured frame: the list cannot be shown in a test
+    /// (appearing needs a view model and presents the first-launch walkthrough), and without being
+    /// shown it has no safe area to measure.
+    func test_stockList_floatingButton_is_pinned_to_the_safe_area_trailing_edge() throws {
+        let controller = mainStoryboard().instantiateViewController(withIdentifier: "stockListVC") as! StockListViewController
+        controller.loadViewIfNeeded()
+
+        let view = controller.view!
+        let button = try XCTUnwrap(view.subviews.compactMap { $0 as? FloatingButton }.first)
+        let trailing = try XCTUnwrap(view.constraints.first { $0.firstItem === button && $0.firstAttribute == .trailing })
+        XCTAssertTrue(trailing.secondItem === view.safeAreaLayoutGuide,
+                      "the button is pinned to the view's edge, so a trailing vertical bar covers it")
+    }
+
+    // MARK: - TradeImportPreviewViewController
+
+    /// Same limit as the stock list test: without a shown window there is no safe area to measure, so the
+    /// button's side constraints are checked instead.
+    func test_tradeImportPreview_importButton_is_pinned_to_the_safe_area_sides() throws {
+        let viewModel = TradeImportViewModel(
+            trades: [], resolver: StockNameResolver(entries: []), isKnownCode: { _ in true },
+            store: FakeTradeImportStore(), listNames: ["我的清單"], currentListName: "我的清單")
+        let controller = TradeImportPreviewViewController(viewModel: viewModel, onImported: {})
+        controller.loadViewIfNeeded()
+
+        func descendants(of view: UIView) -> [UIView] { view.subviews + view.subviews.flatMap(descendants) }
+        let button = try XCTUnwrap(descendants(of: controller.view)
+            .compactMap { $0 as? UIButton }
+            .first { $0.configuration?.title?.hasPrefix("匯入") == true })
+        let bar = try XCTUnwrap(button.superview)
+
+        for attribute in [NSLayoutConstraint.Attribute.leading, .trailing] {
+            let constraint = try XCTUnwrap(bar.constraints.first { $0.firstItem === button && $0.firstAttribute == attribute })
+            XCTAssertTrue(constraint.secondItem === bar.safeAreaLayoutGuide,
+                          "the import button's \(attribute == .leading ? "leading" : "trailing") side is pinned to the bar's edge, so a vertical bar covers it")
+        }
+    }
+
     // MARK: - DividendDetailViewController
 
     func test_dividendDetail_tableView_fills_the_view_after_it_resizes() {

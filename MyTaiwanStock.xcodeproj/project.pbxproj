@@ -10,7 +10,9 @@
 		043375401A165B414B28A950 /* SceneICloudCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 728B8AFF86C937E2E8BECCB9 /* SceneICloudCoordinator.swift */; };
 		0D167E329D9CEAA8EBE189F8 /* TradeImageSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6F52713E23FB475C1000B61D /* TradeImageSource.swift */; };
 		15FA80AF2F7FFD81C59C2D6A /* PendingImportStoreTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8A85EF8C7AC718A80C1BD8B4 /* PendingImportStoreTests.swift */; };
+		1A67895619F1CB7C745E1FEF /* FeeCalculatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DFDE6163CCF298E599B8F90D /* FeeCalculatorTests.swift */; };
 		1AC6F2BCB3902075CD524F37 /* StockListRefresherTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5AC4FF1C38A3B38F1BFAD283 /* StockListRefresherTests.swift */; };
+		1CE67B9F7FC6CB909944E12B /* FeeCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = EFE4BC31B663197CA27B0863 /* FeeCalculator.swift */; };
 		1DF2999F7508FF3072EEEE47 /* FloatingButtonManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DA45FEE2F5F881A51DBD9ED /* FloatingButtonManagerTests.swift */; };
 		1E8A00E46BCF4BED4A7F6C9B /* SceneICloudCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4527BB5764FC0481AAFCE3E6 /* SceneICloudCoordinatorTests.swift */; };
 		226165AD5034A56C7E15A77C /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A187A59E13BDBE76BE7FD07 /* ShareViewController.swift */; };
@@ -45,7 +47,9 @@
 		85022264D8C3DC74598DFBC5 /* LocalDBServiceCrashFixesTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = B000A994999CDE40E7C0CAD6 /* LocalDBServiceCrashFixesTests.swift */; };
 		88959627407C403447D285E5 /* TradeScreenshotParserTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 15A4206DDD948FB6376369D3 /* TradeScreenshotParserTests.swift */; };
 		88BEE1E19FFE04C57D16DB7A /* ICloudBackupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35BE1FA033A9EAAAD45D552C /* ICloudBackupService.swift */; };
+		8C405C0EE225621F41E8FCA7 /* FeeSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFED6DE1D62AA2B4E86C09B6 /* FeeSettings.swift */; };
 		8D01BEDFCDF2898AF0DEDA92 /* StockListEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD93EF53658832306E290E9C /* StockListEntry.swift */; };
+		8FABFB2C6A0FA23BBEABAE6E /* FeeSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D81C19E456102036C3F5039 /* FeeSettingsTests.swift */; };
 		9079AA8B35002B8DED3B7894 /* ICloudBackupServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F24890FEBA8232DE81E0095 /* ICloudBackupServiceTests.swift */; };
 		90818AB5E0F9F0827FF11493 /* PendingImportCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7567F2B0D7B387649C2D41A1 /* PendingImportCoordinator.swift */; };
 		946C3CBE6A927A9A24FF46C4 /* TradeTextRecognizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86E56EE9FEDB8EF9AEEA8030 /* TradeTextRecognizerTests.swift */; };
@@ -281,6 +285,7 @@
 		100C2DECF966B15FA78301FC /* DefaultTradeImportStoreTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DefaultTradeImportStoreTests.swift; sourceTree = "<group>"; };
 		15A4206DDD948FB6376369D3 /* TradeScreenshotParserTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeScreenshotParserTests.swift; sourceTree = "<group>"; };
 		1B7DD018ECFEC6217125DEDA /* PendingImportCoordinatorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PendingImportCoordinatorTests.swift; sourceTree = "<group>"; };
+		1D81C19E456102036C3F5039 /* FeeSettingsTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FeeSettingsTests.swift; sourceTree = "<group>"; };
 		1DA45FEE2F5F881A51DBD9ED /* FloatingButtonManagerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FloatingButtonManagerTests.swift; sourceTree = "<group>"; };
 		1F24890FEBA8232DE81E0095 /* ICloudBackupServiceTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ICloudBackupServiceTests.swift; sourceTree = "<group>"; };
 		26E5B53D701FA2A0250ACBA2 /* TWSEStockInfoFetcher.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TWSEStockInfoFetcher.swift; sourceTree = "<group>"; };
@@ -412,6 +417,7 @@
 		AC9954537E9A152ABDC0F28B /* StockListFilteringTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockListFilteringTests.swift; sourceTree = "<group>"; };
 		AD93EF53658832306E290E9C /* StockListEntry.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockListEntry.swift; sourceTree = "<group>"; };
 		B000A994999CDE40E7C0CAD6 /* LocalDBServiceCrashFixesTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = LocalDBServiceCrashFixesTests.swift; sourceTree = "<group>"; };
+		BFED6DE1D62AA2B4E86C09B6 /* FeeSettings.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FeeSettings.swift; sourceTree = "<group>"; };
 		C1FE0B62189FEF6B2F8D6214 /* TradeScreenshotParser.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeScreenshotParser.swift; sourceTree = "<group>"; };
 		C76A7E78A7574E60C81D3350 /* DefaultTradeImportStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DefaultTradeImportStore.swift; sourceTree = "<group>"; };
 		D0B1C2A3E4F5061728394A5C /* DuplicateStockNoTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DuplicateStockNoTests.swift; sourceTree = "<group>"; };
@@ -444,6 +450,7 @@
 		DF793ADA27E03258007C9442 /* AddStockTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddStockTableViewCell.swift; sourceTree = "<group>"; };
 		DF944EE82807DB04005157A9 /* ChartService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartService.swift; sourceTree = "<group>"; };
 		DFD239DC270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MyTaiwanStock.xcdatamodel; sourceTree = "<group>"; };
+		DFDE6163CCF298E599B8F90D /* FeeCalculatorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FeeCalculatorTests.swift; sourceTree = "<group>"; };
 		DFFB336C27F858830018F3A4 /* StockWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = StockWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		DFFB336D27F858830018F3A4 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		DFFB336F27F858830018F3A4 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -457,6 +464,7 @@
 		DFFEB04D27E1D6C400C85A53 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		DFFEB04F27E1E37D00C85A53 /* Channel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Channel.swift; sourceTree = "<group>"; };
 		EDBFA9181BDA2CA0B0071FFE /* StoreSchemaCompatibilityChecking.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StoreSchemaCompatibilityChecking.swift; sourceTree = "<group>"; };
+		EFE4BC31B663197CA27B0863 /* FeeCalculator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FeeCalculator.swift; sourceTree = "<group>"; };
 		F984A9E41163688F362D7882 /* TradeImportViewModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeImportViewModelTests.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -610,6 +618,8 @@
 				8AFC6E13CB3C18E0826AE4B9 /* UIAlertController+Tapping.swift */,
 				A56D81E3E7183E7DB2B8E89B /* ShareImport */,
 				D24D8738ED48BBC337A4CE12 /* StockListCoordinatorImportTests.swift */,
+				DFDE6163CCF298E599B8F90D /* FeeCalculatorTests.swift */,
+				1D81C19E456102036C3F5039 /* FeeSettingsTests.swift */,
 			);
 			path = MyTaiwanStockTests;
 			sourceTree = "<group>";
@@ -880,6 +890,8 @@
 				DCB4ED896BEF3DDC8FABEF46 /* TradeTextRecognizer.swift */,
 				C76A7E78A7574E60C81D3350 /* DefaultTradeImportStore.swift */,
 				44CFEAF3C949085344714127 /* HistoryDocumentSelector.swift */,
+				EFE4BC31B663197CA27B0863 /* FeeCalculator.swift */,
+				BFED6DE1D62AA2B4E86C09B6 /* FeeSettings.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -1196,6 +1208,8 @@
 				565EB99AFDB762F5CEB6B677 /* PendingImportCoordinatorTests.swift in Sources */,
 				2499E673F963639825B82AE6 /* UIAlertController+Tapping.swift in Sources */,
 				9C46597DB4F3D4AAB04B845D /* StockListCoordinatorImportTests.swift in Sources */,
+				1A67895619F1CB7C745E1FEF /* FeeCalculatorTests.swift in Sources */,
+				8FABFB2C6A0FA23BBEABAE6E /* FeeSettingsTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1328,6 +1342,8 @@
 				0D167E329D9CEAA8EBE189F8 /* TradeImageSource.swift in Sources */,
 				90818AB5E0F9F0827FF11493 /* PendingImportCoordinator.swift in Sources */,
 				A0643F108808C43BAEF0C87E /* PendingBatchImageSource.swift in Sources */,
+				1CE67B9F7FC6CB909944E12B /* FeeCalculator.swift in Sources */,
+				8C405C0EE225621F41E8FCA7 /* FeeSettings.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

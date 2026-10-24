@@ -57,6 +57,16 @@ struct FeeSettingsTests {
         #expect(FeeSettings.current(userDefaults: defaults).mode == .fixedAmount(20))
     }
 
+    /// The earlier settings screen saved whatever number was typed, so the stored value may not be a usable amount.
+    @Test(arguments: [(1e30, 2_147_483_647), (-5.0, 0), (Double.infinity, 0), (Double.nan, 0)])
+    func aStoredAmountThatDoesNotFitIsClampedInsteadOfCrashing(_ input: (stored: Double, amount: Int)) {
+        let defaults = makeDefaults()
+        defaults.set(input.stored, forKey: UserDefaults.userDefinedFeeInDollarsKey)
+        defaults.set("fixedAmount", forKey: UserDefaults.feeModeKey)
+
+        #expect(FeeSettings.current(userDefaults: defaults).mode == .fixedAmount(input.amount))
+    }
+
     @Test func aDiscountOutsideTheRangeFallsBackToTheEarlierChoiceOrNoDiscount() {
         let defaults = makeDefaults()
         defaults.set(11.0, forKey: UserDefaults.feeDiscountKey)

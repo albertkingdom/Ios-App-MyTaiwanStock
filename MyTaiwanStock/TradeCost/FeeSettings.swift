@@ -39,8 +39,12 @@ struct FeeSettings: Equatable {
         storedDiscount(in: userDefaults)
     }
 
+    /// The earlier settings screen saved whatever number was typed, so a stored value that is not a usable
+    /// amount counts as 0, and one that is too large as the largest amount a record can hold.
     static func currentFixedAmount(userDefaults: UserDefaults = .standard) -> Int {
-        max(0, Int(userDefaults.double(forKey: UserDefaults.userDefinedFeeInDollarsKey).rounded(.down)))
+        let stored = userDefaults.double(forKey: UserDefaults.userDefinedFeeInDollarsKey)
+        guard stored.isFinite, stored > 0 else { return 0 }
+        return Int(min(stored.rounded(.down), Double(Int32.max)))
     }
 
     // MARK: writing

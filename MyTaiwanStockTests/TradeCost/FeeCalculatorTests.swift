@@ -91,4 +91,16 @@ struct FeeCalculatorTests {
 
         #expect(result == nil)
     }
+
+    @Test func noResultWhenTheFeeOrTheTaxWouldNotFitInTheRecord() {
+        let price = Decimal(string: "99999999999999999999")!
+
+        let buy = FeeCalculator.calculate(
+            price: price, shares: 30000, side: .buy, settings: FeeSettings(mode: .discount(10)), taxCategory: .stock)
+        let sell = FeeCalculator.calculate(
+            price: price, shares: 30000, side: .sell, settings: FeeSettings(mode: .fixedAmount(1)), taxCategory: .stock)
+
+        #expect(buy == nil)
+        #expect(sell == nil)
+    }
 }

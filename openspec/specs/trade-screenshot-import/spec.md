@@ -358,7 +358,7 @@ code:
 ---
 ### Requirement: Mandatory preview with per-trade confirmation
 
-The system SHALL present every recognized trade in a preview screen before anything is written, and SHALL NOT provide a way to import without the preview. The user SHALL be able to select or deselect each trade and to edit its stock number, price, shares, date and direction. A trade SHALL be shown as incomplete and SHALL NOT be selectable when its stock number, price, shares or date is missing, when its shares are not an integer from 1 to 32767, or when its price is not greater than 0. When a trade matches more than one status, the system SHALL show the first applicable status in this order: unsupported, incomplete, duplicate, importable. After the user edits a trade, the system SHALL recompute its status, SHALL select the trade when it becomes importable, and SHALL deselect it when it becomes duplicate or incomplete. The import action SHALL be disabled while no trade is selected.
+The system SHALL present every recognized trade in a preview screen before anything is written, and SHALL NOT provide a way to import without the preview. The user SHALL be able to select or deselect each trade and to edit its stock number, price, shares, date, direction, fee, and for a sell the tax. A trade SHALL be shown as incomplete and SHALL NOT be selectable when its stock number, price, shares or date is missing, when its shares are not an integer from 1 to 32767, when its price is not greater than 0, or when its fee or tax is negative, is not a whole number, or is above 2147483647. When a trade matches more than one status, the system SHALL show the first applicable status in this order: unsupported, incomplete, duplicate, importable. After the user edits a trade, the system SHALL recompute its status, SHALL select the trade when it becomes importable, and SHALL deselect it when it becomes duplicate or incomplete. The import action SHALL be disabled while no trade is selected.
 
 #### Scenario: Incomplete trade cannot be selected
 
@@ -381,6 +381,12 @@ The system SHALL present every recognized trade in a preview screen before anyth
 | 32768 | incomplete |
 | 33000 | incomplete |
 
+#### Scenario: Invalid fee
+
+- **WHEN** the user enters a fee of -5 in the trade editor
+- **THEN** the preview SHALL mark the trade as incomplete and not selectable
+- **AND** after the user changes the fee to 5, or deletes it and leaves the field so that the estimate is shown again, the trade SHALL become selectable
+
 #### Scenario: Nothing selected
 
 - **WHEN** the user has deselected every trade
@@ -388,59 +394,241 @@ The system SHALL present every recognized trade in a preview screen before anyth
 
 
 <!-- @trace
-source: import-trades-from-screenshot
-updated: 2026-10-05
+source: store-fee-and-tax
+updated: 2026-10-24
 code:
-  - MyTaiwanStock/Util/TradeTextRecognizer.swift
-  - MyTaiwanStockTests/ValidInputServiceTest.swift
-  - MyTaiwanStock/Resources/StockList.json
-  - MyTaiwanStockTests/StockListRefresherTests.swift
-  - MyTaiwanStockTests/StockMarketLookupTests.swift
-  - MyTaiwanStock/Util/StockListRefresher.swift
-  - MyTaiwanStock.xcodeproj/project.pbxproj
-  - MyTaiwanStock/Util/StockListRepository.swift
-  - MyTaiwanStock/SceneDelegate.swift
-  - MyTaiwanStockTests/ChartServiceTests.swift
-  - MyTaiwanStock/View Controller/TradeEditViewController.swift
-  - MyTaiwanStockTests/AddStockNoViewModelTests.swift
-  - MyTaiwanStockTests/TradeScreenshotFixtures.swift
-  - MyTaiwanStock/StockList/StockListCoordinator.swift
-  - MyTaiwanStockTests/HistoryDocumentSelectorTests.swift
-  - MyTaiwanStock/Util/StockNameResolver.swift
-  - MyTaiwanStockTests/TradeScreenshotVisionFixtures.swift
-  - MyTaiwanStock/Util/StockMarketLookup.swift
-  - MyTaiwanStock/Util/StockListParser.swift
-  - MyTaiwanStock/View Controller/View Model/AddStockNoViewModel.swift
-  - MyTaiwanStock/Util/OnlineDBService.swift
-  - MyTaiwanStock/Util/TradeScreenshotParser.swift
-  - MyTaiwanStock/Util/ValidInputService.swift
-  - MyTaiwanStockTests/TestStockListViewModel.swift
-  - MyTaiwanStock/Model/TradeImportModels.swift
-  - MyTaiwanStock/AppDelegate.swift
-  - MyTaiwanStock/Util/HistoryDocumentSelector.swift
-  - MyTaiwanStockTests/TradeTextRecognizerTests.swift
-  - MyTaiwanStockTests/TradeScreenshotParserTests.swift
-  - MyTaiwanStock/StockList/ViewModel/StockListViewModel.swift
-  - MyTaiwanStock/Model/StockListEntry.swift
-  - MyTaiwanStockTests/DefaultTradeImportStoreTests.swift
-  - MyTaiwanStock/Model/StockNoList.swift
-  - MyTaiwanStock/Util/ChartService.swift
-  - MyTaiwanStock/View Controller/TradeImportPreviewViewController.swift
-  - MyTaiwanStock/Util/LocalDBService.swift
-  - MyTaiwanStock/View/FloatingButtonManager.swift
-  - MyTaiwanStockTests/StockListRepositoryTests.swift
-  - MyTaiwanStockTests/FloatingButtonManagerTests.swift
-  - scripts/generate_stock_list.py
-  - MyTaiwanStock/Repository/TWSEStockInfoFetcher.swift
-  - MyTaiwanStock/Repository/NetworkServiceImpl.swift
-  - MyTaiwanStockTests/StockNameResolverTests.swift
-  - MyTaiwanStock/StockList/ViewController/StockListViewController.swift
-  - MyTaiwanStock/View/FloatingButton.swift
-  - MyTaiwanStock/Util/DefaultTradeImportStore.swift
-  - MyTaiwanStockTests/StockListFilteringTests.swift
-  - MyTaiwanStock/View Controller/View Model/TradeImportViewModel.swift
-  - MyTaiwanStockTests/TradeImportViewModelTests.swift
+  - MyTaiwanStockTests/Screens/StockList/ListNameTests.swift
+  - MyTaiwanStock/Screens/Dividend/View/DividendDetailTableViewCell.swift
   - MyTaiwanStock/StockList/TradeImportFlow.swift
+  - MyTaiwanStockTests/TradeCost/OverViewCalculatorTests.swift
+  - MyTaiwanStockTests/DefaultTradeImportStoreTests.swift
+  - MyTaiwanStock/Screens/Onboarding/ViewController/WalkthroughViewController.swift
+  - MyTaiwanStock/Model/TradeImportModels.swift
+  - MyTaiwanStock/Screens/StockList/ViewModel/AddStockCellViewModel.swift
+  - MyTaiwanStock/Screens/TradeImport/Services/StockNameResolver.swift
+  - MyTaiwanStock/AppDelegate.swift
+  - MyTaiwanStock/Screens/StockList/Model/ListStruct.swift
+  - MyTaiwanStock/Screens/News/ViewController/NewsListViewController.swift
+  - MyTaiwanStockTests/TradeScreenshotVisionFixtures.swift
+  - MyTaiwanStock/View Controller/NewsListViewController.swift
+  - MyTaiwanStock/Model/MyStockList.swift
+  - MyTaiwanStockTests/StockListRefresherTests.swift
+  - MyTaiwanStock/View Controller/StockViewController.swift
+  - MyTaiwanStock/View Controller/View Model/AddDividendViewModel.swift
+  - MyTaiwanStock/View/ViewController+extension.swift
+  - MyTaiwanStock/Screens/Chat/Model/Channel.swift
+  - MyTaiwanStock/Model/CoreData/StockNoStruct.swift
+  - MyTaiwanStock/Model/FeeType.swift
+  - MyTaiwanStock/Screens/StockList/ViewModel/AddStockNoViewModel.swift
+  - MyTaiwanStock/Screens/Statistics/View/StatisticStockTableViewCell.swift
+  - MyTaiwanStock/Screens/StockList/Model/StockNoStruct.swift
+  - MyTaiwanStock/AppCoordinator.swift
+  - MyTaiwanStock/Model/Fee.swift
+  - MyTaiwanStock/Screens/TradeEntry/ViewController/AddHistoryViewController.swift
+  - MyTaiwanStock/Screens/TradeEntry/ViewController/MemoViewController.swift
+  - MyTaiwanStock/View/NewsListCellViewModel.swift
+  - MyTaiwanStockTests/StockListFilteringTests.swift
+  - MyTaiwanStock/Screens/Statistics/View/StatisticTableViewCell.swift
+  - MyTaiwanStock/View Controller/AddDividendViewController.swift
+  - MyTaiwanStock/StockList/View/StockTableViewCell.swift
+  - MyTaiwanStock/Model/StockInfo.swift
+  - MyTaiwanStock/Screens/TradeImport/ViewModel/TradeImportViewModel.swift
+  - MyTaiwanStock/Util/TradeScreenshotParser.swift
+  - Localizable.xcstrings
+  - MyTaiwanStock/Screens/Chat/ViewModel/ChatViewModel.swift
+  - MyTaiwanStock/StockList/StockListCoordinator.swift
+  - MyTaiwanStock/View/AddStockCellViewModel.swift
+  - MyTaiwanStock.xcodeproj/project.pbxproj
+  - MyTaiwanStock/Screens/Dividend/ViewModel/AddDividendViewModel.swift
+  - MyTaiwanStockTests/Screens/TradeImport/TradeImportViewModelTests.swift
+  - MyTaiwanStock/Screens/Statistics/View/StatisticStockTableViewCell.xib
+  - MyTaiwanStock/Screens/Chat/Model/Message.swift
+  - MyTaiwanStock/Screens/StockList/ViewController/AddListViewController.swift
+  - MyTaiwanStock/Util/ICloudBackupService.swift
+  - MyTaiwanStock/Screens/StockDetail/View/NewHistoryTableViewCell.swift
+  - MyTaiwanStockTests/Screens/TradeImport/TradeScreenshotVisionFixtures.swift
+  - MyTaiwanStockTests/Screens/TradeEntry/AddHistoryViewModelTests.swift
+  - MyTaiwanStock/View Controller/View Model/AddStockNoViewModel.swift
+  - MyTaiwanStock/Screens/StockList/View/StockTableViewCell.swift
+  - MyTaiwanStockTests/Screens/StockList/DuplicateStockNoTests.swift
+  - MyTaiwanStock/Screens/Chat/ViewController/ChatViewController.swift
+  - MyTaiwanStock/Screens/StockDetail/ViewModel/StockDetailViewModel.swift
+  - MyTaiwanStock/View/AddStockTableViewCell.swift
+  - MyTaiwanStock/View/HistoryCellModel.swift
+  - MyTaiwanStock/View/FloatingButtonManager.swift
+  - MyTaiwanStock/Screens/TradeEntry/ViewModel/AddHistoryViewModel.swift
+  - MyTaiwanStock/Util/FeeCalculator.swift
+  - MyTaiwanStock/Screens/Statistics/ViewModel/StatisticViewModel.swift
+  - MyTaiwanStock/View/DividendDetailTableViewCell.xib
+  - MyTaiwanStockTests/TestStockListViewModel.swift
+  - MyTaiwanStock/View Controller/View Model/AddHistoryViewModel.swift
+  - MyTaiwanStock/Util/TradeTextRecognizer.swift
+  - MyTaiwanStock/Shared/Model/StockListEntry.swift
+  - MyTaiwanStock/Screens/Statistics/View/StatisticDividendTableViewCell.swift
+  - MyTaiwanStockTests/TradeCost/FeeCalculatorTests.swift
+  - MyTaiwanStock/Shared/Model/HistoryOnline.swift
+  - MyTaiwanStock/Shared/Model/MyTaiwanStock.xcdatamodeld/.xccurrentversion
+  - MyTaiwanStockTests/Screens/TradeImport/TradeTextRecognizerTests.swift
+  - MyTaiwanStock/Screens/News/ViewController/webViewController.swift
+  - MyTaiwanStock/View/StatisticStockTableViewCell.xib
+  - MyTaiwanStock/Model/Channel.swift
+  - MyTaiwanStock/App/AppDelegate.swift
+  - MyTaiwanStockTests/TradeCost/FeeTaxFieldsTests.swift
+  - MyTaiwanStock/Model/Message.swift
+  - MyTaiwanStock/Screens/StockList/ViewController/StockListViewController.swift
+  - MyTaiwanStock/View/NewHistoryTableViewCell.swift
+  - MyTaiwanStock/Screens/StockDetail/Model/StockInfo.swift
+  - MyTaiwanStock/Screens/Dividend/ViewController/AddDividendViewController.swift
+  - MyTaiwanStock/Screens/Statistics/ViewController/StatisticViewController.swift
+  - MyTaiwanStock/View Controller/AddStockNoViewController.swift
+  - MyTaiwanStock/App/SceneDelegate.swift
+  - MyTaiwanStock/View Controller/AddHistoryViewController.swift
+  - MyTaiwanStock/Model/MyTaiwanStock.xcdatamodeld/MyTaiwanStock 2.xcdatamodel/contents
+  - MyTaiwanStock/Screens/News/View/NewsListTableViewCell2.swift
+  - MyTaiwanStock/View Controller/TradeImportPreviewViewController.swift
+  - MyTaiwanStock/Repository/NetworkService.swift
+  - MyTaiwanStock/Screens/TradeImport/Services/TradeTextRecognizer.swift
+  - MyTaiwanStock/View Controller/WalkthroughViewController.swift
+  - MyTaiwanStockTests/ICloudBackupServiceTests.swift
+  - MyTaiwanStock/Model/StockStatistic.swift
+  - MyTaiwanStock/TradeCost/Services/OverViewCalculator.swift
+  - MyTaiwanStock/View Controller/View Model/TradeImportViewModel.swift
+  - MyTaiwanStock/Screens/News/ViewModel/NewsListCellViewModel.swift
+  - MyTaiwanStock/Screens/Settings/ViewController/SettingViewController.swift
+  - MyTaiwanStock/View Controller/View Model/AddListViewModel.swift
+  - MyTaiwanStockTests/StockNameResolverTests.swift
+  - MyTaiwanStock/Screens/StockList/ViewModel/AddListViewModel.swift
+  - MyTaiwanStock/Screens/StockList/Model/FavList.swift
+  - MyTaiwanStock/Screens/TradeImport/Coordinator/TradeImportFlow.swift
+  - MyTaiwanStock/View/DividendDetailTableViewCell.swift
+  - MyTaiwanStock/Util/StockNameResolver.swift
+  - MyTaiwanStock/View/StatisticDividendTableViewCell.swift
+  - MyTaiwanStockTests/TradeImportViewModelTests.swift
+  - MyTaiwanStockTests/Screens/StockList/StockListRefresherTests.swift
+  - MyTaiwanStock/SharedUI/FontManager.swift
+  - MyTaiwanStock/Screens/TradeImport/Services/DefaultTradeImportStore.swift
+  - MyTaiwanStockTests/testOverViewCalculator.swift
+  - MyTaiwanStockTests/Screens/TradeImport/TradeScreenshotParserTests.swift
+  - MyTaiwanStock/Screens/StockList/ViewController/AddStockNoViewController.swift
+  - MyTaiwanStock/View Controller/AddListViewController.swift
+  - MyTaiwanStock/App/DependencyContainer.swift
+  - MyTaiwanStock/App/AppCoordinator.swift
+  - MyTaiwanStock/Screens/Statistics/View/StatisticDividendTableViewCell.xib
+  - MyTaiwanStockTests/TradeTextRecognizerTests.swift
+  - MyTaiwanStock/Model/StockListEntry.swift
+  - MyTaiwanStockTests/Screens/StockList/AddStockNoViewModelTests.swift
+  - MyTaiwanStock/View Controller/webViewController.swift
+  - MyTaiwanStock/View Controller/AccountViewController.swift
+  - MyTaiwanStock/Screens/StockList/ViewModel/StockListViewModel.swift
+  - MyTaiwanStock/TradeCost/Model/FeeTaxFields.swift
+  - MyTaiwanStock/TradeCost/Services/FeeCalculator.swift
+  - MyTaiwanStock/View/StatisticTableViewCell.swift
+  - MyTaiwanStock/Model/OnlineDB/FavList.swift
+  - MyTaiwanStock/Util/DefaultTradeImportStore.swift
+  - MyTaiwanStockTests/SharedUI/FloatingButtonManagerTests.swift
+  - MyTaiwanStock/View Controller/DividendDetailViewController.swift
+  - MyTaiwanStockTests/Screens/TradeImport/TradeImportFlowTests.swift
+  - MyTaiwanStock/SceneDelegate.swift
+  - MyTaiwanStockTests/Screens/StockList/StockListCoordinatorImportTests.swift
+  - MyTaiwanStock/Screens/Settings/ViewController/EditFeeViewController.swift
+  - MyTaiwanStock/View Controller/CustomTabBarViewController.swift
+  - MyTaiwanStock/Screens/TradeImport/ViewController/TradeEditViewController.swift
+  - MyTaiwanStock/Model/Sender.swift
+  - MyTaiwanStockTests/HistoryOnlineTests.swift
+  - MyTaiwanStockTests/FeeCalculatorTests.swift
+  - MyTaiwanStock/App/CustomTabBarViewController.swift
+  - MyTaiwanStock/Screens/TradeImport/Services/TradeImageSource.swift
+  - MyTaiwanStock/StockList/TradeImageSource.swift
+  - MyTaiwanStock/View/StatisticStockTableViewCell.swift
+  - MyTaiwanStockTests/BackupDestinationTests.swift
+  - MyTaiwanStock/Screens/StockList/ViewModel/StockCellViewModel.swift
+  - MyTaiwanStock/SharedUI/ViewController+extension.swift
+  - MyTaiwanStock/Screens/News/Model/NewsAPI.swift
+  - docs/architecture/source-layout.md
+  - MyTaiwanStock/Screens/TradeImport/Services/TradeScreenshotParser.swift
+  - MyTaiwanStock/Model/MyTaiwanStock.xcdatamodeld/MyTaiwanStock.xcdatamodel/contents
+  - MyTaiwanStockTests/AccountViewControllerImportTests.swift
+  - MyTaiwanStock/Model/OnlineDB/HistoryOnline.swift
+  - MyTaiwanStockTests/Screens/TradeImport/DefaultTradeImportStoreTests.swift
+  - MyTaiwanStockTests/Screens/StockList/TestStockListViewModel.swift
+  - MyTaiwanStockTests/DuplicateStockNoTests.swift
+  - MyTaiwanStock/Screens/TradeImport/Model/TradeImportModels.swift
+  - MyTaiwanStock/View Controller/View Model/StatisticViewModel.swift
+  - MyTaiwanStock/SharedUI/FloatingButton.swift
+  - MyTaiwanStock/Screens/Statistics/Model/StockStatistic.swift
+  - MyTaiwanStockTests/FeeSettingsTests.swift
+  - MyTaiwanStock/Repository/NetworkServiceImpl.swift
+  - MyTaiwanStock/Screens/StockList/View/AddStockTableViewCell.swift
+  - MyTaiwanStock/Util/BackupDestination.swift
+  - MyTaiwanStock/View Controller/MemoViewController.swift
+  - MyTaiwanStockTests/Screens/StockDetail/StockDetailOverviewTests.swift
+  - MyTaiwanStockTests/StockListCoordinatorImportTests.swift
+  - MyTaiwanStockTests/TradeImportFlowTests.swift
+  - MyTaiwanStock/View Controller/ChatViewController.swift
+  - MyTaiwanStockTests/Screens/TradeImport/StockNameResolverTests.swift
+  - MyTaiwanStock/Screens/Dividend/ViewController/DividendDetailViewController.swift
+  - MyTaiwanStock/Screens/StockDetail/View/NewHistoryTableViewCell.xib
+  - MyTaiwanStockTests/TradeScreenshotParserTests.swift
+  - MyTaiwanStock/Shared/Model/MyTaiwanStock.xcdatamodeld/MyTaiwanStock 2.xcdatamodel/contents
+  - MyTaiwanStock/Screens/News/ViewModel/NewsListViewModel.swift
+  - MyTaiwanStock/UnreadManager.swift
+  - MyTaiwanStock/Model/History.swift
+  - MyTaiwanStock/Screens/StockList/Model/MyStockList.swift
+  - MyTaiwanStockTests/TradeCost/FeeSettingsTests.swift
+  - MyTaiwanStockTests/TradeScreenshotFixtures.swift
+  - MyTaiwanStock/View/NewHistoryTableViewCell.xib
+  - MyTaiwanStock/StockList/ViewController/StockListViewController.swift
+  - MyTaiwanStock/Base.lproj/Main.storyboard
+  - MyTaiwanStock/Model/CoreData/ListStruct.swift
+  - MyTaiwanStock/Util/FeeSettings.swift
+  - MyTaiwanStock/View/FloatingButton.swift
+  - MyTaiwanStock/Model/OneDayStockInfo.swift
+  - MyTaiwanStock/Shared/Model/OneDayStockInfo.swift
+  - MyTaiwanStock/View Controller/View Model/StockDetailViewModel.swift
+  - MyTaiwanStock/Model/NewsAPI.swift
+  - MyTaiwanStock/Util/StoreSchemaCompatibilityChecking.swift
+  - MyTaiwanStockTests/Screens/TradeEntry/AddHistoryViewControllerTests.swift
+  - MyTaiwanStockTests/Screens/Account/AccountViewControllerImportTests.swift
+  - MyTaiwanStockTests/SettingViewControllerTests.swift
+  - MyTaiwanStock/View Controller/TradeEditViewController.swift
+  - MyTaiwanStockTests/ListNameTests.swift
+  - MyTaiwanStockTests/FloatingButtonManagerTests.swift
+  - MyTaiwanStock/Shared/Model/MyTaiwanStock.xcdatamodeld/MyTaiwanStock.xcdatamodel/contents
+  - MyTaiwanStockTests/Screens/TradeImport/TradeEditViewControllerTests.swift
+  - MyTaiwanStock/Util/ValidInputService.swift
+  - MyTaiwanStock/View Controller/EditFeeViewController.swift
+  - MyTaiwanStock/Screens/Account/ViewController/AccountViewController.swift
+  - MyTaiwanStock/Screens/Dividend/View/DividendDetailTableViewCell.xib
+  - MyTaiwanStock/View/NewsListTableViewCell2.swift
+  - MyTaiwanStockTests/Screens/StockDetail/StockViewControllerTests.swift
+  - MyTaiwanStock/Screens/StockDetail/ViewController/StockViewController.swift
+  - MyTaiwanStock/Model/MyTaiwanStock.xcdatamodeld/.xccurrentversion
+  - MyTaiwanStockTests/Screens/TradeImport/TradeImportPreviewViewControllerTests.swift
+  - MyTaiwanStockTests/Screens/TradeImport/TradeScreenshotFixtures.swift
+  - MyTaiwanStock/StockList/ViewModel/StockCellViewModel.swift
+  - MyTaiwanStock/Screens/Chat/Model/Sender.swift
+  - MyTaiwanStock/View Controller/View Model/ChatViewModel.swift
+  - MyTaiwanStock/TradeCost/Model/FeeSettings.swift
+  - MyTaiwanStock/Util/LocalDBService.swift
+  - MyTaiwanStock/View Controller/SettingViewController.swift
+  - MyTaiwanStockTests/Screens/StockList/StockListFilteringTests.swift
+  - MyTaiwanStock/Screens/TradeImport/ViewController/TradeImportPreviewViewController.swift
+  - MyTaiwanStockTests/Screens/Settings/SettingViewControllerTests.swift
+  - MyTaiwanStock/Screens/Chat/Services/UnreadManager.swift
+  - MyTaiwanStock/SharedUI/FloatingButtonManager.swift
+  - MyTaiwanStock/DependencyContainer.swift
+  - MyTaiwanStockTests/StoreSchemaCompatibilityCheckerTests.swift
+  - MyTaiwanStock/FontManager.swift
+  - MyTaiwanStock/StockList/ViewModel/StockListViewModel.swift
+  - MyTaiwanStock/View Controller/View Model/NewsListViewModel.swift
+  - MyTaiwanStock/Screens/StockDetail/ViewModel/HistoryCellModel.swift
+  - MyTaiwanStock/Screens/StockList/Coordinator/StockListCoordinator.swift
+  - MyTaiwanStockTests/AddStockNoViewModelTests.swift
+  - MyTaiwanStock/Screens/StockDetail/Model/History.swift
+  - MyTaiwanStock/OverViewCaculator.swift
+  - MyTaiwanStock/Util/OnlineDBService.swift
+  - MyTaiwanStock/View Controller/StatisticViewController.swift
+  - MyTaiwanStock/View/StatisticDividendTableViewCell.xib
 -->
 
 ---
@@ -527,7 +715,7 @@ code:
 ---
 ### Requirement: Write through the existing record flow
 
-When the user confirms the import, the system SHALL first validate every selected trade, and SHALL write nothing when any selected trade is invalid. After validation passes, the system SHALL write each selected trade on the main actor through the same save-new-record flow used by manual entry, so that the local store and Firestore receive the record as they do for manual entry. The system SHALL write only stock number, direction, price, shares and date, with an empty reason. The system SHALL NOT store fees or transaction tax and SHALL NOT change the Core Data or Firestore schema. Shares SHALL be stored in the unit of shares without conversion. The stored date of an imported trade SHALL be 12:00:00.000 on the trade's calendar date in the Asia/Taipei time zone; when that millisecond timestamp is already used by an existing local record or by an earlier trade in the same batch, the system SHALL add one millisecond at a time until the timestamp is unused. The system SHALL report the number of records submitted for writing.
+When the user confirms the import, the system SHALL first validate every selected trade, and SHALL write nothing when any selected trade is invalid. After validation passes, the system SHALL write each selected trade on the main actor through the same save-new-record flow used by manual entry, so that the local store and Firestore receive the record as they do for manual entry. The system SHALL write the stock number, direction, price, shares, date, fee and tax, with an empty reason, where the fee and the tax are the values shown for that trade in the preview, estimated or edited, and the tax of a buy is written as 0. Shares SHALL be stored in the unit of shares without conversion. The stored date of an imported trade SHALL be 12:00:00.000 on the trade's calendar date in the Asia/Taipei time zone; when that millisecond timestamp is already used by an existing local record or by an earlier trade in the same batch, the system SHALL add one millisecond at a time until the timestamp is unused. The system SHALL report the number of records submitted for writing.
 
 #### Scenario: Confirmed import writes selected trades only
 
@@ -537,9 +725,9 @@ When the user confirms the import, the system SHALL first validate every selecte
 
 ##### Example: odd-lot trade stored in shares
 
-- **GIVEN** the parsed trade 元大台灣50 買進 5 股 價格 112.55 日期 2026-09-30
+- **GIVEN** the parsed trade 元大台灣50 買進 5 股 價格 112.55 日期 2026-09-30 and a fee discount of 10
 - **WHEN** the user confirms the import
-- **THEN** the stored record has stockNo 0050, status 0 (buy), amount 5, price 112.55 and date 2026-09-30 12:00:00.000 Asia/Taipei
+- **THEN** the stored record has stockNo 0050, status 0 (buy), amount 5, price 112.55, fee 1, tax 0 and date 2026-09-30 12:00:00.000 Asia/Taipei
 
 #### Scenario: Same-day trades get distinct timestamps
 
@@ -553,66 +741,253 @@ When the user confirms the import, the system SHALL first validate every selecte
 - **THEN** the system SHALL NOT write any record
 - **AND** the system SHALL show an error
 
-#### Scenario: Fees and tax are not stored
+#### Scenario: Estimated fee and tax are stored
 
-- **WHEN** the screenshot shows a fee of 6 and a transaction tax of 22 for the 瑞昱 sell row
-- **THEN** the stored record SHALL contain no fee or tax value
+- **WHEN** the preview shows an estimated fee of 6 and an estimated tax of 22 for the 瑞昱 sell row and the user confirms
+- **THEN** the stored record SHALL contain a fee of 6 and a tax of 22
+
+#### Scenario: Cleared fee returns to the estimate
+
+- **WHEN** the user deletes the fee of a trade in the editor and leaves the field without typing
+- **THEN** the editor SHALL show the estimated fee again and the confirmed import SHALL store that estimate
 
 
 <!-- @trace
-source: import-trades-from-screenshot
-updated: 2026-10-05
+source: store-fee-and-tax
+updated: 2026-10-24
 code:
-  - MyTaiwanStock/Util/TradeTextRecognizer.swift
-  - MyTaiwanStockTests/ValidInputServiceTest.swift
-  - MyTaiwanStock/Resources/StockList.json
-  - MyTaiwanStockTests/StockListRefresherTests.swift
-  - MyTaiwanStockTests/StockMarketLookupTests.swift
-  - MyTaiwanStock/Util/StockListRefresher.swift
-  - MyTaiwanStock.xcodeproj/project.pbxproj
-  - MyTaiwanStock/Util/StockListRepository.swift
-  - MyTaiwanStock/SceneDelegate.swift
-  - MyTaiwanStockTests/ChartServiceTests.swift
-  - MyTaiwanStock/View Controller/TradeEditViewController.swift
-  - MyTaiwanStockTests/AddStockNoViewModelTests.swift
-  - MyTaiwanStockTests/TradeScreenshotFixtures.swift
-  - MyTaiwanStock/StockList/StockListCoordinator.swift
-  - MyTaiwanStockTests/HistoryDocumentSelectorTests.swift
-  - MyTaiwanStock/Util/StockNameResolver.swift
-  - MyTaiwanStockTests/TradeScreenshotVisionFixtures.swift
-  - MyTaiwanStock/Util/StockMarketLookup.swift
-  - MyTaiwanStock/Util/StockListParser.swift
-  - MyTaiwanStock/View Controller/View Model/AddStockNoViewModel.swift
-  - MyTaiwanStock/Util/OnlineDBService.swift
-  - MyTaiwanStock/Util/TradeScreenshotParser.swift
-  - MyTaiwanStock/Util/ValidInputService.swift
-  - MyTaiwanStockTests/TestStockListViewModel.swift
-  - MyTaiwanStock/Model/TradeImportModels.swift
-  - MyTaiwanStock/AppDelegate.swift
-  - MyTaiwanStock/Util/HistoryDocumentSelector.swift
-  - MyTaiwanStockTests/TradeTextRecognizerTests.swift
-  - MyTaiwanStockTests/TradeScreenshotParserTests.swift
-  - MyTaiwanStock/StockList/ViewModel/StockListViewModel.swift
-  - MyTaiwanStock/Model/StockListEntry.swift
-  - MyTaiwanStockTests/DefaultTradeImportStoreTests.swift
-  - MyTaiwanStock/Model/StockNoList.swift
-  - MyTaiwanStock/Util/ChartService.swift
-  - MyTaiwanStock/View Controller/TradeImportPreviewViewController.swift
-  - MyTaiwanStock/Util/LocalDBService.swift
-  - MyTaiwanStock/View/FloatingButtonManager.swift
-  - MyTaiwanStockTests/StockListRepositoryTests.swift
-  - MyTaiwanStockTests/FloatingButtonManagerTests.swift
-  - scripts/generate_stock_list.py
-  - MyTaiwanStock/Repository/TWSEStockInfoFetcher.swift
-  - MyTaiwanStock/Repository/NetworkServiceImpl.swift
-  - MyTaiwanStockTests/StockNameResolverTests.swift
-  - MyTaiwanStock/StockList/ViewController/StockListViewController.swift
-  - MyTaiwanStock/View/FloatingButton.swift
-  - MyTaiwanStock/Util/DefaultTradeImportStore.swift
-  - MyTaiwanStockTests/StockListFilteringTests.swift
-  - MyTaiwanStock/View Controller/View Model/TradeImportViewModel.swift
-  - MyTaiwanStockTests/TradeImportViewModelTests.swift
+  - MyTaiwanStockTests/Screens/StockList/ListNameTests.swift
+  - MyTaiwanStock/Screens/Dividend/View/DividendDetailTableViewCell.swift
   - MyTaiwanStock/StockList/TradeImportFlow.swift
+  - MyTaiwanStockTests/TradeCost/OverViewCalculatorTests.swift
+  - MyTaiwanStockTests/DefaultTradeImportStoreTests.swift
+  - MyTaiwanStock/Screens/Onboarding/ViewController/WalkthroughViewController.swift
+  - MyTaiwanStock/Model/TradeImportModels.swift
+  - MyTaiwanStock/Screens/StockList/ViewModel/AddStockCellViewModel.swift
+  - MyTaiwanStock/Screens/TradeImport/Services/StockNameResolver.swift
+  - MyTaiwanStock/AppDelegate.swift
+  - MyTaiwanStock/Screens/StockList/Model/ListStruct.swift
+  - MyTaiwanStock/Screens/News/ViewController/NewsListViewController.swift
+  - MyTaiwanStockTests/TradeScreenshotVisionFixtures.swift
+  - MyTaiwanStock/View Controller/NewsListViewController.swift
+  - MyTaiwanStock/Model/MyStockList.swift
+  - MyTaiwanStockTests/StockListRefresherTests.swift
+  - MyTaiwanStock/View Controller/StockViewController.swift
+  - MyTaiwanStock/View Controller/View Model/AddDividendViewModel.swift
+  - MyTaiwanStock/View/ViewController+extension.swift
+  - MyTaiwanStock/Screens/Chat/Model/Channel.swift
+  - MyTaiwanStock/Model/CoreData/StockNoStruct.swift
+  - MyTaiwanStock/Model/FeeType.swift
+  - MyTaiwanStock/Screens/StockList/ViewModel/AddStockNoViewModel.swift
+  - MyTaiwanStock/Screens/Statistics/View/StatisticStockTableViewCell.swift
+  - MyTaiwanStock/Screens/StockList/Model/StockNoStruct.swift
+  - MyTaiwanStock/AppCoordinator.swift
+  - MyTaiwanStock/Model/Fee.swift
+  - MyTaiwanStock/Screens/TradeEntry/ViewController/AddHistoryViewController.swift
+  - MyTaiwanStock/Screens/TradeEntry/ViewController/MemoViewController.swift
+  - MyTaiwanStock/View/NewsListCellViewModel.swift
+  - MyTaiwanStockTests/StockListFilteringTests.swift
+  - MyTaiwanStock/Screens/Statistics/View/StatisticTableViewCell.swift
+  - MyTaiwanStock/View Controller/AddDividendViewController.swift
+  - MyTaiwanStock/StockList/View/StockTableViewCell.swift
+  - MyTaiwanStock/Model/StockInfo.swift
+  - MyTaiwanStock/Screens/TradeImport/ViewModel/TradeImportViewModel.swift
+  - MyTaiwanStock/Util/TradeScreenshotParser.swift
+  - Localizable.xcstrings
+  - MyTaiwanStock/Screens/Chat/ViewModel/ChatViewModel.swift
+  - MyTaiwanStock/StockList/StockListCoordinator.swift
+  - MyTaiwanStock/View/AddStockCellViewModel.swift
+  - MyTaiwanStock.xcodeproj/project.pbxproj
+  - MyTaiwanStock/Screens/Dividend/ViewModel/AddDividendViewModel.swift
+  - MyTaiwanStockTests/Screens/TradeImport/TradeImportViewModelTests.swift
+  - MyTaiwanStock/Screens/Statistics/View/StatisticStockTableViewCell.xib
+  - MyTaiwanStock/Screens/Chat/Model/Message.swift
+  - MyTaiwanStock/Screens/StockList/ViewController/AddListViewController.swift
+  - MyTaiwanStock/Util/ICloudBackupService.swift
+  - MyTaiwanStock/Screens/StockDetail/View/NewHistoryTableViewCell.swift
+  - MyTaiwanStockTests/Screens/TradeImport/TradeScreenshotVisionFixtures.swift
+  - MyTaiwanStockTests/Screens/TradeEntry/AddHistoryViewModelTests.swift
+  - MyTaiwanStock/View Controller/View Model/AddStockNoViewModel.swift
+  - MyTaiwanStock/Screens/StockList/View/StockTableViewCell.swift
+  - MyTaiwanStockTests/Screens/StockList/DuplicateStockNoTests.swift
+  - MyTaiwanStock/Screens/Chat/ViewController/ChatViewController.swift
+  - MyTaiwanStock/Screens/StockDetail/ViewModel/StockDetailViewModel.swift
+  - MyTaiwanStock/View/AddStockTableViewCell.swift
+  - MyTaiwanStock/View/HistoryCellModel.swift
+  - MyTaiwanStock/View/FloatingButtonManager.swift
+  - MyTaiwanStock/Screens/TradeEntry/ViewModel/AddHistoryViewModel.swift
+  - MyTaiwanStock/Util/FeeCalculator.swift
+  - MyTaiwanStock/Screens/Statistics/ViewModel/StatisticViewModel.swift
+  - MyTaiwanStock/View/DividendDetailTableViewCell.xib
+  - MyTaiwanStockTests/TestStockListViewModel.swift
+  - MyTaiwanStock/View Controller/View Model/AddHistoryViewModel.swift
+  - MyTaiwanStock/Util/TradeTextRecognizer.swift
+  - MyTaiwanStock/Shared/Model/StockListEntry.swift
+  - MyTaiwanStock/Screens/Statistics/View/StatisticDividendTableViewCell.swift
+  - MyTaiwanStockTests/TradeCost/FeeCalculatorTests.swift
+  - MyTaiwanStock/Shared/Model/HistoryOnline.swift
+  - MyTaiwanStock/Shared/Model/MyTaiwanStock.xcdatamodeld/.xccurrentversion
+  - MyTaiwanStockTests/Screens/TradeImport/TradeTextRecognizerTests.swift
+  - MyTaiwanStock/Screens/News/ViewController/webViewController.swift
+  - MyTaiwanStock/View/StatisticStockTableViewCell.xib
+  - MyTaiwanStock/Model/Channel.swift
+  - MyTaiwanStock/App/AppDelegate.swift
+  - MyTaiwanStockTests/TradeCost/FeeTaxFieldsTests.swift
+  - MyTaiwanStock/Model/Message.swift
+  - MyTaiwanStock/Screens/StockList/ViewController/StockListViewController.swift
+  - MyTaiwanStock/View/NewHistoryTableViewCell.swift
+  - MyTaiwanStock/Screens/StockDetail/Model/StockInfo.swift
+  - MyTaiwanStock/Screens/Dividend/ViewController/AddDividendViewController.swift
+  - MyTaiwanStock/Screens/Statistics/ViewController/StatisticViewController.swift
+  - MyTaiwanStock/View Controller/AddStockNoViewController.swift
+  - MyTaiwanStock/App/SceneDelegate.swift
+  - MyTaiwanStock/View Controller/AddHistoryViewController.swift
+  - MyTaiwanStock/Model/MyTaiwanStock.xcdatamodeld/MyTaiwanStock 2.xcdatamodel/contents
+  - MyTaiwanStock/Screens/News/View/NewsListTableViewCell2.swift
+  - MyTaiwanStock/View Controller/TradeImportPreviewViewController.swift
+  - MyTaiwanStock/Repository/NetworkService.swift
+  - MyTaiwanStock/Screens/TradeImport/Services/TradeTextRecognizer.swift
+  - MyTaiwanStock/View Controller/WalkthroughViewController.swift
+  - MyTaiwanStockTests/ICloudBackupServiceTests.swift
+  - MyTaiwanStock/Model/StockStatistic.swift
+  - MyTaiwanStock/TradeCost/Services/OverViewCalculator.swift
+  - MyTaiwanStock/View Controller/View Model/TradeImportViewModel.swift
+  - MyTaiwanStock/Screens/News/ViewModel/NewsListCellViewModel.swift
+  - MyTaiwanStock/Screens/Settings/ViewController/SettingViewController.swift
+  - MyTaiwanStock/View Controller/View Model/AddListViewModel.swift
+  - MyTaiwanStockTests/StockNameResolverTests.swift
+  - MyTaiwanStock/Screens/StockList/ViewModel/AddListViewModel.swift
+  - MyTaiwanStock/Screens/StockList/Model/FavList.swift
+  - MyTaiwanStock/Screens/TradeImport/Coordinator/TradeImportFlow.swift
+  - MyTaiwanStock/View/DividendDetailTableViewCell.swift
+  - MyTaiwanStock/Util/StockNameResolver.swift
+  - MyTaiwanStock/View/StatisticDividendTableViewCell.swift
+  - MyTaiwanStockTests/TradeImportViewModelTests.swift
+  - MyTaiwanStockTests/Screens/StockList/StockListRefresherTests.swift
+  - MyTaiwanStock/SharedUI/FontManager.swift
+  - MyTaiwanStock/Screens/TradeImport/Services/DefaultTradeImportStore.swift
+  - MyTaiwanStockTests/testOverViewCalculator.swift
+  - MyTaiwanStockTests/Screens/TradeImport/TradeScreenshotParserTests.swift
+  - MyTaiwanStock/Screens/StockList/ViewController/AddStockNoViewController.swift
+  - MyTaiwanStock/View Controller/AddListViewController.swift
+  - MyTaiwanStock/App/DependencyContainer.swift
+  - MyTaiwanStock/App/AppCoordinator.swift
+  - MyTaiwanStock/Screens/Statistics/View/StatisticDividendTableViewCell.xib
+  - MyTaiwanStockTests/TradeTextRecognizerTests.swift
+  - MyTaiwanStock/Model/StockListEntry.swift
+  - MyTaiwanStockTests/Screens/StockList/AddStockNoViewModelTests.swift
+  - MyTaiwanStock/View Controller/webViewController.swift
+  - MyTaiwanStock/View Controller/AccountViewController.swift
+  - MyTaiwanStock/Screens/StockList/ViewModel/StockListViewModel.swift
+  - MyTaiwanStock/TradeCost/Model/FeeTaxFields.swift
+  - MyTaiwanStock/TradeCost/Services/FeeCalculator.swift
+  - MyTaiwanStock/View/StatisticTableViewCell.swift
+  - MyTaiwanStock/Model/OnlineDB/FavList.swift
+  - MyTaiwanStock/Util/DefaultTradeImportStore.swift
+  - MyTaiwanStockTests/SharedUI/FloatingButtonManagerTests.swift
+  - MyTaiwanStock/View Controller/DividendDetailViewController.swift
+  - MyTaiwanStockTests/Screens/TradeImport/TradeImportFlowTests.swift
+  - MyTaiwanStock/SceneDelegate.swift
+  - MyTaiwanStockTests/Screens/StockList/StockListCoordinatorImportTests.swift
+  - MyTaiwanStock/Screens/Settings/ViewController/EditFeeViewController.swift
+  - MyTaiwanStock/View Controller/CustomTabBarViewController.swift
+  - MyTaiwanStock/Screens/TradeImport/ViewController/TradeEditViewController.swift
+  - MyTaiwanStock/Model/Sender.swift
+  - MyTaiwanStockTests/HistoryOnlineTests.swift
+  - MyTaiwanStockTests/FeeCalculatorTests.swift
+  - MyTaiwanStock/App/CustomTabBarViewController.swift
+  - MyTaiwanStock/Screens/TradeImport/Services/TradeImageSource.swift
+  - MyTaiwanStock/StockList/TradeImageSource.swift
+  - MyTaiwanStock/View/StatisticStockTableViewCell.swift
+  - MyTaiwanStockTests/BackupDestinationTests.swift
+  - MyTaiwanStock/Screens/StockList/ViewModel/StockCellViewModel.swift
+  - MyTaiwanStock/SharedUI/ViewController+extension.swift
+  - MyTaiwanStock/Screens/News/Model/NewsAPI.swift
+  - docs/architecture/source-layout.md
+  - MyTaiwanStock/Screens/TradeImport/Services/TradeScreenshotParser.swift
+  - MyTaiwanStock/Model/MyTaiwanStock.xcdatamodeld/MyTaiwanStock.xcdatamodel/contents
+  - MyTaiwanStockTests/AccountViewControllerImportTests.swift
+  - MyTaiwanStock/Model/OnlineDB/HistoryOnline.swift
+  - MyTaiwanStockTests/Screens/TradeImport/DefaultTradeImportStoreTests.swift
+  - MyTaiwanStockTests/Screens/StockList/TestStockListViewModel.swift
+  - MyTaiwanStockTests/DuplicateStockNoTests.swift
+  - MyTaiwanStock/Screens/TradeImport/Model/TradeImportModels.swift
+  - MyTaiwanStock/View Controller/View Model/StatisticViewModel.swift
+  - MyTaiwanStock/SharedUI/FloatingButton.swift
+  - MyTaiwanStock/Screens/Statistics/Model/StockStatistic.swift
+  - MyTaiwanStockTests/FeeSettingsTests.swift
+  - MyTaiwanStock/Repository/NetworkServiceImpl.swift
+  - MyTaiwanStock/Screens/StockList/View/AddStockTableViewCell.swift
+  - MyTaiwanStock/Util/BackupDestination.swift
+  - MyTaiwanStock/View Controller/MemoViewController.swift
+  - MyTaiwanStockTests/Screens/StockDetail/StockDetailOverviewTests.swift
+  - MyTaiwanStockTests/StockListCoordinatorImportTests.swift
+  - MyTaiwanStockTests/TradeImportFlowTests.swift
+  - MyTaiwanStock/View Controller/ChatViewController.swift
+  - MyTaiwanStockTests/Screens/TradeImport/StockNameResolverTests.swift
+  - MyTaiwanStock/Screens/Dividend/ViewController/DividendDetailViewController.swift
+  - MyTaiwanStock/Screens/StockDetail/View/NewHistoryTableViewCell.xib
+  - MyTaiwanStockTests/TradeScreenshotParserTests.swift
+  - MyTaiwanStock/Shared/Model/MyTaiwanStock.xcdatamodeld/MyTaiwanStock 2.xcdatamodel/contents
+  - MyTaiwanStock/Screens/News/ViewModel/NewsListViewModel.swift
+  - MyTaiwanStock/UnreadManager.swift
+  - MyTaiwanStock/Model/History.swift
+  - MyTaiwanStock/Screens/StockList/Model/MyStockList.swift
+  - MyTaiwanStockTests/TradeCost/FeeSettingsTests.swift
+  - MyTaiwanStockTests/TradeScreenshotFixtures.swift
+  - MyTaiwanStock/View/NewHistoryTableViewCell.xib
+  - MyTaiwanStock/StockList/ViewController/StockListViewController.swift
+  - MyTaiwanStock/Base.lproj/Main.storyboard
+  - MyTaiwanStock/Model/CoreData/ListStruct.swift
+  - MyTaiwanStock/Util/FeeSettings.swift
+  - MyTaiwanStock/View/FloatingButton.swift
+  - MyTaiwanStock/Model/OneDayStockInfo.swift
+  - MyTaiwanStock/Shared/Model/OneDayStockInfo.swift
+  - MyTaiwanStock/View Controller/View Model/StockDetailViewModel.swift
+  - MyTaiwanStock/Model/NewsAPI.swift
+  - MyTaiwanStock/Util/StoreSchemaCompatibilityChecking.swift
+  - MyTaiwanStockTests/Screens/TradeEntry/AddHistoryViewControllerTests.swift
+  - MyTaiwanStockTests/Screens/Account/AccountViewControllerImportTests.swift
+  - MyTaiwanStockTests/SettingViewControllerTests.swift
+  - MyTaiwanStock/View Controller/TradeEditViewController.swift
+  - MyTaiwanStockTests/ListNameTests.swift
+  - MyTaiwanStockTests/FloatingButtonManagerTests.swift
+  - MyTaiwanStock/Shared/Model/MyTaiwanStock.xcdatamodeld/MyTaiwanStock.xcdatamodel/contents
+  - MyTaiwanStockTests/Screens/TradeImport/TradeEditViewControllerTests.swift
+  - MyTaiwanStock/Util/ValidInputService.swift
+  - MyTaiwanStock/View Controller/EditFeeViewController.swift
+  - MyTaiwanStock/Screens/Account/ViewController/AccountViewController.swift
+  - MyTaiwanStock/Screens/Dividend/View/DividendDetailTableViewCell.xib
+  - MyTaiwanStock/View/NewsListTableViewCell2.swift
+  - MyTaiwanStockTests/Screens/StockDetail/StockViewControllerTests.swift
+  - MyTaiwanStock/Screens/StockDetail/ViewController/StockViewController.swift
+  - MyTaiwanStock/Model/MyTaiwanStock.xcdatamodeld/.xccurrentversion
+  - MyTaiwanStockTests/Screens/TradeImport/TradeImportPreviewViewControllerTests.swift
+  - MyTaiwanStockTests/Screens/TradeImport/TradeScreenshotFixtures.swift
+  - MyTaiwanStock/StockList/ViewModel/StockCellViewModel.swift
+  - MyTaiwanStock/Screens/Chat/Model/Sender.swift
+  - MyTaiwanStock/View Controller/View Model/ChatViewModel.swift
+  - MyTaiwanStock/TradeCost/Model/FeeSettings.swift
+  - MyTaiwanStock/Util/LocalDBService.swift
+  - MyTaiwanStock/View Controller/SettingViewController.swift
+  - MyTaiwanStockTests/Screens/StockList/StockListFilteringTests.swift
+  - MyTaiwanStock/Screens/TradeImport/ViewController/TradeImportPreviewViewController.swift
+  - MyTaiwanStockTests/Screens/Settings/SettingViewControllerTests.swift
+  - MyTaiwanStock/Screens/Chat/Services/UnreadManager.swift
+  - MyTaiwanStock/SharedUI/FloatingButtonManager.swift
+  - MyTaiwanStock/DependencyContainer.swift
+  - MyTaiwanStockTests/StoreSchemaCompatibilityCheckerTests.swift
+  - MyTaiwanStock/FontManager.swift
+  - MyTaiwanStock/StockList/ViewModel/StockListViewModel.swift
+  - MyTaiwanStock/View Controller/View Model/NewsListViewModel.swift
+  - MyTaiwanStock/Screens/StockDetail/ViewModel/HistoryCellModel.swift
+  - MyTaiwanStock/Screens/StockList/Coordinator/StockListCoordinator.swift
+  - MyTaiwanStockTests/AddStockNoViewModelTests.swift
+  - MyTaiwanStock/Screens/StockDetail/Model/History.swift
+  - MyTaiwanStock/OverViewCaculator.swift
+  - MyTaiwanStock/Util/OnlineDBService.swift
+  - MyTaiwanStock/View Controller/StatisticViewController.swift
+  - MyTaiwanStock/View/StatisticDividendTableViewCell.xib
 -->
 
 ---
@@ -814,3 +1189,272 @@ When the upper price column is available, the parser SHALL extract the share cou
 
 - **WHEN** the original collapsed and expanded screenshot fixtures are parsed
 - **THEN** the parsed share counts SHALL remain 5, 3, 1 and 10 for 元大台灣50, 華邦電, 台積電 and 瑞昱 respectively
+
+---
+### Requirement: Estimate fee and tax in the preview
+
+The preview SHALL show an estimated fee and an estimated tax for every trade, computed with the same calculation and the same fee settings as manual entry. The tax category used for the estimate SHALL be ETF when the stock number starts with 00 and general stock otherwise, and the tax of a buy SHALL be 0 and SHALL NOT be editable. The trade editor SHALL let the user change the fee, and for a sell the tax, to a whole-dollar number; when the user leaves such a field empty, the editor SHALL show the estimate again. When the user edits the stock number, price, shares or direction of a trade in the editor, the system SHALL estimate again the fee and the tax that the user has not changed by hand, and SHALL keep the values the user changed by hand. A trade whose price or shares are missing SHALL have no estimate until they are entered. The system SHALL NOT read the fee or the tax from the screenshot text in this capability.
+
+#### Scenario: Sell estimate
+
+- **WHEN** the preview contains a sell of 10 shares of 瑞昱 at 757 and the fee discount is 6
+- **THEN** the preview SHALL show a fee of 6 and a tax of 22 for that trade
+
+#### Scenario: ETF sell estimate
+
+- **WHEN** the preview contains a sell of 1000 shares of 0050 at 100 and the fee discount is 10
+- **THEN** the preview SHALL show a fee of 142 and a tax of 100 for that trade
+
+#### Scenario: Estimate after completing a trade
+
+- **WHEN** a trade has no price and the user enters a price of 757 for 10 shares in the editor and has not touched the fee
+- **THEN** the preview SHALL show the estimated fee for that price
+
+#### Scenario: Direction changed
+
+- **WHEN** the user changes a buy to a sell in the editor and has not touched the tax
+- **THEN** the preview SHALL show the estimated tax for the sell
+
+#### Scenario: Edited fee is kept
+
+- **WHEN** the user changes the fee of a trade to 3 and then changes its price in the editor
+- **THEN** the preview SHALL still show a fee of 3 for that trade
+- **AND** the confirmed import SHALL store a fee of 3
+
+<!-- @trace
+source: store-fee-and-tax
+updated: 2026-10-24
+code:
+  - MyTaiwanStockTests/Screens/StockList/ListNameTests.swift
+  - MyTaiwanStock/Screens/Dividend/View/DividendDetailTableViewCell.swift
+  - MyTaiwanStock/StockList/TradeImportFlow.swift
+  - MyTaiwanStockTests/TradeCost/OverViewCalculatorTests.swift
+  - MyTaiwanStockTests/DefaultTradeImportStoreTests.swift
+  - MyTaiwanStock/Screens/Onboarding/ViewController/WalkthroughViewController.swift
+  - MyTaiwanStock/Model/TradeImportModels.swift
+  - MyTaiwanStock/Screens/StockList/ViewModel/AddStockCellViewModel.swift
+  - MyTaiwanStock/Screens/TradeImport/Services/StockNameResolver.swift
+  - MyTaiwanStock/AppDelegate.swift
+  - MyTaiwanStock/Screens/StockList/Model/ListStruct.swift
+  - MyTaiwanStock/Screens/News/ViewController/NewsListViewController.swift
+  - MyTaiwanStockTests/TradeScreenshotVisionFixtures.swift
+  - MyTaiwanStock/View Controller/NewsListViewController.swift
+  - MyTaiwanStock/Model/MyStockList.swift
+  - MyTaiwanStockTests/StockListRefresherTests.swift
+  - MyTaiwanStock/View Controller/StockViewController.swift
+  - MyTaiwanStock/View Controller/View Model/AddDividendViewModel.swift
+  - MyTaiwanStock/View/ViewController+extension.swift
+  - MyTaiwanStock/Screens/Chat/Model/Channel.swift
+  - MyTaiwanStock/Model/CoreData/StockNoStruct.swift
+  - MyTaiwanStock/Model/FeeType.swift
+  - MyTaiwanStock/Screens/StockList/ViewModel/AddStockNoViewModel.swift
+  - MyTaiwanStock/Screens/Statistics/View/StatisticStockTableViewCell.swift
+  - MyTaiwanStock/Screens/StockList/Model/StockNoStruct.swift
+  - MyTaiwanStock/AppCoordinator.swift
+  - MyTaiwanStock/Model/Fee.swift
+  - MyTaiwanStock/Screens/TradeEntry/ViewController/AddHistoryViewController.swift
+  - MyTaiwanStock/Screens/TradeEntry/ViewController/MemoViewController.swift
+  - MyTaiwanStock/View/NewsListCellViewModel.swift
+  - MyTaiwanStockTests/StockListFilteringTests.swift
+  - MyTaiwanStock/Screens/Statistics/View/StatisticTableViewCell.swift
+  - MyTaiwanStock/View Controller/AddDividendViewController.swift
+  - MyTaiwanStock/StockList/View/StockTableViewCell.swift
+  - MyTaiwanStock/Model/StockInfo.swift
+  - MyTaiwanStock/Screens/TradeImport/ViewModel/TradeImportViewModel.swift
+  - MyTaiwanStock/Util/TradeScreenshotParser.swift
+  - Localizable.xcstrings
+  - MyTaiwanStock/Screens/Chat/ViewModel/ChatViewModel.swift
+  - MyTaiwanStock/StockList/StockListCoordinator.swift
+  - MyTaiwanStock/View/AddStockCellViewModel.swift
+  - MyTaiwanStock.xcodeproj/project.pbxproj
+  - MyTaiwanStock/Screens/Dividend/ViewModel/AddDividendViewModel.swift
+  - MyTaiwanStockTests/Screens/TradeImport/TradeImportViewModelTests.swift
+  - MyTaiwanStock/Screens/Statistics/View/StatisticStockTableViewCell.xib
+  - MyTaiwanStock/Screens/Chat/Model/Message.swift
+  - MyTaiwanStock/Screens/StockList/ViewController/AddListViewController.swift
+  - MyTaiwanStock/Util/ICloudBackupService.swift
+  - MyTaiwanStock/Screens/StockDetail/View/NewHistoryTableViewCell.swift
+  - MyTaiwanStockTests/Screens/TradeImport/TradeScreenshotVisionFixtures.swift
+  - MyTaiwanStockTests/Screens/TradeEntry/AddHistoryViewModelTests.swift
+  - MyTaiwanStock/View Controller/View Model/AddStockNoViewModel.swift
+  - MyTaiwanStock/Screens/StockList/View/StockTableViewCell.swift
+  - MyTaiwanStockTests/Screens/StockList/DuplicateStockNoTests.swift
+  - MyTaiwanStock/Screens/Chat/ViewController/ChatViewController.swift
+  - MyTaiwanStock/Screens/StockDetail/ViewModel/StockDetailViewModel.swift
+  - MyTaiwanStock/View/AddStockTableViewCell.swift
+  - MyTaiwanStock/View/HistoryCellModel.swift
+  - MyTaiwanStock/View/FloatingButtonManager.swift
+  - MyTaiwanStock/Screens/TradeEntry/ViewModel/AddHistoryViewModel.swift
+  - MyTaiwanStock/Util/FeeCalculator.swift
+  - MyTaiwanStock/Screens/Statistics/ViewModel/StatisticViewModel.swift
+  - MyTaiwanStock/View/DividendDetailTableViewCell.xib
+  - MyTaiwanStockTests/TestStockListViewModel.swift
+  - MyTaiwanStock/View Controller/View Model/AddHistoryViewModel.swift
+  - MyTaiwanStock/Util/TradeTextRecognizer.swift
+  - MyTaiwanStock/Shared/Model/StockListEntry.swift
+  - MyTaiwanStock/Screens/Statistics/View/StatisticDividendTableViewCell.swift
+  - MyTaiwanStockTests/TradeCost/FeeCalculatorTests.swift
+  - MyTaiwanStock/Shared/Model/HistoryOnline.swift
+  - MyTaiwanStock/Shared/Model/MyTaiwanStock.xcdatamodeld/.xccurrentversion
+  - MyTaiwanStockTests/Screens/TradeImport/TradeTextRecognizerTests.swift
+  - MyTaiwanStock/Screens/News/ViewController/webViewController.swift
+  - MyTaiwanStock/View/StatisticStockTableViewCell.xib
+  - MyTaiwanStock/Model/Channel.swift
+  - MyTaiwanStock/App/AppDelegate.swift
+  - MyTaiwanStockTests/TradeCost/FeeTaxFieldsTests.swift
+  - MyTaiwanStock/Model/Message.swift
+  - MyTaiwanStock/Screens/StockList/ViewController/StockListViewController.swift
+  - MyTaiwanStock/View/NewHistoryTableViewCell.swift
+  - MyTaiwanStock/Screens/StockDetail/Model/StockInfo.swift
+  - MyTaiwanStock/Screens/Dividend/ViewController/AddDividendViewController.swift
+  - MyTaiwanStock/Screens/Statistics/ViewController/StatisticViewController.swift
+  - MyTaiwanStock/View Controller/AddStockNoViewController.swift
+  - MyTaiwanStock/App/SceneDelegate.swift
+  - MyTaiwanStock/View Controller/AddHistoryViewController.swift
+  - MyTaiwanStock/Model/MyTaiwanStock.xcdatamodeld/MyTaiwanStock 2.xcdatamodel/contents
+  - MyTaiwanStock/Screens/News/View/NewsListTableViewCell2.swift
+  - MyTaiwanStock/View Controller/TradeImportPreviewViewController.swift
+  - MyTaiwanStock/Repository/NetworkService.swift
+  - MyTaiwanStock/Screens/TradeImport/Services/TradeTextRecognizer.swift
+  - MyTaiwanStock/View Controller/WalkthroughViewController.swift
+  - MyTaiwanStockTests/ICloudBackupServiceTests.swift
+  - MyTaiwanStock/Model/StockStatistic.swift
+  - MyTaiwanStock/TradeCost/Services/OverViewCalculator.swift
+  - MyTaiwanStock/View Controller/View Model/TradeImportViewModel.swift
+  - MyTaiwanStock/Screens/News/ViewModel/NewsListCellViewModel.swift
+  - MyTaiwanStock/Screens/Settings/ViewController/SettingViewController.swift
+  - MyTaiwanStock/View Controller/View Model/AddListViewModel.swift
+  - MyTaiwanStockTests/StockNameResolverTests.swift
+  - MyTaiwanStock/Screens/StockList/ViewModel/AddListViewModel.swift
+  - MyTaiwanStock/Screens/StockList/Model/FavList.swift
+  - MyTaiwanStock/Screens/TradeImport/Coordinator/TradeImportFlow.swift
+  - MyTaiwanStock/View/DividendDetailTableViewCell.swift
+  - MyTaiwanStock/Util/StockNameResolver.swift
+  - MyTaiwanStock/View/StatisticDividendTableViewCell.swift
+  - MyTaiwanStockTests/TradeImportViewModelTests.swift
+  - MyTaiwanStockTests/Screens/StockList/StockListRefresherTests.swift
+  - MyTaiwanStock/SharedUI/FontManager.swift
+  - MyTaiwanStock/Screens/TradeImport/Services/DefaultTradeImportStore.swift
+  - MyTaiwanStockTests/testOverViewCalculator.swift
+  - MyTaiwanStockTests/Screens/TradeImport/TradeScreenshotParserTests.swift
+  - MyTaiwanStock/Screens/StockList/ViewController/AddStockNoViewController.swift
+  - MyTaiwanStock/View Controller/AddListViewController.swift
+  - MyTaiwanStock/App/DependencyContainer.swift
+  - MyTaiwanStock/App/AppCoordinator.swift
+  - MyTaiwanStock/Screens/Statistics/View/StatisticDividendTableViewCell.xib
+  - MyTaiwanStockTests/TradeTextRecognizerTests.swift
+  - MyTaiwanStock/Model/StockListEntry.swift
+  - MyTaiwanStockTests/Screens/StockList/AddStockNoViewModelTests.swift
+  - MyTaiwanStock/View Controller/webViewController.swift
+  - MyTaiwanStock/View Controller/AccountViewController.swift
+  - MyTaiwanStock/Screens/StockList/ViewModel/StockListViewModel.swift
+  - MyTaiwanStock/TradeCost/Model/FeeTaxFields.swift
+  - MyTaiwanStock/TradeCost/Services/FeeCalculator.swift
+  - MyTaiwanStock/View/StatisticTableViewCell.swift
+  - MyTaiwanStock/Model/OnlineDB/FavList.swift
+  - MyTaiwanStock/Util/DefaultTradeImportStore.swift
+  - MyTaiwanStockTests/SharedUI/FloatingButtonManagerTests.swift
+  - MyTaiwanStock/View Controller/DividendDetailViewController.swift
+  - MyTaiwanStockTests/Screens/TradeImport/TradeImportFlowTests.swift
+  - MyTaiwanStock/SceneDelegate.swift
+  - MyTaiwanStockTests/Screens/StockList/StockListCoordinatorImportTests.swift
+  - MyTaiwanStock/Screens/Settings/ViewController/EditFeeViewController.swift
+  - MyTaiwanStock/View Controller/CustomTabBarViewController.swift
+  - MyTaiwanStock/Screens/TradeImport/ViewController/TradeEditViewController.swift
+  - MyTaiwanStock/Model/Sender.swift
+  - MyTaiwanStockTests/HistoryOnlineTests.swift
+  - MyTaiwanStockTests/FeeCalculatorTests.swift
+  - MyTaiwanStock/App/CustomTabBarViewController.swift
+  - MyTaiwanStock/Screens/TradeImport/Services/TradeImageSource.swift
+  - MyTaiwanStock/StockList/TradeImageSource.swift
+  - MyTaiwanStock/View/StatisticStockTableViewCell.swift
+  - MyTaiwanStockTests/BackupDestinationTests.swift
+  - MyTaiwanStock/Screens/StockList/ViewModel/StockCellViewModel.swift
+  - MyTaiwanStock/SharedUI/ViewController+extension.swift
+  - MyTaiwanStock/Screens/News/Model/NewsAPI.swift
+  - docs/architecture/source-layout.md
+  - MyTaiwanStock/Screens/TradeImport/Services/TradeScreenshotParser.swift
+  - MyTaiwanStock/Model/MyTaiwanStock.xcdatamodeld/MyTaiwanStock.xcdatamodel/contents
+  - MyTaiwanStockTests/AccountViewControllerImportTests.swift
+  - MyTaiwanStock/Model/OnlineDB/HistoryOnline.swift
+  - MyTaiwanStockTests/Screens/TradeImport/DefaultTradeImportStoreTests.swift
+  - MyTaiwanStockTests/Screens/StockList/TestStockListViewModel.swift
+  - MyTaiwanStockTests/DuplicateStockNoTests.swift
+  - MyTaiwanStock/Screens/TradeImport/Model/TradeImportModels.swift
+  - MyTaiwanStock/View Controller/View Model/StatisticViewModel.swift
+  - MyTaiwanStock/SharedUI/FloatingButton.swift
+  - MyTaiwanStock/Screens/Statistics/Model/StockStatistic.swift
+  - MyTaiwanStockTests/FeeSettingsTests.swift
+  - MyTaiwanStock/Repository/NetworkServiceImpl.swift
+  - MyTaiwanStock/Screens/StockList/View/AddStockTableViewCell.swift
+  - MyTaiwanStock/Util/BackupDestination.swift
+  - MyTaiwanStock/View Controller/MemoViewController.swift
+  - MyTaiwanStockTests/Screens/StockDetail/StockDetailOverviewTests.swift
+  - MyTaiwanStockTests/StockListCoordinatorImportTests.swift
+  - MyTaiwanStockTests/TradeImportFlowTests.swift
+  - MyTaiwanStock/View Controller/ChatViewController.swift
+  - MyTaiwanStockTests/Screens/TradeImport/StockNameResolverTests.swift
+  - MyTaiwanStock/Screens/Dividend/ViewController/DividendDetailViewController.swift
+  - MyTaiwanStock/Screens/StockDetail/View/NewHistoryTableViewCell.xib
+  - MyTaiwanStockTests/TradeScreenshotParserTests.swift
+  - MyTaiwanStock/Shared/Model/MyTaiwanStock.xcdatamodeld/MyTaiwanStock 2.xcdatamodel/contents
+  - MyTaiwanStock/Screens/News/ViewModel/NewsListViewModel.swift
+  - MyTaiwanStock/UnreadManager.swift
+  - MyTaiwanStock/Model/History.swift
+  - MyTaiwanStock/Screens/StockList/Model/MyStockList.swift
+  - MyTaiwanStockTests/TradeCost/FeeSettingsTests.swift
+  - MyTaiwanStockTests/TradeScreenshotFixtures.swift
+  - MyTaiwanStock/View/NewHistoryTableViewCell.xib
+  - MyTaiwanStock/StockList/ViewController/StockListViewController.swift
+  - MyTaiwanStock/Base.lproj/Main.storyboard
+  - MyTaiwanStock/Model/CoreData/ListStruct.swift
+  - MyTaiwanStock/Util/FeeSettings.swift
+  - MyTaiwanStock/View/FloatingButton.swift
+  - MyTaiwanStock/Model/OneDayStockInfo.swift
+  - MyTaiwanStock/Shared/Model/OneDayStockInfo.swift
+  - MyTaiwanStock/View Controller/View Model/StockDetailViewModel.swift
+  - MyTaiwanStock/Model/NewsAPI.swift
+  - MyTaiwanStock/Util/StoreSchemaCompatibilityChecking.swift
+  - MyTaiwanStockTests/Screens/TradeEntry/AddHistoryViewControllerTests.swift
+  - MyTaiwanStockTests/Screens/Account/AccountViewControllerImportTests.swift
+  - MyTaiwanStockTests/SettingViewControllerTests.swift
+  - MyTaiwanStock/View Controller/TradeEditViewController.swift
+  - MyTaiwanStockTests/ListNameTests.swift
+  - MyTaiwanStockTests/FloatingButtonManagerTests.swift
+  - MyTaiwanStock/Shared/Model/MyTaiwanStock.xcdatamodeld/MyTaiwanStock.xcdatamodel/contents
+  - MyTaiwanStockTests/Screens/TradeImport/TradeEditViewControllerTests.swift
+  - MyTaiwanStock/Util/ValidInputService.swift
+  - MyTaiwanStock/View Controller/EditFeeViewController.swift
+  - MyTaiwanStock/Screens/Account/ViewController/AccountViewController.swift
+  - MyTaiwanStock/Screens/Dividend/View/DividendDetailTableViewCell.xib
+  - MyTaiwanStock/View/NewsListTableViewCell2.swift
+  - MyTaiwanStockTests/Screens/StockDetail/StockViewControllerTests.swift
+  - MyTaiwanStock/Screens/StockDetail/ViewController/StockViewController.swift
+  - MyTaiwanStock/Model/MyTaiwanStock.xcdatamodeld/.xccurrentversion
+  - MyTaiwanStockTests/Screens/TradeImport/TradeImportPreviewViewControllerTests.swift
+  - MyTaiwanStockTests/Screens/TradeImport/TradeScreenshotFixtures.swift
+  - MyTaiwanStock/StockList/ViewModel/StockCellViewModel.swift
+  - MyTaiwanStock/Screens/Chat/Model/Sender.swift
+  - MyTaiwanStock/View Controller/View Model/ChatViewModel.swift
+  - MyTaiwanStock/TradeCost/Model/FeeSettings.swift
+  - MyTaiwanStock/Util/LocalDBService.swift
+  - MyTaiwanStock/View Controller/SettingViewController.swift
+  - MyTaiwanStockTests/Screens/StockList/StockListFilteringTests.swift
+  - MyTaiwanStock/Screens/TradeImport/ViewController/TradeImportPreviewViewController.swift
+  - MyTaiwanStockTests/Screens/Settings/SettingViewControllerTests.swift
+  - MyTaiwanStock/Screens/Chat/Services/UnreadManager.swift
+  - MyTaiwanStock/SharedUI/FloatingButtonManager.swift
+  - MyTaiwanStock/DependencyContainer.swift
+  - MyTaiwanStockTests/StoreSchemaCompatibilityCheckerTests.swift
+  - MyTaiwanStock/FontManager.swift
+  - MyTaiwanStock/StockList/ViewModel/StockListViewModel.swift
+  - MyTaiwanStock/View Controller/View Model/NewsListViewModel.swift
+  - MyTaiwanStock/Screens/StockDetail/ViewModel/HistoryCellModel.swift
+  - MyTaiwanStock/Screens/StockList/Coordinator/StockListCoordinator.swift
+  - MyTaiwanStockTests/AddStockNoViewModelTests.swift
+  - MyTaiwanStock/Screens/StockDetail/Model/History.swift
+  - MyTaiwanStock/OverViewCaculator.swift
+  - MyTaiwanStock/Util/OnlineDBService.swift
+  - MyTaiwanStock/View Controller/StatisticViewController.swift
+  - MyTaiwanStock/View/StatisticDividendTableViewCell.xib
+-->

@@ -52,7 +52,7 @@ final class TradeImportFlowTests: XCTestCase {
     private var window: UIWindow!
     private var navigation: UINavigationController!
     private var flow: TradeImportFlow!
-    private var endings: [TradeImportFlow.Ending] = []
+    private var endCount = 0
     private var importedCount = 0
     private var events: [String] = []
     private var previewRequests: [(trades: [ParsedTrade], listNames: [String], currentListName: String?)] = []
@@ -90,7 +90,7 @@ final class TradeImportFlowTests: XCTestCase {
             listNames: ["我的清單", "另一份"],
             currentListName: "另一份",
             onImported: { [unowned self] in importedCount += 1 },
-            onFinished: { [unowned self] in endings.append($0) },
+            onFinished: { [unowned self] in endCount += 1 },
             recognizer: recognizer,
             makeViewModel: { [unowned self] trades, listNames, currentListName in
                 events.append("preview")
@@ -141,7 +141,7 @@ final class TradeImportFlowTests: XCTestCase {
         XCTAssertEqual(previewRequests[0].listNames, ["我的清單", "另一份"])
         XCTAssertEqual(previewRequests[0].currentListName, "另一份")
         XCTAssertEqual(flow.state, .inProgress)
-        XCTAssertEqual(endings, [])
+        XCTAssertEqual(endCount, 0)
     }
 
     func test_every_image_of_the_source_is_recognized_and_the_trades_are_joined() async throws {
@@ -176,7 +176,7 @@ final class TradeImportFlowTests: XCTestCase {
         XCTAssertEqual(events, ["finished"], "no preview is made and the images are already finished with")
         XCTAssertEqual(flow.state, .inProgress)
         tap("好", in: try XCTUnwrap(shownAlert))
-        XCTAssertEqual(endings, [.completed])
+        XCTAssertEqual(endCount, 1)
         XCTAssertEqual(flow.state, .finished)
     }
 
@@ -191,7 +191,7 @@ final class TradeImportFlowTests: XCTestCase {
         XCTAssertEqual(events, ["finished"])
         XCTAssertEqual(previewRequests.count, 0, "no preview, so no trade can be written")
         tap("好", in: try XCTUnwrap(shownAlert))
-        XCTAssertEqual(endings, [.completed])
+        XCTAssertEqual(endCount, 1)
     }
 
     func test_a_recognizer_error_is_reported_like_an_unreadable_image() async throws {
@@ -213,7 +213,7 @@ final class TradeImportFlowTests: XCTestCase {
 
         try await waitUntil("the flow ended") { flow.state == .finished }
 
-        XCTAssertEqual(endings, [.interrupted])
+        XCTAssertEqual(endCount, 1)
         XCTAssertEqual(source.finishedCount, 0, "an interrupted recognition has no result, so the images stay")
         XCTAssertNil(navigation.presentedViewController, "the loading screen is gone and no message is shown")
         XCTAssertEqual(previewRequests.count, 0)
@@ -226,7 +226,7 @@ final class TradeImportFlowTests: XCTestCase {
 
         try await waitUntil("the flow ended") { flow.state == .finished }
 
-        XCTAssertEqual(endings, [.interrupted])
+        XCTAssertEqual(endCount, 1)
         XCTAssertEqual(source.finishedCount, 0)
         XCTAssertNil(navigation.presentedViewController)
     }
@@ -239,10 +239,10 @@ final class TradeImportFlowTests: XCTestCase {
 
         navigation.popViewController(animated: false)
 
-        XCTAssertEqual(endings, [.completed])
+        XCTAssertEqual(endCount, 1)
         XCTAssertEqual(flow.state, .finished)
         flow.previewDidClose()
-        XCTAssertEqual(endings, [.completed], "ending is idempotent")
+        XCTAssertEqual(endCount, 1, "ending is idempotent")
     }
 
     func test_importing_and_then_going_back_to_the_list_end_the_flow_once() async throws {
@@ -252,11 +252,11 @@ final class TradeImportFlowTests: XCTestCase {
         flow.previewDidImport()
 
         XCTAssertEqual(importedCount, 1)
-        XCTAssertEqual(endings, [.completed])
+        XCTAssertEqual(endCount, 1)
         // Returning to the list removes the preview, which reports it closed after the animation.
         try await waitUntil("the preview is gone") { navigation.viewControllers.count == 1 }
         try await Task.sleep(for: .milliseconds(100))
-        XCTAssertEqual(endings, [.completed])
+        XCTAssertEqual(endCount, 1)
         XCTAssertEqual(importedCount, 1)
     }
 
@@ -268,7 +268,7 @@ final class TradeImportFlowTests: XCTestCase {
         tap("好", in: alert)
         tap("好", in: alert)
 
-        XCTAssertEqual(endings, [.completed])
+        XCTAssertEqual(endCount, 1)
     }
 
     // MARK: a pending batch
@@ -331,7 +331,7 @@ final class TradeImportFlowTests: XCTestCase {
             .start(importing: PendingBatchImageSource(batch: pending.batch, store: pending.store))
         try await waitUntil("the flow ended") { flow.state == .finished }
 
-        XCTAssertEqual(endings, [.interrupted])
+        XCTAssertEqual(endCount, 1)
         XCTAssertEqual(pending.store.batches().count, 1)
     }
 

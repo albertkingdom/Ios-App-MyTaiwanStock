@@ -21,14 +21,6 @@ final class TradeImportFlow: NSObject {
         case finished
     }
 
-    enum Ending: Equatable {
-        /// The user is done: imported, went back, dismissed a message or cancelled the picker.
-        case completed
-        /// The system interrupted the recognition (the app left the foreground, the device was locked).
-        /// Nothing was shown, and the source keeps its images for another try.
-        case interrupted
-    }
-
     typealias MakeViewModel = (_ trades: [ParsedTrade], _ listNames: [String], _ currentListName: String?) -> TradeImportViewModel
 
     private(set) var state: State = .inProgress
@@ -38,7 +30,7 @@ final class TradeImportFlow: NSObject {
     private let currentListName: String?
     private let onImported: () -> Void
     private let recognizer: TradeTextRecognizing
-    private let onFinished: (Ending) -> Void
+    private let onFinished: () -> Void
     private let makeViewModel: MakeViewModel
     private let minimumLoadingDuration: Duration
     private let isAppActive: () -> Bool
@@ -55,7 +47,7 @@ final class TradeImportFlow: NSObject {
         listNames: [String],
         currentListName: String?,
         onImported: @escaping () -> Void,
-        onFinished: @escaping (Ending) -> Void,
+        onFinished: @escaping () -> Void,
         recognizer: TradeTextRecognizing = TradeTextRecognizer(),
         makeViewModel: @escaping MakeViewModel = TradeImportFlow.makeStoredViewModel,
         minimumLoadingDuration: Duration = TradeImportFlow.defaultMinimumLoadingDuration,
@@ -102,10 +94,10 @@ final class TradeImportFlow: NSObject {
 
     // MARK: ending
 
-    private func finish(_ ending: Ending) {
+    private func finish() {
         guard state == .inProgress else { return }
         state = .finished
-        onFinished(ending)
+        onFinished()
     }
 
     /// The import in the preview was written and acknowledged. Going back to the root closes the preview,
@@ -113,12 +105,12 @@ final class TradeImportFlow: NSObject {
     func previewDidImport() {
         navigationController.popToRootViewController(animated: true)
         onImported()
-        finish(.completed)
+        finish()
     }
 
     /// The preview left the navigation stack, for example through the back button.
     func previewDidClose() {
-        finish(.completed)
+        finish()
     }
 
     // MARK: recognition
@@ -135,7 +127,7 @@ final class TradeImportFlow: NSObject {
         Task {
             let outcome = await recognize(source)
             if case .interrupted = outcome {
-                hideLoading { self.finish(.interrupted) }
+                hideLoading { self.finish() }
                 return
             }
             // A result is known, so the images are no longer needed, before anything is shown.
@@ -202,7 +194,7 @@ final class TradeImportFlow: NSObject {
 
     private func showMessage(title: String, message: String) {
         let alert = UIAlertController(title: title, message: message, preferredStyle: .alert)
-        alert.addAction(UIAlertAction(title: "好", style: .default) { [weak self] _ in self?.finish(.completed) })
+        alert.addAction(UIAlertAction(title: "好", style: .default) { [weak self] _ in self?.finish() })
         navigationController.present(alert, animated: true)
     }
 }
@@ -212,7 +204,7 @@ extension TradeImportFlow: PHPickerViewControllerDelegate {
         picker.dismiss(animated: true) { [weak self] in
             guard let self else { return }
             if results.isEmpty {
-                finish(.completed)
+                finish()
             } else {
                 process(PhotoPickerImageSource(results: results))
             }

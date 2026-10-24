@@ -101,7 +101,7 @@ extension StockListCoordinator: StockListCoordinatorProtocol {
             listNames: listNames,
             currentListName: currentListName,
             onImported: onImported,
-            onFinished: { [weak self] _ in
+            onFinished: { [weak self] in
                 self?.importFlow = nil
                 self?.onImportFinished?()
             })

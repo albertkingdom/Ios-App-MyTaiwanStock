@@ -15,7 +15,7 @@
 | News | 新聞列表、新聞網頁閱讀 |
 | Chat | 聊天畫面及群組未讀狀態 |
 | Account | 帳號、登入與本機資料匯入 |
-| Settings | 設定畫面與手續費固定金額編輯 |
+| Settings | 設定畫面與手續費設定頁（折數與最低手續費） |
 | Onboarding | 初次使用導覽 |
 
 `MyTaiwanStockTests/Screens/` 對應上述畫面與流程，現有相關測試依畫面歸位。沒有測試的畫面不建立空測試資料夾。

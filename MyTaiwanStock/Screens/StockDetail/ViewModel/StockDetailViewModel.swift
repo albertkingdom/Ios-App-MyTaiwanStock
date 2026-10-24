@@ -17,9 +17,10 @@ class StockDetailViewModel {
 
     var historyCombine = CurrentValueSubject<[HistoryCellModel], Never>([])
     var totalAmountCombine = CurrentValueSubject<Int, Never>(0)  //持股數
-    var avgBuyPriceCombine = CurrentValueSubject<String, Never>("-")  // 買入均價
+    var avgBuyPriceCombine = CurrentValueSubject<String, Never>("-")  // 買入均價（含手續費）
+    var missingFeeNoteCombine = CurrentValueSubject<Bool, Never>(false)  // 有買進紀錄沒有手續費資料
     var avgSellPriceCombine = CurrentValueSubject<String, Never>("-")  //賣出均價
-    var totalAssetCombine = CurrentValueSubject<String, Never>("")  //市值
+    var totalAssetCombine = CurrentValueSubject<String, Never>("-")  //市值
     @Published var coreDataObjectsCombine: [InvestHistory] = []
     @Published var highlightChartIndex: Int = -1
     var subscription = Set<AnyCancellable>()
@@ -96,9 +97,8 @@ class StockDetailViewModel {
             historys: historys,
             stockPrice: currentStockPriceFloat
         )
-        if let totalAsset = calculator.totalAsset() {
-            totalAssetCombine.send(String(totalAsset))
-        }
+        totalAssetCombine.send(calculator.totalAsset().map { String($0) } ?? "-")
+        missingFeeNoteCombine.send(calculator.hasBuyWithUnknownFee)
         avgSellPriceCombine.send(OverViewCalculator.format(calculator.averageSellPrice()))
         avgBuyPriceCombine.send(OverViewCalculator.format(calculator.averageBuyPrice()))
         totalAmountCombine.send(calculator.amount)

@@ -28,6 +28,7 @@
 		3A6D87882A7C77A152C0187A /* StockListRepositoryTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 61D79600CCD9F096BA52ED45 /* StockListRepositoryTests.swift */; };
 		3D201AE7E704FAE38867821A /* PendingImportStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33ED63165D40C72C1A110698 /* PendingImportStore.swift */; };
 		41C9C9FA491B5D0FF9B38E23 /* StockNameResolverTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4DB2A925F8B659FCD4C126CC /* StockNameResolverTests.swift */; };
+		42832E32E0C22DB50053FEE4 /* StockViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = EAE2CA17A5551A7E23CEDFBA /* StockViewControllerTests.swift */; };
 		445A9A8D102EA7F2879A8B18 /* TradeImportViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86BBB438DF5F34BD6DC11451 /* TradeImportViewModel.swift */; };
 		49271FFED761C7C5C12A698F /* TWSEStockInfoFetcher.swift in Sources */ = {isa = PBXBuildFile; fileRef = 26E5B53D701FA2A0250ACBA2 /* TWSEStockInfoFetcher.swift */; };
 		498CA584FCE709CAE8FD5ED1 /* StockMarketLookupTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7468712F972AC4EDD765663 /* StockMarketLookupTests.swift */; };
@@ -182,6 +183,7 @@
 		CC3A8FD7743632B5AAE2AEDB /* ChartServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 273217F8284584EE8DAE887B /* ChartServiceTests.swift */; };
 		D0B1C2A3E4F5061728394A5B /* DuplicateStockNoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0B1C2A3E4F5061728394A5C /* DuplicateStockNoTests.swift */; };
 		D0B1C2A3E4F5061728394A5D /* ListNameTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0B1C2A3E4F5061728394A5E /* ListNameTests.swift */; };
+		D185E72A2FDE1415C29B0DBF /* StockDetailOverviewTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8E8C6CCF3E8A0BD40BA0B847 /* StockDetailOverviewTests.swift */; };
 		D508D05EB0149A48570D3F9F /* StockListRefresher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D58D87D037B5D9470F5316F8 /* StockListRefresher.swift */; };
 		D5B0434C58654D9DEC8A67D5 /* StoreSchemaCompatibilityCheckerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88445A331382A6B6557409C2 /* StoreSchemaCompatibilityCheckerTests.swift */; };
 		D90E55C726063FA871B731AA /* AddHistoryViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE6950F8BBF25C8A498AC649 /* AddHistoryViewControllerTests.swift */; };
@@ -338,6 +340,7 @@
 		88445A331382A6B6557409C2 /* StoreSchemaCompatibilityCheckerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StoreSchemaCompatibilityCheckerTests.swift; sourceTree = "<group>"; };
 		8A85EF8C7AC718A80C1BD8B4 /* PendingImportStoreTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PendingImportStoreTests.swift; sourceTree = "<group>"; };
 		8AFC6E13CB3C18E0826AE4B9 /* UIAlertController+Tapping.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = "UIAlertController+Tapping.swift"; sourceTree = "<group>"; };
+		8E8C6CCF3E8A0BD40BA0B847 /* StockDetailOverviewTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockDetailOverviewTests.swift; sourceTree = "<group>"; };
 		8F775A826F44136978F59060 /* StockList.json */ = {isa = PBXFileReference; includeInIndex = 1; path = StockList.json; sourceTree = "<group>"; };
 		957B7DA882FDC55B06E94968 /* ICloudAvailabilityChecking.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ICloudAvailabilityChecking.swift; sourceTree = "<group>"; };
 		9D06AAFE532A45BB2550AE10 /* StockListParser.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockListParser.swift; sourceTree = "<group>"; };
@@ -482,6 +485,7 @@
 		DFFEB04D27E1D6C400C85A53 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		DFFEB04F27E1E37D00C85A53 /* Channel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Channel.swift; sourceTree = "<group>"; };
 		E571E6AC97963B0E4C8891FE /* TradeImportPreviewViewControllerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeImportPreviewViewControllerTests.swift; sourceTree = "<group>"; };
+		EAE2CA17A5551A7E23CEDFBA /* StockViewControllerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockViewControllerTests.swift; sourceTree = "<group>"; };
 		EDBFA9181BDA2CA0B0071FFE /* StoreSchemaCompatibilityChecking.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StoreSchemaCompatibilityChecking.swift; sourceTree = "<group>"; };
 		EFE4BC31B663197CA27B0863 /* FeeCalculator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FeeCalculator.swift; sourceTree = "<group>"; };
 		F984A9E41163688F362D7882 /* TradeImportViewModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeImportViewModelTests.swift; sourceTree = "<group>"; };
@@ -675,6 +679,7 @@
 				B239CB275063F8CCA8BB677F /* TradeImport */,
 				1E4986C3F331BF88185CF917 /* Account */,
 				4886FCFFB353B1DE1890027D /* Settings */,
+				817964012E9E7322FCE58184 /* StockDetail */,
 			);
 			name = Screens;
 			path = Screens;
@@ -909,6 +914,16 @@
 			);
 			name = ViewController;
 			path = ViewController;
+			sourceTree = "<group>";
+		};
+		817964012E9E7322FCE58184 /* StockDetail */ = {
+			isa = PBXGroup;
+			children = (
+				8E8C6CCF3E8A0BD40BA0B847 /* StockDetailOverviewTests.swift */,
+				EAE2CA17A5551A7E23CEDFBA /* StockViewControllerTests.swift */,
+			);
+			name = StockDetail;
+			path = StockDetail;
 			sourceTree = "<group>";
 		};
 		852270A82C7D135F3EA51CC0 /* Services */ = {
@@ -1714,6 +1729,8 @@
 				32899A7474FED77EC877E8ED /* FeeTaxFieldsTests.swift in Sources */,
 				2333B31DFC38B4FA60CB1E87 /* TradeEditViewControllerTests.swift in Sources */,
 				8F13248E195BA87B11F1DD67 /* TradeImportPreviewViewControllerTests.swift in Sources */,
+				D185E72A2FDE1415C29B0DBF /* StockDetailOverviewTests.swift in Sources */,
+				42832E32E0C22DB50053FEE4 /* StockViewControllerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

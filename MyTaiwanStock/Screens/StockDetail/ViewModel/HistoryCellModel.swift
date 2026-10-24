@@ -20,31 +20,36 @@ struct HistoryCellModel {
     var amountString: String {
         return String(historyData.amount)
     }
+    /// The profit of a buy in percent including its fee, rounded to the two decimals the label shows so that
+    /// the color agrees with the text; nil for a sell or without a current price.
+    let revenueValue: Decimal?
     var revenueString: String {
-        let revenueInString = calcRevenue(price: historyData.price)
-        return Int(self.status) == 0 ? "\(revenueInString) %" : "N/A"
+        guard status == 0 else { return "N/A" }
+        return "\(OverViewCalculator.format(revenueValue)) %"
     }
-    var revenueFloat: Float {
-        
-        return Float(revenueString) ?? 0
+    /// The fee and the tax on a line of their own, a dash for a value that was never stored.
+    var feeTaxString: String {
+        "detailVC_fee_tax_format".localized(with: [Self.amountText(historyData.fee), Self.amountText(historyData.tax)])
     }
-    var historyData: InvestHistory
-    var currentStockPriceString: String
+    let historyData: InvestHistory
+    let currentStockPriceString: String
 
     /// The numbers the overview needs. The price goes through its shortest text so that 112.55 stays 112.55.
-    var tradeLine: TradeLine {
-        TradeLine(
-            side: historyData.status == 1 ? .sell : .buy,
-            shares: Int(historyData.amount),
-            price: Decimal(string: String(historyData.price)) ?? 0,
-            fee: nil)
-    }
+    let tradeLine: TradeLine
     
     init(historyData: InvestHistory, currentStockPrice: String) {
         self.historyData = historyData
         self.currentStockPriceString = currentStockPrice
-        
-        
+        // Decimal(string:) reads a dash as 0, so the text has to be a real number first.
+        let currentPrice = Float(currentStockPrice).flatMap { Decimal(string: String($0)) }
+        let line = TradeLine(
+            side: historyData.status == 1 ? .sell : .buy,
+            shares: Int(historyData.amount),
+            price: Decimal(string: String(historyData.price)) ?? 0,
+            fee: historyData.fee?.intValue)
+        self.tradeLine = line
+        self.revenueValue = OverViewCalculator.profitPercent(of: line, currentPrice: currentPrice)
+            .map(OverViewCalculator.rounded)
     }
     
     
@@ -56,15 +61,8 @@ struct HistoryCellModel {
         
         return datestr
     }
-    
-    func calcRevenue(price: Float) -> String {
-        var revenueStr: String! = "-"
-        if currentStockPriceString != "-" {
-            if let StockPriceFloat = Float(currentStockPriceString) {
-                let result = (StockPriceFloat - price) / price * 100
-                revenueStr = String(format:"%.2f", result)
-            }
-        }
-        return revenueStr
+
+    private static func amountText(_ amount: NSNumber?) -> String {
+        amount.map { String($0.intValue) } ?? "-"
     }
 }

@@ -184,7 +184,7 @@ struct testOverViewCalculator {
 
 /// One in-memory store for the whole file: a managed object keeps only a weak reference to its context.
 @MainActor
-private enum HistoryFixtures {
+enum HistoryFixtures {
     static let container: NSPersistentContainer = {
         let url = Bundle(for: LocalDBService.self).url(forResource: "MyTaiwanStock", withExtension: "momd")!
         let model = NSManagedObjectModel(contentsOf: url)!
@@ -196,15 +196,27 @@ private enum HistoryFixtures {
         return container
     }()
 
-    /// `side` is 0 for a buy and 1 for a sell, as stored.
-    static func cell(side: Int16, shares: Int16, price: Float) -> HistoryCellModel {
+    /// `side` is 0 for a buy and 1 for a sell, as stored; a nil `fee` or `tax` is a record from before they were stored.
+    static func history(
+        side: Int16, shares: Int16, price: Float, fee: Int32? = nil, tax: Int32? = nil
+    ) -> MyTaiwanStock.InvestHistory {
         let history = MyTaiwanStock.InvestHistory(context: container.viewContext)  // the test target also generates its own InvestHistory
         history.stockNo = "0050"
         history.status = side
         history.amount = shares
         history.price = price
         history.date = Date()
-        return HistoryCellModel(historyData: history, currentStockPrice: "105")
+        history.fee = fee.map { NSNumber(value: $0) }
+        history.tax = tax.map { NSNumber(value: $0) }
+        return history
+    }
+
+    static func cell(
+        side: Int16, shares: Int16, price: Float, fee: Int32? = nil, tax: Int32? = nil, current: String = "105"
+    ) -> HistoryCellModel {
+        HistoryCellModel(
+            historyData: history(side: side, shares: shares, price: price, fee: fee, tax: tax),
+            currentStockPrice: current)
     }
 }
 
@@ -240,8 +252,8 @@ struct OverViewHoldingsTests {
 }
 
 struct OverViewAveragesTests {
-    private func line(_ side: TradeSide, _ shares: Int, _ price: Decimal) -> TradeLine {
-        TradeLine(side: side, shares: shares, price: price, fee: nil)
+    private func line(_ side: TradeSide, _ shares: Int, _ price: Decimal, fee: Int? = nil) -> TradeLine {
+        TradeLine(side: side, shares: shares, price: price, fee: fee)
     }
 
     @Test func averageBuyPriceIgnoresSells() {
@@ -291,5 +303,117 @@ struct OverViewAveragesTests {
         // 112.55 as a Float is 112.5500030517578125; the line has to carry 112.55.
         let text = String(Float(112.55))
         #expect(Decimal(string: text) == Decimal(string: "112.55"))
+    }
+
+    // MARK: fees in the average buy price
+
+    @Test func averageBuyPriceIncludesTheBuyFees() {
+        let sut = OverViewCalculator(
+            lines: [line(.buy, 1000, 100, fee: 142), line(.buy, 1000, 110, fee: 156)], stockPrice: nil)
+
+        #expect(sut.averageBuyPrice() == Decimal(string: "105.149"))
+        #expect(OverViewCalculator.format(sut.averageBuyPrice()) == "105.15")
+    }
+
+    @Test func aFeeThatRoundsAverageBuyPriceHalfUp() {
+        let sut = OverViewCalculator(lines: [line(.buy, 1000, 100, fee: 145)], stockPrice: nil)
+
+        #expect(sut.averageBuyPrice() == Decimal(string: "100.145"))
+        #expect(OverViewCalculator.format(sut.averageBuyPrice()) == "100.15")
+    }
+
+    @Test func anUnknownFeeCountsAsZeroInTheAverageBuyPrice() {
+        let sut = OverViewCalculator(
+            lines: [line(.buy, 1000, 100, fee: 142), line(.buy, 1000, 110, fee: nil)], stockPrice: nil)
+
+        #expect(sut.averageBuyPrice() == Decimal(string: "105.071"))
+    }
+
+    @Test func sellFeesStayOutOfBothAverages() {
+        let sut = OverViewCalculator(
+            lines: [line(.buy, 1000, 100, fee: 142), line(.sell, 1000, 105, fee: 150)], stockPrice: nil)
+
+        #expect(sut.averageBuyPrice() == Decimal(string: "100.142"))
+        #expect(sut.averageSellPrice() == 105)
+    }
+
+    @Test func deletingTheLastBuyLeavesNoAverageBuyPrice() {
+        let sut = OverViewCalculator(lines: [line(.sell, 1000, 105, fee: 150)], stockPrice: nil)
+
+        #expect(sut.averageBuyPrice() == nil)
+        #expect(OverViewCalculator.format(sut.averageBuyPrice()) == "-")
+    }
+
+    // MARK: the note about buys without a fee
+
+    @Test func aBuyWithoutAFeeRaisesTheNote() {
+        let sut = OverViewCalculator(
+            lines: [line(.buy, 1000, 100, fee: 142), line(.buy, 1000, 110, fee: nil)], stockPrice: nil)
+
+        #expect(sut.hasBuyWithUnknownFee)
+    }
+
+    @Test func aSellWithoutAFeeDoesNotRaiseTheNote() {
+        let sut = OverViewCalculator(
+            lines: [line(.buy, 1000, 100, fee: 142), line(.sell, 1000, 105, fee: nil)], stockPrice: nil)
+
+        #expect(!sut.hasBuyWithUnknownFee)
+    }
+
+    @Test func buysWithAFeeOfZeroAreKnown() {
+        let sut = OverViewCalculator(lines: [line(.buy, 1000, 100, fee: 0)], stockPrice: nil)
+
+        #expect(!sut.hasBuyWithUnknownFee)
+    }
+
+    // MARK: market value
+
+    @Test func marketValueIsHoldingsTimesThePriceWhileHoldingSomething() {
+        let sut = OverViewCalculator(lines: [line(.buy, 1000, 100), line(.sell, 400, 105)], stockPrice: 105)
+
+        #expect(sut.totalAsset() == 63000)
+    }
+
+    @Test func marketValueIsMissingWhenHoldingsAreZeroOrNegative() {
+        let flat = OverViewCalculator(lines: [line(.buy, 1000, 100), line(.sell, 1000, 105)], stockPrice: 105)
+        let short = OverViewCalculator(lines: [line(.sell, 400, 105)], stockPrice: 105)
+
+        #expect(flat.totalAsset() == nil)
+        #expect(short.totalAsset() == nil)
+    }
+
+    @Test func marketValueIsMissingWithoutACurrentPrice() {
+        let sut = OverViewCalculator(lines: [line(.buy, 1000, 100)], stockPrice: nil)
+
+        #expect(sut.totalAsset() == nil)
+    }
+
+    // MARK: profit of one buy record
+
+    @Test func profitUsesThePriceIncludingTheFee() throws {
+        let profit = try #require(OverViewCalculator.profitPercent(of: line(.buy, 1000, 100, fee: 142), currentPrice: 105))
+
+        #expect(OverViewCalculator.format(profit) == "4.85")
+    }
+
+    @Test func profitTreatsAnUnknownFeeAsZero() throws {
+        let profit = try #require(OverViewCalculator.profitPercent(of: line(.buy, 1000, 100), currentPrice: 105))
+
+        #expect(OverViewCalculator.format(profit) == "5.00")
+    }
+
+    @Test func aLossIsNegative() throws {
+        let profit = try #require(OverViewCalculator.profitPercent(of: line(.buy, 1000, 100, fee: 142), currentPrice: 95))
+
+        #expect(profit < 0)
+        #expect(OverViewCalculator.format(profit) == "-5.13")
+    }
+
+    @Test func aSellRecordHasNoProfit() {
+        #expect(OverViewCalculator.profitPercent(of: line(.sell, 1000, 100, fee: 142), currentPrice: 105) == nil)
+    }
+
+    @Test func profitIsMissingWithoutACurrentPrice() {
+        #expect(OverViewCalculator.profitPercent(of: line(.buy, 1000, 100, fee: 142), currentPrice: nil) == nil)
     }
 }

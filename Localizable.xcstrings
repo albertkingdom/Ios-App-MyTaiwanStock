@@ -18,6 +18,57 @@
         }
       }
     },
+    "detailVC_avg_buy_title" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Avg. buy price\n(incl. fees)"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "買入均價\n(含費用)"
+          }
+        }
+      }
+    },
+    "detailVC_fee_note" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Some records have no fee data"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "部分紀錄沒有手續費資料"
+          }
+        }
+      }
+    },
+    "detailVC_fee_tax_format" : {
+      "extractionState" : "manual",
+      "localizations" : {
+        "en" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Fee %@ · Tax %@"
+          }
+        },
+        "zh-Hant" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "手續費 %@・稅 %@"
+          }
+        }
+      }
+    },
     "detailVC_history_title" : {
       "extractionState" : "manual",
       "localizations" : {

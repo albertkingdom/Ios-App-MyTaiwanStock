@@ -136,7 +136,8 @@ class StockViewController: UIViewController {
         stackOfTitle.addArrangedSubview(avgSellPriceTitleLabel)
         totalAssetValueTitleLabel.text = "市值"
         totalAmountTitleLabel.text = "持股數"
-        avgBuyPriceTitleLabel.text = "買入均價"
+        avgBuyPriceTitleLabel.text = "detailVC_avg_buy_title".localized
+        avgBuyPriceTitleLabel.numberOfLines = 2
         avgSellPriceTitleLabel.text = "賣出均價"
         totalAssetValueTitleLabel.font = UIFont.systemFont(ofSize: 14)
         totalAmountTitleLabel.font = UIFont.systemFont(ofSize: 14)
@@ -151,11 +152,22 @@ class StockViewController: UIViewController {
         totalAmountLabel.textAlignment = .center
         avgBuyPriceLabel.textAlignment = .center
         avgSellPriceLabel.textAlignment = .center
-        container.addSubview(stack)
+        feeNoteLabel.text = "detailVC_fee_note".localized
+        feeNoteLabel.font = UIFont.preferredFont(forTextStyle: .caption1)
+        feeNoteLabel.adjustsFontForContentSizeCategory = true
+        feeNoteLabel.textColor = .secondaryLabel
+        feeNoteLabel.textAlignment = .center
+        feeNoteLabel.numberOfLines = 0
+        feeNoteLabel.isHidden = !(viewModel?.missingFeeNoteCombine.value ?? false)
+        // Hiding the note inside a stack takes its height away as well.
+        let valueStack = UIStackView(arrangedSubviews: [stack, feeNoteLabel])
+        valueStack.axis = .vertical
+        valueStack.spacing = 4
+        container.addSubview(valueStack)
         container.addSubview(stackOfTitle)
         container.addSubview(title)
         
-        stack.translatesAutoresizingMaskIntoConstraints = false
+        valueStack.translatesAutoresizingMaskIntoConstraints = false
         stackOfTitle.translatesAutoresizingMaskIntoConstraints = false
         title.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
@@ -166,10 +178,10 @@ class StockViewController: UIViewController {
             stackOfTitle.topAnchor.constraint(equalTo: title.bottomAnchor),
             stackOfTitle.trailingAnchor.constraint(equalTo: container.trailingAnchor),
             
-            stack.leadingAnchor.constraint(equalTo: container.leadingAnchor),
-            stack.topAnchor.constraint(equalTo: stackOfTitle.bottomAnchor),
-            stack.trailingAnchor.constraint(equalTo: container.trailingAnchor),
-            stack.bottomAnchor.constraint(equalTo: container.bottomAnchor),
+            valueStack.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            valueStack.topAnchor.constraint(equalTo: stackOfTitle.bottomAnchor),
+            valueStack.trailingAnchor.constraint(equalTo: container.trailingAnchor),
+            valueStack.bottomAnchor.constraint(equalTo: container.bottomAnchor),
         ])
         return container
     }()
@@ -177,6 +189,7 @@ class StockViewController: UIViewController {
     var totalAmountLabel = UILabel()
     var avgBuyPriceLabel = UILabel()
     var avgSellPriceLabel = UILabel()
+    var feeNoteLabel = UILabel()
     var totalAssetValueTitleLabel = UILabel()
     var totalAmountTitleLabel = UILabel()
     var avgBuyPriceTitleLabel = UILabel()
@@ -237,6 +250,9 @@ class StockViewController: UIViewController {
         containerTableView.dataSource = self
         containerTableView.delegate = self
         containerTableView.showsVerticalScrollIndicator = false
+        // The second line and larger text sizes make the rows taller than a fixed height allows.
+        containerTableView.rowHeight = UITableView.automaticDimension
+        containerTableView.estimatedRowHeight = 70
         // rigister custom section header
         containerTableView.register(MyCustomSectionHeader.self, forHeaderFooterViewReuseIdentifier: "sectionHeader")
         // custom tableview cell
@@ -543,6 +559,17 @@ class StockViewController: UIViewController {
             }
             .store(in: &subscription)
         
+        viewModel.missingFeeNoteCombine
+            .removeDuplicates()
+            .sink { [weak self] visible in
+                guard let self else { return }
+                self.feeNoteLabel.isHidden = !visible
+                // The note changes the height of the header, so it has to be measured again.
+                self.fittedHeaderWidth = 0
+                self.view.setNeedsLayout()
+            }
+            .store(in: &subscription)
+        
         viewModel.totalAssetCombine
             .sink { [weak self] value in
                 self?.totalAssetValueLabel.text = value
@@ -651,9 +678,6 @@ extension StockViewController: UITableViewDataSource, UITableViewDelegate {
     // MARK: click table cell to highlight on chart
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         viewModel.highLightChart(at: indexPath.row)
-    }
-    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
-        return 70
     }
     override func setEditing(_ editing: Bool, animated: Bool) {
         super.setEditing(editing, animated: true)

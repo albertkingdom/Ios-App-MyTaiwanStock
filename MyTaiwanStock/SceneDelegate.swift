@@ -154,7 +154,15 @@ extension SceneDelegate {
                 preferredStyle: .alert
             )
             alert.addAction(UIAlertAction(title: "還原", style: .default) { _ in
-                Task { try? await iCloudCoordinator.restore() }
+                Task {
+                    do {
+                        try await iCloudCoordinator.restore()
+                    } catch {
+                        await MainActor.run {
+                            window.rootViewController?.present(Self.restoreFailureAlert(for: error), animated: true)
+                        }
+                    }
+                }
             })
             alert.addAction(UIAlertAction(title: "不還原", style: .cancel))
             await MainActor.run {
@@ -165,6 +173,22 @@ extension SceneDelegate {
 }
 
 extension SceneDelegate {
+    /// A restore that fails leaves the data on the device as it was.
+    static func restoreFailureAlert(for error: Error) -> UIAlertController {
+        let message: String
+        switch error as? ICloudBackupServiceError {
+        case .incompatibleSnapshotSchema:
+            message = "這份備份來自不相容的版本，無法還原。目前的資料沒有變動。"
+        case .snapshotMigrationFailed:
+            message = "備份檔無法升級到目前的版本，無法還原。目前的資料沒有變動。"
+        default:
+            message = "無法還原 iCloud 備份。目前的資料沒有變動。"
+        }
+        let alert = UIAlertController(title: "還原失敗", message: message, preferredStyle: .alert)
+        alert.addAction(UIAlertAction(title: "好", style: .default))
+        return alert
+    }
+
     private func setupNavigationBarAppearance() {
         // iOS 15及以上的設置方式
         if #available(iOS 15.0, *) {

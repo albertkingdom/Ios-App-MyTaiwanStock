@@ -23,9 +23,16 @@ class SettingViewController: UITableViewController {
     /// the real `FileManager.default.ubiquityIdentityToken`.
     var iCloudAvailabilityChecking: ICloudAvailabilityChecking = DefaultICloudAvailabilityChecker()
 
+    /// How far the table was pushed up so the discount row stays above the keyboard; 0 when it was not needed.
+    private var keyboardInsetAdded: CGFloat = 0
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setup()
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(keyboardDidShow(_:)), name: UIResponder.keyboardDidShowNotification, object: nil)
+        NotificationCenter.default.addObserver(
+            self, selector: #selector(keyboardWillHide), name: UIResponder.keyboardWillHideNotification, object: nil)
         tableView.contentInsetAdjustmentBehavior = .automatic
         syncSwitch.isOn = UserPreferences.shared.syncPreference == .iCloud
     }
@@ -64,7 +71,32 @@ class SettingViewController: UITableViewController {
         feeModeControl.addTarget(self, action: #selector(feeModeChanged), for: .valueChanged)
     }
 
+    /// The table normally scrolls the edited row above the keyboard by itself. On a wide window, where the
+    /// content is short and fits on the screen, it does not, and the keyboard covers the discount row. So once
+    /// the keyboard is up, whatever still hides the row is added as bottom inset and scrolled away.
+    @objc private func keyboardDidShow(_ notification: Notification) {
+        guard feeDiscountTextfield.isFirstResponder, let cell = discountCell, let window = view.window,
+              let keyboard = (notification.userInfo?[UIResponder.keyboardFrameEndUserInfoKey] as? NSValue)?.cgRectValue
+        else { return }
+        let keyboardTop = window.convert(keyboard, from: window.screen.coordinateSpace).minY
+        let rowBottom = cell.convert(cell.bounds, to: window).maxY + 8
+        let hidden = rowBottom - keyboardTop
+        guard hidden > 0 else { return }
+        keyboardInsetAdded += hidden
+        tableView.contentInset.bottom += hidden
+        tableView.verticalScrollIndicatorInsets.bottom += hidden
+        tableView.setContentOffset(CGPoint(x: 0, y: tableView.contentOffset.y + hidden), animated: true)
+    }
+
+    @objc private func keyboardWillHide() {
+        guard keyboardInsetAdded > 0 else { return }
+        tableView.contentInset.bottom -= keyboardInsetAdded
+        tableView.verticalScrollIndicatorInsets.bottom -= keyboardInsetAdded
+        keyboardInsetAdded = 0
+    }
+
     @objc private func feeModeChanged() {
+        view.endEditing(true)
         FeeSettings.saveMode(fixedAmount: feeModeControl.selectedSegmentIndex == 1, userDefaults: userDefaults)
         updateFeeRows()
     }
@@ -119,11 +151,22 @@ class SettingViewController: UITableViewController {
         updateFeeRows()
     }
 
-    /// The row of the mode that is not in use is dimmed, so it is clear which setting counts.
+    /// Only the row of the mode in use is shown. A static table cannot drop a row, so the other one is
+    /// hidden and given a height of 0.
     private func updateFeeRows() {
         let usesFixedAmount = feeModeControl.selectedSegmentIndex == 1
-        fixedAmountCell?.contentView.alpha = usesFixedAmount ? 1 : 0.4
-        discountCell?.contentView.alpha = usesFixedAmount ? 0.4 : 1
+        fixedAmountCell?.isHidden = !usesFixedAmount
+        discountCell?.isHidden = usesFixedAmount
+        tableView.beginUpdates()
+        tableView.endUpdates()
+    }
+
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        let usesFixedAmount = feeModeControl.selectedSegmentIndex == 1
+        let hidden = usesFixedAmount ? discountCell : fixedAmountCell
+        // For a static table, super returns the cell the storyboard defines for this row.
+        if let hidden, super.tableView(tableView, cellForRowAt: indexPath) === hidden { return 0 }
+        return super.tableView(tableView, heightForRowAt: indexPath)
     }
 
     private var fixedAmountCell: UITableViewCell? { userDefinedFeeLabel.enclosingCell }

@@ -16,15 +16,15 @@ protocol RecordSaving {
 extension NetworkServiceImpl: RecordSaving {}
 
 /// The state behind the add-record screen: the side, the tax category, and the fee and the tax as the two
-/// fields show them. A field the user typed in keeps the typed text; the other one follows the price, the
-/// shares, the side and the category.
+/// fields show them (see `FeeTaxFields`). A field the user typed in keeps the typed text; the other one follows
+/// the price, the shares, the side and the category.
 final class AddHistoryViewModel {
     var date = Date()
     var memo = ""
     private(set) var side: TradeSide = .buy
     private(set) var taxCategory: TaxCategory = .stock
-    private(set) var feeText = ""
-    private(set) var taxText = ""
+    var feeText: String { fields.feeText }
+    var taxText: String { fields.taxText }
     /// Runs after a computed value changed, so the screen shows the new text. It does not run for text the
     /// user typed, which the field already shows.
     var onChange: (() -> Void)?
@@ -34,8 +34,7 @@ final class AddHistoryViewModel {
     private let validation = ValidInputService()
     private var priceText: String?
     private var amountText: String?
-    private var feeIsManual = false
-    private var taxIsManual = false
+    private var fields = FeeTaxFields()
 
     init(
         feeSettings: @escaping () -> FeeSettings = { FeeSettings.current() },
@@ -65,26 +64,24 @@ final class AddHistoryViewModel {
     }
 
     func didEditFee(_ text: String?) {
-        feeText = text ?? ""
-        feeIsManual = true
+        fields.editFee(text ?? "")
     }
 
     func didEditTax(_ text: String?) {
-        taxText = text ?? ""
-        taxIsManual = true
+        fields.editTax(text ?? "")
     }
 
     /// A field that is left empty shows the computed value again and goes back to following the inputs.
     func didEndEditingFee() {
-        guard isBlank(feeText) else { return }
-        feeIsManual = false
-        recompute()
+        let wasManual = fields.feeIsManual
+        fields.endEditingFee()
+        if wasManual != fields.feeIsManual { recompute() }
     }
 
     func didEndEditingTax() {
-        guard isBlank(taxText) else { return }
-        taxIsManual = false
-        recompute()
+        let wasManual = fields.taxIsManual
+        fields.endEditingTax()
+        if wasManual != fields.taxIsManual { recompute() }
     }
 
     // MARK: saving
@@ -105,9 +102,7 @@ final class AddHistoryViewModel {
     // MARK: computing
 
     private func recompute() {
-        let computed = computedFeeAndTax()
-        if !feeIsManual { feeText = computed.map { String($0.fee) } ?? "" }
-        if !taxIsManual { taxText = computed.map { String($0.tax) } ?? "" }
+        fields.refresh(with: computedFeeAndTax(), side: side)
         onChange?()
     }
 
@@ -130,9 +125,5 @@ final class AddHistoryViewModel {
 
     private static func shares(from text: String?) -> Int? {
         text.flatMap { Int($0.trimmingCharacters(in: .whitespaces)) }
-    }
-
-    private func isBlank(_ text: String) -> Bool {
-        text.trimmingCharacters(in: .whitespaces).isEmpty
     }
 }

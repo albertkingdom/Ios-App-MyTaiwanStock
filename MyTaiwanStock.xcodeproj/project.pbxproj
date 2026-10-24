@@ -113,8 +113,6 @@
 		A168E09E27146EF600C75064 /* NewsAPI.swift in Sources */ = {isa = PBXBuildFile; fileRef = A168E09D27146EF600C75064 /* NewsAPI.swift */; };
 		A168E0A027147C9800C75064 /* NewsListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A168E09F27147C9800C75064 /* NewsListViewController.swift */; };
 		A168E0A427148D1600C75064 /* webViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A168E0A327148D1600C75064 /* webViewController.swift */; };
-		A17C2A7928D80C99007508D0 /* FeeType.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17C2A7828D80C99007508D0 /* FeeType.swift */; };
-		A17C2A7B28D81303007508D0 /* Fee.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17C2A7A28D81303007508D0 /* Fee.swift */; };
 		A17DCFE72DB34FC900707C87 /* NotoSansTC-VariableFont_wght.ttf in Resources */ = {isa = PBXBuildFile; fileRef = A17DCFE62DB34FC900707C87 /* NotoSansTC-VariableFont_wght.ttf */; };
 		A17DCFE92DB3515400707C87 /* FontManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A17DCFE82DB3514C00707C87 /* FontManager.swift */; };
 		A181943B28B87895009475E9 /* ValidInputService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A181943A28B87895009475E9 /* ValidInputService.swift */; };
@@ -390,8 +388,6 @@
 		A168E09D27146EF600C75064 /* NewsAPI.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsAPI.swift; sourceTree = "<group>"; };
 		A168E09F27147C9800C75064 /* NewsListViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsListViewController.swift; sourceTree = "<group>"; };
 		A168E0A327148D1600C75064 /* webViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = webViewController.swift; sourceTree = "<group>"; };
-		A17C2A7828D80C99007508D0 /* FeeType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FeeType.swift; sourceTree = "<group>"; };
-		A17C2A7A28D81303007508D0 /* Fee.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Fee.swift; sourceTree = "<group>"; };
 		A17DCFE62DB34FC900707C87 /* NotoSansTC-VariableFont_wght.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; path = "NotoSansTC-VariableFont_wght.ttf"; sourceTree = "<group>"; };
 		A17DCFE82DB3514C00707C87 /* FontManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FontManager.swift; sourceTree = "<group>"; };
 		A181943A28B87895009475E9 /* ValidInputService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ValidInputService.swift; sourceTree = "<group>"; };
@@ -1353,8 +1349,6 @@
 		DF8655CA8D28C22694AF8612 /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				A17C2A7A28D81303007508D0 /* Fee.swift */,
-				A17C2A7828D80C99007508D0 /* FeeType.swift */,
 				BFED6DE1D62AA2B4E86C09B6 /* FeeSettings.swift */,
 				069B576327C8108F8ABC97E6 /* FeeTaxFields.swift */,
 			);
@@ -1780,7 +1774,6 @@
 				DF06F31C270AA43A0031D6FE /* StockViewController.swift in Sources */,
 				A17DCFE92DB3515400707C87 /* FontManager.swift in Sources */,
 				DF06F324270B1A4F0031D6FE /* MyStockList.swift in Sources */,
-				A17C2A7928D80C99007508D0 /* FeeType.swift in Sources */,
 				A1CD75CC2CD3210A000A0A7A /* UIViewController+Extension.swift in Sources */,
 				DF06F2FB27097F2C0031D6FE /* AppDelegate.swift in Sources */,
 				A1065AD22C21CEF30033A319 /* WalkthroughViewController.swift in Sources */,
@@ -1809,7 +1802,6 @@
 				A12515612C15C339001BFC53 /* Notification+Extension.swift in Sources */,
 				A1DE92602DB3A3CD00D743C7 /* AppCoordinator.swift in Sources */,
 				DF06F317270A01220031D6FE /* StockTableViewCell.swift in Sources */,
-				A17C2A7B28D81303007508D0 /* Fee.swift in Sources */,
 				DFFEB04A27E1D45000C85A53 /* ChatViewController.swift in Sources */,
 				A127052A28335E6C00ED92F2 /* NewsListViewModel.swift in Sources */,
 				A127052228320B2200ED92F2 /* AddHistoryViewModel.swift in Sources */,

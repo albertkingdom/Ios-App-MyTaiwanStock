@@ -38,7 +38,7 @@ Screens/StockList/
 
 - `App/`：AppDelegate、SceneDelegate、AppCoordinator、DependencyContainer、CustomTabBarViewController，負責啟動、組裝與主導覽。
 - `SharedUI/`：跨畫面的浮動按鈕、字型與 UIViewController 顯示提示擴充；對應測試放 `MyTaiwanStockTests/SharedUI/`。
-- `TradeCost/Model/`：共用費用設定與既有費用型別；`TradeCost/Services/`：新增、匯入與詳情共同使用的費稅與成本計算。
+- `TradeCost/Model/`：共用費用設定；`TradeCost/Services/`：新增、匯入與詳情共同使用的費稅與成本計算。
 - `ShareImport/`：分享擴充功能與主 App 間的待匯入協調和共用資料。
 - 畫面專用 Model 放在 `Screens/<畫面>/Model/`：新聞 API 型別、聊天訊息、統計數值、收藏清單、歷史行情與交易型別跟隨各自畫面。
 - `Shared/Model/`：跨流程共用的即時行情、股票名錄、交易上傳型別，以及 Core Data 模型。Core Data 的版本群組、兩版模型及目前版本設定整包保留。

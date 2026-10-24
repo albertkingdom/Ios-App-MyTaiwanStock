@@ -28,6 +28,7 @@ class FeeSettingsViewController: UITableViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         navigationItem.title = "手續費"
+        matchNavigationBarToPageBackground(.systemGroupedBackground)
         navigationItem.rightBarButtonItem = UIBarButtonItem(
             title: "儲存", style: .done, target: self, action: #selector(saveTapped))
 
@@ -61,6 +62,16 @@ class FeeSettingsViewController: UITableViewController {
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         [discountField, wholeLotMinimumField, oddLotMinimumField][indexPath.row].becomeFirstResponder()
+    }
+
+    /// A fixed space above the rows. A grouped table gives a section without a header view no space at all in
+    /// a short window such as the Duo's, and the rows would touch the navigation bar.
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        UIView()
+    }
+
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        24
     }
 
     override func tableView(_ tableView: UITableView, titleForFooterInSection section: Int) -> String? {

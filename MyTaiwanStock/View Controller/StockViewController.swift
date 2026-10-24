@@ -533,15 +533,13 @@ class StockViewController: UIViewController {
         
         viewModel.avgBuyPriceCombine
             .sink { [weak self] price in
-                guard let priceFloat = Float(price) else { return }
-                self?.avgBuyPriceLabel.text = priceFloat>0 ? price : "-"
+                self?.avgBuyPriceLabel.text = price
             }
             .store(in: &subscription)
         
         viewModel.avgSellPriceCombine
             .sink { [weak self] price in
-                guard let priceFloat = Float(price) else { return }
-                self?.avgSellPriceLabel.text = priceFloat>0 ? price : "-"
+                self?.avgSellPriceLabel.text = price
             }
             .store(in: &subscription)
         

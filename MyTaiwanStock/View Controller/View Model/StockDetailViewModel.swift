@@ -17,8 +17,8 @@ class StockDetailViewModel {
 
     var historyCombine = CurrentValueSubject<[HistoryCellModel], Never>([])
     var totalAmountCombine = CurrentValueSubject<Int, Never>(0)  //持股數
-    var avgBuyPriceCombine = CurrentValueSubject<String, Never>("")  // 買入均價
-    var avgSellPriceCombine = CurrentValueSubject<String, Never>("")  //賣出均價
+    var avgBuyPriceCombine = CurrentValueSubject<String, Never>("-")  // 買入均價
+    var avgSellPriceCombine = CurrentValueSubject<String, Never>("-")  //賣出均價
     var totalAssetCombine = CurrentValueSubject<String, Never>("")  //市值
     @Published var coreDataObjectsCombine: [InvestHistory] = []
     @Published var highlightChartIndex: Int = -1
@@ -99,8 +99,8 @@ class StockDetailViewModel {
         if let totalAsset = calculator.totalAsset() {
             totalAssetCombine.send(String(totalAsset))
         }
-        avgSellPriceCombine.send(String(calculator.averageSellPrice()))
-        avgBuyPriceCombine.send(String(calculator.averageBuyPrice()))
+        avgSellPriceCombine.send(OverViewCalculator.format(calculator.averageSellPrice()))
+        avgBuyPriceCombine.send(OverViewCalculator.format(calculator.averageBuyPrice()))
         totalAmountCombine.send(calculator.amount)
     }
 

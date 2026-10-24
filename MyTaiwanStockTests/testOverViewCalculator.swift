@@ -179,3 +179,117 @@ struct testOverViewCalculator {
 //        )
 //    }
 }
+
+// MARK: - holdings and average prices with sell records
+
+/// One in-memory store for the whole file: a managed object keeps only a weak reference to its context.
+@MainActor
+private enum HistoryFixtures {
+    static let container: NSPersistentContainer = {
+        let url = Bundle(for: LocalDBService.self).url(forResource: "MyTaiwanStock", withExtension: "momd")!
+        let model = NSManagedObjectModel(contentsOf: url)!
+        let container = NSPersistentContainer(name: "MyTaiwanStock", managedObjectModel: model)
+        let description = NSPersistentStoreDescription()
+        description.type = NSInMemoryStoreType
+        container.persistentStoreDescriptions = [description]
+        container.loadPersistentStores { _, error in precondition(error == nil) }
+        return container
+    }()
+
+    /// `side` is 0 for a buy and 1 for a sell, as stored.
+    static func cell(side: Int16, shares: Int16, price: Float) -> HistoryCellModel {
+        let history = MyTaiwanStock.InvestHistory(context: container.viewContext)  // the test target also generates its own InvestHistory
+        history.stockNo = "0050"
+        history.status = side
+        history.amount = shares
+        history.price = price
+        history.date = Date()
+        return HistoryCellModel(historyData: history, currentStockPrice: "105")
+    }
+}
+
+@MainActor
+struct OverViewHoldingsTests {
+    private func calculator(_ cells: [HistoryCellModel]) -> OverViewCalculator {
+        OverViewCalculator(historys: cells, stockPrice: 105)
+    }
+
+    @Test func holdingsAreBuysMinusSells() {
+        let sut = calculator([
+            HistoryFixtures.cell(side: 0, shares: 1000, price: 100),
+            HistoryFixtures.cell(side: 1, shares: 400, price: 105),
+        ])
+
+        #expect(sut.amount == 600)
+    }
+
+    @Test func buyingAndSellingTheSameSharesLeavesNothing() {
+        let sut = calculator([
+            HistoryFixtures.cell(side: 0, shares: 1000, price: 100),
+            HistoryFixtures.cell(side: 1, shares: 1000, price: 105),
+        ])
+
+        #expect(sut.amount == 0)
+    }
+
+    @Test func onlySellsGiveNegativeHoldings() {
+        let sut = calculator([HistoryFixtures.cell(side: 1, shares: 400, price: 105)])
+
+        #expect(sut.amount == -400)
+    }
+}
+
+struct OverViewAveragesTests {
+    private func line(_ side: TradeSide, _ shares: Int, _ price: Decimal) -> TradeLine {
+        TradeLine(side: side, shares: shares, price: price, fee: nil)
+    }
+
+    @Test func averageBuyPriceIgnoresSells() {
+        let sut = OverViewCalculator(
+            lines: [line(.buy, 1000, 100), line(.buy, 1000, 110), line(.sell, 500, 120)], stockPrice: nil)
+
+        #expect(sut.averageBuyPrice() == 105)
+        #expect(sut.amount == 1500)
+    }
+
+    @Test func averageSellPriceIsTheValueOfTheSellsOverTheirShares() {
+        let sut = OverViewCalculator(
+            lines: [line(.buy, 1000, 100), line(.sell, 200, 120), line(.sell, 300, 130)], stockPrice: nil)
+
+        #expect(sut.averageSellPrice() == 126)
+    }
+
+    @Test func withoutBuysThereIsNoAverageBuyPrice() {
+        let sut = OverViewCalculator(lines: [line(.sell, 400, 105)], stockPrice: nil)
+
+        #expect(sut.averageBuyPrice() == nil)
+        #expect(sut.averageSellPrice() == 105)
+    }
+
+    @Test func withoutSellsThereIsNoAverageSellPrice() {
+        let sut = OverViewCalculator(lines: [line(.buy, 1000, 100)], stockPrice: nil)
+
+        #expect(sut.averageSellPrice() == nil)
+    }
+
+    @Test func noRecordsGiveNoAveragesAndNoHoldings() {
+        let sut = OverViewCalculator(lines: [], stockPrice: 105)
+
+        #expect(sut.amount == 0)
+        #expect(sut.averageBuyPrice() == nil)
+        #expect(sut.averageSellPrice() == nil)
+    }
+
+    @Test func pricesAreShownWithTwoDecimalsRoundedHalfUp() {
+        #expect(OverViewCalculator.format(Decimal(string: "100.145")) == "100.15")
+        #expect(OverViewCalculator.format(Decimal(string: "105.149")) == "105.15")
+        #expect(OverViewCalculator.format(Decimal(105)) == "105.00")
+        #expect(OverViewCalculator.format(nil) == "-")
+    }
+
+    @Test func aPriceOfAFloatKeepsItsShortestText() {
+        // 112.55 as a Float is 112.5500030517578125; the line has to carry 112.55.
+        let text = String(Float(112.55))
+        #expect(Decimal(string: text) == Decimal(string: "112.55"))
+    }
+}

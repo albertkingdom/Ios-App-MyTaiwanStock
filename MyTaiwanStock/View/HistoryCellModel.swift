@@ -30,6 +30,15 @@ struct HistoryCellModel {
     }
     var historyData: InvestHistory
     var currentStockPriceString: String
+
+    /// The numbers the overview needs. The price goes through its shortest text so that 112.55 stays 112.55.
+    var tradeLine: TradeLine {
+        TradeLine(
+            side: historyData.status == 1 ? .sell : .buy,
+            shares: Int(historyData.amount),
+            price: Decimal(string: String(historyData.price)) ?? 0,
+            fee: nil)
+    }
     
     init(historyData: InvestHistory, currentStockPrice: String) {
         self.historyData = historyData

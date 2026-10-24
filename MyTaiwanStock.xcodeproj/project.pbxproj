@@ -213,6 +213,7 @@
 		E37B32A9594CB1AA519D0A7F /* Clock.swift in Sources */ = {isa = PBXBuildFile; fileRef = 07B67B026858954D2F414D94 /* Clock.swift */; };
 		E3B120D3A6D124AADD99A68D /* TradeScreenshotParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = C1FE0B62189FEF6B2F8D6214 /* TradeScreenshotParser.swift */; };
 		E46FC5736898EFB4F516FDE7 /* ShareImageImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AE85FAF8E9F25E155D5D12 /* ShareImageImporter.swift */; };
+		E9A1058D4455729EB32EBD7C /* InvestHistoryMigrationTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4C964B68FACC29DE5DD9E6D8 /* InvestHistoryMigrationTests.swift */; };
 		EA296C98AFD3A91A19F7E58F /* TradeImportViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F984A9E41163688F362D7882 /* TradeImportViewModelTests.swift */; };
 		EBA091E719AE8600D49AC49B /* StockNameResolver.swift in Sources */ = {isa = PBXBuildFile; fileRef = A40356AAFB24898C0EE3E32C /* StockNameResolver.swift */; };
 		ED32AB085E98375A5BEF3BA2 /* StockMarketLookup.swift in Sources */ = {isa = PBXBuildFile; fileRef = 344EF2A4392E0936741F7193 /* StockMarketLookup.swift */; };
@@ -305,6 +306,7 @@
 		444B2D36B63AFE2189A450B6 /* TradeScreenshotFixtures.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeScreenshotFixtures.swift; sourceTree = "<group>"; };
 		44CFEAF3C949085344714127 /* HistoryDocumentSelector.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HistoryDocumentSelector.swift; sourceTree = "<group>"; };
 		4527BB5764FC0481AAFCE3E6 /* SceneICloudCoordinatorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SceneICloudCoordinatorTests.swift; sourceTree = "<group>"; };
+		4C964B68FACC29DE5DD9E6D8 /* InvestHistoryMigrationTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = InvestHistoryMigrationTests.swift; sourceTree = "<group>"; };
 		4DB2A925F8B659FCD4C126CC /* StockNameResolverTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockNameResolverTests.swift; sourceTree = "<group>"; };
 		4FDD431ACF6E94446DACFFFA /* Info.plist */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		5336FBA6B104EF2D3C240B32 /* BackupDestination.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = BackupDestination.swift; sourceTree = "<group>"; };
@@ -451,6 +453,7 @@
 		DF944EE82807DB04005157A9 /* ChartService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ChartService.swift; sourceTree = "<group>"; };
 		DFD239DC270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MyTaiwanStock.xcdatamodel; sourceTree = "<group>"; };
 		DFDE6163CCF298E599B8F90D /* FeeCalculatorTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FeeCalculatorTests.swift; sourceTree = "<group>"; };
+		DFE82DAB667E0692F6DC7F28 /* MyTaiwanStock 2.xcdatamodel */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = wrapper.xcdatamodel; path = "MyTaiwanStock 2.xcdatamodel"; sourceTree = "<group>"; };
 		DFFB336C27F858830018F3A4 /* StockWidgetExtension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = StockWidgetExtension.appex; sourceTree = BUILT_PRODUCTS_DIR; };
 		DFFB336D27F858830018F3A4 /* WidgetKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = WidgetKit.framework; path = System/Library/Frameworks/WidgetKit.framework; sourceTree = SDKROOT; };
 		DFFB336F27F858830018F3A4 /* SwiftUI.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SwiftUI.framework; path = System/Library/Frameworks/SwiftUI.framework; sourceTree = SDKROOT; };
@@ -620,6 +623,7 @@
 				D24D8738ED48BBC337A4CE12 /* StockListCoordinatorImportTests.swift */,
 				DFDE6163CCF298E599B8F90D /* FeeCalculatorTests.swift */,
 				1D81C19E456102036C3F5039 /* FeeSettingsTests.swift */,
+				4C964B68FACC29DE5DD9E6D8 /* InvestHistoryMigrationTests.swift */,
 			);
 			path = MyTaiwanStockTests;
 			sourceTree = "<group>";
@@ -1210,6 +1214,7 @@
 				9C46597DB4F3D4AAB04B845D /* StockListCoordinatorImportTests.swift in Sources */,
 				1A67895619F1CB7C745E1FEF /* FeeCalculatorTests.swift in Sources */,
 				8FABFB2C6A0FA23BBEABAE6E /* FeeSettingsTests.swift in Sources */,
+				E9A1058D4455729EB32EBD7C /* InvestHistoryMigrationTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1983,8 +1988,9 @@
 			isa = XCVersionGroup;
 			children = (
 				DFD239DC270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodel */,
+				DFE82DAB667E0692F6DC7F28 /* MyTaiwanStock 2.xcdatamodel */,
 			);
-			currentVersion = DFD239DC270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodel */;
+			currentVersion = DFE82DAB667E0692F6DC7F28 /* MyTaiwanStock 2.xcdatamodel */;
 			path = MyTaiwanStock.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;

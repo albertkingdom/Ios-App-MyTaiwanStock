@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="23605" systemVersion="24E263" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
+    <entity name="CashDividend" representedClassName="CashDividend" syncable="YES" codeGenerationType="class">
+        <attribute name="amount" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="stockNo" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="InvestHistory" representedClassName="InvestHistory" syncable="YES" codeGenerationType="class">
+        <attribute name="amount" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="fee" optional="YES" attributeType="Integer 32" usesScalarValueType="NO"/>
+        <attribute name="price" optional="YES" attributeType="Float" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="reason" optional="YES" attributeType="String"/>
+        <attribute name="status" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="stockNo" optional="YES" attributeType="String"/>
+        <attribute name="tax" optional="YES" attributeType="Integer 32" usesScalarValueType="NO"/>
+    </entity>
+    <entity name="List" representedClassName=".List" syncable="YES">
+        <attribute name="name" attributeType="String" defaultValueString="預設清單"/>
+        <relationship name="stockNo" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="StockNo" inverseName="ofList" inverseEntity="StockNo"/>
+    </entity>
+    <entity name="StockDividend" representedClassName="StockDividend" syncable="YES" codeGenerationType="class">
+        <attribute name="amount" optional="YES" attributeType="Integer 16" defaultValueString="0" usesScalarValueType="YES"/>
+        <attribute name="date" optional="YES" attributeType="Date" usesScalarValueType="NO"/>
+        <attribute name="stockNo" optional="YES" attributeType="String"/>
+    </entity>
+    <entity name="StockNo" representedClassName=".StockNo" syncable="YES">
+        <attribute name="currentPrice" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="YES"/>
+        <attribute name="stockNo" optional="YES" attributeType="String"/>
+        <relationship name="ofList" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="List" inverseName="stockNo" inverseEntity="List"/>
+    </entity>
+</model>

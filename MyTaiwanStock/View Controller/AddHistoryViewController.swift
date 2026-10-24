@@ -2,8 +2,6 @@
 //  AddHistoryViewController.swift
 //  MyTaiwanStock
 //
-//  Created by Albert Lin on 2021/10/6.
-//
 import CoreData
 import UIKit
 
@@ -11,65 +9,37 @@ class AddHistoryViewController: UITableViewController {
     var context: NSManagedObjectContext?
     let validationService = ValidInputService()
     var stockNo: String!
-    
-    var viewModel: AddHistoryViewModel!
-
-    var feeType: FeeType!
-    var fee: Fee = Fee()
-    var userDefinedFee: Double = 0 // 從userdefault取使用者預設值
-    var userDefinedDiscount: Int = 0 // 從userdefault取使用者預設折數
+    var viewModel = AddHistoryViewModel()
 
     @IBOutlet weak var saveButton: UIBarButtonItem!
     @IBOutlet weak var stockNoLabel: UILabel!
     @IBOutlet weak var priceTextField: UITextField!
     @IBOutlet weak var amountTextField: UITextField!
     @IBOutlet weak var memoLabel: UILabel!
-    @IBOutlet weak var feePicker: UIPickerView!
+    @IBOutlet weak var memoCell: UITableViewCell!
     @IBOutlet weak var feeTextField: UITextField!
-    
-    @IBAction func setSegmentControl(_ sender: UISegmentedControl) {
+    @IBOutlet weak var taxTextField: UITextField!
+    @IBOutlet weak var taxCategoryButton: UIButton!
+    @IBOutlet weak var taxCategoryCell: UITableViewCell!
+    @IBOutlet weak var taxCell: UITableViewCell!
 
-        switch sender.selectedSegmentIndex {
-        case 0:
-            viewModel.buyOrSellStatus = 0
-        case 1:
-            viewModel.buyOrSellStatus = 1
-        default:
-            viewModel.buyOrSellStatus = 0
-        }
+    @IBAction func setSegmentControl(_ sender: UISegmentedControl) {
+        view.endEditing(true)
+        viewModel.didSelect(side: sender.selectedSegmentIndex == 1 ? .sell : .buy)
     }
+
     @IBAction func datePickerChanged(_ sender: UIDatePicker) {
-        
-        //print(sender.date)
-        
         viewModel.date = sender.date
     }
-    
-    @IBAction func saveNewRecord(_ sender: Any){
-        dismissKeyboard()
-        
-        do {
-            
-            let price = try validationService.validStockPriceInput(priceTextField.text)
-            let amount = try validationService.validStockAmountInput(amountTextField.text)
-            let reason = memoLabel.text ?? ""
-            switch feeType {
-            case .Percent(let percent):
-                print("fee percent \(percent)")
-            case .userDefined:
-                let feeInt = try validationService.validUserDefinedFee(feeTextField.text)
-                print("userDefinedFee \(feeInt)")
-            case .OneDollar:
-                print("1")
-            default:break
-            }
-            
 
-            viewModel.saveNewInvestRecord(stockNo: stockNo, price: price, amount: amount, reason: reason)
+    @IBAction func saveNewRecord(_ sender: Any) {
+        dismissKeyboard()
+        do {
+            try viewModel.save(stockNo: stockNo, priceText: priceTextField.text, amountText: amountTextField.text)
             showToast(message: "成功新增一筆投資紀錄")
             saveButton.isEnabled = false
-            DispatchQueue.main.asyncAfter(deadline: .now() + 2) {
-                self.navigationController?.popViewController(animated: true)
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) { [weak self] in
+                self?.navigationController?.popViewController(animated: true)
             }
         } catch {
             switch error {
@@ -77,172 +47,130 @@ class AddHistoryViewController: UITableViewController {
                 amountTextField.textColor = .red
             case ValidationError.invalidPrice:
                 priceTextField.textColor = .red
-            case ValidationError.invalidUserDefinedFee:
-                print("ValidationError.invalidUserDefinedFee")
-            default:
-                return
+            case ValidationError.invalidFeeOrTax:
+                if (try? validationService.validFeeOrTaxInput(feeTextField.text)) == nil {
+                    feeTextField.textColor = .red
+                }
+                if viewModel.side == .sell,
+                   (try? validationService.validFeeOrTaxInput(taxTextField.text)) == nil {
+                    taxTextField.textColor = .red
+                }
+            default: return
             }
             showToast(message: error.localizedDescription)
         }
-
     }
+
     @IBAction func cancel(_ sender: Any) {
         navigationController?.popViewController(animated: true)
     }
+
     override func viewDidLoad() {
         super.viewDidLoad()
-
-        viewModel = AddHistoryViewModel()
-        
         stockNoLabel.text = stockNo
-        priceTextField.keyboardType = .decimalPad
-        amountTextField.keyboardType = .numberPad
-        priceTextField.backgroundColor = UIColor(hex: "#eeeeee")
-        amountTextField.backgroundColor = UIColor(hex: "#eeeeee")
-        priceTextField.borderStyle = .roundedRect
-        amountTextField.borderStyle = .roundedRect
-        priceTextField.inputAccessoryView = toolBar()
-        amountTextField.inputAccessoryView = toolBar()
         navigationItem.title = "新增一筆"
-
-        memoLabel.text = viewModel.memo
+        for field in [priceTextField!, amountTextField!, feeTextField!, taxTextField!] {
+            field.delegate = self
+            field.keyboardType = field === priceTextField ? .decimalPad : .numberPad
+            field.inputAccessoryView = toolBar()
+        }
+        for field in [priceTextField!, amountTextField!] {
+            field.backgroundColor = UIColor(hex: "#eeeeee")
+            field.borderStyle = .roundedRect
+            field.addTarget(self, action: #selector(tradeInputChanged), for: .editingChanged)
+        }
+        for field in [feeTextField!, taxTextField!] {
+            let unit = UILabel()
+            unit.text = " 元"
+            unit.sizeToFit()
+            field.rightView = unit
+            field.rightViewMode = .always
+            field.addTarget(self, action: #selector(costInputChanged(_:)), for: .editingChanged)
+            field.addTarget(self, action: #selector(costInputEnded(_:)), for: .editingDidEnd)
+        }
         memoLabel.numberOfLines = 1
         memoLabel.lineBreakMode = .byTruncatingTail
-        priceTextField.delegate = self
-        amountTextField.delegate = self
-        
-        feePicker.dataSource = self
-        feePicker.delegate = self
-        
-        feeTextField.delegate = self
-        
-        userDefinedFee = UserDefaults.standard.double(forKey: UserDefaults.userDefinedFeeInDollarsKey)
-        userDefinedDiscount = UserDefaults.standard.integer(forKey: UserDefaults.userDefinedFeeDiscountKey)
-        feePicker.selectRow(userDefinedDiscount, inComponent: 1, animated: true)
-        feeTextField.text = fee.feePercentValues[userDefinedDiscount]
-        
-        viewModel.updateFeeAmount = { digit in
-            self.feeTextField.text = "\(digit) 元"
-        }
-        
+        taxCategoryButton.showsMenuAsPrimaryAction = true
+        taxCategoryButton.changesSelectionAsPrimaryAction = true
+        viewModel.onChange = { [weak self] in self?.refresh() }
+        refresh()
     }
+
     override func viewWillAppear(_ animated: Bool) {
+        super.viewWillAppear(animated)
         memoLabel.text = viewModel.memo
     }
+
+    @objc private func tradeInputChanged() {
+        viewModel.didChange(priceText: priceTextField.text, amountText: amountTextField.text)
+    }
+
+    @objc private func costInputChanged(_ field: UITextField) {
+        if field === feeTextField { viewModel.didEditFee(field.text) }
+        else { viewModel.didEditTax(field.text) }
+    }
+
+    @objc private func costInputEnded(_ field: UITextField) {
+        if field === feeTextField { viewModel.didEndEditingFee() }
+        else { viewModel.didEndEditingTax() }
+    }
+
+    private func refresh() {
+        if feeTextField.text != viewModel.feeText { feeTextField.text = viewModel.feeText }
+        if taxTextField.text != viewModel.taxText { taxTextField.text = viewModel.taxText }
+        let hideTax = viewModel.side == .buy
+        let visibilityChanged = taxCell.isHidden != hideTax
+        taxCategoryCell.isHidden = hideTax
+        taxCell.isHidden = hideTax
+        taxCategoryButton.menu = UIMenu(options: .singleSelection, children: TaxCategory.allCases.map { category in
+            UIAction(title: category.title, state: category == viewModel.taxCategory ? .on : .off) { [weak self] _ in
+                self?.viewModel.didSelect(taxCategory: category)
+            }
+        })
+        if visibilityChanged {
+            tableView.beginUpdates()
+            tableView.endUpdates()
+        }
+    }
+
+    override func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        let cell = super.tableView(tableView, cellForRowAt: indexPath)
+        if viewModel.side == .buy, cell === taxCell || cell === taxCategoryCell { return 0 }
+        return super.tableView(tableView, heightForRowAt: indexPath)
+    }
+
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if segue.identifier == "writeReasonSegue" {
-            logger.debug("writeReasonSegue")
+            (segue.destination as? MemoViewController)?.viewModel = viewModel
         }
     }
+
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.row == 6 {
-            let nextVC = self.storyboard?.instantiateViewController(withIdentifier: "writeReasonVC") as! MemoViewController
-            nextVC.viewModel = viewModel
-            self.navigationController?.pushViewController(nextVC, animated: true)
-        }
+        guard tableView.cellForRow(at: indexPath) === memoCell,
+              let editor = storyboard?.instantiateViewController(withIdentifier: "writeReasonVC") as? MemoViewController
+        else { return }
+        editor.viewModel = viewModel
+        navigationController?.pushViewController(editor, animated: true)
     }
-    
-
 }
-
 
 extension AddHistoryViewController: UITextFieldDelegate {
     func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
         textField.textColor = .label
-        
-        if textField.tag == 1 {
-            let strippedString = "$$"
-            print("range \(range),  string \(string)")
-//               // replace current content with stripped content
-//               if let replaceStart = textField.position(from: textField.beginningOfDocument, offset: range.location),
-//                   let replaceEnd = textField.position(from: replaceStart, offset: range.length),
-//                   let textRange = textField.textRange(from: replaceStart, to: replaceEnd) {
-//
-//                   textField.replace(textRange, withText: "\(textField.text) strippedString")
-//               }
+        if textField === feeTextField || textField === taxTextField {
+            return string.allSatisfy { $0.isASCII && $0.isNumber }
         }
-        
-        if let amountText = amountTextField.text,
-           let priceText = priceTextField.text,
-           let amountFloat = Float(amountText),
-           let priceFloat = Float(priceText)
-        {
-            if !amountText.isEmpty && !priceText.isEmpty{
-                viewModel.calculateFeeAndTax(price: priceFloat, amount: amountFloat, buyOrSell: 0)
-            }
-        }
-        
         return true
-
     }
 }
 
-
-extension AddHistoryViewController: UIPickerViewDelegate, UIPickerViewDataSource {
-   
-    func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        return 2
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        if component == 0 {
-            return 3
-        }
-        if pickerView.selectedRow(inComponent: 0) == 1 {
-            return 1
-        }
-        if pickerView.selectedRow(inComponent: 0) == 2 {
-            return 1
-        }
-        return fee.feePercentValues.count
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        if component == 0 {
-            return fee.feeCategory[row]
-        }
-        if pickerView.selectedRow(inComponent: 0) == 1 {
-            return "1元"
-        }
-        if pickerView.selectedRow(inComponent: 0) == 2 {
-            return "自訂"
-        }
-        
-        return fee.feePercentValues[row]
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        //print("pickerview did select component \(component) row \(row)")
-        pickerView.reloadComponent(1)
-
-        switch pickerView.selectedRow(inComponent: 0) {
-        case 0:
-            // 折數
-            feeTextField.text = fee.feePercentValues[row]
-            
-            guard let priceStr = priceTextField.text,
-                  let amountStr = amountTextField.text,
-                  let priceFloat = Float(priceStr),
-                  let amountFloat = Float(amountStr)
-            else {return}
-            let multiplier = Float(row+1)*0.1
-            viewModel.updateFeeMultiplier(multiplier: multiplier)
-            viewModel.calculateFeeAndTax(price: priceFloat, amount: amountFloat, buyOrSell: 0)
-//            let calculatedFee = fee.calFee(price: priceFloat, amount: amountFloat, multiplier: multiplier)
-//            feeTextField.text = "\(calculatedFee) 元"
-            feeTextField.isEnabled = false
-            feeType = FeeType.Percent(multiplier)
-        case 1:
-            // 1元
-            feeTextField.text = "1元"
-            feeTextField.isEnabled = false
-            feeType = FeeType.OneDollar
-        case 2:
-            feeTextField.isEnabled = false
-            feeTextField.placeholder = "輸入手續費"
-            feeTextField.text = "\(userDefinedFee)"
-            feeType = FeeType.userDefined
-        default: break
+private extension TaxCategory {
+    var title: String {
+        switch self {
+        case .stock: return "一般股票"
+        case .dayTrade: return "現股當沖"
+        case .etf: return "ETF"
+        case .exempt: return "免稅"
         }
     }
 }

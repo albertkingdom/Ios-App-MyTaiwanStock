@@ -167,6 +167,7 @@
 		A1F168332BDE11400080F57E /* UIColor+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1F168322BDE11400080F57E /* UIColor+Extension.swift */; };
 		AB7549469F25A34506D108B6 /* ShareImageImporter.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66AE85FAF8E9F25E155D5D12 /* ShareImageImporter.swift */; };
 		ABC9643CA67C9DCE06519683 /* AddStockNoViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35EDD97E7F23FFCC4B3C4D8D /* AddStockNoViewModelTests.swift */; };
+		AC403C0A27F47608267F4705 /* AddHistoryViewModelTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D7350AD98A6DF1E57CDA1107 /* AddHistoryViewModelTests.swift */; };
 		AE7EA0BE44FB6CE44D980974 /* HistoryOnlineTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7068E958757E9074134F1608 /* HistoryOnlineTests.swift */; };
 		B1CC4EA048AB75E6A26E84F7 /* ShareExtension.appex in Embed App Extensions */ = {isa = PBXBuildFile; fileRef = 010643DA5EC565431111423D /* ShareExtension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		B433722D03E984B1E7F44AE7 /* StockListParser.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9D06AAFE532A45BB2550AE10 /* StockListParser.swift */; };
@@ -179,6 +180,7 @@
 		D0B1C2A3E4F5061728394A5D /* ListNameTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D0B1C2A3E4F5061728394A5E /* ListNameTests.swift */; };
 		D508D05EB0149A48570D3F9F /* StockListRefresher.swift in Sources */ = {isa = PBXBuildFile; fileRef = D58D87D037B5D9470F5316F8 /* StockListRefresher.swift */; };
 		D5B0434C58654D9DEC8A67D5 /* StoreSchemaCompatibilityCheckerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 88445A331382A6B6557409C2 /* StoreSchemaCompatibilityCheckerTests.swift */; };
+		D90E55C726063FA871B731AA /* AddHistoryViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = DE6950F8BBF25C8A498AC649 /* AddHistoryViewControllerTests.swift */; };
 		DF06F2FB27097F2C0031D6FE /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F2FA27097F2C0031D6FE /* AppDelegate.swift */; };
 		DF06F2FD27097F2C0031D6FE /* SceneDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F2FC27097F2C0031D6FE /* SceneDelegate.swift */; };
 		DF06F2FF27097F2C0031D6FE /* StockListViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = DF06F2FE27097F2C0031D6FE /* StockListViewController.swift */; };
@@ -430,8 +432,10 @@
 		D0B1C2A3E4F5061728394A5E /* ListNameTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ListNameTests.swift; sourceTree = "<group>"; };
 		D24D8738ED48BBC337A4CE12 /* StockListCoordinatorImportTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockListCoordinatorImportTests.swift; sourceTree = "<group>"; };
 		D58D87D037B5D9470F5316F8 /* StockListRefresher.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockListRefresher.swift; sourceTree = "<group>"; };
+		D7350AD98A6DF1E57CDA1107 /* AddHistoryViewModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddHistoryViewModelTests.swift; sourceTree = "<group>"; };
 		D7468712F972AC4EDD765663 /* StockMarketLookupTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockMarketLookupTests.swift; sourceTree = "<group>"; };
 		DCB4ED896BEF3DDC8FABEF46 /* TradeTextRecognizer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeTextRecognizer.swift; sourceTree = "<group>"; };
+		DE6950F8BBF25C8A498AC649 /* AddHistoryViewControllerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = AddHistoryViewControllerTests.swift; sourceTree = "<group>"; };
 		DF06F2F727097F2C0031D6FE /* MyTaiwanStock.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = MyTaiwanStock.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		DF06F2FA27097F2C0031D6FE /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		DF06F2FC27097F2C0031D6FE /* SceneDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SceneDelegate.swift; sourceTree = "<group>"; };
@@ -638,6 +642,8 @@
 				B239CB275063F8CCA8BB677F /* TradeImport */,
 				B63AB7F996374C4CCFF5CAEE /* TradeCost */,
 				88445A331382A6B6557409C2 /* StoreSchemaCompatibilityCheckerTests.swift */,
+				D7350AD98A6DF1E57CDA1107 /* AddHistoryViewModelTests.swift */,
+				DE6950F8BBF25C8A498AC649 /* AddHistoryViewControllerTests.swift */,
 			);
 			path = MyTaiwanStockTests;
 			sourceTree = "<group>";
@@ -1259,6 +1265,8 @@
 				E9A1058D4455729EB32EBD7C /* InvestHistoryMigrationTests.swift in Sources */,
 				AE7EA0BE44FB6CE44D980974 /* HistoryOnlineTests.swift in Sources */,
 				D5B0434C58654D9DEC8A67D5 /* StoreSchemaCompatibilityCheckerTests.swift in Sources */,
+				AC403C0A27F47608267F4705 /* AddHistoryViewModelTests.swift in Sources */,
+				D90E55C726063FA871B731AA /* AddHistoryViewControllerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

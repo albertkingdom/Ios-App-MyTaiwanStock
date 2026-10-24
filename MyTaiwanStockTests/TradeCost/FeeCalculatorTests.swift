@@ -17,8 +17,12 @@ struct FeeCalculatorTests {
         let category: TaxCategory
         let fee: Int
         let tax: Int
+        var wholeLotMinimum: Int = FeeSettings.defaultWholeLotMinimumFee
+        var oddLotMinimum: Int = FeeSettings.defaultOddLotMinimumFee
 
-        var testDescription: String { "\(side) \(shares) @ \(price), discount \(discount), \(category)" }
+        var testDescription: String {
+            "\(side) \(shares) @ \(price), discount \(discount), \(category), minimums \(wholeLotMinimum) / \(oddLotMinimum)"
+        }
     }
 
     /// The example table of the specification.
@@ -33,11 +37,22 @@ struct FeeCalculatorTests {
         Case(side: .sell, shares: 1000, price: "100", discount: "10", category: .exempt, fee: 142, tax: 0),
         Case(side: .buy, shares: 999, price: "1", discount: "10", category: .stock, fee: 1, tax: 0),
         Case(side: .buy, shares: 1500, price: "1", discount: "10", category: .stock, fee: 20, tax: 0),
+        Case(
+            side: .buy, shares: 5, price: "112.55", discount: "6", category: .stock, fee: 5, tax: 0,
+            oddLotMinimum: 5),
+        Case(
+            side: .buy, shares: 1000, price: "20", discount: "6", category: .stock, fee: 30, tax: 0,
+            wholeLotMinimum: 30),
+        Case(
+            side: .buy, shares: 1000, price: "20", discount: "6", category: .stock, fee: 17, tax: 0,
+            wholeLotMinimum: 0),
     ]
 
     @Test(arguments: cases)
     func matchesTheSpecificationTable(_ testCase: Case) throws {
-        let settings = FeeSettings(mode: .discount(try #require(Decimal(string: testCase.discount))))
+        let settings = FeeSettings(
+            mode: .discount(try #require(Decimal(string: testCase.discount))),
+            wholeLotMinimumFee: testCase.wholeLotMinimum, oddLotMinimumFee: testCase.oddLotMinimum)
 
         let result = FeeCalculator.calculate(
             price: try #require(Decimal(string: testCase.price)), shares: testCase.shares, side: testCase.side,

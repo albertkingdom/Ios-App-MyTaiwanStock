@@ -87,6 +87,75 @@ struct FeeSettingsTests {
         #expect(throws: FeeSettingsError.self) { try FeeSettings.parseDiscount(nil) }
     }
 
+    // MARK: minimum fees
+
+    @Test func withNothingSavedTheMinimumFeesAreTheDefaults() {
+        let settings = FeeSettings.current(userDefaults: makeDefaults())
+
+        #expect(settings.wholeLotMinimumFee == 20)
+        #expect(settings.oddLotMinimumFee == 1)
+    }
+
+    @Test func theSavedMinimumFeesAreReadBack() {
+        let defaults = makeDefaults()
+        defaults.set(30, forKey: UserDefaults.feeMinimumWholeLotKey)
+        defaults.set(5, forKey: UserDefaults.feeMinimumOddLotKey)
+
+        let settings = FeeSettings.current(userDefaults: defaults)
+
+        #expect(settings.wholeLotMinimumFee == 30)
+        #expect(settings.oddLotMinimumFee == 5)
+    }
+
+    @Test func zeroAndTheLargestRecordAmountAreSavedMinimumFees() {
+        let defaults = makeDefaults()
+        defaults.set(0, forKey: UserDefaults.feeMinimumWholeLotKey)
+        defaults.set(2_147_483_647, forKey: UserDefaults.feeMinimumOddLotKey)
+
+        let settings = FeeSettings.current(userDefaults: defaults)
+
+        #expect(settings.wholeLotMinimumFee == 0)
+        #expect(settings.oddLotMinimumFee == 2_147_483_647)
+    }
+
+    @Test func aMinimumFeeThatIsNotAWholeNumberInRangeFallsBackToTheDefault() {
+        let invalidValues: [Any] = ["20", 20.5, -1, 2_147_483_648]
+        for value in invalidValues {
+            let defaults = makeDefaults()
+            defaults.set(value, forKey: UserDefaults.feeMinimumWholeLotKey)
+            defaults.set(value, forKey: UserDefaults.feeMinimumOddLotKey)
+
+            let settings = FeeSettings.current(userDefaults: defaults)
+
+            #expect(settings.wholeLotMinimumFee == 20, "whole-lot minimum for \(value)")
+            #expect(settings.oddLotMinimumFee == 1, "odd-lot minimum for \(value)")
+        }
+    }
+
+    @Test func readingTheMinimumFeesWritesNothing() {
+        let defaults = makeDefaults()
+        defaults.set("20", forKey: UserDefaults.feeMinimumWholeLotKey)
+
+        _ = FeeSettings.current(userDefaults: defaults)
+
+        #expect(defaults.object(forKey: UserDefaults.feeMinimumWholeLotKey) as? String == "20")
+        #expect(defaults.object(forKey: UserDefaults.feeMinimumOddLotKey) == nil)
+    }
+
+    @Test func aFixedAmountSettingKeepsTheSavedDiscountAndMinimumFees() {
+        let defaults = makeDefaults()
+        defaults.set(2.8, forKey: UserDefaults.feeDiscountKey)
+        defaults.set(5, forKey: UserDefaults.feeMinimumOddLotKey)
+        defaults.set("fixedAmount", forKey: UserDefaults.feeModeKey)
+        defaults.set(30.0, forKey: UserDefaults.userDefinedFeeInDollarsKey)
+
+        let settings = FeeSettings.current(userDefaults: defaults)
+
+        #expect(settings.mode == .fixedAmount(30))
+        #expect(settings.discount == Decimal(string: "2.8")!)
+        #expect(settings.oddLotMinimumFee == 5)
+    }
+
     // MARK: saving
 
     @Test func theSavedModeDiscountAndAmountAreReadBack() {

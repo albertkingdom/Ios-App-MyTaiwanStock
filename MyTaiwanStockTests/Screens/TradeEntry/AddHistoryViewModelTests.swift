@@ -70,6 +70,14 @@ struct AddHistoryViewModelTests {
         #expect(fees == ["20", "20", "149", "149", "150"])
     }
 
+    @Test func theOddLotMinimumFeeFromTheSettingsIsShown() {
+        let viewModel = makeViewModel(settings: FeeSettings(mode: .discount(6), oddLotMinimumFee: 5))
+
+        viewModel.didChange(priceText: "112.55", amountText: "5")
+
+        #expect(viewModel.feeText == "5")
+    }
+
     @Test func aFixedAmountReplacesTheFormula() {
         let viewModel = makeViewModel(settings: FeeSettings(mode: .fixedAmount(30)))
 

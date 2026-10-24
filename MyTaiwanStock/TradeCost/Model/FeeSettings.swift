@@ -15,18 +15,52 @@ struct FeeSettings: Equatable {
     }
 
     static let noDiscount = Decimal(10)
+    static let defaultWholeLotMinimumFee = 20
+    static let defaultOddLotMinimumFee = 1
 
     var mode: Mode
+    var discount: Decimal
+    var wholeLotMinimumFee: Int
+    var oddLotMinimumFee: Int
+
+    init(
+        mode: Mode,
+        wholeLotMinimumFee: Int = FeeSettings.defaultWholeLotMinimumFee,
+        oddLotMinimumFee: Int = FeeSettings.defaultOddLotMinimumFee
+    ) {
+        let discount: Decimal
+        if case .discount(let value) = mode {
+            discount = value
+        } else {
+            discount = FeeSettings.noDiscount
+        }
+        self.init(
+            mode: mode, discount: discount, wholeLotMinimumFee: wholeLotMinimumFee, oddLotMinimumFee: oddLotMinimumFee)
+    }
+
+    private init(mode: Mode, discount: Decimal, wholeLotMinimumFee: Int, oddLotMinimumFee: Int) {
+        self.mode = mode
+        self.discount = discount
+        self.wholeLotMinimumFee = wholeLotMinimumFee
+        self.oddLotMinimumFee = oddLotMinimumFee
+    }
 
     /// Reads the settings without writing anything. Without a saved mode the mode is the discount mode, so
     /// a fixed amount saved before modes existed is not applied to every trade. Without a saved discount,
     /// the earlier choice, the position of the discount in a list that started at 1, is read as that
-    /// position plus one; without either, there is no discount.
+    /// position plus one; without either, there is no discount. A minimum fee that is not saved as a whole
+    /// number in range is read as its default.
     static func current(userDefaults: UserDefaults = .standard) -> FeeSettings {
-        if usesFixedAmount(userDefaults: userDefaults) {
-            return FeeSettings(mode: .fixedAmount(currentFixedAmount(userDefaults: userDefaults)))
-        }
-        return FeeSettings(mode: .discount(storedDiscount(in: userDefaults)))
+        let discount = storedDiscount(in: userDefaults)
+        let mode: Mode = usesFixedAmount(userDefaults: userDefaults)
+            ? .fixedAmount(currentFixedAmount(userDefaults: userDefaults))
+            : .discount(discount)
+        return FeeSettings(
+            mode: mode, discount: discount,
+            wholeLotMinimumFee: storedMinimumFee(
+                forKey: UserDefaults.feeMinimumWholeLotKey, defaultFee: defaultWholeLotMinimumFee, in: userDefaults),
+            oddLotMinimumFee: storedMinimumFee(
+                forKey: UserDefaults.feeMinimumOddLotKey, defaultFee: defaultOddLotMinimumFee, in: userDefaults))
     }
 
     // MARK: reading the parts, for the settings screen that shows both whichever mode is active
@@ -77,6 +111,13 @@ struct FeeSettings: Equatable {
     }
 
     private static let minimumDiscount = Decimal(string: "0.1")!
+
+    private static func storedMinimumFee(forKey key: String, defaultFee: Int, in userDefaults: UserDefaults) -> Int {
+        guard let saved = userDefaults.object(forKey: key) as? Int, (0...Int(Int32.max)).contains(saved) else {
+            return defaultFee
+        }
+        return saved
+    }
 
     private static func storedDiscount(in userDefaults: UserDefaults) -> Decimal {
         if let saved = userDefaults.object(forKey: UserDefaults.feeDiscountKey) as? Double,

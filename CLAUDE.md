@@ -27,6 +27,15 @@ Changes can be parked（暫存）— temporarily moved out of `openspec/changes/
 
 <!-- SPECTRA:END -->
 
+# Spectra Plan Review
+
+Spectra 規劃（`/spectra-propose`，或之後修改 proposal、design、tasks、delta spec）完成後，**開始實作（`/spectra-apply`）之前**，必須開一個 Opus agent（Agent 工具，`model: "opus"`）審查計畫，不等使用者開口要求：
+
+1. 審查者唯讀，不修改任何檔案。交給它 change 名稱、artifact 的路徑與相關程式碼位置，要求檢查：計畫與現有程式碼是否一致、遺漏的邊界與失敗情境、任務的順序與相依、每個任務的驗證方式能否實際執行、規格的 SHALL 與情境是否可測。
+2. 審查結果依嚴重度記錄成 `docs/reviews/{YYYY-MM-DD}-{change 名稱}-plan.md`，記錄方式與 Code Review 相同（含修復 Todo、逐項打勾、全部打勾後刪除、不加入版控）。
+3. 高、中嚴重度的發現要修正 artifact（需要使用者決定的先問使用者），修完再審，直到沒有高、中嚴重度；低嚴重度由使用者決定修或不修。
+4. 計畫審查沒完成前，不得開始 `/spectra-apply`，也不得對計畫宣稱「可以實作」。
+
 # Branch Convention
 
 新需求（feature）必須在 `feature/{版號}/{需求名稱}` 分支上實作，例如 `feature/1.19/icloud-backup-rework`。版號採下一個預計發布的 App 版本（對照 `MARKETING_VERSION`）。

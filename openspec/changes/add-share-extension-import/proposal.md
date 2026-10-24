@@ -38,10 +38,10 @@
   - New: ShareExtension/ShareViewController.swift
   - New: ShareExtension/Info.plist
   - New: ShareExtension/ShareExtension.entitlements
-  - New: MyTaiwanStock/Util/PendingImportStore.swift
-  - New: MyTaiwanStock/Util/PendingImportCoordinator.swift
-  - New: MyTaiwanStockTests/PendingImportStoreTests.swift
-  - New: MyTaiwanStockTests/PendingImportCoordinatorTests.swift
+  - New: MyTaiwanStock/ShareImport/SharedWithExtension/PendingImportStore.swift
+  - New: MyTaiwanStock/ShareImport/PendingImportCoordinator.swift
+  - New: MyTaiwanStockTests/ShareImport/PendingImportStoreTests.swift
+  - New: MyTaiwanStockTests/ShareImport/PendingImportCoordinatorTests.swift
   - New: MyTaiwanStockTests/TradeImportFlowTests.swift
   - Modified: MyTaiwanStock.xcodeproj/project.pbxproj
   - Modified: MyTaiwanStock/StockList/TradeImportFlow.swift

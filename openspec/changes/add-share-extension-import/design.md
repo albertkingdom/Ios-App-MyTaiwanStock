@@ -54,7 +54,7 @@ Extension 把所有分享項目的附件攤平，只處理圖片附件，原樣�
 
 保護：根資料夾設為排除備份（不進 iCloud 裝置備份與電腦備份）；資料夾與檔案寫入後設為最高等級的檔案保護（鎖屏時無法讀取）；不產生縮圖；紀錄檔不寫入圖片內容或辨識內容。因為鎖屏時讀不到，讀取失敗視為暫時無法讀取，不當作錯誤也不刪除批次。待匯入根資料夾只由 PendingImportStore 存取。
 
-PendingImportStore 放在 MyTaiwanStock/Util/PendingImportStore.swift，同時加入主 App 與 ShareExtension 兩個 target，只依賴 Foundation：不使用全域 logger，不使用 LocalDBService 的 App Group 常數（該檔引用 CoreData、CloudKit、UIKit），容器位置由呼叫端注入，測試用暫存目錄。寫入 API 接收檔案 URL 而不是圖片資料，並由 store 負責「先寫暫存、再改名」。
+PendingImportStore 放在 MyTaiwanStock/ShareImport/SharedWithExtension/PendingImportStore.swift，同時加入主 App 與 ShareExtension 兩個 target，只依賴 Foundation：不使用全域 logger，不使用 LocalDBService 的 App Group 常數（該檔引用 CoreData、CloudKit、UIKit），容器位置由呼叫端注入，測試用暫存目錄。寫入 API 接收檔案 URL 而不是圖片資料，並由 store 負責「先寫暫存、再改名」。
 
 ### 圖片辨識完成後立即刪除
 
@@ -62,7 +62,7 @@ PendingImportStore 放在 MyTaiwanStock/Util/PendingImportStore.swift，同時�
 
 ### 主 App 回到前景時詢問並接手
 
-接手邏輯放進一個可測試的小物件 PendingImportCoordinator（MyTaiwanStock/Util/PendingImportCoordinator.swift），SceneDelegate 在 sceneDidBecomeActive 只呼叫它；它的檢查另外在匯入流程結束時、列表頁出現時觸發。檢查的條件依序是：
+接手邏輯放進一個可測試的小物件 PendingImportCoordinator（MyTaiwanStock/ShareImport/PendingImportCoordinator.swift），SceneDelegate 在 sceneDidBecomeActive 只呼叫它；它的檢查另外在匯入流程結束時、列表頁出現時觸發。檢查的條件依序是：
 
 1. 有待匯入批次（先清除過期批次）。
 2. 目前沒有匯入流程進行中。

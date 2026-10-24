@@ -91,7 +91,7 @@ enum ValidationError: LocalizedError {
         case .invalidStockNo:
             return "請輸入正確股票代號"
         case .invalidUserDefinedFee:
-            return "請輸入自訂手續費"
+            return "手續費請輸入 0 以上的數字，小數會捨去"
         case .invalidFeeOrTax:
             return "手續費與稅請輸入 0 以上的整數"
         }

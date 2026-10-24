@@ -23,16 +23,60 @@ struct FeeSettings: Equatable {
     /// the earlier choice, the position of the discount in a list that started at 1, is read as that
     /// position plus one; without either, there is no discount.
     static func current(userDefaults: UserDefaults = .standard) -> FeeSettings {
-        if userDefaults.string(forKey: UserDefaults.feeModeKey) == "fixedAmount" {
-            let amount = userDefaults.double(forKey: UserDefaults.userDefinedFeeInDollarsKey)
-            return FeeSettings(mode: .fixedAmount(max(0, Int(amount.rounded(.down)))))
+        if usesFixedAmount(userDefaults: userDefaults) {
+            return FeeSettings(mode: .fixedAmount(currentFixedAmount(userDefaults: userDefaults)))
         }
         return FeeSettings(mode: .discount(storedDiscount(in: userDefaults)))
     }
 
+    // MARK: reading the parts, for the settings screen that shows both whichever mode is active
+
+    static func usesFixedAmount(userDefaults: UserDefaults = .standard) -> Bool {
+        userDefaults.string(forKey: UserDefaults.feeModeKey) == "fixedAmount"
+    }
+
+    static func currentDiscount(userDefaults: UserDefaults = .standard) -> Decimal {
+        storedDiscount(in: userDefaults)
+    }
+
+    static func currentFixedAmount(userDefaults: UserDefaults = .standard) -> Int {
+        max(0, Int(userDefaults.double(forKey: UserDefaults.userDefinedFeeInDollarsKey).rounded(.down)))
+    }
+
+    // MARK: writing
+
+    static func saveMode(fixedAmount: Bool, userDefaults: UserDefaults = .standard) {
+        userDefaults.set(fixedAmount ? "fixedAmount" : "discount", forKey: UserDefaults.feeModeKey)
+    }
+
+    static func saveDiscount(_ discount: Decimal, userDefaults: UserDefaults = .standard) {
+        userDefaults.set(NSDecimalNumber(decimal: discount).doubleValue, forKey: UserDefaults.feeDiscountKey)
+    }
+
+    static func saveFixedAmount(_ amount: Int, userDefaults: UserDefaults = .standard) {
+        userDefaults.set(Double(max(0, amount)), forKey: UserDefaults.userDefinedFeeInDollarsKey)
+    }
+
+    /// A discount typed in the settings screen: a plain number from 0.1 to 10 with at most two decimals.
+    static func parseDiscount(_ text: String?) throws -> Decimal {
+        guard let text = text?.trimmingCharacters(in: .whitespaces), !text.isEmpty,
+              text.allSatisfy({ $0.isASCII && ($0.isNumber || $0 == ".") }),
+              text.filter({ $0 == "." }).count <= 1,
+              let value = Decimal(string: text),
+              (minimumDiscount...noDiscount).contains(value)
+        else { throw FeeSettingsError.invalidDiscount }
+        var hundredths = value * 100
+        var whole = Decimal()
+        NSDecimalRound(&whole, &hundredths, 0, .down)
+        guard whole == value * 100 else { throw FeeSettingsError.invalidDiscount }
+        return value
+    }
+
+    private static let minimumDiscount = Decimal(string: "0.1")!
+
     private static func storedDiscount(in userDefaults: UserDefaults) -> Decimal {
         if let saved = userDefaults.object(forKey: UserDefaults.feeDiscountKey) as? Double,
-           let discount = Decimal(string: String(saved)), (Decimal(string: "0.1")!...noDiscount).contains(discount) {
+           let discount = Decimal(string: String(saved)), (minimumDiscount...noDiscount).contains(discount) {
             return discount
         }
         if let position = userDefaults.object(forKey: UserDefaults.userDefinedFeeDiscountKey) as? Int {
@@ -40,4 +84,10 @@ struct FeeSettings: Equatable {
         }
         return noDiscount
     }
+}
+
+enum FeeSettingsError: LocalizedError {
+    case invalidDiscount
+
+    var errorDescription: String? { "折數請輸入 0.1 到 10 的數字，最多兩位小數" }
 }

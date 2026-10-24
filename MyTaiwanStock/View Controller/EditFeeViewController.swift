@@ -9,6 +9,8 @@ import UIKit
 
 class EditFeeViewController: UITableViewController {
     @IBOutlet weak var feeTextField: UITextField!
+    /// Where the fixed fee is saved; tests pass a store of their own.
+    var userDefaults: UserDefaults = .standard
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -18,16 +20,15 @@ class EditFeeViewController: UITableViewController {
         
     }
     @objc func onTapSave(_ sender: UIBarButtonItem) {
-        print("onTapSave")
-        // save to userdefault
-        guard let fee = feeTextField.text,
-              let feeDouble = Double(fee)
-        else {
-            return
+        do {
+            let amount = try ValidInputService().validUserDefinedFee(feeTextField.text)
+            FeeSettings.saveFixedAmount(amount, userDefaults: userDefaults)
+            navigationController?.popViewController(animated: true)
+        } catch {
+            let alert = UIAlertController(title: "手續費無法儲存", message: error.localizedDescription, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "好", style: .default))
+            present(alert, animated: true)
         }
-        print("fee double \(feeDouble)")
-        UserDefaults.standard.set(feeDouble, forKey: UserDefaults.userDefinedFeeInDollarsKey)
-        navigationController?.popViewController(animated: true)
     }
     
     func initView() {
@@ -36,6 +37,7 @@ class EditFeeViewController: UITableViewController {
         tableView.separatorStyle = .none
         tableView.backgroundColor = .secondarySystemBackground
         
+        feeTextField.text = "\(FeeSettings.currentFixedAmount(userDefaults: userDefaults))"
         feeTextField.placeholder = "新台幣"
         feeTextField.borderStyle = .roundedRect
 //        feeTextField.backgroundColor = .lightGray

@@ -63,4 +63,43 @@ struct FeeSettingsTests {
 
         #expect(FeeSettings.current(userDefaults: defaults).mode == .discount(10))
     }
+
+    // MARK: typed discount
+
+    @Test(arguments: [("2.8", "2.8"), ("10", "10"), ("0.1", "0.1"), ("6", "6"), (" 0.65 ", "0.65"), ("9.99", "9.99")])
+    func aDiscountFromPointOneToTenWithTwoDecimalsIsAccepted(_ input: (text: String, value: String)) throws {
+        #expect(try FeeSettings.parseDiscount(input.text) == Decimal(string: input.value)!)
+    }
+
+    @Test(arguments: ["0", "11", "10.01", "0.05", "2.855", "-1", "abc", "", "1e1", "2.8折", "1.2.3", "0x6"])
+    func aDiscountOutOfRangeOrNotAPlainNumberIsRefused(_ text: String) {
+        #expect(throws: FeeSettingsError.self) { try FeeSettings.parseDiscount(text) }
+        #expect(throws: FeeSettingsError.self) { try FeeSettings.parseDiscount(nil) }
+    }
+
+    // MARK: saving
+
+    @Test func theSavedModeDiscountAndAmountAreReadBack() {
+        let defaults = makeDefaults()
+
+        FeeSettings.saveMode(fixedAmount: true, userDefaults: defaults)
+        FeeSettings.saveDiscount(Decimal(string: "2.8")!, userDefaults: defaults)
+        FeeSettings.saveFixedAmount(30, userDefaults: defaults)
+
+        #expect(FeeSettings.usesFixedAmount(userDefaults: defaults))
+        #expect(FeeSettings.currentDiscount(userDefaults: defaults) == Decimal(string: "2.8")!)
+        #expect(FeeSettings.currentFixedAmount(userDefaults: defaults) == 30)
+        #expect(FeeSettings.current(userDefaults: defaults).mode == .fixedAmount(30))
+
+        FeeSettings.saveMode(fixedAmount: false, userDefaults: defaults)
+        #expect(FeeSettings.current(userDefaults: defaults).mode == .discount(Decimal(string: "2.8")!))
+    }
+
+    @Test func aFixedAmountIsNeverSavedNegative() {
+        let defaults = makeDefaults()
+
+        FeeSettings.saveFixedAmount(-5, userDefaults: defaults)
+
+        #expect(FeeSettings.currentFixedAmount(userDefaults: defaults) == 0)
+    }
 }

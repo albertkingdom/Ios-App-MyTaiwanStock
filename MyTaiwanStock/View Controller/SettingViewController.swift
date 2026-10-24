@@ -14,8 +14,11 @@ class SettingViewController: UITableViewController {
     @IBOutlet weak var userDefinedFeeLabel: UILabel! // 自訂fee數字
     @IBOutlet weak var feeDiscountTextfield: UITextField!
     @IBOutlet weak var syncSwitch: UISwitch!
-    var pickerView = UIPickerView()
-    var fee: Fee = Fee()
+    /// Where the fee settings are read from and saved to; tests pass a store of their own.
+    var userDefaults: UserDefaults = .standard
+    /// Chooses how the fee is charged: with a discount, or as a fixed amount. It sits in the header of the
+    /// fee section, so the storyboard does not need another row.
+    let feeModeControl = UISegmentedControl(items: ["折數", "固定金額"])
     /// Injectable so tests can simulate "device not signed into iCloud" without touching
     /// the real `FileManager.default.ubiquityIdentityToken`.
     var iCloudAvailabilityChecking: ICloudAvailabilityChecking = DefaultICloudAvailabilityChecker()
@@ -54,13 +57,16 @@ class SettingViewController: UITableViewController {
         tableView.estimatedSectionFooterHeight = 80
         tableView.sectionFooterHeight = UITableView.automaticDimension
 
-        feeDiscountTextfield.inputView = pickerView
+        feeDiscountTextfield.keyboardType = .decimalPad
         feeDiscountTextfield.borderStyle = .none
         feeDiscountTextfield.delegate = self
-        feeDiscountTextfield.tintColor = .clear
         feeDiscountTextfield.inputAccessoryView = toolBar()
-        pickerView.delegate = self
-        pickerView.dataSource = self
+        feeModeControl.addTarget(self, action: #selector(feeModeChanged), for: .valueChanged)
+    }
+
+    @objc private func feeModeChanged() {
+        FeeSettings.saveMode(fixedAmount: feeModeControl.selectedSegmentIndex == 1, userDefaults: userDefaults)
+        updateFeeRows()
     }
 
     /// The storyboard pins the switch to the content view's trailing layout margin. Under a vertical bar the
@@ -107,20 +113,66 @@ class SettingViewController: UITableViewController {
     }
     
     func initView() {
-        let feeInDollars = UserDefaults.standard.double(forKey: UserDefaults.userDefinedFeeInDollarsKey)
-        let feeDiscountIndex = UserDefaults.standard.integer(forKey: UserDefaults.userDefinedFeeDiscountKey)
-        print("viewDidAppear feeInDollars \(feeInDollars)")
-        userDefinedFeeLabel.text = "\(feeInDollars) 元"
-        feeDiscountTextfield.text = fee.feePercentValues[feeDiscountIndex]
+        userDefinedFeeLabel.text = "\(FeeSettings.currentFixedAmount(userDefaults: userDefaults)) 元"
+        feeDiscountTextfield.text = Self.discountText(FeeSettings.currentDiscount(userDefaults: userDefaults))
+        feeModeControl.selectedSegmentIndex = FeeSettings.usesFixedAmount(userDefaults: userDefaults) ? 1 : 0
+        updateFeeRows()
+    }
+
+    /// The row of the mode that is not in use is dimmed, so it is clear which setting counts.
+    private func updateFeeRows() {
+        let usesFixedAmount = feeModeControl.selectedSegmentIndex == 1
+        fixedAmountCell?.contentView.alpha = usesFixedAmount ? 1 : 0.4
+        discountCell?.contentView.alpha = usesFixedAmount ? 0.4 : 1
+    }
+
+    private var fixedAmountCell: UITableViewCell? { userDefinedFeeLabel.enclosingCell }
+    private var discountCell: UITableViewCell? { feeDiscountTextfield.enclosingCell }
+
+    /// "6 折", or "無折扣" for 10.
+    static func discountText(_ discount: Decimal) -> String {
+        discount == FeeSettings.noDiscount ? "無折扣" : "\(discount) 折"
     }
 
     
     override func tableView(_ tableView: UITableView, titleForHeaderInSection section: Int) -> String? {
         switch section {
         case 0: return "帳號"
-        case 1: return "手續費"
+        case 1: return nil   // a header view with the fee mode control, see viewForHeaderInSection
         default: return nil
         }
+    }
+
+    override func tableView(_ tableView: UITableView, viewForHeaderInSection section: Int) -> UIView? {
+        guard section == 1 else { return nil }
+
+        let container = UIView()
+        let title = UILabel()
+        title.text = "手續費"
+        title.font = .preferredFont(forTextStyle: .footnote)
+        title.textColor = .secondaryLabel
+        title.adjustsFontForContentSizeCategory = true
+        let stack = UIStackView(arrangedSubviews: [title, feeModeControl])
+        stack.axis = .vertical
+        stack.alignment = .fill
+        stack.spacing = 8
+        stack.translatesAutoresizingMaskIntoConstraints = false
+        container.addSubview(stack)
+        // Same edges as the footer: at least 8pt from the leading edge, the layout margins otherwise.
+        let leading = stack.leadingAnchor.constraint(equalTo: container.layoutMarginsGuide.leadingAnchor)
+        leading.priority = .defaultHigh
+        NSLayoutConstraint.activate([
+            stack.leadingAnchor.constraint(greaterThanOrEqualTo: container.leadingAnchor, constant: 8),
+            leading,
+            stack.trailingAnchor.constraint(equalTo: container.layoutMarginsGuide.trailingAnchor),
+            stack.topAnchor.constraint(equalTo: container.topAnchor, constant: 12),
+            stack.bottomAnchor.constraint(equalTo: container.bottomAnchor, constant: -8),
+        ])
+        return container
+    }
+
+    override func tableView(_ tableView: UITableView, heightForHeaderInSection section: Int) -> CGFloat {
+        section == 1 ? UITableView.automaticDimension : super.tableView(tableView, heightForHeaderInSection: section)
     }
 
     func section0FooterText() -> String {
@@ -173,10 +225,13 @@ class SettingViewController: UITableViewController {
 
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.section == 1 && indexPath.row == 0 {
+        if let cell = tableView.cellForRow(at: indexPath), cell === fixedAmountCell {
             let vc = self.storyboard?.instantiateViewController(withIdentifier: "editFeeVC") as! EditFeeViewController
-            
+            vc.userDefaults = userDefaults
             self.navigationController?.pushViewController(vc, animated: true)
+        }
+        if let cell = tableView.cellForRow(at: indexPath), cell === discountCell {
+            feeDiscountTextfield.becomeFirstResponder()
         }
         if indexPath.section == 0 && indexPath.row == 0 {
             let vc = self.storyboard?.instantiateViewController(withIdentifier: "accountVC") as! AccountViewController
@@ -190,28 +245,32 @@ class SettingViewController: UITableViewController {
 }
 
 extension SettingViewController: UITextFieldDelegate {
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        print("textFieldDidEndEditing \(textField.text)")
+    func textFieldDidBeginEditing(_ textField: UITextField) {
+        // Edit the number itself, without the unit.
+        textField.text = "\(FeeSettings.currentDiscount(userDefaults: userDefaults))"
     }
 
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        do {
+            let discount = try FeeSettings.parseDiscount(textField.text)
+            FeeSettings.saveDiscount(discount, userDefaults: userDefaults)
+        } catch {
+            let alert = UIAlertController(title: "折數無法儲存", message: error.localizedDescription, preferredStyle: .alert)
+            alert.addAction(UIAlertAction(title: "好", style: .default))
+            present(alert, animated: true)
+        }
+        textField.text = Self.discountText(FeeSettings.currentDiscount(userDefaults: userDefaults))
+    }
 }
 
-extension SettingViewController: UIPickerViewDataSource, UIPickerViewDelegate {
-    func numberOfComponents(in pickerView: UIPickerView) -> Int {
-        return 1
-    }
-    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return fee.feePercentValues.count
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return fee.feePercentValues[row]
-    }
-    
-    func pickerView(_ pickerView: UIPickerView, didSelectRow row: Int, inComponent component: Int) {
-        feeDiscountTextfield.text = fee.feePercentValues[row]
-        
-        UserDefaults.standard.set(row, forKey: UserDefaults.userDefinedFeeDiscountKey)
-//        feeDiscountTextfield.resignFirstResponder()
+private extension UIView {
+    /// The table view cell this view is in.
+    var enclosingCell: UITableViewCell? {
+        var view: UIView? = self
+        while let current = view {
+            if let cell = current as? UITableViewCell { return cell }
+            view = current.superview
+        }
+        return nil
     }
 }

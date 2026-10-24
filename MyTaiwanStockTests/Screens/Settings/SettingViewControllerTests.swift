@@ -120,7 +120,7 @@ final class SettingViewControllerTests: XCTestCase {
         let settings = try makeSettings(defaults: defaults)
 
         FeeSettings.save(
-            FeeSettings(mode: .discount(Decimal(string: "2.8")!), wholeLotMinimumFee: 30, oddLotMinimumFee: 5),
+            FeeSettings(discount: Decimal(string: "2.8")!, wholeLotMinimumFee: 30, oddLotMinimumFee: 5),
             userDefaults: defaults)
         settings.viewWillAppear(false)
 

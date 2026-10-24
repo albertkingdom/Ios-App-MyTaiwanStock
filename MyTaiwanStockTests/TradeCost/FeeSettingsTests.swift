@@ -20,7 +20,7 @@ struct FeeSettingsTests {
     @Test func withNothingSavedThereIsNoDiscount() {
         let settings = FeeSettings.current(userDefaults: makeDefaults())
 
-        #expect(settings.mode == .discount(10))
+        #expect(settings.discount == 10)
     }
 
     @Test func theEarlierDiscountChoiceIsReadAsPositionPlusOneWithoutBeingWritten() {
@@ -29,9 +29,9 @@ struct FeeSettingsTests {
 
         let settings = FeeSettings.current(userDefaults: defaults)
 
-        #expect(settings.mode == .discount(6))
+        #expect(settings.discount == 6)
         #expect(defaults.object(forKey: UserDefaults.feeDiscountKey) == nil)
-        #expect(defaults.object(forKey: UserDefaults.feeModeKey) == nil)
+        #expect(defaults.object(forKey: "feeMode") == nil)
     }
 
     @Test func aSavedDiscountWinsOverTheEarlierChoice() {
@@ -39,39 +39,14 @@ struct FeeSettingsTests {
         defaults.set(5, forKey: UserDefaults.userDefinedFeeDiscountKey)
         defaults.set(2.8, forKey: UserDefaults.feeDiscountKey)
 
-        #expect(FeeSettings.current(userDefaults: defaults).mode == .discount(Decimal(string: "2.8")!))
-    }
-
-    @Test func aFixedAmountSavedEarlierDoesNotSwitchTheModeByItself() {
-        let defaults = makeDefaults()
-        defaults.set(20.0, forKey: UserDefaults.userDefinedFeeInDollarsKey)
-
-        #expect(FeeSettings.current(userDefaults: defaults).mode == .discount(10))
-    }
-
-    @Test func theFixedAmountModeUsesTheSavedAmountRoundedDown() {
-        let defaults = makeDefaults()
-        defaults.set(20.9, forKey: UserDefaults.userDefinedFeeInDollarsKey)
-        defaults.set("fixedAmount", forKey: UserDefaults.feeModeKey)
-
-        #expect(FeeSettings.current(userDefaults: defaults).mode == .fixedAmount(20))
-    }
-
-    /// The earlier settings screen saved whatever number was typed, so the stored value may not be a usable amount.
-    @Test(arguments: [(1e30, 2_147_483_647), (-5.0, 0), (Double.infinity, 0), (Double.nan, 0)])
-    func aStoredAmountThatDoesNotFitIsClampedInsteadOfCrashing(_ input: (stored: Double, amount: Int)) {
-        let defaults = makeDefaults()
-        defaults.set(input.stored, forKey: UserDefaults.userDefinedFeeInDollarsKey)
-        defaults.set("fixedAmount", forKey: UserDefaults.feeModeKey)
-
-        #expect(FeeSettings.current(userDefaults: defaults).mode == .fixedAmount(input.amount))
+        #expect(FeeSettings.current(userDefaults: defaults).discount == Decimal(string: "2.8")!)
     }
 
     @Test func aDiscountOutsideTheRangeFallsBackToTheEarlierChoiceOrNoDiscount() {
         let defaults = makeDefaults()
         defaults.set(11.0, forKey: UserDefaults.feeDiscountKey)
 
-        #expect(FeeSettings.current(userDefaults: defaults).mode == .discount(10))
+        #expect(FeeSettings.current(userDefaults: defaults).discount == 10)
     }
 
     // MARK: typed discount
@@ -142,44 +117,24 @@ struct FeeSettingsTests {
         #expect(defaults.object(forKey: UserDefaults.feeMinimumOddLotKey) == nil)
     }
 
-    @Test func aFixedAmountSettingKeepsTheSavedDiscountAndMinimumFees() {
+    /// Keys left by the earlier fixed-amount setting are ignored: the formula with the default discount applies,
+    /// and neither the old keys nor the new ones are written.
+    @Test func oldFixedAmountKeysAreIgnoredAndNotChanged() {
         let defaults = makeDefaults()
-        defaults.set(2.8, forKey: UserDefaults.feeDiscountKey)
-        defaults.set(5, forKey: UserDefaults.feeMinimumOddLotKey)
-        defaults.set("fixedAmount", forKey: UserDefaults.feeModeKey)
-        defaults.set(30.0, forKey: UserDefaults.userDefinedFeeInDollarsKey)
+        defaults.set("fixedAmount", forKey: "feeMode")
+        defaults.set(30.0, forKey: "userDefinedFeeInDollars")
 
         let settings = FeeSettings.current(userDefaults: defaults)
+        let result = FeeCalculator.calculate(
+            price: 100, shares: 1000, side: .buy, settings: settings, taxCategory: .stock)
 
-        #expect(settings.mode == .fixedAmount(30))
-        #expect(settings.discount == Decimal(string: "2.8")!)
-        #expect(settings.oddLotMinimumFee == 5)
-    }
-
-    // MARK: saving
-
-    @Test func theSavedModeDiscountAndAmountAreReadBack() {
-        let defaults = makeDefaults()
-
-        FeeSettings.saveMode(fixedAmount: true, userDefaults: defaults)
-        FeeSettings.saveDiscount(Decimal(string: "2.8")!, userDefaults: defaults)
-        FeeSettings.saveFixedAmount(30, userDefaults: defaults)
-
-        #expect(FeeSettings.usesFixedAmount(userDefaults: defaults))
-        #expect(FeeSettings.currentDiscount(userDefaults: defaults) == Decimal(string: "2.8")!)
-        #expect(FeeSettings.currentFixedAmount(userDefaults: defaults) == 30)
-        #expect(FeeSettings.current(userDefaults: defaults).mode == .fixedAmount(30))
-
-        FeeSettings.saveMode(fixedAmount: false, userDefaults: defaults)
-        #expect(FeeSettings.current(userDefaults: defaults).mode == .discount(Decimal(string: "2.8")!))
-    }
-
-    @Test func aFixedAmountIsNeverSavedNegative() {
-        let defaults = makeDefaults()
-
-        FeeSettings.saveFixedAmount(-5, userDefaults: defaults)
-
-        #expect(FeeSettings.currentFixedAmount(userDefaults: defaults) == 0)
+        #expect(settings == FeeSettings())
+        #expect(result?.fee == 142)
+        #expect(defaults.string(forKey: "feeMode") == "fixedAmount")
+        #expect(defaults.double(forKey: "userDefinedFeeInDollars") == 30)
+        #expect(defaults.object(forKey: UserDefaults.feeDiscountKey) == nil)
+        #expect(defaults.object(forKey: UserDefaults.feeMinimumWholeLotKey) == nil)
+        #expect(defaults.object(forKey: UserDefaults.feeMinimumOddLotKey) == nil)
     }
 
     // MARK: the three values together
@@ -244,28 +199,28 @@ struct FeeSettingsTests {
         #expect(defaults.string(forKey: "feeMode") == "fixedAmount")
     }
 
-    @Test func aParsedDiscountIsTheDiscountMode() throws {
+    @Test func aParsedDiscountIsKept() throws {
         let settings = try FeeSettings.parse(discountText: "6", wholeLotMinimumText: "20", oddLotMinimumText: "1")
 
-        #expect(settings.mode == .discount(6))
+        #expect(settings.discount == 6)
     }
 
     // MARK: summary
 
     @Test func theSummaryShowsTheDiscountAndBothMinimumFees() {
-        let settings = FeeSettings(mode: .discount(Decimal(string: "2.8")!))
+        let settings = FeeSettings(discount: Decimal(string: "2.8")!)
 
         #expect(settings.summaryText == "2.8 折・最低 20 / 1 元")
     }
 
     @Test func theSummaryOfNoDiscountSaysSo() {
-        let settings = FeeSettings(mode: .discount(10))
+        let settings = FeeSettings(discount: 10)
 
         #expect(settings.summaryText == "無折扣・最低 20 / 1 元")
     }
 
     @Test func aMinimumFeeOfZeroIsShownAsZero() {
-        let settings = FeeSettings(mode: .discount(6), wholeLotMinimumFee: 0, oddLotMinimumFee: 5)
+        let settings = FeeSettings(discount: 6, wholeLotMinimumFee: 0, oddLotMinimumFee: 5)
 
         #expect(settings.summaryText == "6 折・最低 0 / 5 元")
     }

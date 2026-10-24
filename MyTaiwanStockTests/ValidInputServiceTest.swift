@@ -118,22 +118,6 @@ class ValidInputServiceTest: XCTestCase {
         }
     }
 
-    // MARK: fixed fee amount
-
-    func test_fixed_fee_with_a_decimal_point_is_rounded_down_to_whole_dollars() {
-        XCTAssertEqual(try validation.validUserDefinedFee("20.5"), 20)
-        XCTAssertEqual(try validation.validUserDefinedFee("20.0"), 20)
-        XCTAssertEqual(try validation.validUserDefinedFee("0"), 0)
-    }
-
-    func test_fixed_fee_that_is_not_a_plain_non_negative_number_throws() {
-        for text in ["abc", "", "-5", "20abc", "1e3", "inf", "nan", "0x10", "1.2.3", "2147483648", nil] as [String?] {
-            XCTAssertThrowsError(try validation.validUserDefinedFee(text), "\(text ?? "nil")") { error in
-                XCTAssertEqual(error as? ValidationError, .invalidUserDefinedFee)
-            }
-        }
-    }
-
     // MARK: fee and tax typed for a record
 
     func test_fee_or_tax_accepts_whole_dollars_in_range() {

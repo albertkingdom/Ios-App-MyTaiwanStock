@@ -30,7 +30,7 @@ final class FeeSettingsViewControllerTests: XCTestCase {
 
     private func seed(_ defaults: UserDefaults) {
         FeeSettings.save(
-            FeeSettings(mode: .discount(6), wholeLotMinimumFee: 20, oddLotMinimumFee: 1), userDefaults: defaults)
+            FeeSettings(discount: 6, wholeLotMinimumFee: 20, oddLotMinimumFee: 1), userDefaults: defaults)
     }
 
     func test_showsDefaultsWhenNothingIsSaved() {
@@ -44,7 +44,7 @@ final class FeeSettingsViewControllerTests: XCTestCase {
     func test_showsStoredValues() {
         let defaults = makeDefaults()
         FeeSettings.save(
-            FeeSettings(mode: .discount(2.8), wholeLotMinimumFee: 30, oddLotMinimumFee: 5), userDefaults: defaults)
+            FeeSettings(discount: 2.8, wholeLotMinimumFee: 30, oddLotMinimumFee: 5), userDefaults: defaults)
 
         let (_, page) = makePage(defaults: defaults)
 

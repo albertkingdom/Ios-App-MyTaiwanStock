@@ -17,7 +17,7 @@ final class TradeImportPreviewViewControllerTests: XCTestCase {
         return TradeImportViewModel(
             trades: [trade], resolver: StockNameResolver(entries: entries), isKnownCode: { _ in true },
             store: FakeTradeImportStore(), listNames: [], currentListName: nil,
-            feeSettings: FeeSettings(mode: .discount(6)))
+            feeSettings: FeeSettings(discount: 6))
     }
 
     private func makeNavigation(_ viewModel: TradeImportViewModel) -> (UINavigationController, TradeImportPreviewViewController) {

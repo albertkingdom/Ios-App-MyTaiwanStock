@@ -52,14 +52,9 @@ enum FeeCalculator {
     }
 
     private static func fee(forValue value: Decimal, shares: Int, settings: FeeSettings) -> Int? {
-        switch settings.mode {
-        case .fixedAmount(let amount):
-            return amount <= Int(Int32.max) ? max(0, amount) : nil
-        case .discount(let discount):
-            guard let calculated = roundedDown(value * standardFeeRate * discount / 10) else { return nil }
-            let minimum = shares >= wholeLotShares ? settings.wholeLotMinimumFee : settings.oddLotMinimumFee
-            return max(calculated, minimum)
-        }
+        guard let calculated = roundedDown(value * standardFeeRate * settings.discount / 10) else { return nil }
+        let minimum = shares >= wholeLotShares ? settings.wholeLotMinimumFee : settings.oddLotMinimumFee
+        return max(calculated, minimum)
     }
 
     /// Nil when the result is not a number or does not fit in a record.

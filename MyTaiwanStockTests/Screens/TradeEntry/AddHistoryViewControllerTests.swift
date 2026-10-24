@@ -6,7 +6,7 @@ final class AddHistoryViewControllerTests: XCTestCase {
     private func makeController() -> AddHistoryViewController {
         let storyboard = UIStoryboard(name: "Main", bundle: Bundle(for: AddHistoryViewController.self))
         let controller = storyboard.instantiateViewController(withIdentifier: "addRecordController") as! AddHistoryViewController
-        controller.viewModel = AddHistoryViewModel(feeSettings: { FeeSettings(mode: .discount(10)) })
+        controller.viewModel = AddHistoryViewModel(feeSettings: { FeeSettings(discount: 10) })
         controller.stockNo = "2330"
         controller.loadViewIfNeeded()
         controller.tableView.layoutIfNeeded()

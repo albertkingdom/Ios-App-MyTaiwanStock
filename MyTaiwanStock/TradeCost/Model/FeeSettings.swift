@@ -5,99 +5,43 @@
 
 import Foundation
 
-/// How the brokerage fee is charged, as chosen in the settings screen.
+/// The brokerage fee settings chosen in the settings screen.
 struct FeeSettings: Equatable {
-    enum Mode: Equatable {
-        /// The standard rate multiplied by a discount from 0.1 to 10, where 10 means no discount.
-        case discount(Decimal)
-        /// A fixed amount in whole dollars that replaces the formula.
-        case fixedAmount(Int)
-    }
-
+    /// The standard rate multiplied by a discount from 0.1 to 10, where 10 means no discount.
     static let noDiscount = Decimal(10)
     static let defaultWholeLotMinimumFee = 20
     static let defaultOddLotMinimumFee = 1
 
-    var mode: Mode
     var discount: Decimal
     var wholeLotMinimumFee: Int
     var oddLotMinimumFee: Int
 
     init(
-        mode: Mode,
+        discount: Decimal = FeeSettings.noDiscount,
         wholeLotMinimumFee: Int = FeeSettings.defaultWholeLotMinimumFee,
         oddLotMinimumFee: Int = FeeSettings.defaultOddLotMinimumFee
     ) {
-        let discount: Decimal
-        if case .discount(let value) = mode {
-            discount = value
-        } else {
-            discount = FeeSettings.noDiscount
-        }
-        self.init(
-            mode: mode, discount: discount, wholeLotMinimumFee: wholeLotMinimumFee, oddLotMinimumFee: oddLotMinimumFee)
-    }
-
-    private init(mode: Mode, discount: Decimal, wholeLotMinimumFee: Int, oddLotMinimumFee: Int) {
-        self.mode = mode
         self.discount = discount
         self.wholeLotMinimumFee = wholeLotMinimumFee
         self.oddLotMinimumFee = oddLotMinimumFee
     }
 
-    /// Reads the settings without writing anything. Without a saved mode the mode is the discount mode, so
-    /// a fixed amount saved before modes existed is not applied to every trade. Without a saved discount,
-    /// the earlier choice, the position of the discount in a list that started at 1, is read as that
-    /// position plus one; without either, there is no discount. A minimum fee that is not saved as a whole
-    /// number in range is read as its default.
+    /// Reads the settings without writing anything. Without a saved discount, the earlier choice, the
+    /// position of the discount in a list that started at 1, is read as that position plus one; without
+    /// either, there is no discount. A minimum fee that is not saved as a whole number in range is read as
+    /// its default.
     static func current(userDefaults: UserDefaults = .standard) -> FeeSettings {
-        let discount = storedDiscount(in: userDefaults)
-        let mode: Mode = usesFixedAmount(userDefaults: userDefaults)
-            ? .fixedAmount(currentFixedAmount(userDefaults: userDefaults))
-            : .discount(discount)
-        return FeeSettings(
-            mode: mode, discount: discount,
+        FeeSettings(
+            discount: storedDiscount(in: userDefaults),
             wholeLotMinimumFee: storedMinimumFee(
                 forKey: UserDefaults.feeMinimumWholeLotKey, defaultFee: defaultWholeLotMinimumFee, in: userDefaults),
             oddLotMinimumFee: storedMinimumFee(
                 forKey: UserDefaults.feeMinimumOddLotKey, defaultFee: defaultOddLotMinimumFee, in: userDefaults))
     }
 
-    // MARK: reading the parts, for the settings screen that shows both whichever mode is active
-
-    static func usesFixedAmount(userDefaults: UserDefaults = .standard) -> Bool {
-        userDefaults.string(forKey: UserDefaults.feeModeKey) == "fixedAmount"
-    }
-
-    static func currentDiscount(userDefaults: UserDefaults = .standard) -> Decimal {
-        storedDiscount(in: userDefaults)
-    }
-
-    /// The earlier settings screen saved whatever number was typed, so a stored value that is not a usable
-    /// amount counts as 0, and one that is too large as the largest amount a record can hold.
-    static func currentFixedAmount(userDefaults: UserDefaults = .standard) -> Int {
-        let stored = userDefaults.double(forKey: UserDefaults.userDefinedFeeInDollarsKey)
-        guard stored.isFinite, stored > 0 else { return 0 }
-        return Int(min(stored.rounded(.down), Double(Int32.max)))
-    }
-
-    // MARK: writing
-
-    static func saveMode(fixedAmount: Bool, userDefaults: UserDefaults = .standard) {
-        userDefaults.set(fixedAmount ? "fixedAmount" : "discount", forKey: UserDefaults.feeModeKey)
-    }
-
-    static func saveDiscount(_ discount: Decimal, userDefaults: UserDefaults = .standard) {
-        userDefaults.set(NSDecimalNumber(decimal: discount).doubleValue, forKey: UserDefaults.feeDiscountKey)
-    }
-
-    static func saveFixedAmount(_ amount: Int, userDefaults: UserDefaults = .standard) {
-        userDefaults.set(Double(max(0, amount)), forKey: UserDefaults.userDefinedFeeInDollarsKey)
-    }
-
-    /// Writes the discount and both minimum fees together; the fee mode is left as it is.
+    /// Writes the discount and both minimum fees together.
     static func save(_ settings: FeeSettings, userDefaults: UserDefaults = .standard) {
-        saveDiscount(settings.discount, userDefaults: userDefaults)
+        userDefaults.set(NSDecimalNumber(decimal: settings.discount).doubleValue, forKey: UserDefaults.feeDiscountKey)
         userDefaults.set(settings.wholeLotMinimumFee, forKey: UserDefaults.feeMinimumWholeLotKey)
         userDefaults.set(settings.oddLotMinimumFee, forKey: UserDefaults.feeMinimumOddLotKey)
     }
@@ -136,7 +80,7 @@ struct FeeSettings: Equatable {
             throw FeeSettingsError.invalidOddLotMinimumFee
         }
         return FeeSettings(
-            mode: .discount(discount), wholeLotMinimumFee: wholeLotMinimumFee, oddLotMinimumFee: oddLotMinimumFee)
+            discount: discount, wholeLotMinimumFee: wholeLotMinimumFee, oddLotMinimumFee: oddLotMinimumFee)
     }
 
     private static let minimumDiscount = Decimal(string: "0.1")!

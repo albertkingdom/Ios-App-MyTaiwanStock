@@ -36,17 +36,17 @@
 
 - Affected specs: `trade-fee-and-tax`（新增）、`trade-screenshot-import`、`icloud-backup`
 - Affected code:
-  - New: MyTaiwanStock/Util/FeeCalculator.swift
-  - New: MyTaiwanStock/Util/FeeSettings.swift
+  - New: MyTaiwanStock/TradeCost/FeeCalculator.swift
+  - New: MyTaiwanStock/TradeCost/FeeSettings.swift
   - New: MyTaiwanStock/Model/MyTaiwanStock.xcdatamodeld/MyTaiwanStock 2.xcdatamodel
   - New: MyTaiwanStock/Model/MyTaiwanStock.xcdatamodeld/.xccurrentversion
-  - New: MyTaiwanStockTests/FeeCalculatorTests.swift
-  - New: MyTaiwanStockTests/FeeSettingsTests.swift
+  - New: MyTaiwanStockTests/TradeCost/FeeCalculatorTests.swift
+  - New: MyTaiwanStockTests/TradeCost/FeeSettingsTests.swift
   - New: MyTaiwanStockTests/InvestHistoryMigrationTests.swift
   - New: MyTaiwanStockTests/StoreSchemaCompatibilityCheckerTests.swift
   - New: MyTaiwanStockTests/AddHistoryViewModelTests.swift
   - New: MyTaiwanStockTests/HistoryOnlineTests.swift
-  - Modified: MyTaiwanStock/OverViewCaculator.swift
+  - Modified: MyTaiwanStock/TradeCost/OverViewCalculator.swift
   - Modified: MyTaiwanStock/View/HistoryCellModel.swift
   - Modified: MyTaiwanStock/View/NewHistoryTableViewCell.swift
   - Modified: MyTaiwanStock/View/NewHistoryTableViewCell.xib
@@ -54,9 +54,9 @@
   - Modified: MyTaiwanStock/View Controller/AddHistoryViewController.swift
   - Modified: MyTaiwanStock/View Controller/View Model/AddHistoryViewModel.swift
   - Modified: MyTaiwanStock/View Controller/View Model/StockDetailViewModel.swift
-  - Modified: MyTaiwanStock/View Controller/View Model/TradeImportViewModel.swift
-  - Modified: MyTaiwanStock/View Controller/TradeEditViewController.swift
-  - Modified: MyTaiwanStock/View Controller/TradeImportPreviewViewController.swift
+  - Modified: MyTaiwanStock/TradeImport/TradeImportViewModel.swift
+  - Modified: MyTaiwanStock/TradeImport/TradeEditViewController.swift
+  - Modified: MyTaiwanStock/TradeImport/TradeImportPreviewViewController.swift
   - Modified: MyTaiwanStock/View Controller/SettingViewController.swift
   - Modified: MyTaiwanStock/View Controller/EditFeeViewController.swift
   - Modified: MyTaiwanStock/View Controller/StockViewController.swift
@@ -65,7 +65,7 @@
   - Modified: MyTaiwanStock/Util/UserDefault+Extension.swift
   - Modified: MyTaiwanStock/Util/LocalDBService.swift
   - Modified: MyTaiwanStock/Util/OnlineDBService.swift
-  - Modified: MyTaiwanStock/Util/DefaultTradeImportStore.swift
+  - Modified: MyTaiwanStock/TradeImport/DefaultTradeImportStore.swift
   - Modified: MyTaiwanStock/Util/StoreSchemaCompatibilityChecking.swift
   - Modified: MyTaiwanStock/Util/ICloudBackupService.swift
   - Modified: MyTaiwanStock/Util/BackupDestination.swift
@@ -78,9 +78,9 @@
   - Modified: MyTaiwanStockTests/AccountViewControllerImportTests.swift
   - Modified: MyTaiwanStockTests/ICloudBackupServiceTests.swift
   - Modified: MyTaiwanStockTests/BackupDestinationTests.swift
-  - Modified: MyTaiwanStockTests/testOverViewCalculator.swift
+  - Modified: MyTaiwanStockTests/TradeCost/OverViewCalculatorTests.swift
   - Modified: MyTaiwanStockTests/ValidInputServiceTest.swift
-  - Modified: MyTaiwanStockTests/TradeImportViewModelTests.swift
-  - Modified: MyTaiwanStockTests/DefaultTradeImportStoreTests.swift
+  - Modified: MyTaiwanStockTests/TradeImport/TradeImportViewModelTests.swift
+  - Modified: MyTaiwanStockTests/TradeImport/DefaultTradeImportStoreTests.swift
   - Removed: MyTaiwanStock/Model/Fee.swift
   - Removed: MyTaiwanStock/Model/FeeType.swift

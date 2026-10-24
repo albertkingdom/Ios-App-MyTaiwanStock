@@ -59,9 +59,9 @@
 		A1065AD22C21CEF30033A319 /* WalkthroughViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1065AD12C21CEF30033A319 /* WalkthroughViewController.swift */; };
 		A10CD2D028B9D1BB00B37AA4 /* CustomTabBarViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A10CD2CF28B9D1BB00B37AA4 /* CustomTabBarViewController.swift */; };
 		A1164EFC2CD268220036C275 /* UnreadManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1164EFB2CD268220036C275 /* UnreadManager.swift */; };
-		A11E04682CF2DB6B00138497 /* OverViewCaculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11E04672CF2DB6B00138497 /* OverViewCaculator.swift */; };
+		A11E04682CF2DB6B00138497 /* OverViewCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11E04672CF2DB6B00138497 /* OverViewCalculator.swift */; };
 		A11E046B2CF2DE1100138497 /* TestStockListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11E04692CF2DE1100138497 /* TestStockListViewModel.swift */; };
-		A11E046D2CF2EBE700138497 /* testOverViewCalculator.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11E046C2CF2EBE700138497 /* testOverViewCalculator.swift */; };
+		A11E046D2CF2EBE700138497 /* OverViewCalculatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11E046C2CF2EBE700138497 /* OverViewCalculatorTests.swift */; };
 		A11E046F2CFAC2AE00138497 /* Date+Extension.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11E046E2CFAC2A700138497 /* Date+Extension.swift */; };
 		A11E04732CFB24A800138497 /* FloatingButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A11E04722CFB24A800138497 /* FloatingButton.swift */; };
 		A1202125288BB8DD00C8746A /* NewsListTableViewCell2.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1202124288BB8DD00C8746A /* NewsListTableViewCell2.swift */; };
@@ -337,9 +337,9 @@
 		A10CD2CF28B9D1BB00B37AA4 /* CustomTabBarViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CustomTabBarViewController.swift; sourceTree = "<group>"; };
 		A1164EE82CD123BD0036C275 /* README.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = README.md; sourceTree = "<group>"; };
 		A1164EFB2CD268220036C275 /* UnreadManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UnreadManager.swift; sourceTree = "<group>"; };
-		A11E04672CF2DB6B00138497 /* OverViewCaculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverViewCaculator.swift; sourceTree = "<group>"; };
+		A11E04672CF2DB6B00138497 /* OverViewCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverViewCalculator.swift; sourceTree = "<group>"; };
 		A11E04692CF2DE1100138497 /* TestStockListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TestStockListViewModel.swift; sourceTree = "<group>"; };
-		A11E046C2CF2EBE700138497 /* testOverViewCalculator.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = testOverViewCalculator.swift; sourceTree = "<group>"; };
+		A11E046C2CF2EBE700138497 /* OverViewCalculatorTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OverViewCalculatorTests.swift; sourceTree = "<group>"; };
 		A11E046E2CFAC2A700138497 /* Date+Extension.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extension.swift"; sourceTree = "<group>"; };
 		A11E04722CFB24A800138497 /* FloatingButton.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FloatingButton.swift; sourceTree = "<group>"; };
 		A1202124288BB8DD00C8746A /* NewsListTableViewCell2.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NewsListTableViewCell2.swift; sourceTree = "<group>"; };
@@ -563,6 +563,24 @@
 			path = SharedWithExtension;
 			sourceTree = "<group>";
 		};
+		7AB937D9595D4A2A588C4924 /* TradeImport */ = {
+			isa = PBXGroup;
+			children = (
+				38636568B743F70FE246F6FE /* TradeImportFlow.swift */,
+				6F52713E23FB475C1000B61D /* TradeImageSource.swift */,
+				C1FE0B62189FEF6B2F8D6214 /* TradeScreenshotParser.swift */,
+				DCB4ED896BEF3DDC8FABEF46 /* TradeTextRecognizer.swift */,
+				A40356AAFB24898C0EE3E32C /* StockNameResolver.swift */,
+				C76A7E78A7574E60C81D3350 /* DefaultTradeImportStore.swift */,
+				8640D09D97E976868D167E4D /* TradeImportModels.swift */,
+				86BBB438DF5F34BD6DC11451 /* TradeImportViewModel.swift */,
+				39AD27A74F9DF2F3D0E2701C /* TradeImportPreviewViewController.swift */,
+				808890ADBB223AD086D933A4 /* TradeEditViewController.swift */,
+			);
+			name = TradeImport;
+			path = TradeImport;
+			sourceTree = "<group>";
+		};
 		A12705102830AE7C00ED92F2 /* View Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -574,7 +592,6 @@
 				A1270527283241D700ED92F2 /* ChatViewModel.swift */,
 				A127052928335E6C00ED92F2 /* NewsListViewModel.swift */,
 				A16321532954B05D0011F295 /* AddDividendViewModel.swift */,
-				86BBB438DF5F34BD6DC11451 /* TradeImportViewModel.swift */,
 			);
 			path = "View Model";
 			sourceTree = "<group>";
@@ -594,7 +611,6 @@
 			children = (
 				A11E04692CF2DE1100138497 /* TestStockListViewModel.swift */,
 				A181945828B88209009475E9 /* ValidInputServiceTest.swift */,
-				A11E046C2CF2EBE700138497 /* testOverViewCalculator.swift */,
 				1F24890FEBA8232DE81E0095 /* ICloudBackupServiceTests.swift */,
 				B000A994999CDE40E7C0CAD6 /* LocalDBServiceCrashFixesTests.swift */,
 				D0B1C2A3E4F5061728394A5C /* DuplicateStockNoTests.swift */,
@@ -609,24 +625,16 @@
 				5AC4FF1C38A3B38F1BFAD283 /* StockListRefresherTests.swift */,
 				D7468712F972AC4EDD765663 /* StockMarketLookupTests.swift */,
 				273217F8284584EE8DAE887B /* ChartServiceTests.swift */,
-				444B2D36B63AFE2189A450B6 /* TradeScreenshotFixtures.swift */,
-				15A4206DDD948FB6376369D3 /* TradeScreenshotParserTests.swift */,
-				4DB2A925F8B659FCD4C126CC /* StockNameResolverTests.swift */,
-				86E56EE9FEDB8EF9AEEA8030 /* TradeTextRecognizerTests.swift */,
-				36DAE738BFD46BF3EF2FD877 /* TradeScreenshotVisionFixtures.swift */,
-				F984A9E41163688F362D7882 /* TradeImportViewModelTests.swift */,
-				100C2DECF966B15FA78301FC /* DefaultTradeImportStoreTests.swift */,
 				1DA45FEE2F5F881A51DBD9ED /* FloatingButtonManagerTests.swift */,
 				02FECA27A0D552A9EB23F939 /* HistoryDocumentSelectorTests.swift */,
 				7B24E0A8C5D13F96B2A4E871 /* ResizableLayoutTests.swift */,
-				9EBA9C7EE00012BE30C66789 /* TradeImportFlowTests.swift */,
 				8AFC6E13CB3C18E0826AE4B9 /* UIAlertController+Tapping.swift */,
 				A56D81E3E7183E7DB2B8E89B /* ShareImport */,
 				D24D8738ED48BBC337A4CE12 /* StockListCoordinatorImportTests.swift */,
-				DFDE6163CCF298E599B8F90D /* FeeCalculatorTests.swift */,
-				1D81C19E456102036C3F5039 /* FeeSettingsTests.swift */,
 				4C964B68FACC29DE5DD9E6D8 /* InvestHistoryMigrationTests.swift */,
 				7068E958757E9074134F1608 /* HistoryOnlineTests.swift */,
+				B239CB275063F8CCA8BB677F /* TradeImport */,
+				B63AB7F996374C4CCFF5CAEE /* TradeCost */,
 			);
 			path = MyTaiwanStockTests;
 			sourceTree = "<group>";
@@ -665,8 +673,6 @@
 				A1DE925C2DB39A7400D743C7 /* ViewModel */,
 				A1DE925B2DB39A4400D743C7 /* View */,
 				A1DE925A2DB3999500D743C7 /* ViewController */,
-				38636568B743F70FE246F6FE /* TradeImportFlow.swift */,
-				6F52713E23FB475C1000B61D /* TradeImageSource.swift */,
 			);
 			path = StockList;
 			sourceTree = "<group>";
@@ -716,6 +722,33 @@
 			path = ShareImport;
 			sourceTree = "<group>";
 		};
+		B239CB275063F8CCA8BB677F /* TradeImport */ = {
+			isa = PBXGroup;
+			children = (
+				100C2DECF966B15FA78301FC /* DefaultTradeImportStoreTests.swift */,
+				9EBA9C7EE00012BE30C66789 /* TradeImportFlowTests.swift */,
+				F984A9E41163688F362D7882 /* TradeImportViewModelTests.swift */,
+				444B2D36B63AFE2189A450B6 /* TradeScreenshotFixtures.swift */,
+				15A4206DDD948FB6376369D3 /* TradeScreenshotParserTests.swift */,
+				36DAE738BFD46BF3EF2FD877 /* TradeScreenshotVisionFixtures.swift */,
+				86E56EE9FEDB8EF9AEEA8030 /* TradeTextRecognizerTests.swift */,
+				4DB2A925F8B659FCD4C126CC /* StockNameResolverTests.swift */,
+			);
+			name = TradeImport;
+			path = TradeImport;
+			sourceTree = "<group>";
+		};
+		B63AB7F996374C4CCFF5CAEE /* TradeCost */ = {
+			isa = PBXGroup;
+			children = (
+				DFDE6163CCF298E599B8F90D /* FeeCalculatorTests.swift */,
+				1D81C19E456102036C3F5039 /* FeeSettingsTests.swift */,
+				A11E046C2CF2EBE700138497 /* OverViewCalculatorTests.swift */,
+			);
+			name = TradeCost;
+			path = TradeCost;
+			sourceTree = "<group>";
+		};
 		BFE7EE6F57DFA01028BB14B9 /* ShareImport */ = {
 			isa = PBXGroup;
 			children = (
@@ -725,6 +758,17 @@
 			);
 			name = ShareImport;
 			path = ShareImport;
+			sourceTree = "<group>";
+		};
+		CFE9320BBA212D9E3F60C25F /* TradeCost */ = {
+			isa = PBXGroup;
+			children = (
+				EFE4BC31B663197CA27B0863 /* FeeCalculator.swift */,
+				BFED6DE1D62AA2B4E86C09B6 /* FeeSettings.swift */,
+				A11E04672CF2DB6B00138497 /* OverViewCalculator.swift */,
+			);
+			name = TradeCost;
+			path = TradeCost;
 			sourceTree = "<group>";
 		};
 		DF06F2EE27097F2C0031D6FE = {
@@ -782,10 +826,11 @@
 				A1164EE82CD123BD0036C275 /* README.md */,
 				A1164EFB2CD268220036C275 /* UnreadManager.swift */,
 				A1CD75D12CD388F1000A0A7A /* DependencyContainer.swift */,
-				A11E04672CF2DB6B00138497 /* OverViewCaculator.swift */,
 				A1C03DE327C1D8571005AB268 /* ActivityKit */,
 				2E8016544C5C1DBE0E2915A1 /* Resources */,
 				BFE7EE6F57DFA01028BB14B9 /* ShareImport */,
+				7AB937D9595D4A2A588C4924 /* TradeImport */,
+				CFE9320BBA212D9E3F60C25F /* TradeCost */,
 			);
 			path = MyTaiwanStock;
 			sourceTree = "<group>";
@@ -808,7 +853,6 @@
 				A17C2A7828D80C99007508D0 /* FeeType.swift */,
 				A17C2A7A28D81303007508D0 /* Fee.swift */,
 				AD93EF53658832306E290E9C /* StockListEntry.swift */,
-				8640D09D97E976868D167E4D /* TradeImportModels.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -833,8 +877,6 @@
 				A163216D2956A52F0011F295 /* DividendDetailViewController.swift */,
 				A12515632C16076F001BFC53 /* MemoViewController.swift */,
 				A1065AD12C21CEF30033A319 /* WalkthroughViewController.swift */,
-				808890ADBB223AD086D933A4 /* TradeEditViewController.swift */,
-				39AD27A74F9DF2F3D0E2701C /* TradeImportPreviewViewController.swift */,
 			);
 			path = "View Controller";
 			sourceTree = "<group>";
@@ -892,13 +934,7 @@
 				2E689875DDDAF313A6EC4313 /* StockListRepository.swift */,
 				D58D87D037B5D9470F5316F8 /* StockListRefresher.swift */,
 				344EF2A4392E0936741F7193 /* StockMarketLookup.swift */,
-				C1FE0B62189FEF6B2F8D6214 /* TradeScreenshotParser.swift */,
-				A40356AAFB24898C0EE3E32C /* StockNameResolver.swift */,
-				DCB4ED896BEF3DDC8FABEF46 /* TradeTextRecognizer.swift */,
-				C76A7E78A7574E60C81D3350 /* DefaultTradeImportStore.swift */,
 				44CFEAF3C949085344714127 /* HistoryDocumentSelector.swift */,
-				EFE4BC31B663197CA27B0863 /* FeeCalculator.swift */,
-				BFED6DE1D62AA2B4E86C09B6 /* FeeSettings.swift */,
 			);
 			path = Util;
 			sourceTree = "<group>";
@@ -1183,7 +1219,7 @@
 				A11E046B2CF2DE1100138497 /* TestStockListViewModel.swift in Sources */,
 				A1DE927E2DC325DC00D743C7 /* StockNoStruct.swift in Sources */,
 				A1DE927C2DC325D300D743C7 /* ListStruct.swift in Sources */,
-				A11E046D2CF2EBE700138497 /* testOverViewCalculator.swift in Sources */,
+				A11E046D2CF2EBE700138497 /* OverViewCalculatorTests.swift in Sources */,
 				A1DE92752DBCC68600D743C7 /* List+CoreDataProperties.swift in Sources */,
 				9079AA8B35002B8DED3B7894 /* ICloudBackupServiceTests.swift in Sources */,
 				85022264D8C3DC74598DFBC5 /* LocalDBServiceCrashFixesTests.swift in Sources */,
@@ -1321,7 +1357,7 @@
 				A168E0A427148D1600C75064 /* webViewController.swift in Sources */,
 				A1270528283241D700ED92F2 /* ChatViewModel.swift in Sources */,
 				A199DC4628C84C54003FBC61 /* OnlineDBService.swift in Sources */,
-				A11E04682CF2DB6B00138497 /* OverViewCaculator.swift in Sources */,
+				A11E04682CF2DB6B00138497 /* OverViewCalculator.swift in Sources */,
 				A12705142830B36700ED92F2 /* StockCellViewModel.swift in Sources */,
 				A1C03DE127C1D8571005AB268 /* StockActivityAttributes.swift in Sources */,
 				A1C03DE527C1D8590005AB268 /* ActivityManager.swift in Sources */,

@@ -559,6 +559,16 @@
 			name = iOS;
 			sourceTree = "<group>";
 		};
+		709088F44AF22C6EBA7AC6D1 /* TradeEntry */ = {
+			isa = PBXGroup;
+			children = (
+				DE6950F8BBF25C8A498AC649 /* AddHistoryViewControllerTests.swift */,
+				D7350AD98A6DF1E57CDA1107 /* AddHistoryViewModelTests.swift */,
+			);
+			name = TradeEntry;
+			path = TradeEntry;
+			sourceTree = "<group>";
+		};
 		741131B9C2335C77571A6472 /* SharedWithExtension */ = {
 			isa = PBXGroup;
 			children = (
@@ -593,7 +603,6 @@
 				A127051B2831F98100ED92F2 /* AddStockNoViewModel.swift */,
 				A127051D283201D700ED92F2 /* AddListViewModel.swift */,
 				A127051F283209FD00ED92F2 /* StockDetailViewModel.swift */,
-				A127052128320B2200ED92F2 /* AddHistoryViewModel.swift */,
 				A1270523283212FE00ED92F2 /* StatisticViewModel.swift */,
 				A1270527283241D700ED92F2 /* ChatViewModel.swift */,
 				A127052928335E6C00ED92F2 /* NewsListViewModel.swift */,
@@ -642,8 +651,7 @@
 				B239CB275063F8CCA8BB677F /* TradeImport */,
 				B63AB7F996374C4CCFF5CAEE /* TradeCost */,
 				88445A331382A6B6557409C2 /* StoreSchemaCompatibilityCheckerTests.swift */,
-				D7350AD98A6DF1E57CDA1107 /* AddHistoryViewModelTests.swift */,
-				DE6950F8BBF25C8A498AC649 /* AddHistoryViewControllerTests.swift */,
+				709088F44AF22C6EBA7AC6D1 /* TradeEntry */,
 			);
 			path = MyTaiwanStockTests;
 			sourceTree = "<group>";
@@ -718,6 +726,17 @@
 				A1DE92772DC3248E00D743C7 /* StockNoStruct.swift */,
 			);
 			path = CoreData;
+			sourceTree = "<group>";
+		};
+		A284EC9E19E0403C63E03C6B /* TradeEntry */ = {
+			isa = PBXGroup;
+			children = (
+				DF06F329270DEA1A0031D6FE /* AddHistoryViewController.swift */,
+				A127052128320B2200ED92F2 /* AddHistoryViewModel.swift */,
+				A12515632C16076F001BFC53 /* MemoViewController.swift */,
+			);
+			name = TradeEntry;
+			path = TradeEntry;
 			sourceTree = "<group>";
 		};
 		A56D81E3E7183E7DB2B8E89B /* ShareImport */ = {
@@ -840,6 +859,7 @@
 				BFE7EE6F57DFA01028BB14B9 /* ShareImport */,
 				7AB937D9595D4A2A588C4924 /* TradeImport */,
 				CFE9320BBA212D9E3F60C25F /* TradeCost */,
+				A284EC9E19E0403C63E03C6B /* TradeEntry */,
 			);
 			path = MyTaiwanStock;
 			sourceTree = "<group>";
@@ -870,7 +890,6 @@
 			isa = PBXGroup;
 			children = (
 				A12705102830AE7C00ED92F2 /* View Model */,
-				DF06F329270DEA1A0031D6FE /* AddHistoryViewController.swift */,
 				DF06F31B270AA43A0031D6FE /* StockViewController.swift */,
 				A168E09F27147C9800C75064 /* NewsListViewController.swift */,
 				A168E0A327148D1600C75064 /* webViewController.swift */,
@@ -884,7 +903,6 @@
 				A199DC3E28C79CAE003FBC61 /* AccountViewController.swift */,
 				A16321512954A5C50011F295 /* AddDividendViewController.swift */,
 				A163216D2956A52F0011F295 /* DividendDetailViewController.swift */,
-				A12515632C16076F001BFC53 /* MemoViewController.swift */,
 				A1065AD12C21CEF30033A319 /* WalkthroughViewController.swift */,
 			);
 			path = "View Controller";

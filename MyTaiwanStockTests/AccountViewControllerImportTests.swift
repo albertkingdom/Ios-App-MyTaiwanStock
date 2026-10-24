@@ -11,6 +11,8 @@ final class MockOnlineDBUploading: OnlineDBUploading {
     private(set) var uploadedListNames: [String] = []
     private(set) var uploadedStockNumbers: [String] = []
     private(set) var uploadedHistoryStockNos: [String] = []
+    private(set) var uploadedHistoryFees: [Int?] = []
+    private(set) var uploadedHistoryTaxes: [Int?] = []
 
     func uploadListToOnlineDB(listName: String) {
         uploadedListNames.append(listName)
@@ -18,8 +20,10 @@ final class MockOnlineDBUploading: OnlineDBUploading {
     func uploadNewStockNoToOnlineDB(stockNumber: String, listName: String) {
         uploadedStockNumbers.append(stockNumber)
     }
-    func uploadHistoryToOnlineDB(stockNo: String, price: Float, amount: Int, date: Date, status: Int) {
+    func uploadHistoryToOnlineDB(stockNo: String, price: Float, amount: Int, date: Date, status: Int, fee: Int?, tax: Int?) {
         uploadedHistoryStockNos.append(stockNo)
+        uploadedHistoryFees.append(fee)
+        uploadedHistoryTaxes.append(tax)
     }
 
     var didUploadAnything: Bool {
@@ -128,6 +132,24 @@ final class AccountViewControllerImportTests: XCTestCase {
 
         XCTAssertEqual(mock.uploadedListNames, ["我的清單"])
         XCTAssertEqual(mock.uploadedStockNumbers, ["2330"])
+    }
+
+    func test_importLocalDataToOnlineDB_carriesTheFeeAndTaxOfEachLocalRecord() {
+        seedLocalList(name: "我的清單", stockNo: "2330")
+        LocalDBService.shared.saveNewRecord(
+            stockNo: "2330", price: 100, amount: 1000, reason: "", buyOrSellStatus: 0,
+            date: Date(timeIntervalSince1970: 1_800_000_000), fee: 142, tax: 0)
+        LocalDBService.shared.saveNewRecord(
+            stockNo: "2330", price: 105, amount: 400, reason: "", buyOrSellStatus: 1,
+            date: Date(timeIntervalSince1970: 1_800_000_100))
+        let mock = MockOnlineDBUploading()
+        let vc = Self.makeAccountViewController()
+
+        vc.importLocalDataToOnlineDB(lists: LocalDBService.shared.fetchAllListFromDB(), onlineDBService: mock)
+
+        XCTAssertEqual(mock.uploadedHistoryStockNos.count, 2)
+        XCTAssertEqual(mock.uploadedHistoryFees.compactMap { $0 }, [142], "the record saved without a fee uploads none")
+        XCTAssertEqual(mock.uploadedHistoryTaxes.compactMap { $0 }, [0], "a tax of 0 is a value, not unknown")
     }
 
     func test_declining_import_uploadsNothingAndKeepsLocalDataIntact() {

@@ -245,7 +245,10 @@ final class MockOnlineDBSyncing: OnlineDBSyncing {
         uploadedListNames.append(listName)
     }
     func uploadNewStockNoToOnlineDB(stockNumber: String, listName: String) {}
-    func uploadHistoryToOnlineDB(stockNo: String, price: Float, amount: Int, date: Date, status: Int) {}
+    private(set) var uploadedHistory: [(stockNo: String, fee: Int?, tax: Int?)] = []
+    func uploadHistoryToOnlineDB(stockNo: String, price: Float, amount: Int, date: Date, status: Int, fee: Int?, tax: Int?) {
+        uploadedHistory.append((stockNo, fee, tax))
+    }
     func deleteListFromOnlineDB(listName: String) {}
     func renameListInOnlineDB(oldName: String, newName: String) {
         renamedLists.append((oldName, newName))

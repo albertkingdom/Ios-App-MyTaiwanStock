@@ -15,7 +15,7 @@ import CoreData
 protocol OnlineDBUploading {
     func uploadListToOnlineDB(listName: String)
     func uploadNewStockNoToOnlineDB(stockNumber: String, listName: String)
-    func uploadHistoryToOnlineDB(stockNo: String, price: Float, amount: Int, date: Date, status: Int)
+    func uploadHistoryToOnlineDB(stockNo: String, price: Float, amount: Int, date: Date, status: Int, fee: Int?, tax: Int?)
 }
 
 /// NetworkServiceImpl 用到的所有 Firestore 操作，抽出來讓測試能注入 mock，不碰正式 Firestore
@@ -212,10 +212,10 @@ class OnlineDBService: OnlineDBSyncing {
                 }
             }
     }
-    func uploadHistoryToOnlineDB(stockNo: String, price: Float, amount: Int, date: Date, status: Int) {
+    func uploadHistoryToOnlineDB(stockNo: String, price: Float, amount: Int, date: Date, status: Int, fee: Int?, tax: Int?) {
         guard let email = getLoginAccountEmail() else {return}
         let timeInMillis = UInt64(date.timeIntervalSince1970*1000)
-        let newHistory = HistoryOnline(price: Double(price), amount: amount, stockNo: stockNo, time: timeInMillis, email: email, status: status)
+        let newHistory = HistoryOnline(price: Double(price), amount: amount, stockNo: stockNo, time: timeInMillis, email: email, status: status, fee: fee, tax: tax)
         do {
             try db.collection(history).document().setData(from: newHistory)
         } catch let error {

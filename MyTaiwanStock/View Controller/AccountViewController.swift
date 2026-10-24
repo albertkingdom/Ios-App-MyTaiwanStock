@@ -223,7 +223,9 @@ extension AccountViewController {
                         price: history.price,
                         amount: Int(history.amount),
                         date: date,
-                        status: Int(history.status)
+                        status: Int(history.status),
+                        fee: history.fee?.intValue,
+                        tax: history.tax?.intValue
                     )
                 }
             }

@@ -15,4 +15,7 @@ struct HistoryOnline: Codable {
     let time: UInt64
     let email: String
     var status: Int = 0 //0: buy, 1: sell
+    /// Whole dollars; left out of the document when unknown.
+    var fee: Int?
+    var tax: Int?
 }

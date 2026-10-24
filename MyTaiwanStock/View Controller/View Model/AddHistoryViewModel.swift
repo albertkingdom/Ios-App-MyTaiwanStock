@@ -39,7 +39,9 @@ class AddHistoryViewModel {
             amount: amount,
             reason: memo,
             buyOrSellStatus: buyOrSellStatus,
-            date: date
+            date: date,
+            fee: nil,
+            tax: nil
         )
     }
     

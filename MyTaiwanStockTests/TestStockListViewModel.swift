@@ -612,7 +612,7 @@ class MockNetworkService: NetworkService {
     func saveList(with listName: String) -> MyTaiwanStock.List { fatalError() }
     func saveNewRecord(
         stockNo: String, price: Float, amount: Int, reason: String,
-        buyOrSellStatus: Int, date: Date
+        buyOrSellStatus: Int, date: Date, fee: Int?, tax: Int?
     ) {}
     func saveStockDividend(stockNo: String, amount: Int, date: Date) {}
     func saveCashDividend(stockNo: String, amount: Int, date: Date) {}

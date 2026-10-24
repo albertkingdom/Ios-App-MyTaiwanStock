@@ -32,7 +32,7 @@ final class DefaultTradeImportStore: TradeImportStore {
     func saveRecord(stockNo: String, price: Float, amount: Int, side: TradeSide, date: Date) {
         repository.saveNewRecord(
             stockNo: stockNo, price: price, amount: amount, reason: "",
-            buyOrSellStatus: side.rawValue, date: date)
+            buyOrSellStatus: side.rawValue, date: date, fee: nil, tax: nil)
     }
 
     func listContains(stockNo: String, listName: String) -> Bool {

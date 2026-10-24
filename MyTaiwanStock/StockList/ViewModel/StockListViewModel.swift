@@ -518,6 +518,16 @@ extension StockListViewModel {
         )
     }
 
+    /// Imports screenshots that are already at hand, such as a pending batch from the share extension.
+    func navigateToImportTrades(of source: TradeImageSource) {
+        coordinator.showImportTrades(
+            of: source,
+            listNames: listNames,
+            currentListName: currentFollowingListCombine.value?.name,
+            onImported: { [weak self] in self?.reloadAfterImport() }
+        )
+    }
+
     /// Reloads the lists from the database after an import added stocks to one of them.
     /// Re-sending the current index runs the same pipeline as switching lists: it refreshes the
     /// shown stocks, shares the stock numbers with the widget and reloads the widget timelines.

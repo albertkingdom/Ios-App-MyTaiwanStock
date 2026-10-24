@@ -15,13 +15,16 @@ final class TradeImportPreviewViewController: UIViewController {
 
     private let viewModel: TradeImportViewModel
     private let onImported: () -> Void
+    private let onClosed: () -> Void
 
     private let tableView = UITableView(frame: .zero, style: .insetGrouped)
     private let importButton = UIButton(type: .system)
 
-    init(viewModel: TradeImportViewModel, onImported: @escaping () -> Void) {
+    /// `onClosed` runs when the page leaves the navigation stack, however that happens.
+    init(viewModel: TradeImportViewModel, onImported: @escaping () -> Void, onClosed: @escaping () -> Void = {}) {
         self.viewModel = viewModel
         self.onImported = onImported
+        self.onClosed = onClosed
         super.init(nibName: nil, bundle: nil)
     }
 
@@ -36,6 +39,11 @@ final class TradeImportPreviewViewController: UIViewController {
         setUpViews()
         setContentScrollView(tableView, for: .top)
         refresh()
+    }
+
+    override func didMove(toParent parent: UIViewController?) {
+        super.didMove(toParent: parent)
+        if parent == nil { onClosed() }
     }
 
     // MARK: layout

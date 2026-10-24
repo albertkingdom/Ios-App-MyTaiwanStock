@@ -20,6 +20,13 @@ protocol StockListCoordinatorProtocol: AnyObject {
     func showImportTrades(
         listNames: [String], currentListName: String?,
         onImported: @escaping () -> Void)
+    /// Runs the import on screenshots that are already at hand, such as a pending batch from the share
+    /// extension, instead of asking the user to pick them.
+    func showImportTrades(
+        of source: TradeImageSource, listNames: [String], currentListName: String?,
+        onImported: @escaping () -> Void)
+    /// Whether an import flow is running, from picking the screenshots to closing the preview.
+    var isImportInProgress: Bool { get }
 }
 
 final class StockListCoordinator: Coordinator {
@@ -27,6 +34,9 @@ final class StockListCoordinator: Coordinator {
     var parentCoordinator: Coordinator?
     var childCoordinators: [Coordinator] = []
     private var importFlow: TradeImportFlow?
+    /// Runs when an import ends, however it ends, so the pending batches are looked at again. An
+    /// interrupted import kept its batch, which is offered again once the app is active.
+    var onImportFinished: (() -> Void)?
 
     init(navigationController: UINavigationController) {
         self.navigationController = navigationController
@@ -56,21 +66,47 @@ final class StockListCoordinator: Coordinator {
 }
 
 extension StockListCoordinator: StockListCoordinatorProtocol {
+    var isImportInProgress: Bool {
+        MainActor.assumeIsolated { importFlow?.state == .inProgress }
+    }
+
     func showImportTrades(
         listNames: [String], currentListName: String?,
         onImported: @escaping () -> Void
     ) {
         // Called from a button tap, so already on the main thread.
         MainActor.assumeIsolated {
-            let flow = TradeImportFlow(
-                navigationController: navigationController,
-                listNames: listNames,
-                currentListName: currentListName,
-                onImported: onImported,
-                onFinished: { [weak self] in self?.importFlow = nil })
-            importFlow = flow  // the flow is its own picker's delegate, so something must keep it alive
-            flow.start()
+            makeImportFlow(listNames: listNames, currentListName: currentListName, onImported: onImported)?.start()
         }
+    }
+
+    func showImportTrades(
+        of source: TradeImageSource, listNames: [String], currentListName: String?,
+        onImported: @escaping () -> Void
+    ) {
+        MainActor.assumeIsolated {
+            makeImportFlow(listNames: listNames, currentListName: currentListName, onImported: onImported)?
+                .start(importing: source)
+        }
+    }
+
+    /// Nil while another import is still running, so a second one never starts on top of it.
+    @MainActor
+    private func makeImportFlow(
+        listNames: [String], currentListName: String?, onImported: @escaping () -> Void
+    ) -> TradeImportFlow? {
+        guard !isImportInProgress else { return nil }
+        let flow = TradeImportFlow(
+            navigationController: navigationController,
+            listNames: listNames,
+            currentListName: currentListName,
+            onImported: onImported,
+            onFinished: { [weak self] in
+                self?.importFlow = nil
+                self?.onImportFinished?()
+            })
+        importFlow = flow  // the flow is its own picker's delegate, so something must keep it alive
+        return flow
     }
 
     func showStockDetail(

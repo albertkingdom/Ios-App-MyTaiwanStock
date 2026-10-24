@@ -24,6 +24,9 @@ final class AppCoordinator: Coordinator {
         self.navigationController = navigationController
     }
 
+    /// The coordinator of the stock list tab, once `start()` has created it.
+    private(set) var stockListCoordinator: StockListCoordinator?
+
     func start() {
         showStockList()
     }
@@ -33,6 +36,7 @@ final class AppCoordinator: Coordinator {
             navigationController: navigationController)
         //                stockListCoordinator.parentCoordinator = self
         //                childCoordinators.append(stockListCoordinator)
+        self.stockListCoordinator = stockListCoordinator
         stockListCoordinator.start()
     }
 }

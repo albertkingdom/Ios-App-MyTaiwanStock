@@ -15,6 +15,36 @@ enum ShareImageImporterError: Error {
     case imageUnavailable
 }
 
+/// A share that is being copied. Cancelling it removes what was copied so far and the completion is
+/// never called, so a share the user gave up on leaves nothing behind.
+final class ShareImageImport {
+    private let lock = NSLock()
+    private var cancelled = false
+    private var draft: PendingImportDraft?
+
+    var isCancelled: Bool {
+        lock.lock()
+        defer { lock.unlock() }
+        return cancelled
+    }
+
+    func cancel() {
+        lock.lock()
+        cancelled = true
+        let draft = draft
+        lock.unlock()
+        draft?.discard()
+    }
+
+    fileprivate func attach(_ draft: PendingImportDraft) {
+        lock.lock()
+        self.draft = draft
+        let alreadyCancelled = cancelled
+        lock.unlock()
+        if alreadyCancelled { draft.discard() }
+    }
+}
+
 /// Copies the images of a share into a new batch of the pending import folder.
 ///
 /// The extension has little memory, so images are copied as files and never decoded. Attachments load in
@@ -23,25 +53,34 @@ enum ShareImageImporterError: Error {
 /// they finish loading.
 enum ShareImageImporter {
     /// Calls `completion` on the main queue with the finished batch, or with the error after removing
-    /// everything that was copied. Attachments that are not images are ignored.
+    /// everything that was copied. Attachments that are not images are ignored. The returned object cancels
+    /// the share; a cancelled share never calls `completion`.
+    @discardableResult
     static func importImages(
         from providers: [NSItemProvider],
         into store: PendingImportStore,
         completion: @escaping (Result<PendingImportBatch, Error>) -> Void
-    ) {
+    ) -> ShareImageImport {
+        let handle = ShareImageImport()
+        func finish(_ result: Result<PendingImportBatch, Error>) {
+            guard !handle.isCancelled else { return }
+            completion(result)
+        }
+
         let imageProviders = providers.filter { $0.hasItemConformingToTypeIdentifier(UTType.image.identifier) }
         guard !imageProviders.isEmpty else {
-            DispatchQueue.main.async { completion(.failure(ShareImageImporterError.noImages)) }
-            return
+            DispatchQueue.main.async { finish(.failure(ShareImageImporterError.noImages)) }
+            return handle
         }
 
         let draft: PendingImportDraft
         do {
             draft = try store.beginDraft()
         } catch {
-            DispatchQueue.main.async { completion(.failure(error)) }
-            return
+            DispatchQueue.main.async { finish(.failure(error)) }
+            return handle
         }
+        handle.attach(draft)
 
         let failure = FirstFailure()
         let group = DispatchGroup()
@@ -64,16 +103,23 @@ enum ShareImageImporter {
         group.notify(queue: .main) {
             if let error = failure.value {
                 draft.discard()
-                completion(.failure(error))
+                finish(.failure(error))
                 return
             }
             do {
-                completion(.success(try draft.commit()))
+                let batch = try draft.commit()
+                if handle.isCancelled {
+                    // Cancelled after the last image was copied, so the batch exists and has to go too.
+                    store.delete(batch)
+                    return
+                }
+                completion(.success(batch))
             } catch {
                 draft.discard()
-                completion(.failure(error))
+                finish(.failure(error))
             }
         }
+        return handle
     }
 }
 

@@ -117,6 +117,52 @@ final class ShareImageImporterTests: XCTestCase {
         XCTAssertEqual(leftovers, [], "the draft folder must be removed")
     }
 
+    /// A provider whose image arrives after `delay`, like a photo that is still downloading from iCloud.
+    private func slowImageProvider(delay: TimeInterval) throws -> NSItemProvider {
+        let url = container.appendingPathComponent("\(UUID().uuidString)-slow.png")
+        try "slow".write(to: url, atomically: true, encoding: .utf8)
+        let provider = NSItemProvider()
+        provider.registerFileRepresentation(
+            forTypeIdentifier: UTType.png.identifier, fileOptions: [], visibility: .all
+        ) { completion in
+            DispatchQueue.global().asyncAfter(deadline: .now() + delay) { completion(url, false, nil) }
+            return nil
+        }
+        return provider
+    }
+
+    func test_cancelling_a_share_that_is_still_loading_removes_the_draft_and_never_completes() throws {
+        var completed = false
+        let handle = ShareImageImporter.importImages(
+            from: [try imageProvider("fast.png", contents: "fast"), try slowImageProvider(delay: 0.3)], into: store
+        ) { _ in completed = true }
+        XCTAssertEqual(try fileManager.contentsOfDirectory(atPath: store.rootURL.path).count, 1, "the draft exists while loading")
+
+        handle.cancel()
+        let settled = expectation(description: "the slow image arrived")
+        settled.isInverted = true
+        wait(for: [settled], timeout: 0.8)
+
+        XCTAssertFalse(completed)
+        XCTAssertEqual(store.batches(), [])
+        XCTAssertEqual(try fileManager.contentsOfDirectory(atPath: store.rootURL.path), [], "nothing is left behind")
+    }
+
+    func test_cancelling_a_share_that_already_finished_keeps_its_batch() throws {
+        var result: Result<PendingImportBatch, Error>?
+        let done = expectation(description: "import finished")
+        let handle = ShareImageImporter.importImages(from: [try imageProvider("a.png", contents: "a")], into: store) {
+            result = $0
+            done.fulfill()
+        }
+        wait(for: [done], timeout: 5)
+        let batch = try XCTUnwrap(result).get()
+
+        handle.cancel()
+
+        XCTAssertEqual(store.batches(), [batch])
+    }
+
     func test_an_unavailable_container_fails_the_share() throws {
         // A file where the pending folder should be: the folder cannot be created.
         try "x".write(to: container.appendingPathComponent("PendingImports"), atomically: true, encoding: .utf8)

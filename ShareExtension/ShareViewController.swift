@@ -12,7 +12,9 @@ final class ShareViewController: UIViewController {
     private let spinner = UIActivityIndicatorView(style: .large)
     private let iconView = UIImageView()
     private let messageLabel = UILabel()
+    private let cancelButton = UIButton(type: .system)
     private var didStart = false
+    private var currentImport: ShareImageImport?
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -30,7 +32,12 @@ final class ShareViewController: UIViewController {
 
         spinner.startAnimating()
 
-        let stack = UIStackView(arrangedSubviews: [iconView, spinner, messageLabel])
+        cancelButton.setTitle("取消", for: .normal)
+        cancelButton.titleLabel?.font = .preferredFont(forTextStyle: .body)
+        cancelButton.titleLabel?.adjustsFontForContentSizeCategory = true
+        cancelButton.addTarget(self, action: #selector(cancelTapped), for: .touchUpInside)
+
+        let stack = UIStackView(arrangedSubviews: [iconView, spinner, messageLabel, cancelButton])
         stack.axis = .vertical
         stack.alignment = .center
         stack.spacing = 16
@@ -55,7 +62,7 @@ final class ShareViewController: UIViewController {
             return fail("無法使用共用資料夾，請稍後再試。")
         }
         let attachments = (extensionContext?.inputItems as? [NSExtensionItem] ?? []).flatMap { $0.attachments ?? [] }
-        ShareImageImporter.importImages(from: attachments, into: store) { [weak self] result in
+        currentImport = ShareImageImporter.importImages(from: attachments, into: store) { [weak self] result in
             switch result {
             case .success:
                 self?.showDone()
@@ -65,8 +72,15 @@ final class ShareViewController: UIViewController {
         }
     }
 
+    /// Gives up on a share that is still copying, for example a photo that is slow to download from iCloud.
+    @objc private func cancelTapped() {
+        currentImport?.cancel()
+        extensionContext?.cancelRequest(withError: NSError(domain: NSCocoaErrorDomain, code: NSUserCancelledError))
+    }
+
     private func showDone() {
         spinner.stopAnimating()
+        cancelButton.isHidden = true
         iconView.image = UIImage(systemName: "checkmark.circle.fill")
         iconView.tintColor = .systemGreen
         iconView.isHidden = false
@@ -81,6 +95,7 @@ final class ShareViewController: UIViewController {
 
     private func fail(_ message: String) {
         spinner.stopAnimating()
+        cancelButton.isHidden = true
         let alert = UIAlertController(title: "無法加入待匯入", message: message, preferredStyle: .alert)
         alert.addAction(UIAlertAction(title: "好", style: .default) { [weak self] _ in
             self?.extensionContext?.cancelRequest(withError: NSError(domain: "ShareExtension", code: 1))

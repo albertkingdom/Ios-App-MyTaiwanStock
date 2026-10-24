@@ -531,6 +531,105 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		07850789ADE405CD156F0E2E /* SharedUI */ = {
+			isa = PBXGroup;
+			children = (
+				1DA45FEE2F5F881A51DBD9ED /* FloatingButtonManagerTests.swift */,
+			);
+			name = SharedUI;
+			path = SharedUI;
+			sourceTree = "<group>";
+		};
+		08460D95BDDAA923C230F8F9 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				EFE4BC31B663197CA27B0863 /* FeeCalculator.swift */,
+				A11E04672CF2DB6B00138497 /* OverViewCalculator.swift */,
+			);
+			name = Services;
+			path = Services;
+			sourceTree = "<group>";
+		};
+		0AEEA5BA508BCB539541D4B4 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				A127052928335E6C00ED92F2 /* NewsListViewModel.swift */,
+				A127052B2833604400ED92F2 /* NewsListCellViewModel.swift */,
+			);
+			name = ViewModel;
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		1263415D0BC81A55E0FC661C /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				A127051F283209FD00ED92F2 /* StockDetailViewModel.swift */,
+				A127052528321DB000ED92F2 /* HistoryCellModel.swift */,
+			);
+			name = ViewModel;
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		13AD6F630DD18B4C9898378F /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				DF715D712809140300DD92F4 /* AddListViewController.swift */,
+				DF793AD627DF8C36007C9442 /* AddStockNoViewController.swift */,
+				DF06F2FE27097F2C0031D6FE /* StockListViewController.swift */,
+			);
+			name = ViewController;
+			path = ViewController;
+			sourceTree = "<group>";
+		};
+		147B9F17FC4633EAAA375F6F /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				DFFEB04927E1D45000C85A53 /* ChatViewController.swift */,
+			);
+			name = ViewController;
+			path = ViewController;
+			sourceTree = "<group>";
+		};
+		14A199D60C4EF65F40F6FDE1 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				A127051D283201D700ED92F2 /* AddListViewModel.swift */,
+				A127051B2831F98100ED92F2 /* AddStockNoViewModel.swift */,
+				A127051928314D6900ED92F2 /* AddStockCellViewModel.swift */,
+				A12705112830AE9900ED92F2 /* StockListViewModel.swift */,
+				A12705132830B36700ED92F2 /* StockCellViewModel.swift */,
+			);
+			name = ViewModel;
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		1E4986C3F331BF88185CF917 /* Account */ = {
+			isa = PBXGroup;
+			children = (
+				3E6F2F5D3CC3519CA29412D1 /* AccountViewControllerImportTests.swift */,
+			);
+			name = Account;
+			path = Account;
+			sourceTree = "<group>";
+		};
+		24862A4E6282B6945E702F88 /* Shared */ = {
+			isa = PBXGroup;
+			children = (
+				6DCDB90B5643F295C4DB34CF /* Model */,
+			);
+			name = Shared;
+			path = Shared;
+			sourceTree = "<group>";
+		};
+		259D10FA1376D65AB42228B8 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				86BBB438DF5F34BD6DC11451 /* TradeImportViewModel.swift */,
+			);
+			name = ViewModel;
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
 		28DA80A1F40EB1A84D9D154A /* ShareExtension */ = {
 			isa = PBXGroup;
 			children = (
@@ -542,6 +641,15 @@
 			path = ShareExtension;
 			sourceTree = "<group>";
 		};
+		2DC61CEB18F95AF94629BAF4 /* Account */ = {
+			isa = PBXGroup;
+			children = (
+				BD167675128728D288926376 /* ViewController */,
+			);
+			name = Account;
+			path = Account;
+			sourceTree = "<group>";
+		};
 		2E8016544C5C1DBE0E2915A1 /* Resources */ = {
 			isa = PBXGroup;
 			children = (
@@ -551,12 +659,151 @@
 			path = Resources;
 			sourceTree = "<group>";
 		};
+		33B03B136DA51CBE723BD687 /* Screens */ = {
+			isa = PBXGroup;
+			children = (
+				EA47AB7EFC7397C70461DAE8 /* StockList */,
+				709088F44AF22C6EBA7AC6D1 /* TradeEntry */,
+				B239CB275063F8CCA8BB677F /* TradeImport */,
+				1E4986C3F331BF88185CF917 /* Account */,
+				4886FCFFB353B1DE1890027D /* Settings */,
+			);
+			name = Screens;
+			path = Screens;
+			sourceTree = "<group>";
+		};
+		354DC6507B517B33573595E5 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				A168E09F27147C9800C75064 /* NewsListViewController.swift */,
+				A168E0A327148D1600C75064 /* webViewController.swift */,
+			);
+			name = ViewController;
+			path = ViewController;
+			sourceTree = "<group>";
+		};
+		357E223E154DF4630E1A907E /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				A168E09D27146EF600C75064 /* NewsAPI.swift */,
+			);
+			name = Model;
+			path = Model;
+			sourceTree = "<group>";
+		};
+		35A614F1308E63D27AF2EA21 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				A16321512954A5C50011F295 /* AddDividendViewController.swift */,
+				A163216D2956A52F0011F295 /* DividendDetailViewController.swift */,
+			);
+			name = ViewController;
+			path = ViewController;
+			sourceTree = "<group>";
+		};
+		48630E95074082EFA1D15E0E /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				DF14417F27869C200038D05D /* StockStatistic.swift */,
+			);
+			name = Model;
+			path = Model;
+			sourceTree = "<group>";
+		};
+		4886FCFFB353B1DE1890027D /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				3CDB14A33624A6CC60E64BDD /* SettingViewControllerTests.swift */,
+			);
+			name = Settings;
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		4ACF61FBAA222F08BE86E570 /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				A127052128320B2200ED92F2 /* AddHistoryViewModel.swift */,
+			);
+			name = ViewModel;
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		4FC8EFDFA548E9E4D10DB67C /* SharedUI */ = {
+			isa = PBXGroup;
+			children = (
+				A11E04722CFB24A800138497 /* FloatingButton.swift */,
+				A1D831342D44A48A00497508 /* FloatingButtonManager.swift */,
+				A1C2E5E628B71F55009D8D9B /* ViewController+extension.swift */,
+				A17DCFE82DB3514C00707C87 /* FontManager.swift */,
+			);
+			name = SharedUI;
+			path = SharedUI;
+			sourceTree = "<group>";
+		};
+		57E6C5AC3844FE2B5BD2DE59 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				DF06F2FA27097F2C0031D6FE /* AppDelegate.swift */,
+				DF06F2FC27097F2C0031D6FE /* SceneDelegate.swift */,
+				A1DE925F2DB3A3C300D743C7 /* AppCoordinator.swift */,
+				A1CD75D12CD388F1000A0A7A /* DependencyContainer.swift */,
+				A10CD2CF28B9D1BB00B37AA4 /* CustomTabBarViewController.swift */,
+			);
+			name = App;
+			path = App;
+			sourceTree = "<group>";
+		};
+		5930A43D4354FCEBD88C4A3F /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				DF06F323270B1A4F0031D6FE /* MyStockList.swift */,
+				A1DE92772DC3248E00D743C7 /* StockNoStruct.swift */,
+				A1DE92792DC324E800D743C7 /* ListStruct.swift */,
+				A199DC4328C843BD003FBC61 /* FavList.swift */,
+			);
+			name = Model;
+			path = Model;
+			sourceTree = "<group>";
+		};
+		5AE54027D031CD3F24BB836D /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				A1270527283241D700ED92F2 /* ChatViewModel.swift */,
+			);
+			name = ViewModel;
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		63EE0E59B425AF209186CECB /* StockDetail */ = {
+			isa = PBXGroup;
+			children = (
+				8DC6D37BB7F8B413B1EB815D /* ViewController */,
+				1263415D0BC81A55E0FC661C /* ViewModel */,
+				AA97D305628073FBB71BE02D /* View */,
+				D43DA43CD1BCF606814380CC /* Model */,
+			);
+			name = StockDetail;
+			path = StockDetail;
+			sourceTree = "<group>";
+		};
 		6BEB1F296570AC3DCA79CA98 /* iOS */ = {
 			isa = PBXGroup;
 			children = (
 				591F48D357E7365A81BFAC5B /* Foundation.framework */,
 			);
 			name = iOS;
+			sourceTree = "<group>";
+		};
+		6DCDB90B5643F295C4DB34CF /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				DF06F3122709A3190031D6FE /* OneDayStockInfo.swift */,
+				AD93EF53658832306E290E9C /* StockListEntry.swift */,
+				A199DC4728C88923003FBC61 /* HistoryOnline.swift */,
+				DFD239DB270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodeld */,
+			);
+			name = Model;
+			path = Model;
 			sourceTree = "<group>";
 		};
 		709088F44AF22C6EBA7AC6D1 /* TradeEntry */ = {
@@ -569,6 +816,25 @@
 			path = TradeEntry;
 			sourceTree = "<group>";
 		};
+		71AF76145DC1BECB07277E2F /* Screens */ = {
+			isa = PBXGroup;
+			children = (
+				A1DE92592DB3997500D743C7 /* StockList */,
+				63EE0E59B425AF209186CECB /* StockDetail */,
+				A284EC9E19E0403C63E03C6B /* TradeEntry */,
+				7AB937D9595D4A2A588C4924 /* TradeImport */,
+				CB54EBB5411630F2930AFE94 /* Dividend */,
+				89D5E1781C6418B7E99EF562 /* Statistics */,
+				EE37634E65E73D0EDC4F88D7 /* News */,
+				A2D89F24B4CBFCB59CF4D322 /* Chat */,
+				2DC61CEB18F95AF94629BAF4 /* Account */,
+				AA8C33833831858B9BB61FAF /* Settings */,
+				933C909B1AECF935A53F0791 /* Onboarding */,
+			);
+			name = Screens;
+			path = Screens;
+			sourceTree = "<group>";
+		};
 		741131B9C2335C77571A6472 /* SharedWithExtension */ = {
 			isa = PBXGroup;
 			children = (
@@ -579,36 +845,140 @@
 			path = SharedWithExtension;
 			sourceTree = "<group>";
 		};
-		7AB937D9595D4A2A588C4924 /* TradeImport */ = {
+		777BECB289C643D73F234DDA /* Services */ = {
 			isa = PBXGroup;
 			children = (
-				38636568B743F70FE246F6FE /* TradeImportFlow.swift */,
 				6F52713E23FB475C1000B61D /* TradeImageSource.swift */,
 				C1FE0B62189FEF6B2F8D6214 /* TradeScreenshotParser.swift */,
 				DCB4ED896BEF3DDC8FABEF46 /* TradeTextRecognizer.swift */,
 				A40356AAFB24898C0EE3E32C /* StockNameResolver.swift */,
 				C76A7E78A7574E60C81D3350 /* DefaultTradeImportStore.swift */,
-				8640D09D97E976868D167E4D /* TradeImportModels.swift */,
-				86BBB438DF5F34BD6DC11451 /* TradeImportViewModel.swift */,
-				39AD27A74F9DF2F3D0E2701C /* TradeImportPreviewViewController.swift */,
-				808890ADBB223AD086D933A4 /* TradeEditViewController.swift */,
+			);
+			name = Services;
+			path = Services;
+			sourceTree = "<group>";
+		};
+		7A804346CB8D279487C9ABE3 /* View */ = {
+			isa = PBXGroup;
+			children = (
+				DF14417D27868B240038D05D /* StatisticTableViewCell.swift */,
+				A16321692955EF8F0011F295 /* StatisticStockTableViewCell.swift */,
+				A163216A2955EF8F0011F295 /* StatisticStockTableViewCell.xib */,
+				A16321652955A4BF0011F295 /* StatisticDividendTableViewCell.swift */,
+				A16321662955A4BF0011F295 /* StatisticDividendTableViewCell.xib */,
+			);
+			name = View;
+			path = View;
+			sourceTree = "<group>";
+		};
+		7AB937D9595D4A2A588C4924 /* TradeImport */ = {
+			isa = PBXGroup;
+			children = (
+				DA4276F1B73614F602163166 /* Coordinator */,
+				777BECB289C643D73F234DDA /* Services */,
+				E4560A5BA7AC9A2A008AD877 /* Model */,
+				259D10FA1376D65AB42228B8 /* ViewModel */,
+				86EFE013641541D6CEF43081 /* ViewController */,
 			);
 			name = TradeImport;
 			path = TradeImport;
 			sourceTree = "<group>";
 		};
-		A12705102830AE7C00ED92F2 /* View Model */ = {
+		7C346DC1A00AAAE0B5007FB7 /* ViewController */ = {
 			isa = PBXGroup;
 			children = (
-				A127051B2831F98100ED92F2 /* AddStockNoViewModel.swift */,
-				A127051D283201D700ED92F2 /* AddListViewModel.swift */,
-				A127051F283209FD00ED92F2 /* StockDetailViewModel.swift */,
-				A1270523283212FE00ED92F2 /* StatisticViewModel.swift */,
-				A1270527283241D700ED92F2 /* ChatViewModel.swift */,
-				A127052928335E6C00ED92F2 /* NewsListViewModel.swift */,
-				A16321532954B05D0011F295 /* AddDividendViewModel.swift */,
+				DF06F329270DEA1A0031D6FE /* AddHistoryViewController.swift */,
+				A12515632C16076F001BFC53 /* MemoViewController.swift */,
 			);
-			path = "View Model";
+			name = ViewController;
+			path = ViewController;
+			sourceTree = "<group>";
+		};
+		7C505FA52951FF6F0469BAAF /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				A1065AD12C21CEF30033A319 /* WalkthroughViewController.swift */,
+			);
+			name = ViewController;
+			path = ViewController;
+			sourceTree = "<group>";
+		};
+		852270A82C7D135F3EA51CC0 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				A1164EFB2CD268220036C275 /* UnreadManager.swift */,
+			);
+			name = Services;
+			path = Services;
+			sourceTree = "<group>";
+		};
+		86EFE013641541D6CEF43081 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				39AD27A74F9DF2F3D0E2701C /* TradeImportPreviewViewController.swift */,
+				808890ADBB223AD086D933A4 /* TradeEditViewController.swift */,
+			);
+			name = ViewController;
+			path = ViewController;
+			sourceTree = "<group>";
+		};
+		892BEB87E1A3CF334BD367CD /* View */ = {
+			isa = PBXGroup;
+			children = (
+				A1202124288BB8DD00C8746A /* NewsListTableViewCell2.swift */,
+			);
+			name = View;
+			path = View;
+			sourceTree = "<group>";
+		};
+		89D5E1781C6418B7E99EF562 /* Statistics */ = {
+			isa = PBXGroup;
+			children = (
+				D097DDB30D26447239EF546C /* ViewController */,
+				D372087F6EC6908CFFECA09E /* ViewModel */,
+				7A804346CB8D279487C9ABE3 /* View */,
+				48630E95074082EFA1D15E0E /* Model */,
+			);
+			name = Statistics;
+			path = Statistics;
+			sourceTree = "<group>";
+		};
+		8DC44D3F061ABE4BF746717B /* View */ = {
+			isa = PBXGroup;
+			children = (
+				A163216F2956A8CC0011F295 /* DividendDetailTableViewCell.swift */,
+				A16321702956A8CC0011F295 /* DividendDetailTableViewCell.xib */,
+			);
+			name = View;
+			path = View;
+			sourceTree = "<group>";
+		};
+		8DC6D37BB7F8B413B1EB815D /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				DF06F31B270AA43A0031D6FE /* StockViewController.swift */,
+			);
+			name = ViewController;
+			path = ViewController;
+			sourceTree = "<group>";
+		};
+		933C909B1AECF935A53F0791 /* Onboarding */ = {
+			isa = PBXGroup;
+			children = (
+				7C505FA52951FF6F0469BAAF /* ViewController */,
+			);
+			name = Onboarding;
+			path = Onboarding;
+			sourceTree = "<group>";
+		};
+		98389D2A31FFDC6A68FA645D /* View */ = {
+			isa = PBXGroup;
+			children = (
+				DF793ADA27E03258007C9442 /* AddStockTableViewCell.swift */,
+				DF06F316270A01220031D6FE /* StockTableViewCell.swift */,
+			);
+			name = View;
+			path = View;
 			sourceTree = "<group>";
 		};
 		A14CBA112944360600DDA990 /* Repository */ = {
@@ -624,45 +994,26 @@
 		A181945028B881B5009475E9 /* MyTaiwanStockTests */ = {
 			isa = PBXGroup;
 			children = (
-				A11E04692CF2DE1100138497 /* TestStockListViewModel.swift */,
 				A181945828B88209009475E9 /* ValidInputServiceTest.swift */,
 				1F24890FEBA8232DE81E0095 /* ICloudBackupServiceTests.swift */,
 				B000A994999CDE40E7C0CAD6 /* LocalDBServiceCrashFixesTests.swift */,
-				D0B1C2A3E4F5061728394A5C /* DuplicateStockNoTests.swift */,
-				D0B1C2A3E4F5061728394A5E /* ListNameTests.swift */,
-				3E6F2F5D3CC3519CA29412D1 /* AccountViewControllerImportTests.swift */,
 				0A260454FDA074BE16F88EFA /* BackupDestinationTests.swift */,
-				3CDB14A33624A6CC60E64BDD /* SettingViewControllerTests.swift */,
 				4527BB5764FC0481AAFCE3E6 /* SceneICloudCoordinatorTests.swift */,
-				AC9954537E9A152ABDC0F28B /* StockListFilteringTests.swift */,
 				61D79600CCD9F096BA52ED45 /* StockListRepositoryTests.swift */,
-				35EDD97E7F23FFCC4B3C4D8D /* AddStockNoViewModelTests.swift */,
-				5AC4FF1C38A3B38F1BFAD283 /* StockListRefresherTests.swift */,
 				D7468712F972AC4EDD765663 /* StockMarketLookupTests.swift */,
 				273217F8284584EE8DAE887B /* ChartServiceTests.swift */,
-				1DA45FEE2F5F881A51DBD9ED /* FloatingButtonManagerTests.swift */,
 				02FECA27A0D552A9EB23F939 /* HistoryDocumentSelectorTests.swift */,
 				7B24E0A8C5D13F96B2A4E871 /* ResizableLayoutTests.swift */,
 				8AFC6E13CB3C18E0826AE4B9 /* UIAlertController+Tapping.swift */,
 				A56D81E3E7183E7DB2B8E89B /* ShareImport */,
-				D24D8738ED48BBC337A4CE12 /* StockListCoordinatorImportTests.swift */,
 				4C964B68FACC29DE5DD9E6D8 /* InvestHistoryMigrationTests.swift */,
 				7068E958757E9074134F1608 /* HistoryOnlineTests.swift */,
-				B239CB275063F8CCA8BB677F /* TradeImport */,
 				B63AB7F996374C4CCFF5CAEE /* TradeCost */,
 				88445A331382A6B6557409C2 /* StoreSchemaCompatibilityCheckerTests.swift */,
-				709088F44AF22C6EBA7AC6D1 /* TradeEntry */,
+				07850789ADE405CD156F0E2E /* SharedUI */,
+				33B03B136DA51CBE723BD687 /* Screens */,
 			);
 			path = MyTaiwanStockTests;
-			sourceTree = "<group>";
-		};
-		A199DC4228C843A0003FBC61 /* OnlineDB */ = {
-			isa = PBXGroup;
-			children = (
-				A199DC4328C843BD003FBC61 /* FavList.swift */,
-				A199DC4728C88923003FBC61 /* HistoryOnline.swift */,
-			);
-			path = OnlineDB;
 			sourceTree = "<group>";
 		};
 		A1C03DE327C1D8571005AB268 /* ActivityKit */ = {
@@ -686,57 +1037,35 @@
 		A1DE92592DB3997500D743C7 /* StockList */ = {
 			isa = PBXGroup;
 			children = (
-				A1DE925D2DB39EF200D743C7 /* StockListCoordinator.swift */,
-				A1DE925C2DB39A7400D743C7 /* ViewModel */,
-				A1DE925B2DB39A4400D743C7 /* View */,
-				A1DE925A2DB3999500D743C7 /* ViewController */,
+				F3C23C3FCFEFE52B55C9E5EF /* Coordinator */,
+				13AD6F630DD18B4C9898378F /* ViewController */,
+				14A199D60C4EF65F40F6FDE1 /* ViewModel */,
+				98389D2A31FFDC6A68FA645D /* View */,
+				5930A43D4354FCEBD88C4A3F /* Model */,
 			);
 			path = StockList;
-			sourceTree = "<group>";
-		};
-		A1DE925A2DB3999500D743C7 /* ViewController */ = {
-			isa = PBXGroup;
-			children = (
-				DF06F2FE27097F2C0031D6FE /* StockListViewController.swift */,
-			);
-			path = ViewController;
-			sourceTree = "<group>";
-		};
-		A1DE925B2DB39A4400D743C7 /* View */ = {
-			isa = PBXGroup;
-			children = (
-				DF06F316270A01220031D6FE /* StockTableViewCell.swift */,
-			);
-			path = View;
-			sourceTree = "<group>";
-		};
-		A1DE925C2DB39A7400D743C7 /* ViewModel */ = {
-			isa = PBXGroup;
-			children = (
-				A12705112830AE9900ED92F2 /* StockListViewModel.swift */,
-				A12705132830B36700ED92F2 /* StockCellViewModel.swift */,
-			);
-			path = ViewModel;
-			sourceTree = "<group>";
-		};
-		A1DE92762DC323BC00D743C7 /* CoreData */ = {
-			isa = PBXGroup;
-			children = (
-				A1DE92792DC324E800D743C7 /* ListStruct.swift */,
-				A1DE92772DC3248E00D743C7 /* StockNoStruct.swift */,
-			);
-			path = CoreData;
 			sourceTree = "<group>";
 		};
 		A284EC9E19E0403C63E03C6B /* TradeEntry */ = {
 			isa = PBXGroup;
 			children = (
-				DF06F329270DEA1A0031D6FE /* AddHistoryViewController.swift */,
-				A127052128320B2200ED92F2 /* AddHistoryViewModel.swift */,
-				A12515632C16076F001BFC53 /* MemoViewController.swift */,
+				7C346DC1A00AAAE0B5007FB7 /* ViewController */,
+				4ACF61FBAA222F08BE86E570 /* ViewModel */,
 			);
 			name = TradeEntry;
 			path = TradeEntry;
+			sourceTree = "<group>";
+		};
+		A2D89F24B4CBFCB59CF4D322 /* Chat */ = {
+			isa = PBXGroup;
+			children = (
+				147B9F17FC4633EAAA375F6F /* ViewController */,
+				5AE54027D031CD3F24BB836D /* ViewModel */,
+				852270A82C7D135F3EA51CC0 /* Services */,
+				ACE6C70D90F578DE2F214506 /* Model */,
+			);
+			name = Chat;
+			path = Chat;
 			sourceTree = "<group>";
 		};
 		A56D81E3E7183E7DB2B8E89B /* ShareImport */ = {
@@ -748,6 +1077,36 @@
 			);
 			name = ShareImport;
 			path = ShareImport;
+			sourceTree = "<group>";
+		};
+		AA8C33833831858B9BB61FAF /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				D20DBB799F333670D37A93B4 /* ViewController */,
+			);
+			name = Settings;
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		AA97D305628073FBB71BE02D /* View */ = {
+			isa = PBXGroup;
+			children = (
+				A1BB04D4293098F0002F983B /* NewHistoryTableViewCell.swift */,
+				A1BB04D5293098F0002F983B /* NewHistoryTableViewCell.xib */,
+			);
+			name = View;
+			path = View;
+			sourceTree = "<group>";
+		};
+		ACE6C70D90F578DE2F214506 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				DFFEB04B27E1D68C00C85A53 /* Sender.swift */,
+				DFFEB04F27E1E37D00C85A53 /* Channel.swift */,
+				DFFEB04D27E1D6C400C85A53 /* Message.swift */,
+			);
+			name = Model;
+			path = Model;
 			sourceTree = "<group>";
 		};
 		B239CB275063F8CCA8BB677F /* TradeImport */ = {
@@ -777,6 +1136,15 @@
 			path = TradeCost;
 			sourceTree = "<group>";
 		};
+		BD167675128728D288926376 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				A199DC3E28C79CAE003FBC61 /* AccountViewController.swift */,
+			);
+			name = ViewController;
+			path = ViewController;
+			sourceTree = "<group>";
+		};
 		BFE7EE6F57DFA01028BB14B9 /* ShareImport */ = {
 			isa = PBXGroup;
 			children = (
@@ -788,15 +1156,81 @@
 			path = ShareImport;
 			sourceTree = "<group>";
 		};
+		C969D4E14CDA57E6CBFC3D3C /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				A16321532954B05D0011F295 /* AddDividendViewModel.swift */,
+			);
+			name = ViewModel;
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		CB54EBB5411630F2930AFE94 /* Dividend */ = {
+			isa = PBXGroup;
+			children = (
+				35A614F1308E63D27AF2EA21 /* ViewController */,
+				C969D4E14CDA57E6CBFC3D3C /* ViewModel */,
+				8DC44D3F061ABE4BF746717B /* View */,
+			);
+			name = Dividend;
+			path = Dividend;
+			sourceTree = "<group>";
+		};
 		CFE9320BBA212D9E3F60C25F /* TradeCost */ = {
 			isa = PBXGroup;
 			children = (
-				EFE4BC31B663197CA27B0863 /* FeeCalculator.swift */,
-				BFED6DE1D62AA2B4E86C09B6 /* FeeSettings.swift */,
-				A11E04672CF2DB6B00138497 /* OverViewCalculator.swift */,
+				DF8655CA8D28C22694AF8612 /* Model */,
+				08460D95BDDAA923C230F8F9 /* Services */,
 			);
 			name = TradeCost;
 			path = TradeCost;
+			sourceTree = "<group>";
+		};
+		D097DDB30D26447239EF546C /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				DF14417B2785A5630038D05D /* StatisticViewController.swift */,
+			);
+			name = ViewController;
+			path = ViewController;
+			sourceTree = "<group>";
+		};
+		D20DBB799F333670D37A93B4 /* ViewController */ = {
+			isa = PBXGroup;
+			children = (
+				A199DC3128BF1B70003FBC61 /* SettingViewController.swift */,
+				A199DC3328BF400D003FBC61 /* EditFeeViewController.swift */,
+			);
+			name = ViewController;
+			path = ViewController;
+			sourceTree = "<group>";
+		};
+		D372087F6EC6908CFFECA09E /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+				A1270523283212FE00ED92F2 /* StatisticViewModel.swift */,
+			);
+			name = ViewModel;
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		D43DA43CD1BCF606814380CC /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				DF06F325270D50000031D6FE /* History.swift */,
+				DF06F30F2709805E0031D6FE /* StockInfo.swift */,
+			);
+			name = Model;
+			path = Model;
+			sourceTree = "<group>";
+		};
+		DA4276F1B73614F602163166 /* Coordinator */ = {
+			isa = PBXGroup;
+			children = (
+				38636568B743F70FE246F6FE /* TradeImportFlow.swift */,
+			);
+			name = Coordinator;
+			path = Coordinator;
 			sourceTree = "<group>";
 		};
 		DF06F2EE27097F2C0031D6FE = {
@@ -835,101 +1269,25 @@
 		DF06F2F927097F2C0031D6FE /* MyTaiwanStock */ = {
 			isa = PBXGroup;
 			children = (
-				A1DE925F2DB3A3C300D743C7 /* AppCoordinator.swift */,
-				A1DE92592DB3997500D743C7 /* StockList */,
-				A17DCFE82DB3514C00707C87 /* FontManager.swift */,
 				A14CBA112944360600DDA990 /* Repository */,
 				DFFB338127F94B5A0018F3A4 /* MyTaiwanStock.entitlements */,
 				DF3873A327ECC930000E2EAF /* Util */,
-				DF06F315270A00DF0031D6FE /* View */,
-				DF06F311270984FE0031D6FE /* View Controller */,
-				DF06F30E27097F360031D6FE /* Model */,
-				DF06F2FA27097F2C0031D6FE /* AppDelegate.swift */,
-				DF06F2FC27097F2C0031D6FE /* SceneDelegate.swift */,
 				A12705172830F4AB00ED92F2 /* GoogleService-Info.plist */,
 				DF06F30027097F2C0031D6FE /* Main.storyboard */,
 				DF06F30327097F2E0031D6FE /* Assets.xcassets */,
 				DF06F30527097F2E0031D6FE /* LaunchScreen.storyboard */,
 				DF06F30827097F2E0031D6FE /* Info.plist */,
 				A1164EE82CD123BD0036C275 /* README.md */,
-				A1164EFB2CD268220036C275 /* UnreadManager.swift */,
-				A1CD75D12CD388F1000A0A7A /* DependencyContainer.swift */,
 				A1C03DE327C1D8571005AB268 /* ActivityKit */,
 				2E8016544C5C1DBE0E2915A1 /* Resources */,
 				BFE7EE6F57DFA01028BB14B9 /* ShareImport */,
-				7AB937D9595D4A2A588C4924 /* TradeImport */,
 				CFE9320BBA212D9E3F60C25F /* TradeCost */,
-				A284EC9E19E0403C63E03C6B /* TradeEntry */,
+				4FC8EFDFA548E9E4D10DB67C /* SharedUI */,
+				57E6C5AC3844FE2B5BD2DE59 /* App */,
+				71AF76145DC1BECB07277E2F /* Screens */,
+				24862A4E6282B6945E702F88 /* Shared */,
 			);
 			path = MyTaiwanStock;
-			sourceTree = "<group>";
-		};
-		DF06F30E27097F360031D6FE /* Model */ = {
-			isa = PBXGroup;
-			children = (
-				A1DE92762DC323BC00D743C7 /* CoreData */,
-				A199DC4228C843A0003FBC61 /* OnlineDB */,
-				DF06F30F2709805E0031D6FE /* StockInfo.swift */,
-				DF06F3122709A3190031D6FE /* OneDayStockInfo.swift */,
-				A168E09D27146EF600C75064 /* NewsAPI.swift */,
-				DF06F323270B1A4F0031D6FE /* MyStockList.swift */,
-				DF06F325270D50000031D6FE /* History.swift */,
-				DFD239DB270F39A7004AFAF9 /* MyTaiwanStock.xcdatamodeld */,
-				DF14417F27869C200038D05D /* StockStatistic.swift */,
-				DFFEB04B27E1D68C00C85A53 /* Sender.swift */,
-				DFFEB04D27E1D6C400C85A53 /* Message.swift */,
-				DFFEB04F27E1E37D00C85A53 /* Channel.swift */,
-				A17C2A7828D80C99007508D0 /* FeeType.swift */,
-				A17C2A7A28D81303007508D0 /* Fee.swift */,
-				AD93EF53658832306E290E9C /* StockListEntry.swift */,
-			);
-			path = Model;
-			sourceTree = "<group>";
-		};
-		DF06F311270984FE0031D6FE /* View Controller */ = {
-			isa = PBXGroup;
-			children = (
-				A12705102830AE7C00ED92F2 /* View Model */,
-				DF06F31B270AA43A0031D6FE /* StockViewController.swift */,
-				A168E09F27147C9800C75064 /* NewsListViewController.swift */,
-				A168E0A327148D1600C75064 /* webViewController.swift */,
-				DF14417B2785A5630038D05D /* StatisticViewController.swift */,
-				DFFEB04927E1D45000C85A53 /* ChatViewController.swift */,
-				DF715D712809140300DD92F4 /* AddListViewController.swift */,
-				DF793AD627DF8C36007C9442 /* AddStockNoViewController.swift */,
-				A10CD2CF28B9D1BB00B37AA4 /* CustomTabBarViewController.swift */,
-				A199DC3128BF1B70003FBC61 /* SettingViewController.swift */,
-				A199DC3328BF400D003FBC61 /* EditFeeViewController.swift */,
-				A199DC3E28C79CAE003FBC61 /* AccountViewController.swift */,
-				A16321512954A5C50011F295 /* AddDividendViewController.swift */,
-				A163216D2956A52F0011F295 /* DividendDetailViewController.swift */,
-				A1065AD12C21CEF30033A319 /* WalkthroughViewController.swift */,
-			);
-			path = "View Controller";
-			sourceTree = "<group>";
-		};
-		DF06F315270A00DF0031D6FE /* View */ = {
-			isa = PBXGroup;
-			children = (
-				A127052528321DB000ED92F2 /* HistoryCellModel.swift */,
-				A1202124288BB8DD00C8746A /* NewsListTableViewCell2.swift */,
-				A127052B2833604400ED92F2 /* NewsListCellViewModel.swift */,
-				DF14417D27868B240038D05D /* StatisticTableViewCell.swift */,
-				DF793ADA27E03258007C9442 /* AddStockTableViewCell.swift */,
-				A127051928314D6900ED92F2 /* AddStockCellViewModel.swift */,
-				A1C2E5E628B71F55009D8D9B /* ViewController+extension.swift */,
-				A11E04722CFB24A800138497 /* FloatingButton.swift */,
-				A1BB04D4293098F0002F983B /* NewHistoryTableViewCell.swift */,
-				A1BB04D5293098F0002F983B /* NewHistoryTableViewCell.xib */,
-				A16321652955A4BF0011F295 /* StatisticDividendTableViewCell.swift */,
-				A16321662955A4BF0011F295 /* StatisticDividendTableViewCell.xib */,
-				A16321692955EF8F0011F295 /* StatisticStockTableViewCell.swift */,
-				A163216A2955EF8F0011F295 /* StatisticStockTableViewCell.xib */,
-				A163216F2956A8CC0011F295 /* DividendDetailTableViewCell.swift */,
-				A16321702956A8CC0011F295 /* DividendDetailTableViewCell.xib */,
-				A1D831342D44A48A00497508 /* FloatingButtonManager.swift */,
-			);
-			path = View;
 			sourceTree = "<group>";
 		};
 		DF3873A327ECC930000E2EAF /* Util */ = {
@@ -966,6 +1324,17 @@
 			path = Util;
 			sourceTree = "<group>";
 		};
+		DF8655CA8D28C22694AF8612 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				A17C2A7A28D81303007508D0 /* Fee.swift */,
+				A17C2A7828D80C99007508D0 /* FeeType.swift */,
+				BFED6DE1D62AA2B4E86C09B6 /* FeeSettings.swift */,
+			);
+			name = Model;
+			path = Model;
+			sourceTree = "<group>";
+		};
 		DF8691F227ECC463003FF990 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
@@ -986,6 +1355,51 @@
 				A1E172492BED087200ED5916 /* View+Extension.swift */,
 			);
 			path = StockWidget;
+			sourceTree = "<group>";
+		};
+		E4560A5BA7AC9A2A008AD877 /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				8640D09D97E976868D167E4D /* TradeImportModels.swift */,
+			);
+			name = Model;
+			path = Model;
+			sourceTree = "<group>";
+		};
+		EA47AB7EFC7397C70461DAE8 /* StockList */ = {
+			isa = PBXGroup;
+			children = (
+				35EDD97E7F23FFCC4B3C4D8D /* AddStockNoViewModelTests.swift */,
+				D24D8738ED48BBC337A4CE12 /* StockListCoordinatorImportTests.swift */,
+				AC9954537E9A152ABDC0F28B /* StockListFilteringTests.swift */,
+				5AC4FF1C38A3B38F1BFAD283 /* StockListRefresherTests.swift */,
+				A11E04692CF2DE1100138497 /* TestStockListViewModel.swift */,
+				D0B1C2A3E4F5061728394A5C /* DuplicateStockNoTests.swift */,
+				D0B1C2A3E4F5061728394A5E /* ListNameTests.swift */,
+			);
+			name = StockList;
+			path = StockList;
+			sourceTree = "<group>";
+		};
+		EE37634E65E73D0EDC4F88D7 /* News */ = {
+			isa = PBXGroup;
+			children = (
+				354DC6507B517B33573595E5 /* ViewController */,
+				0AEEA5BA508BCB539541D4B4 /* ViewModel */,
+				357E223E154DF4630E1A907E /* Model */,
+				892BEB87E1A3CF334BD367CD /* View */,
+			);
+			name = News;
+			path = News;
+			sourceTree = "<group>";
+		};
+		F3C23C3FCFEFE52B55C9E5EF /* Coordinator */ = {
+			isa = PBXGroup;
+			children = (
+				A1DE925D2DB39EF200D743C7 /* StockListCoordinator.swift */,
+			);
+			name = Coordinator;
+			path = Coordinator;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */

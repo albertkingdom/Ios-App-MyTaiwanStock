@@ -10,13 +10,13 @@ final class FakeTradeImportStore: TradeImportStore {
     var existing: [String: [ExistingTrade]] = [:]
     var timestamps: Set<Int64> = []
     var lists: [String: Set<String>] = [:]
-    private(set) var saved: [(stockNo: String, price: Float, amount: Int, side: TradeSide, date: Date)] = []
+    private(set) var saved: [(stockNo: String, price: Float, amount: Int, side: TradeSide, date: Date, fee: Int, tax: Int)] = []
     private(set) var addedStocks: [(stockNo: String, listName: String)] = []
 
     func existingTrades(stockNo: String) -> [ExistingTrade] { existing[stockNo] ?? [] }
     func usedTimestamps() -> Set<Int64> { timestamps }
-    func saveRecord(stockNo: String, price: Float, amount: Int, side: TradeSide, date: Date) {
-        saved.append((stockNo, price, amount, side, date))
+    func saveRecord(stockNo: String, price: Float, amount: Int, side: TradeSide, date: Date, fee: Int, tax: Int) {
+        saved.append((stockNo, price, amount, side, date, fee, tax))
     }
     func listContains(stockNo: String, listName: String) -> Bool { lists[listName]?.contains(stockNo) ?? false }
     func addStock(stockNo: String, toList listName: String) {
@@ -54,14 +54,23 @@ final class TradeImportViewModelTests: XCTestCase {
             side: side, tradeTypeText: type, isSupportedType: supported)
     }
 
+    /// Fee and tax depend on the fee settings, so every test gets fixed ones instead of what the simulator holds.
     private func makeViewModel(
-        _ trades: [ParsedTrade], lists: [String] = ["我的清單"], current: String? = "我的清單"
+        _ trades: [ParsedTrade], lists: [String] = ["我的清單"], current: String? = "我的清單",
+        settings: FeeSettings = FeeSettings(mode: .discount(10))
     ) -> TradeImportViewModel {
         let resolver = StockNameResolver(entries: entries)
         let codes = Set(entries.map(\.code))
         return TradeImportViewModel(
             trades: trades, resolver: resolver, isKnownCode: { codes.contains($0) },
-            store: store, listNames: lists, currentListName: current)
+            store: store, listNames: lists, currentListName: current, feeSettings: settings)
+    }
+
+    private let discountOfSix = FeeSettings(mode: .discount(6))
+
+    /// 瑞昱 sells 10 shares at 757, the example of the screenshot test data.
+    private func realtekSell(price: Float? = 757, amount: Int? = 10) -> ParsedTrade {
+        parsed("瑞昱", price: price, amount: amount, side: .sell, type: "盤中零股賣出")
     }
 
     private func status(_ viewModel: TradeImportViewModel, _ index: Int = 0) -> TradePreviewStatus {
@@ -365,5 +374,226 @@ final class TradeImportViewModelTests: XCTestCase {
         XCTAssertEqual(store.saved.count, 1)
         XCTAssertEqual(store.addedStocks.count, 1)
     }
-}
 
+    // MARK: estimated fee and tax
+
+    func test_a_sell_shows_the_estimated_fee_and_tax() {
+        let viewModel = makeViewModel([realtekSell()], settings: discountOfSix)
+
+        XCTAssertEqual(viewModel.items[0].feeText, "6")
+        XCTAssertEqual(viewModel.items[0].taxText, "22")
+    }
+
+    func test_a_sell_of_an_etf_uses_the_etf_tax_rate() {
+        let viewModel = makeViewModel([parsed(price: 100, amount: 1000, side: .sell, type: "盤中賣出")])
+
+        XCTAssertEqual(viewModel.items[0].feeText, "142")
+        XCTAssertEqual(viewModel.items[0].taxText, "100")
+    }
+
+    func test_a_buy_has_a_tax_of_zero() {
+        let viewModel = makeViewModel([parsed(price: 112.55, amount: 5)])
+
+        XCTAssertEqual(viewModel.items[0].feeText, "1")
+        XCTAssertEqual(viewModel.items[0].taxText, "0")
+    }
+
+    func test_a_fixed_fee_setting_replaces_the_formula() {
+        let viewModel = makeViewModel([realtekSell()], settings: FeeSettings(mode: .fixedAmount(30)))
+
+        XCTAssertEqual(viewModel.items[0].feeText, "30")
+        XCTAssertEqual(viewModel.items[0].taxText, "22")
+    }
+
+    func test_a_trade_without_a_price_or_shares_has_no_estimate_until_they_are_entered() {
+        let viewModel = makeViewModel([realtekSell(price: nil)], settings: discountOfSix)
+        XCTAssertEqual(viewModel.items[0].feeText, "")
+        XCTAssertEqual(viewModel.items[0].taxText, "")
+        XCTAssertEqual(status(viewModel), .incomplete)
+
+        viewModel.setPrice(757, for: viewModel.items[0].id)
+
+        XCTAssertEqual(viewModel.items[0].feeText, "6")
+        XCTAssertEqual(viewModel.items[0].taxText, "22")
+        XCTAssertEqual(status(viewModel), .importable)
+    }
+
+    func test_changing_a_buy_to_a_sell_estimates_the_tax() {
+        let viewModel = makeViewModel([parsed("瑞昱", price: 757, amount: 10)], settings: discountOfSix)
+        XCTAssertEqual(viewModel.items[0].taxText, "0")
+
+        viewModel.setSide(.sell, for: viewModel.items[0].id)
+
+        XCTAssertEqual(viewModel.items[0].taxText, "22")
+    }
+
+    func test_changing_the_stock_number_estimates_the_tax_again() {
+        let viewModel = makeViewModel([parsed("華邦電", price: 100, amount: 1000, side: .sell, type: "盤中賣出")])
+        XCTAssertEqual(viewModel.items[0].taxText, "300")
+
+        viewModel.setStockNo("0050", for: viewModel.items[0].id)
+
+        XCTAssertEqual(viewModel.items[0].taxText, "100")
+    }
+
+    func test_changing_the_price_and_the_shares_estimates_again() {
+        let viewModel = makeViewModel([realtekSell()], settings: discountOfSix)
+
+        viewModel.setPrice(800, for: viewModel.items[0].id)
+        viewModel.setAmount(1000, for: viewModel.items[0].id)
+
+        XCTAssertEqual(viewModel.items[0].feeText, "684")
+        XCTAssertEqual(viewModel.items[0].taxText, "2400")
+    }
+
+    func test_the_estimate_of_a_draft_is_available_to_the_editor() {
+        let viewModel = makeViewModel([parsed()])
+
+        XCTAssertEqual(
+            viewModel.estimate(stockNo: "0050", price: 100, amount: 1000, side: .sell),
+            FeeAndTax(fee: 142, tax: 100))
+        XCTAssertNil(viewModel.estimate(stockNo: "0050", price: nil, amount: 1000, side: .sell))
+    }
+
+    // MARK: editing the fee and the tax
+
+    func test_an_edited_fee_is_kept_when_the_price_changes() throws {
+        let viewModel = makeViewModel([realtekSell()], settings: discountOfSix)
+        let id = viewModel.items[0].id
+
+        viewModel.setFee("3", for: id)
+        viewModel.setPrice(800, for: id)
+
+        XCTAssertEqual(viewModel.items[0].feeText, "3")
+        XCTAssertEqual(viewModel.items[0].taxText, "24")
+        _ = try viewModel.confirmImport()
+        XCTAssertEqual(store.saved[0].fee, 3)
+    }
+
+    func test_an_edited_tax_is_kept_when_the_direction_or_the_shares_change() {
+        let viewModel = makeViewModel([realtekSell()], settings: discountOfSix)
+        let id = viewModel.items[0].id
+
+        viewModel.setTax("30", for: id)
+        viewModel.setAmount(20, for: id)
+
+        XCTAssertEqual(viewModel.items[0].taxText, "30")
+        XCTAssertEqual(viewModel.items[0].feeText, "12")
+    }
+
+    func test_clearing_the_fee_returns_to_the_estimate() throws {
+        let viewModel = makeViewModel([realtekSell()], settings: discountOfSix)
+        let id = viewModel.items[0].id
+        viewModel.setFee("3", for: id)
+
+        viewModel.setFee("", for: id)
+
+        XCTAssertEqual(viewModel.items[0].feeText, "6")
+        _ = try viewModel.confirmImport()
+        XCTAssertEqual(store.saved[0].fee, 6)
+    }
+
+    func test_after_clearing_the_fee_follows_the_inputs_again() {
+        let viewModel = makeViewModel([realtekSell()], settings: discountOfSix)
+        let id = viewModel.items[0].id
+        viewModel.setFee("3", for: id)
+        viewModel.setFee("  ", for: id)
+
+        viewModel.setAmount(20, for: id)
+
+        XCTAssertEqual(viewModel.items[0].feeText, "12")
+    }
+
+    func test_a_buy_tax_is_zero_and_cannot_be_edited() throws {
+        let viewModel = makeViewModel([parsed()])
+
+        viewModel.setTax("50", for: viewModel.items[0].id)
+
+        XCTAssertEqual(viewModel.items[0].taxText, "0")
+        _ = try viewModel.confirmImport()
+        XCTAssertEqual(store.saved[0].tax, 0)
+    }
+
+    func test_a_tax_edited_on_a_sell_is_dropped_when_the_trade_becomes_a_buy() throws {
+        let viewModel = makeViewModel([realtekSell()], settings: discountOfSix)
+        let id = viewModel.items[0].id
+        viewModel.setTax("50", for: id)
+
+        viewModel.setSide(.buy, for: id)
+        XCTAssertEqual(viewModel.items[0].taxText, "0")
+        viewModel.setSide(.sell, for: id)
+
+        XCTAssertEqual(viewModel.items[0].taxText, "22")
+    }
+
+    func test_a_negative_fee_makes_the_trade_incomplete_until_it_is_fixed() {
+        let viewModel = makeViewModel([realtekSell()], settings: discountOfSix)
+        let id = viewModel.items[0].id
+
+        viewModel.setFee("-5", for: id)
+
+        XCTAssertEqual(status(viewModel), .incomplete)
+        XCTAssertFalse(viewModel.items[0].isSelected)
+
+        viewModel.setFee("5", for: id)
+
+        XCTAssertEqual(status(viewModel), .importable)
+        XCTAssertTrue(viewModel.items[0].isSelected)
+    }
+
+    func test_clearing_an_invalid_fee_makes_the_trade_importable_again() {
+        let viewModel = makeViewModel([realtekSell()], settings: discountOfSix)
+        let id = viewModel.items[0].id
+        viewModel.setFee("-5", for: id)
+
+        viewModel.setFee("", for: id)
+
+        XCTAssertEqual(status(viewModel), .importable)
+        XCTAssertTrue(viewModel.items[0].isSelected)
+    }
+
+    func test_a_fee_or_tax_that_is_not_a_whole_number_in_range_is_incomplete() {
+        let viewModel = makeViewModel([realtekSell()])
+        let id = viewModel.items[0].id
+
+        for bad in ["5.5", "abc", "2147483648", "1e3"] {
+            viewModel.setFee(bad, for: id)
+            XCTAssertEqual(status(viewModel), .incomplete, "fee \(bad)")
+            viewModel.setFee("", for: id)
+            viewModel.setTax(bad, for: id)
+            XCTAssertEqual(status(viewModel), .incomplete, "tax \(bad)")
+            viewModel.setTax("", for: id)
+        }
+        viewModel.setFee("2147483647", for: id)
+        XCTAssertEqual(status(viewModel), .importable)
+    }
+
+    func test_a_confirmed_import_with_an_invalid_fee_writes_nothing() {
+        let viewModel = makeViewModel([realtekSell()], settings: discountOfSix)
+        viewModel.setFee("-5", for: viewModel.items[0].id)
+        viewModel.items[0].isSelected = true // not reachable through the UI
+
+        XCTAssertThrowsError(try viewModel.confirmImport())
+        XCTAssertTrue(store.saved.isEmpty)
+    }
+
+    // MARK: writing the fee and the tax
+
+    func test_the_estimates_are_stored() throws {
+        let viewModel = makeViewModel([realtekSell()], settings: discountOfSix)
+
+        _ = try viewModel.confirmImport()
+
+        XCTAssertEqual(store.saved[0].fee, 6)
+        XCTAssertEqual(store.saved[0].tax, 22)
+    }
+
+    func test_an_odd_lot_buy_is_stored_with_a_fee_of_1_and_a_tax_of_0() throws {
+        let viewModel = makeViewModel([parsed(price: 112.55, amount: 5)])
+
+        _ = try viewModel.confirmImport()
+
+        XCTAssertEqual(store.saved[0].fee, 1)
+        XCTAssertEqual(store.saved[0].tax, 0)
+    }
+}

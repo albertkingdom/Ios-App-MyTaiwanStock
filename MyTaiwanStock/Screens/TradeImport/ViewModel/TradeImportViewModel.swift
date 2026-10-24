@@ -17,7 +17,7 @@ protocol TradeImportStore {
     func existingTrades(stockNo: String) -> [ExistingTrade]
     /// Millisecond timestamps of every stored buy/sell record, across all stocks.
     func usedTimestamps() -> Set<Int64>
-    func saveRecord(stockNo: String, price: Float, amount: Int, side: TradeSide, date: Date)
+    func saveRecord(stockNo: String, price: Float, amount: Int, side: TradeSide, date: Date, fee: Int, tax: Int)
     func listContains(stockNo: String, listName: String) -> Bool
     func addStock(stockNo: String, toList listName: String)
 }
@@ -41,9 +41,18 @@ struct TradePreviewItem: Equatable, Identifiable {
     var isSupportedType: Bool
     var status: TradePreviewStatus
     var isSelected: Bool
+    /// The fee and the tax as the preview and the editor show them: the estimate, until the user types a value.
+    var fields = FeeTaxFields()
+
+    var feeText: String { fields.feeText }
+    var taxText: String { fields.taxText }
+    var fee: Int? { fields.fee }
+    var tax: Int? { fields.tax }
 
     /// Whether every value needed to write the trade is present and valid.
-    var isComplete: Bool { Self.isComplete(stockNo: stockNo, date: date, price: price, amount: amount) }
+    var isComplete: Bool {
+        Self.isComplete(stockNo: stockNo, date: date, price: price, amount: amount) && fee != nil && tax != nil
+    }
 
     static func isComplete(stockNo: String?, date: Date?, price: Float?, amount: Int?) -> Bool {
         guard stockNo != nil, date != nil,
@@ -68,6 +77,7 @@ final class TradeImportViewModel {
 
     private let isKnownCode: (String) -> Bool
     private let store: TradeImportStore
+    private let feeSettings: FeeSettings
 
     init(
         trades: [ParsedTrade],
@@ -75,10 +85,12 @@ final class TradeImportViewModel {
         isKnownCode: @escaping (String) -> Bool,
         store: TradeImportStore,
         listNames: [String],
-        currentListName: String?
+        currentListName: String?,
+        feeSettings: FeeSettings = FeeSettings.current()
     ) {
         self.isKnownCode = isKnownCode
         self.store = store
+        self.feeSettings = feeSettings
         self.listNames = listNames
         self.selectedListName = currentListName.flatMap { listNames.contains($0) ? $0 : nil } ?? listNames.first
         self.items = trades.map { trade in
@@ -88,6 +100,7 @@ final class TradeImportViewModel {
                 tradeTypeText: trade.tradeTypeText, isSupportedType: trade.isSupportedType,
                 status: .incomplete, isSelected: false)
         }
+        for index in items.indices { estimateFeeAndTax(at: index) }
         refreshStatuses(applyDefaultSelection: true)
     }
 
@@ -136,8 +149,10 @@ final class TradeImportViewModel {
         var usedTimestamps = store.usedTimestamps()
         for item in selected {
             let date = Self.storedDate(for: item.date!, avoiding: &usedTimestamps)
+            // A buy pays no tax, whatever the text holds.
             store.saveRecord(
-                stockNo: item.stockNo!, price: item.price!, amount: item.amount!, side: item.side, date: date)
+                stockNo: item.stockNo!, price: item.price!, amount: item.amount!, side: item.side, date: date,
+                fee: item.fee!, tax: item.side == .buy ? 0 : item.tax!)
         }
         addImportedStocksToSelectedList(selected)
         return selected.count
@@ -194,10 +209,45 @@ final class TradeImportViewModel {
     func setDate(_ date: Date?, for id: UUID) { edit(id) { $0.date = date } }
     func setSide(_ side: TradeSide, for id: UUID) { edit(id) { $0.side = side } }
 
+    /// A typed fee is kept when the price, the shares or the direction change; an empty text goes back to the
+    /// estimate and follows those values again.
+    func setFee(_ text: String, for id: UUID) {
+        edit(id) { item in
+            item.fields.editFee(text)
+            item.fields.endEditingFee()
+        }
+    }
+
+    /// The same for the tax of a sell. A buy pays no tax, so its tax cannot be edited.
+    func setTax(_ text: String, for id: UUID) {
+        edit(id) { item in
+            guard item.side == .sell else { return }
+            item.fields.editTax(text)
+            item.fields.endEditingTax()
+        }
+    }
+
+    /// The estimate for values that are not stored yet, so the editor can show it while the user types.
+    func estimate(stockNo: String?, price: Float?, amount: Int?, side: TradeSide) -> FeeAndTax? {
+        guard let price, let amount, let decimalPrice = Decimal(string: String(price)) else { return nil }
+        // Tax category: ETF codes start with 00; the user can change the tax of one trade by hand.
+        let category: TaxCategory = stockNo?.hasPrefix("00") == true ? .etf : .stock
+        return FeeCalculator.calculate(
+            price: decimalPrice, shares: amount, side: side, settings: feeSettings, taxCategory: category)
+    }
+
     private func edit(_ id: UUID, _ change: (inout TradePreviewItem) -> Void) {
         guard let index = items.firstIndex(where: { $0.id == id }) else { return }
         change(&items[index])
+        estimateFeeAndTax(at: index)
         refreshStatuses(applyDefaultSelection: false)
+    }
+
+    /// Estimates the fee and the tax the user has not typed. Without a price or shares there is no estimate.
+    private func estimateFeeAndTax(at index: Int) {
+        let item = items[index]
+        let estimate = estimate(stockNo: item.stockNo, price: item.price, amount: item.amount, side: item.side)
+        items[index].fields.refresh(with: estimate, side: item.side)
     }
 
     // MARK: statuses

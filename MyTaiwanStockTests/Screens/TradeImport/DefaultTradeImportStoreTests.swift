@@ -48,14 +48,17 @@ final class DefaultTradeImportStoreTests: XCTestCase {
         TaipeiCalendar.calendar.date(from: DateComponents(year: year, month: month, day: day))!
     }
 
-    private func makeViewModel(listName: String? = "自選", lists: [String] = ["自選"]) -> TradeImportViewModel {
+    private func makeViewModel(
+        listName: String? = "自選", lists: [String] = ["自選"], side: TradeSide = .buy,
+        settings: FeeSettings = FeeSettings(mode: .discount(10))
+    ) -> TradeImportViewModel {
         let codes = Set(entries.map(\.code))
         let trade = ParsedTrade(
-            stockName: "華邦電", date: taipei(2026, 10, 1), price: 179.5, amount: 3, side: .buy,
+            stockName: "華邦電", date: taipei(2026, 10, 1), price: 179.5, amount: 3, side: side,
             tradeTypeText: "盤中零股買進", isSupportedType: true)
         return TradeImportViewModel(
             trades: [trade], resolver: StockNameResolver(entries: entries), isKnownCode: { codes.contains($0) },
-            store: store, listNames: lists, currentListName: listName)
+            store: store, listNames: lists, currentListName: listName, feeSettings: settings)
     }
 
     private func insertList(_ name: String) {
@@ -91,6 +94,29 @@ final class DefaultTradeImportStoreTests: XCTestCase {
         XCTAssertEqual(record.value(forKey: "status") as? Int, 0)
         XCTAssertEqual(record.value(forKey: "reason") as? String, "")
         XCTAssertEqual(stockNos(inList: "自選"), ["2344"])
+    }
+
+    func test_import_stores_the_fee_and_the_tax_of_a_buy() throws {
+        insertList("自選")
+
+        _ = try makeViewModel().confirmImport()
+
+        let record = try XCTUnwrap(records().first)
+        XCTAssertEqual(record.value(forKey: "fee") as? Int, 1)
+        XCTAssertEqual(record.value(forKey: "tax") as? Int, 0)
+    }
+
+    func test_import_stores_the_fee_and_the_tax_of_a_sell() throws {
+        insertList("自選")
+        let viewModel = makeViewModel(side: .sell)
+        viewModel.setFee("7", for: viewModel.items[0].id)
+
+        _ = try viewModel.confirmImport()
+
+        let record = try XCTUnwrap(records().first)
+        XCTAssertEqual(record.value(forKey: "status") as? Int, 1)
+        XCTAssertEqual(record.value(forKey: "fee") as? Int, 7)
+        XCTAssertEqual(record.value(forKey: "tax") as? Int, 1)
     }
 
     func test_importing_twice_never_puts_the_same_stock_in_the_list_twice() throws {

@@ -114,15 +114,24 @@ final class TradeImportPreviewViewController: UIViewController {
     }
 
     private func presentEditor(for item: TradePreviewItem) {
-        let editor = TradeEditViewController(item: item) { [weak self] stockNo, price, amount, date, side in
-            guard let self else { return }
-            viewModel.setStockNo(stockNo, for: item.id)
-            viewModel.setPrice(price, for: item.id)
-            viewModel.setAmount(amount, for: item.id)
-            viewModel.setDate(date, for: item.id)
-            viewModel.setSide(side, for: item.id)
-            refresh()
-        }
+        let editor = TradeEditViewController(
+            item: item,
+            estimate: { [weak viewModel] stockNo, price, amount, side in
+                viewModel?.estimate(stockNo: stockNo, price: price, amount: amount, side: side)
+            },
+            onSave: { [weak self] stockNo, price, amount, date, side, feeText, taxText in
+                guard let self else { return }
+                viewModel.setStockNo(stockNo, for: item.id)
+                viewModel.setPrice(price, for: item.id)
+                viewModel.setAmount(amount, for: item.id)
+                viewModel.setDate(date, for: item.id)
+                viewModel.setSide(side, for: item.id)
+                // The values are applied last: a field the user did not type follows the new inputs, an empty
+                // one goes back to the estimate.
+                viewModel.setFee(feeText ?? "", for: item.id)
+                viewModel.setTax(taxText ?? "", for: item.id)
+                refresh()
+            })
         navigationController?.pushViewController(editor, animated: true)
     }
 
@@ -228,7 +237,9 @@ extension TradeImportPreviewViewController: UITableViewDataSource, UITableViewDe
         let date = item.date.map(Self.dateFormatter.string(from:)) ?? "日期？"
         let amount = item.amount.map { "\($0) 股" } ?? "股數？"
         let price = item.price.map { String(format: "%.2f", $0) } ?? "價格？"
-        content.secondaryText = "\(side) ・ \(amount) ・ \(price) ・ \(date)"
+        let fee = item.feeText.isEmpty ? "手續費？" : "手續費 \(item.feeText)"
+        let tax = item.taxText.isEmpty ? "稅？" : "稅 \(item.taxText)"
+        content.secondaryText = "\(side) ・ \(amount) ・ \(price) ・ \(date)\n\(fee) ・ \(tax)"
         content.secondaryTextProperties.color = .secondaryLabel
         content.image = UIImage(systemName: item.isSelected ? "checkmark.circle.fill" : (selectable ? "circle" : "exclamationmark.circle"))
         content.imageProperties.tintColor = item.isSelected ? .systemBlue : (selectable ? .tertiaryLabel : Self.statusColor(item.status))

@@ -29,10 +29,10 @@ final class DefaultTradeImportStore: TradeImportStore {
         Set(localDB.fetchAllHistoryDates().map(TradeImportViewModel.millis(of:)))
     }
 
-    func saveRecord(stockNo: String, price: Float, amount: Int, side: TradeSide, date: Date) {
+    func saveRecord(stockNo: String, price: Float, amount: Int, side: TradeSide, date: Date, fee: Int, tax: Int) {
         repository.saveNewRecord(
             stockNo: stockNo, price: price, amount: amount, reason: "",
-            buyOrSellStatus: side.rawValue, date: date, fee: nil, tax: nil)
+            buyOrSellStatus: side.rawValue, date: date, fee: fee, tax: tax)
     }
 
     func listContains(stockNo: String, listName: String) -> Bool {

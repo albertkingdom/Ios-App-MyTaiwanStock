@@ -16,6 +16,7 @@
 		1DF2999F7508FF3072EEEE47 /* FloatingButtonManagerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1DA45FEE2F5F881A51DBD9ED /* FloatingButtonManagerTests.swift */; };
 		1E8A00E46BCF4BED4A7F6C9B /* SceneICloudCoordinatorTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4527BB5764FC0481AAFCE3E6 /* SceneICloudCoordinatorTests.swift */; };
 		226165AD5034A56C7E15A77C /* ShareViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0A187A59E13BDBE76BE7FD07 /* ShareViewController.swift */; };
+		2333B31DFC38B4FA60CB1E87 /* TradeEditViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 73862F35CF59AFAA06CAD480 /* TradeEditViewControllerTests.swift */; };
 		2335557E326A324692DE5F9D /* PendingImportStore.swift in Sources */ = {isa = PBXBuildFile; fileRef = 33ED63165D40C72C1A110698 /* PendingImportStore.swift */; };
 		248A663993B36BBA068B4D84 /* BackupDestination.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5336FBA6B104EF2D3C240B32 /* BackupDestination.swift */; };
 		2499E673F963639825B82AE6 /* UIAlertController+Tapping.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8AFC6E13CB3C18E0826AE4B9 /* UIAlertController+Tapping.swift */; };
@@ -51,6 +52,7 @@
 		88BEE1E19FFE04C57D16DB7A /* ICloudBackupService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 35BE1FA033A9EAAAD45D552C /* ICloudBackupService.swift */; };
 		8C405C0EE225621F41E8FCA7 /* FeeSettings.swift in Sources */ = {isa = PBXBuildFile; fileRef = BFED6DE1D62AA2B4E86C09B6 /* FeeSettings.swift */; };
 		8D01BEDFCDF2898AF0DEDA92 /* StockListEntry.swift in Sources */ = {isa = PBXBuildFile; fileRef = AD93EF53658832306E290E9C /* StockListEntry.swift */; };
+		8F13248E195BA87B11F1DD67 /* TradeImportPreviewViewControllerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = E571E6AC97963B0E4C8891FE /* TradeImportPreviewViewControllerTests.swift */; };
 		8FABFB2C6A0FA23BBEABAE6E /* FeeSettingsTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1D81C19E456102036C3F5039 /* FeeSettingsTests.swift */; };
 		9079AA8B35002B8DED3B7894 /* ICloudBackupServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F24890FEBA8232DE81E0095 /* ICloudBackupServiceTests.swift */; };
 		90818AB5E0F9F0827FF11493 /* PendingImportCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7567F2B0D7B387649C2D41A1 /* PendingImportCoordinator.swift */; };
@@ -325,6 +327,7 @@
 		6F52713E23FB475C1000B61D /* TradeImageSource.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeImageSource.swift; sourceTree = "<group>"; };
 		7068E958757E9074134F1608 /* HistoryOnlineTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = HistoryOnlineTests.swift; sourceTree = "<group>"; };
 		728B8AFF86C937E2E8BECCB9 /* SceneICloudCoordinator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = SceneICloudCoordinator.swift; sourceTree = "<group>"; };
+		73862F35CF59AFAA06CAD480 /* TradeEditViewControllerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeEditViewControllerTests.swift; sourceTree = "<group>"; };
 		7567F2B0D7B387649C2D41A1 /* PendingImportCoordinator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = PendingImportCoordinator.swift; sourceTree = "<group>"; };
 		7B24E0A8C5D13F96B2A4E871 /* ResizableLayoutTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ResizableLayoutTests.swift; sourceTree = "<group>"; };
 		808890ADBB223AD086D933A4 /* TradeEditViewController.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeEditViewController.swift; sourceTree = "<group>"; };
@@ -478,6 +481,7 @@
 		DFFEB04B27E1D68C00C85A53 /* Sender.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Sender.swift; sourceTree = "<group>"; };
 		DFFEB04D27E1D6C400C85A53 /* Message.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		DFFEB04F27E1E37D00C85A53 /* Channel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Channel.swift; sourceTree = "<group>"; };
+		E571E6AC97963B0E4C8891FE /* TradeImportPreviewViewControllerTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeImportPreviewViewControllerTests.swift; sourceTree = "<group>"; };
 		EDBFA9181BDA2CA0B0071FFE /* StoreSchemaCompatibilityChecking.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StoreSchemaCompatibilityChecking.swift; sourceTree = "<group>"; };
 		EFE4BC31B663197CA27B0863 /* FeeCalculator.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = FeeCalculator.swift; sourceTree = "<group>"; };
 		F984A9E41163688F362D7882 /* TradeImportViewModelTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeImportViewModelTests.swift; sourceTree = "<group>"; };
@@ -1124,6 +1128,8 @@
 				36DAE738BFD46BF3EF2FD877 /* TradeScreenshotVisionFixtures.swift */,
 				86E56EE9FEDB8EF9AEEA8030 /* TradeTextRecognizerTests.swift */,
 				4DB2A925F8B659FCD4C126CC /* StockNameResolverTests.swift */,
+				73862F35CF59AFAA06CAD480 /* TradeEditViewControllerTests.swift */,
+				E571E6AC97963B0E4C8891FE /* TradeImportPreviewViewControllerTests.swift */,
 			);
 			name = TradeImport;
 			path = TradeImport;
@@ -1706,6 +1712,8 @@
 				AC403C0A27F47608267F4705 /* AddHistoryViewModelTests.swift in Sources */,
 				D90E55C726063FA871B731AA /* AddHistoryViewControllerTests.swift in Sources */,
 				32899A7474FED77EC877E8ED /* FeeTaxFieldsTests.swift in Sources */,
+				2333B31DFC38B4FA60CB1E87 /* TradeEditViewControllerTests.swift in Sources */,
+				8F13248E195BA87B11F1DD67 /* TradeImportPreviewViewControllerTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

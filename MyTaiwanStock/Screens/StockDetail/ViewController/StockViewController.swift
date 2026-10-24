@@ -13,6 +13,9 @@ import ActivityKit
 
 
 class StockViewController: UIViewController {
+    /// The distance between the section titles and the left edge of the page.
+    static let titleMargin: CGFloat = 16
+
     var subscription = Set<AnyCancellable>()
     var viewModel: StockDetailViewModel!
     
@@ -171,7 +174,9 @@ class StockViewController: UIViewController {
         stackOfTitle.translatesAutoresizingMaskIntoConstraints = false
         title.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            title.leadingAnchor.constraint(equalTo: container.leadingAnchor),
+            // The table runs to the edge of the safe area, so a title needs its own margin to stay off the edge
+            // of the screen (and off a vertical tab bar).
+            title.leadingAnchor.constraint(equalTo: container.leadingAnchor, constant: Self.titleMargin),
             title.trailingAnchor.constraint(equalTo: container.trailingAnchor),
             title.topAnchor.constraint(equalTo: container.topAnchor),
             stackOfTitle.leadingAnchor.constraint(equalTo: container.leadingAnchor),
@@ -404,7 +409,7 @@ class StockViewController: UIViewController {
             stack.translatesAutoresizingMaskIntoConstraints = false
             contentView.addSubview(title)
             contentView.addSubview(stack)
-            NSLayoutConstraint.activate([title.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
+            NSLayoutConstraint.activate([title.leadingAnchor.constraint(equalTo: contentView.leadingAnchor, constant: StockViewController.titleMargin),
                                          title.topAnchor.constraint(equalTo: contentView.topAnchor),
                                          stack.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
                                          stack.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),

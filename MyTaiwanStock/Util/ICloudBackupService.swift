@@ -18,6 +18,9 @@ enum ICloudBackupServiceError: Error {
     /// The snapshot's Core Data model version is incompatible with the currently-running
     /// model. Restore is aborted without touching the local store.
     case incompatibleSnapshotSchema
+    /// The snapshot is a known model version but a copy of it could not be opened with the current model.
+    /// Restore is aborted without touching the local store.
+    case snapshotMigrationFailed
 }
 
 protocol ICloudBackupService {
@@ -42,6 +45,9 @@ actor DefaultICloudBackupService: ICloudBackupService {
     private let availabilityChecking: ICloudAvailabilityChecking
     private let destination: BackupDestination
     private let schemaCompatibilityChecking: StoreSchemaCompatibilityChecking
+    private let migrationVerifier: StoreMigrationVerifying
+    private let fileCoordinator: FileCoordinating
+    private let stagingDirectory: URL
     private let sourceStoreURL: () -> URL?
     private let reloadStore: () throws -> Void
     private let userDefaults: UserDefaults
@@ -51,6 +57,9 @@ actor DefaultICloudBackupService: ICloudBackupService {
         availabilityChecking: ICloudAvailabilityChecking = DefaultICloudAvailabilityChecker(),
         destination: BackupDestination,
         schemaCompatibilityChecking: StoreSchemaCompatibilityChecking,
+        migrationVerifier: StoreMigrationVerifying,
+        fileCoordinator: FileCoordinating = NSFileCoordinator(),
+        stagingDirectory: URL = FileManager.default.temporaryDirectory.appendingPathComponent("ICloudRestoreStaging", isDirectory: true),
         sourceStoreURL: @escaping () -> URL?,
         reloadStore: @escaping () throws -> Void,
         userDefaults: UserDefaults = .standard
@@ -59,6 +68,9 @@ actor DefaultICloudBackupService: ICloudBackupService {
         self.availabilityChecking = availabilityChecking
         self.destination = destination
         self.schemaCompatibilityChecking = schemaCompatibilityChecking
+        self.migrationVerifier = migrationVerifier
+        self.fileCoordinator = fileCoordinator
+        self.stagingDirectory = stagingDirectory
         self.sourceStoreURL = sourceStoreURL
         self.reloadStore = reloadStore
         self.userDefaults = userDefaults
@@ -112,14 +124,32 @@ actor DefaultICloudBackupService: ICloudBackupService {
         else {
             throw BackupDestinationError.ubiquityContainerUnavailable
         }
-        guard schemaCompatibilityChecking.isCompatible(storeAt: snapshotURL) else {
+
+        // The snapshot is read from iCloud once: one copy to check and try out, and one that stays as it
+        // is and is what replaces the database. The copy that is tried out gets upgraded in place, and
+        // reading iCloud again could meet a snapshot another device wrote in the meantime, one that was
+        // never checked.
+        let staging = stagingDirectory.appendingPathComponent(UUID().uuidString, isDirectory: true)
+        defer { try? FileManager.default.removeItem(at: staging) }
+        let copies = try SnapshotStaging.copy(
+            SQLiteStoreFileSet(mainURL: snapshotURL),
+            into: [staging.appendingPathComponent("verify"), staging.appendingPathComponent("restore")],
+            coordinator: fileCoordinator)
+        let (verifyCopy, restoreCopy) = (copies[0], copies[1])
+
+        guard schemaCompatibilityChecking.isCompatible(storeAt: verifyCopy.mainURL) else {
             throw ICloudBackupServiceError.incompatibleSnapshotSchema
         }
+        do {
+            try migrationVerifier.verifyStoreCanBeOpened(at: verifyCopy.mainURL)
+        } catch {
+            print("ICloudBackupService: snapshot cannot be migrated: \(error)")
+            throw ICloudBackupServiceError.snapshotMigrationFailed
+        }
 
-        let sourceSet = SQLiteStoreFileSet(mainURL: snapshotURL)
         let destinationSet = SQLiteStoreFileSet(mainURL: storeURL)
-        for (source, destinationURL) in zip(sourceSet.allURLs, destinationSet.allURLs) {
-            try CoordinatedFileReplace.replace(destination: destinationURL, withContentsOf: source)
+        for (source, destinationURL) in zip(restoreCopy.allURLs, destinationSet.allURLs) {
+            try CoordinatedFileReplace.replace(destination: destinationURL, withContentsOf: source, coordinator: fileCoordinator)
         }
 
         // The running `NSPersistentContainer` still holds a connection to the file we just
@@ -152,7 +182,10 @@ extension DefaultICloudBackupService {
             snapshotFileName: "MyTaiwanStock-backup.sqlite"
         ),
         schemaCompatibilityChecking: CoreDataSchemaCompatibilityChecker(
-            managedObjectModel: { LocalDBService.shared.container.managedObjectModel }
+            knownModels: { BundledModels.all() }
+        ),
+        migrationVerifier: CoreDataStoreMigrationVerifier(
+            currentModel: { LocalDBService.shared.container.managedObjectModel }
         ),
         sourceStoreURL: {
             URL.storeURL(for: LocalDBService.appGroupIdentifier, databaseName: LocalDBService.databaseName)

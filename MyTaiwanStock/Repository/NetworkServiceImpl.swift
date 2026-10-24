@@ -213,7 +213,9 @@ class NetworkServiceImpl: NetworkService {
         amount: Int,
         reason: String,
         buyOrSellStatus: Int,
-        date: Date
+        date: Date,
+        fee: Int?,
+        tax: Int?
     ) {
         localDBService.saveNewRecord(
             stockNo: stockNo,
@@ -221,7 +223,9 @@ class NetworkServiceImpl: NetworkService {
             amount: amount,
             reason: reason,
             buyOrSellStatus: buyOrSellStatus,
-            date: date
+            date: date,
+            fee: fee,
+            tax: tax
         )
 
         onLineDBService.uploadHistoryToOnlineDB(
@@ -229,7 +233,9 @@ class NetworkServiceImpl: NetworkService {
             price: price,
             amount: amount,
             date: date,
-            status: buyOrSellStatus
+            status: buyOrSellStatus,
+            fee: fee,
+            tax: tax
         )
     }
 

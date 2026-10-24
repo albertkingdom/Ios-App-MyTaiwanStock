@@ -36,6 +36,7 @@ struct SQLiteStoreFileSet {
 /// called directly, uncoordinated).
 protocol FileCoordinating {
     func coordinateWriting(itemAt url: URL, options: NSFileCoordinator.WritingOptions, byAccessor writer: (URL) throws -> Void) throws
+    func coordinateReading(itemAt url: URL, options: NSFileCoordinator.ReadingOptions, byAccessor reader: (URL) throws -> Void) throws
 }
 
 extension NSFileCoordinator: FileCoordinating {
@@ -51,6 +52,54 @@ extension NSFileCoordinator: FileCoordinating {
         }
         if let coordinatorError { throw coordinatorError }
         if let innerError { throw innerError }
+    }
+
+    func coordinateReading(itemAt url: URL, options: NSFileCoordinator.ReadingOptions, byAccessor reader: (URL) throws -> Void) throws {
+        var coordinatorError: NSError?
+        var innerError: Error?
+        coordinate(readingItemAt: url, options: options, error: &coordinatorError) { coordinatedURL in
+            do {
+                try reader(coordinatedURL)
+            } catch {
+                innerError = error
+            }
+        }
+        if let coordinatorError { throw coordinatorError }
+        if let innerError { throw innerError }
+    }
+}
+
+/// Copies a snapshot out of iCloud before it is used. The snapshot lives in the ubiquity container, so its
+/// files may not be downloaded yet and another device may replace them at any time; reading each file
+/// through the coordinator waits for the download, and copying all the files this way gives the restore a
+/// set of its own that nothing else can change.
+enum SnapshotStaging {
+    /// Copies the snapshot's store file and its `-wal` and `-shm` files, when they exist, into each of
+    /// `directories` in one coordinated read per file, and returns the copies. The store file must exist.
+    @discardableResult
+    static func copy(
+        _ snapshot: SQLiteStoreFileSet,
+        into directories: [URL],
+        coordinator: FileCoordinating = NSFileCoordinator()
+    ) throws -> [SQLiteStoreFileSet] {
+        let targets = directories.map {
+            SQLiteStoreFileSet(mainURL: $0.appendingPathComponent(snapshot.mainURL.lastPathComponent))
+        }
+        for directory in directories {
+            try FileManager.default.createDirectory(at: directory, withIntermediateDirectories: true)
+        }
+        for (index, source) in snapshot.allURLs.enumerated() {
+            guard FileManager.default.fileExists(atPath: source.path) else {
+                if index == 0 { throw CocoaError(.fileNoSuchFile) }
+                continue
+            }
+            try coordinator.coordinateReading(itemAt: source, options: []) { coordinatedURL in
+                for target in targets {
+                    try FileManager.default.copyItem(at: coordinatedURL, to: target.allURLs[index])
+                }
+            }
+        }
+        return targets
     }
 }
 

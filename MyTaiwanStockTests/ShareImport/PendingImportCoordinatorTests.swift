@@ -56,10 +56,21 @@ final class PendingImportCoordinatorTests: XCTestCase {
         return try draft.commit()
     }
 
-    /// The checks that follow becoming active wait one turn of the run loop.
+    /// The checks that follow becoming active wait one turn of the run loop, then read the folder off the
+    /// main thread.
+    private func settle() async throws {
+        try await Task.sleep(for: .milliseconds(50))
+        await coordinator.waitForChecks()
+    }
+
     private func becomeActive() async throws {
         coordinator.appDidBecomeActive()
-        try await Task.sleep(for: .milliseconds(50))
+        try await settle()
+    }
+
+    private func check() async {
+        coordinator.check()
+        await coordinator.waitForChecks()
     }
 
     // MARK: asking
@@ -75,7 +86,7 @@ final class PendingImportCoordinatorTests: XCTestCase {
 
     func test_no_pending_batch_asks_nothing() async throws {
         try await becomeActive()
-        coordinator.check()
+        await check()
 
         XCTAssertEqual(questions.count, 0)
     }
@@ -84,7 +95,7 @@ final class PendingImportCoordinatorTests: XCTestCase {
         coordinator = makeCoordinator(store: nil)
 
         try await becomeActive()
-        coordinator.check()
+        await check()
 
         XCTAssertEqual(questions.count, 0)
     }
@@ -106,7 +117,7 @@ final class PendingImportCoordinatorTests: XCTestCase {
         XCTAssertEqual(questions.count, 0)
 
         hasModal = false
-        coordinator.check()
+        await check()
         XCTAssertEqual(questions.count, 1, "the next trigger asks; nothing was queued before")
     }
 
@@ -123,9 +134,9 @@ final class PendingImportCoordinatorTests: XCTestCase {
         try writeBatch(imageCount: 1)
 
         try await becomeActive()
-        coordinator.check()
+        await check()
         coordinator.importDidFinish()
-        try await Task.sleep(for: .milliseconds(50))
+        try await settle()
 
         XCTAssertEqual(questions.count, 1)
     }
@@ -157,9 +168,9 @@ final class PendingImportCoordinatorTests: XCTestCase {
         try await becomeActive()
 
         questions[0].answer(false)
-        coordinator.check()
+        await check()
         coordinator.importDidFinish()
-        try await Task.sleep(for: .milliseconds(50))
+        try await settle()
 
         XCTAssertEqual(questions.count, 1, "at most one question each time the app becomes active")
         XCTAssertEqual(startedBatches, [])
@@ -203,11 +214,66 @@ final class PendingImportCoordinatorTests: XCTestCase {
         // The flow deleted the batch once it had a result, then ended.
         store.delete(first)
         coordinator.importDidFinish()
-        try await Task.sleep(for: .milliseconds(50))
+        try await settle()
 
         XCTAssertEqual(questions.map(\.imageCount), [1, 2])
         questions[1].answer(true)
         XCTAssertEqual(startedBatches, [first, second])
+    }
+
+    func test_triggers_that_arrive_together_ask_only_once() async throws {
+        try writeBatch(imageCount: 1)
+
+        coordinator.check()
+        coordinator.check()
+        coordinator.importDidFinish()
+        try await settle()
+
+        XCTAssertEqual(questions.count, 1)
+    }
+
+    // MARK: the stock list tab
+
+    private func makeStockListTab(topPage: UIViewController? = UIViewController()) throws
+        -> (tabs: UITabBarController, navigation: UINavigationController, mock: MockStockListCoordinator)
+    {
+        let mock = MockStockListCoordinator()
+        let viewModel = StockListViewModel(repository: MockNetworkService(), coordinator: mock)
+        let storyboard = UIStoryboard(name: "Main", bundle: Bundle(for: AddListViewController.self))
+        let list = try XCTUnwrap(storyboard.instantiateViewController(withIdentifier: "stockListVC") as? StockListViewController)
+        list.configure(with: viewModel)
+        let navigation = UINavigationController(rootViewController: list)
+        if let topPage { navigation.pushViewController(topPage, animated: false) }
+        let tabs = UITabBarController()
+        tabs.viewControllers = [navigation, UIViewController()]
+        tabs.selectedIndex = 1
+        return (tabs, navigation, mock)
+    }
+
+    func test_showing_the_import_selects_the_list_tab_returns_to_its_root_and_starts_it_there() throws {
+        let (tabs, navigation, mock) = try makeStockListTab()
+        let source = PendingBatchImageSource(
+            batch: PendingImportBatch(folderURL: container, createdAt: clock, imageURLs: []), store: store)
+
+        PendingImportCoordinator.showImport(of: source, in: tabs, navigationController: navigation)
+
+        XCTAssertEqual(tabs.selectedIndex, 0)
+        XCTAssertEqual(navigation.viewControllers.count, 1, "the page the user was on is gone")
+        XCTAssertEqual(mock.importedSources.count, 1)
+        XCTAssertTrue(mock.importedSources.first === source)
+    }
+
+    func test_showing_the_import_over_something_that_is_not_the_stock_list_starts_nothing_and_does_not_crash() throws {
+        let mock = MockStockListCoordinator()
+        let navigation = UINavigationController(rootViewController: UIViewController())
+        let tabs = UITabBarController()
+        tabs.viewControllers = [navigation]
+        let source = PendingBatchImageSource(
+            batch: PendingImportBatch(folderURL: container, createdAt: clock, imageURLs: []), store: store)
+
+        PendingImportCoordinator.showImport(of: source, in: tabs, navigationController: navigation)
+
+        XCTAssertEqual(mock.importedSources.count, 0)
     }
 
     // MARK: expiry

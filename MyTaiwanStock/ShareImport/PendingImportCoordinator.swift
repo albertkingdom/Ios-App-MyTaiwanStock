@@ -24,6 +24,8 @@ final class PendingImportCoordinator {
     private var isAsking = false
     private var isStarting = false
     private var declinedSinceActive = false
+    private var checkTask: Task<Void, Never>?
+    private var needsAnotherCheck = false
 
     /// `store` is nil when the shared container cannot be reached; then there is never anything to offer.
     init(
@@ -61,10 +63,42 @@ final class PendingImportCoordinator {
         DispatchQueue.main.async { [weak self] in self?.check() }
     }
 
+    /// Looks for a pending batch and asks about it. The folder is read off the main thread; a trigger that
+    /// arrives meanwhile makes the check run once more, because what it found may be out of date.
     func check() {
-        guard let store, isAppActive(), !isAsking, !isStarting, !declinedSinceActive, !isImportRunning() else { return }
-        store.purgeStale()
-        guard let batch = store.batches().first, !hasModal() else { return }
+        guard canAsk else { return }
+        guard checkTask == nil else {
+            needsAnotherCheck = true
+            return
+        }
+        checkTask = Task { [weak self] in
+            await self?.performCheck()
+            guard let self else { return }
+            checkTask = nil
+            if needsAnotherCheck {
+                needsAnotherCheck = false
+                check()
+            }
+        }
+    }
+
+    /// Waits until no check is running, including the one a trigger during a check asks for.
+    func waitForChecks() async {
+        while let task = checkTask { await task.value }
+    }
+
+    private var canAsk: Bool {
+        store != nil && isAppActive() && !isAsking && !isStarting && !declinedSinceActive && !isImportRunning()
+    }
+
+    private func performCheck() async {
+        guard let store else { return }
+        let batch = await Task.detached(priority: .utility) { () -> PendingImportBatch? in
+            store.purgeStale()
+            return store.batches().first
+        }.value
+        // The app may have changed while the folder was read.
+        guard canAsk, !hasModal(), let batch else { return }
 
         isAsking = true
         askToImport(batch.imageURLs.count) { [weak self] importNow in
@@ -100,13 +134,26 @@ extension PendingImportCoordinator {
                 window.rootViewController?.present(makePrompt(imageCount: count, answer: answer), animated: true)
             },
             startImport: { batch, store in
-                // The first tab is the stock list. The root is shown without animation so the loading screen
-                // comes up over the list, whatever page of the tab the user was on.
-                tabBarController.selectedIndex = 0
-                stockListCoordinator.navigationController.popToRootViewController(animated: false)
-                guard let list = stockListCoordinator.navigationController.viewControllers.first as? StockListViewController else { return }
-                list.startImport(of: PendingBatchImageSource(batch: batch, store: store))
+                showImport(
+                    of: PendingBatchImageSource(batch: batch, store: store),
+                    in: tabBarController, navigationController: stockListCoordinator.navigationController)
             })
+    }
+
+    /// Shows the stock list at its root, whatever page the user was on, and runs the import there. The root
+    /// comes without animation so the loading screen appears over the list at once.
+    static func showImport(
+        of source: TradeImageSource,
+        in tabBarController: UITabBarController,
+        navigationController: UINavigationController
+    ) {
+        tabBarController.selectedIndex = 0   // the first tab is the stock list
+        navigationController.popToRootViewController(animated: false)
+        guard let list = navigationController.viewControllers.first as? StockListViewController else {
+            logger.error("The first tab does not show the stock list, so the pending import cannot start")
+            return
+        }
+        list.startImport(of: source)
     }
 
     /// Whether any screen is presented over the app, a question or the photo picker included.

@@ -49,6 +49,7 @@
 		9079AA8B35002B8DED3B7894 /* ICloudBackupServiceTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 1F24890FEBA8232DE81E0095 /* ICloudBackupServiceTests.swift */; };
 		90818AB5E0F9F0827FF11493 /* PendingImportCoordinator.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7567F2B0D7B387649C2D41A1 /* PendingImportCoordinator.swift */; };
 		946C3CBE6A927A9A24FF46C4 /* TradeTextRecognizerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 86E56EE9FEDB8EF9AEEA8030 /* TradeTextRecognizerTests.swift */; };
+		9C46597DB4F3D4AAB04B845D /* StockListCoordinatorImportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = D24D8738ED48BBC337A4CE12 /* StockListCoordinatorImportTests.swift */; };
 		9E54B0369028A1C694D3FFBA /* TradeTextRecognizer.swift in Sources */ = {isa = PBXBuildFile; fileRef = DCB4ED896BEF3DDC8FABEF46 /* TradeTextRecognizer.swift */; };
 		A0643F108808C43BAEF0C87E /* PendingBatchImageSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 835586F265E3CA5C07AE2988 /* PendingBatchImageSource.swift */; };
 		A1065AD22C21CEF30033A319 /* WalkthroughViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1065AD12C21CEF30033A319 /* WalkthroughViewController.swift */; };
@@ -415,6 +416,7 @@
 		C76A7E78A7574E60C81D3350 /* DefaultTradeImportStore.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DefaultTradeImportStore.swift; sourceTree = "<group>"; };
 		D0B1C2A3E4F5061728394A5C /* DuplicateStockNoTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = DuplicateStockNoTests.swift; sourceTree = "<group>"; };
 		D0B1C2A3E4F5061728394A5E /* ListNameTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = ListNameTests.swift; sourceTree = "<group>"; };
+		D24D8738ED48BBC337A4CE12 /* StockListCoordinatorImportTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockListCoordinatorImportTests.swift; sourceTree = "<group>"; };
 		D58D87D037B5D9470F5316F8 /* StockListRefresher.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockListRefresher.swift; sourceTree = "<group>"; };
 		D7468712F972AC4EDD765663 /* StockMarketLookupTests.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = StockMarketLookupTests.swift; sourceTree = "<group>"; };
 		DCB4ED896BEF3DDC8FABEF46 /* TradeTextRecognizer.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = TradeTextRecognizer.swift; sourceTree = "<group>"; };
@@ -607,6 +609,7 @@
 				9EBA9C7EE00012BE30C66789 /* TradeImportFlowTests.swift */,
 				8AFC6E13CB3C18E0826AE4B9 /* UIAlertController+Tapping.swift */,
 				A56D81E3E7183E7DB2B8E89B /* ShareImport */,
+				D24D8738ED48BBC337A4CE12 /* StockListCoordinatorImportTests.swift */,
 			);
 			path = MyTaiwanStockTests;
 			sourceTree = "<group>";
@@ -1192,6 +1195,7 @@
 				84DCFCD5BB027276DCE4C524 /* TradeImportFlowTests.swift in Sources */,
 				565EB99AFDB762F5CEB6B677 /* PendingImportCoordinatorTests.swift in Sources */,
 				2499E673F963639825B82AE6 /* UIAlertController+Tapping.swift in Sources */,
+				9C46597DB4F3D4AAB04B845D /* StockListCoordinatorImportTests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

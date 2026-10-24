@@ -23,4 +23,4 @@
 ## 5. 清理與驗證
 
 - [x] 5.1 清除手續費相關死碼：移除 MyTaiwanStock/Model/Fee.swift（含 calFee 與只給滾輪用的折數字串）、MyTaiwanStock/Model/FeeType.swift，以及 AddHistoryViewModel 中沒人讀取的 revenue、taxAmount 與強引用 self 的更新閉包；同時在 MyTaiwanStock.xcodeproj/project.pbxproj 移除這兩個檔案的 PBXBuildFile、PBXFileReference 與 group 參考。驗證：專案建置成功，全專案搜尋 calFee、FeeType、taxAmount、revenue（限 AddHistoryViewModel）沒有殘留使用，完整單元測試通過，且建置沒有「找不到檔案」的錯誤。
-- [ ] 5.2 手動驗證與升級檢查：先用目前 mvvm 上的版本在 iPhone 17 Pro 模擬器建立含買單與賣單的資料與一份 iCloud 備份，再安裝這個分支的版本，確認資料保留、舊紀錄手續費顯示「-」且出現提示、持股與均價在有賣單時正確；新增買單與賣單確認儲存與顯示；匯入截圖確認預覽、編輯後重新估算與存入；還原升級前的備份成功；設定頁切換手續費模式與折數。在 iPhone Duo 模擬器檢查新增頁、紀錄列表、詳情頁與設定頁的版面。驗證：結果寫進 PR 描述，發版說明註明「未動過折數的使用者，估算折數從 0.6 變成無折扣」。
+- [x] 5.2 手動驗證與升級檢查：先用目前 mvvm 上的版本在 iPhone 17 Pro 模擬器建立含買單與賣單的資料與一份 iCloud 備份，再安裝這個分支的版本，確認資料保留、舊紀錄手續費顯示「-」且出現提示、持股與均價在有賣單時正確；新增買單與賣單確認儲存與顯示；匯入截圖確認預覽、編輯後重新估算與存入；還原升級前的備份成功；設定頁切換手續費模式與折數。在 iPhone Duo 模擬器檢查新增頁、紀錄列表、詳情頁與設定頁的版面。驗證：結果寫進 PR 描述，發版說明註明「未動過折數的使用者，估算折數從 0.6 變成無折扣」。

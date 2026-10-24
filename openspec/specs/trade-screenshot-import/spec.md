@@ -8,12 +8,18 @@ The trade-screenshot-import capability lets a user turn screenshots of the Yuant
 
 ### Requirement: Recognize trades from screenshots on device
 
-The system SHALL let the user pick one or more screenshots with the system photo picker and SHALL recognize the text in each image on the device using Vision text recognition with Traditional Chinese enabled and language correction disabled. The system SHALL NOT upload the screenshots or the recognized text to any server.
+The system SHALL let the user pick one or more screenshots with the system photo picker, or receive the images of a pending batch shared through the share extension, and SHALL recognize the text in each image on the device using Vision text recognition with Traditional Chinese enabled and language correction disabled, one image at a time. The system SHALL NOT upload the screenshots or the recognized text to any server.
 
 #### Scenario: Multiple screenshots are merged into one preview
 
 - **WHEN** the user selects two screenshots and both contain trade rows
 - **THEN** the system SHALL recognize each image and present all recognized trades together in a single preview list
+
+#### Scenario: Screenshots from a pending batch are recognized the same way
+
+- **WHEN** the images of a pending batch shared through the share extension contain trade rows
+- **THEN** the system SHALL recognize each image with the same settings as picker images
+- **AND** the system SHALL present all recognized trades together in a single preview list
 
 #### Scenario: Screenshot without trades
 
@@ -26,63 +32,6 @@ The system SHALL let the user pick one or more screenshots with the system photo
 - **WHEN** a selected image cannot be loaded or the recognition request fails
 - **THEN** the system SHALL show an error message
 - **AND** the system SHALL NOT write any record
-
-
-<!-- @trace
-source: import-trades-from-screenshot
-updated: 2026-10-05
-code:
-  - MyTaiwanStock/Util/TradeTextRecognizer.swift
-  - MyTaiwanStockTests/ValidInputServiceTest.swift
-  - MyTaiwanStock/Resources/StockList.json
-  - MyTaiwanStockTests/StockListRefresherTests.swift
-  - MyTaiwanStockTests/StockMarketLookupTests.swift
-  - MyTaiwanStock/Util/StockListRefresher.swift
-  - MyTaiwanStock.xcodeproj/project.pbxproj
-  - MyTaiwanStock/Util/StockListRepository.swift
-  - MyTaiwanStock/SceneDelegate.swift
-  - MyTaiwanStockTests/ChartServiceTests.swift
-  - MyTaiwanStock/View Controller/TradeEditViewController.swift
-  - MyTaiwanStockTests/AddStockNoViewModelTests.swift
-  - MyTaiwanStockTests/TradeScreenshotFixtures.swift
-  - MyTaiwanStock/StockList/StockListCoordinator.swift
-  - MyTaiwanStockTests/HistoryDocumentSelectorTests.swift
-  - MyTaiwanStock/Util/StockNameResolver.swift
-  - MyTaiwanStockTests/TradeScreenshotVisionFixtures.swift
-  - MyTaiwanStock/Util/StockMarketLookup.swift
-  - MyTaiwanStock/Util/StockListParser.swift
-  - MyTaiwanStock/View Controller/View Model/AddStockNoViewModel.swift
-  - MyTaiwanStock/Util/OnlineDBService.swift
-  - MyTaiwanStock/Util/TradeScreenshotParser.swift
-  - MyTaiwanStock/Util/ValidInputService.swift
-  - MyTaiwanStockTests/TestStockListViewModel.swift
-  - MyTaiwanStock/Model/TradeImportModels.swift
-  - MyTaiwanStock/AppDelegate.swift
-  - MyTaiwanStock/Util/HistoryDocumentSelector.swift
-  - MyTaiwanStockTests/TradeTextRecognizerTests.swift
-  - MyTaiwanStockTests/TradeScreenshotParserTests.swift
-  - MyTaiwanStock/StockList/ViewModel/StockListViewModel.swift
-  - MyTaiwanStock/Model/StockListEntry.swift
-  - MyTaiwanStockTests/DefaultTradeImportStoreTests.swift
-  - MyTaiwanStock/Model/StockNoList.swift
-  - MyTaiwanStock/Util/ChartService.swift
-  - MyTaiwanStock/View Controller/TradeImportPreviewViewController.swift
-  - MyTaiwanStock/Util/LocalDBService.swift
-  - MyTaiwanStock/View/FloatingButtonManager.swift
-  - MyTaiwanStockTests/StockListRepositoryTests.swift
-  - MyTaiwanStockTests/FloatingButtonManagerTests.swift
-  - scripts/generate_stock_list.py
-  - MyTaiwanStock/Repository/TWSEStockInfoFetcher.swift
-  - MyTaiwanStock/Repository/NetworkServiceImpl.swift
-  - MyTaiwanStockTests/StockNameResolverTests.swift
-  - MyTaiwanStock/StockList/ViewController/StockListViewController.swift
-  - MyTaiwanStock/View/FloatingButton.swift
-  - MyTaiwanStock/Util/DefaultTradeImportStore.swift
-  - MyTaiwanStockTests/StockListFilteringTests.swift
-  - MyTaiwanStock/View Controller/View Model/TradeImportViewModel.swift
-  - MyTaiwanStockTests/TradeImportViewModelTests.swift
-  - MyTaiwanStock/StockList/TradeImportFlow.swift
--->
 
 ---
 ### Requirement: Parse two-line trade rows by position

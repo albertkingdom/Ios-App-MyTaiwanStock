@@ -77,89 +77,74 @@ final class SettingViewControllerTests: XCTestCase {
         let settings = try XCTUnwrap(nav.viewControllers.first as? SettingViewController)
         settings.userDefaults = defaults
         settings.loadViewIfNeeded()
-        settings.initView()
+        settings.refreshFeeSummary()
         return settings
     }
 
-    func test_fee_section_starts_in_the_discount_mode_without_a_discount() throws {
+    /// The only cell of the fee section, as the table's data source returns it for the storyboard.
+    private func feeRowCell(_ settings: SettingViewController) throws -> UITableViewCell {
+        XCTAssertEqual(settings.tableView(settings.tableView, numberOfRowsInSection: 1), 1)
+        return try XCTUnwrap(settings.tableView.dataSource?.tableView(
+            settings.tableView, cellForRowAt: IndexPath(row: 0, section: 1)))
+    }
+
+    private func descendants(of view: UIView) -> [UIView] {
+        view.subviews.flatMap { [$0] + descendants(of: $0) }
+    }
+
+    func test_fee_row_in_storyboard_is_titled_fee_and_holds_the_summary() throws {
+        let settings = try makeSettings(defaults: makeDefaults())
+        let cell = try feeRowCell(settings)
+
+        let titles = descendants(of: cell.contentView).compactMap { ($0 as? UILabel)?.text }
+        XCTAssertTrue(titles.contains("手續費"))
+        XCTAssertTrue(settings.feeSummaryLabel.isDescendant(of: cell.contentView))
+    }
+
+    func test_fee_row_has_no_segmented_control_or_text_field() throws {
+        let settings = try makeSettings(defaults: makeDefaults())
+        let cell = try feeRowCell(settings)
+
+        let inputs = descendants(of: cell.contentView).filter { $0 is UITextField || $0 is UISegmentedControl }
+        XCTAssertTrue(inputs.isEmpty)
+    }
+
+    func test_fee_summary_shows_the_defaults_when_nothing_is_saved() throws {
         let settings = try makeSettings(defaults: makeDefaults())
 
-        XCTAssertEqual(settings.feeModeControl.selectedSegmentIndex, 0)
-        XCTAssertEqual(settings.feeDiscountTextfield.text, "無折扣")
-        XCTAssertEqual(settings.userDefinedFeeLabel.text, "0 元")
+        XCTAssertEqual(settings.feeSummaryLabel.text, "無折扣・最低 20 / 1 元")
     }
 
-    func test_fee_section_shows_what_is_saved() throws {
-        let defaults = makeDefaults()
-        FeeSettings.saveMode(fixedAmount: true, userDefaults: defaults)
-        FeeSettings.saveDiscount(Decimal(string: "2.8")!, userDefaults: defaults)
-        FeeSettings.saveFixedAmount(30, userDefaults: defaults)
-
-        let settings = try makeSettings(defaults: defaults)
-
-        XCTAssertEqual(settings.feeModeControl.selectedSegmentIndex, 1)
-        XCTAssertEqual(settings.feeDiscountTextfield.text, "2.8 折")
-        XCTAssertEqual(settings.userDefinedFeeLabel.text, "30 元")
-    }
-
-    func test_choosing_the_fixed_amount_mode_saves_it() throws {
+    func test_fee_summary_is_refreshed_when_the_screen_appears_again() throws {
         let defaults = makeDefaults()
         let settings = try makeSettings(defaults: defaults)
 
-        settings.feeModeControl.selectedSegmentIndex = 1
-        settings.feeModeControl.sendActions(for: .valueChanged)
+        FeeSettings.save(
+            FeeSettings(mode: .discount(Decimal(string: "2.8")!), wholeLotMinimumFee: 30, oddLotMinimumFee: 5),
+            userDefaults: defaults)
+        settings.viewWillAppear(false)
 
-        XCTAssertTrue(FeeSettings.usesFixedAmount(userDefaults: defaults))
-        XCTAssertEqual(FeeSettings.current(userDefaults: defaults).mode, .fixedAmount(0))
+        XCTAssertEqual(settings.feeSummaryLabel.text, "2.8 折・最低 30 / 5 元")
     }
 
-    func test_the_fee_section_header_holds_the_mode_control() throws {
-        let settings = try makeSettings(defaults: makeDefaults())
-
-        let header = try XCTUnwrap(settings.tableView(settings.tableView, viewForHeaderInSection: 1))
-
-        XCTAssertTrue(settings.feeModeControl.isDescendant(of: header))
-        XCTAssertNil(settings.tableView(settings.tableView, viewForHeaderInSection: 0))
-    }
-
-    func test_a_typed_discount_is_saved_and_shown_with_its_unit() throws {
+    func test_tapping_the_fee_row_pushes_the_fee_page_with_the_same_defaults() throws {
         let defaults = makeDefaults()
         let settings = try makeSettings(defaults: defaults)
+        let nav = UINavigationController(rootViewController: settings)
 
-        settings.feeDiscountTextfield.text = "2.8"
-        settings.textFieldDidEndEditing(settings.feeDiscountTextfield)
+        settings.tableView(settings.tableView, didSelectRowAt: IndexPath(row: 0, section: 1))
 
-        XCTAssertEqual(FeeSettings.currentDiscount(userDefaults: defaults), Decimal(string: "2.8")!)
-        XCTAssertEqual(settings.feeDiscountTextfield.text, "2.8 折")
+        let feePage = try XCTUnwrap(nav.topViewController as? FeeSettingsViewController)
+        XCTAssertTrue(feePage.userDefaults === defaults)
     }
 
-    func test_a_discount_that_is_not_valid_is_not_saved_and_the_old_one_is_shown_again() throws {
-        let defaults = makeDefaults()
-        FeeSettings.saveDiscount(Decimal(6), userDefaults: defaults)
-        let settings = try makeSettings(defaults: defaults)
+    func test_zh_hant_translation_names_the_fee_row_and_drops_the_removed_keys() throws {
+        let path = try XCTUnwrap(Bundle(for: SettingViewController.self).path(forResource: "zh-Hant", ofType: "lproj"))
+        let bundle = try XCTUnwrap(Bundle(path: path))
 
-        for typed in ["11", "0", "2.855", "abc", ""] {
-            settings.feeDiscountTextfield.text = typed
-            settings.textFieldDidEndEditing(settings.feeDiscountTextfield)
-
-            XCTAssertEqual(FeeSettings.currentDiscount(userDefaults: defaults), 6, "\(typed)")
-            XCTAssertEqual(settings.feeDiscountTextfield.text, "6 折", "\(typed)")
+        XCTAssertEqual(bundle.localizedString(forKey: "mPW-VC-YWK.text", value: nil, table: "Main"), "手續費")
+        for key in ["ss2-gw-9Vk.text", "DgW-h3-Tq7.text", "JkS-Y3-3X6.text"] {
+            XCTAssertEqual(bundle.localizedString(forKey: key, value: nil, table: "Main"), key)
         }
-    }
-
-    func test_the_fixed_fee_screen_saves_a_number_rounded_down_and_refuses_text() throws {
-        let defaults = makeDefaults()
-        let storyboard = UIStoryboard(name: "Main", bundle: Bundle(for: AddListViewController.self))
-        let editor = storyboard.instantiateViewController(withIdentifier: "editFeeVC") as! EditFeeViewController
-        editor.userDefaults = defaults
-        editor.loadViewIfNeeded()
-
-        editor.feeTextField.text = "abc"
-        editor.onTapSave(UIBarButtonItem())
-        XCTAssertEqual(FeeSettings.currentFixedAmount(userDefaults: defaults), 0, "refused, nothing saved")
-
-        editor.feeTextField.text = "20.5"
-        editor.onTapSave(UIBarButtonItem())
-        XCTAssertEqual(FeeSettings.currentFixedAmount(userDefaults: defaults), 20)
     }
 }

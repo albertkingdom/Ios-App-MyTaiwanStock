@@ -32,8 +32,8 @@ class StockViewController: UIViewController {
     private var fittedHeaderWidth: CGFloat = 0
     var stockInfoForCandleStickChart: [[String]]! {
         didSet {
-            if let stockPriceDiffString = stockInfoForCandleStickChart.last?[7],
-               let stockPriceDiffFloat = Float(stockPriceDiffString) {
+            if let lastDay = stockInfoForCandleStickChart.last, lastDay.count > 7,
+               let stockPriceDiffFloat = lastDay[7].twseNumber.map(Float.init) {
                 
                 priceDiffLabel.text = "\(abs(stockPriceDiffFloat))"
                 arrowImageView.tintColor = stockPriceDiffFloat>=0 ? .systemRed : .systemGreen

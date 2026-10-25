@@ -34,7 +34,7 @@ private final class FakeRecordSaver: RecordSaving {
 }
 
 struct AddHistoryViewModelTests {
-    private let noDiscount = FeeSettings(mode: .discount(10))
+    private let noDiscount = FeeSettings(discount: 10)
     private let saver = FakeRecordSaver()
 
     private func makeViewModel(settings: FeeSettings? = nil) -> AddHistoryViewModel {
@@ -70,16 +70,16 @@ struct AddHistoryViewModelTests {
         #expect(fees == ["20", "20", "149", "149", "150"])
     }
 
-    @Test func aFixedAmountReplacesTheFormula() {
-        let viewModel = makeViewModel(settings: FeeSettings(mode: .fixedAmount(30)))
+    @Test func theOddLotMinimumFeeFromTheSettingsIsShown() {
+        let viewModel = makeViewModel(settings: FeeSettings(discount: 6, oddLotMinimumFee: 5))
 
-        viewModel.didChange(priceText: "100", amountText: "1000")
+        viewModel.didChange(priceText: "112.55", amountText: "5")
 
-        #expect(viewModel.feeText == "30")
+        #expect(viewModel.feeText == "5")
     }
 
     @Test func theDiscountFromTheSettingsIsUsed() {
-        let viewModel = makeViewModel(settings: FeeSettings(mode: .discount(Decimal(string: "2.8")!)))
+        let viewModel = makeViewModel(settings: FeeSettings(discount: Decimal(string: "2.8")!))
 
         viewModel.didChange(priceText: "100", amountText: "1000")
 

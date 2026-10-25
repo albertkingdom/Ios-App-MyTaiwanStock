@@ -57,7 +57,7 @@ final class TradeImportViewModelTests: XCTestCase {
     /// Fee and tax depend on the fee settings, so every test gets fixed ones instead of what the simulator holds.
     private func makeViewModel(
         _ trades: [ParsedTrade], lists: [String] = ["我的清單"], current: String? = "我的清單",
-        settings: FeeSettings = FeeSettings(mode: .discount(10))
+        settings: FeeSettings = FeeSettings(discount: 10)
     ) -> TradeImportViewModel {
         let resolver = StockNameResolver(entries: entries)
         let codes = Set(entries.map(\.code))
@@ -66,7 +66,7 @@ final class TradeImportViewModelTests: XCTestCase {
             store: store, listNames: lists, currentListName: current, feeSettings: settings)
     }
 
-    private let discountOfSix = FeeSettings(mode: .discount(6))
+    private let discountOfSix = FeeSettings(discount: 6)
 
     /// 瑞昱 sells 10 shares at 757, the example of the screenshot test data.
     private func realtekSell(price: Float? = 757, amount: Int? = 10) -> ParsedTrade {
@@ -398,11 +398,12 @@ final class TradeImportViewModelTests: XCTestCase {
         XCTAssertEqual(viewModel.items[0].taxText, "0")
     }
 
-    func test_a_fixed_fee_setting_replaces_the_formula() {
-        let viewModel = makeViewModel([realtekSell()], settings: FeeSettings(mode: .fixedAmount(30)))
+    func test_the_odd_lot_minimum_fee_setting_applies_to_the_preview() {
+        let viewModel = makeViewModel(
+            [parsed(price: 112.55, amount: 5)], settings: FeeSettings(discount: 6, oddLotMinimumFee: 5))
 
-        XCTAssertEqual(viewModel.items[0].feeText, "30")
-        XCTAssertEqual(viewModel.items[0].taxText, "22")
+        XCTAssertEqual(viewModel.items[0].feeText, "5")
+        XCTAssertEqual(viewModel.items[0].taxText, "0")
     }
 
     func test_a_trade_without_a_price_or_shares_has_no_estimate_until_they_are_entered() {

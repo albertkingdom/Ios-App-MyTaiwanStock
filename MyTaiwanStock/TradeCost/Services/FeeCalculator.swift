@@ -31,8 +31,6 @@ struct FeeAndTax: Equatable {
 /// The brokerage fee and the transaction tax of one trade, in decimals and rounded down to whole dollars.
 enum FeeCalculator {
     static let standardFeeRate = Decimal(string: "0.001425")!
-    static let wholeLotMinimumFee = 20
-    static let oddLotMinimumFee = 1
     /// A trade of this many shares or more is charged the whole-lot minimum, even when it is not a multiple
     /// of it: the broker would split such a trade into a whole lot and an odd lot, which is not modeled.
     static let wholeLotShares = 1000
@@ -54,13 +52,9 @@ enum FeeCalculator {
     }
 
     private static func fee(forValue value: Decimal, shares: Int, settings: FeeSettings) -> Int? {
-        switch settings.mode {
-        case .fixedAmount(let amount):
-            return amount <= Int(Int32.max) ? max(0, amount) : nil
-        case .discount(let discount):
-            guard let calculated = roundedDown(value * standardFeeRate * discount / 10) else { return nil }
-            return max(calculated, shares >= wholeLotShares ? wholeLotMinimumFee : oddLotMinimumFee)
-        }
+        guard let calculated = roundedDown(value * standardFeeRate * settings.discount / 10) else { return nil }
+        let minimum = shares >= wholeLotShares ? settings.wholeLotMinimumFee : settings.oddLotMinimumFee
+        return max(calculated, minimum)
     }
 
     /// Nil when the result is not a number or does not fit in a record.

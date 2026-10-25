@@ -33,7 +33,7 @@ final class TradeEditViewControllerTests: XCTestCase {
         let viewModel = TradeImportViewModel(
             trades: [], resolver: StockNameResolver(entries: []), isKnownCode: { _ in true },
             store: FakeTradeImportStore(), listNames: [], currentListName: nil,
-            feeSettings: FeeSettings(mode: .discount(6)))
+            feeSettings: FeeSettings(discount: 6))
         let controller = TradeEditViewController(
             item: item,
             estimate: { viewModel.estimate(stockNo: $0, price: $1, amount: $2, side: $3) },

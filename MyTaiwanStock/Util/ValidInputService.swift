@@ -43,25 +43,6 @@ struct ValidInputService {
         return stockNoText
     }
     
-    /// A fixed fee in dollars: a plain number that is not negative, rounded down to whole dollars.
-    func validUserDefinedFee(_ feeString: String?) throws -> Int {
-        guard let text = feeString?.trimmingCharacters(in: .whitespaces), !text.isEmpty,
-              text.allSatisfy({ $0.isASCII && ($0.isNumber || $0 == ".") }),
-              text.filter({ $0 == "." }).count <= 1,
-              let decimal = Decimal(string: text)
-        else {
-            throw ValidationError.invalidUserDefinedFee
-        }
-        var input = decimal
-        var rounded = Decimal()
-        NSDecimalRound(&rounded, &input, 0, .down)
-        let dollars = NSDecimalNumber(decimal: rounded)
-        guard dollars.compare(NSDecimalNumber(value: Int32.max)) != .orderedDescending else {
-            throw ValidationError.invalidUserDefinedFee
-        }
-        return dollars.intValue
-    }
-    
     /// The fee or the tax typed for a record: a whole number of dollars from 0 to 2147483647.
     func validFeeOrTaxInput(_ text: String?) throws -> Int {
         guard let text = text?.trimmingCharacters(in: .whitespaces),
@@ -79,7 +60,6 @@ enum ValidationError: LocalizedError {
     case invalidPrice
     case invalidAmount
     case invalidStockNo
-    case invalidUserDefinedFee
     case invalidFeeOrTax
     
     var errorDescription: String? {
@@ -90,8 +70,6 @@ enum ValidationError: LocalizedError {
             return "請輸入正確交易量股數（1 到 32767）"
         case .invalidStockNo:
             return "請輸入正確股票代號"
-        case .invalidUserDefinedFee:
-            return "手續費請輸入 0 以上的數字，小數會捨去"
         case .invalidFeeOrTax:
             return "手續費與稅請輸入 0 以上的整數"
         }

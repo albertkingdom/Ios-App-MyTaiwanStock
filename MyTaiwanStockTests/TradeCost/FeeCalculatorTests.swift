@@ -17,8 +17,12 @@ struct FeeCalculatorTests {
         let category: TaxCategory
         let fee: Int
         let tax: Int
+        var wholeLotMinimum: Int = FeeSettings.defaultWholeLotMinimumFee
+        var oddLotMinimum: Int = FeeSettings.defaultOddLotMinimumFee
 
-        var testDescription: String { "\(side) \(shares) @ \(price), discount \(discount), \(category)" }
+        var testDescription: String {
+            "\(side) \(shares) @ \(price), discount \(discount), \(category), minimums \(wholeLotMinimum) / \(oddLotMinimum)"
+        }
     }
 
     /// The example table of the specification.
@@ -33,11 +37,22 @@ struct FeeCalculatorTests {
         Case(side: .sell, shares: 1000, price: "100", discount: "10", category: .exempt, fee: 142, tax: 0),
         Case(side: .buy, shares: 999, price: "1", discount: "10", category: .stock, fee: 1, tax: 0),
         Case(side: .buy, shares: 1500, price: "1", discount: "10", category: .stock, fee: 20, tax: 0),
+        Case(
+            side: .buy, shares: 5, price: "112.55", discount: "6", category: .stock, fee: 5, tax: 0,
+            oddLotMinimum: 5),
+        Case(
+            side: .buy, shares: 1000, price: "20", discount: "6", category: .stock, fee: 30, tax: 0,
+            wholeLotMinimum: 30),
+        Case(
+            side: .buy, shares: 1000, price: "20", discount: "6", category: .stock, fee: 17, tax: 0,
+            wholeLotMinimum: 0),
     ]
 
     @Test(arguments: cases)
     func matchesTheSpecificationTable(_ testCase: Case) throws {
-        let settings = FeeSettings(mode: .discount(try #require(Decimal(string: testCase.discount))))
+        let settings = FeeSettings(
+            discount: try #require(Decimal(string: testCase.discount)),
+            wholeLotMinimumFee: testCase.wholeLotMinimum, oddLotMinimumFee: testCase.oddLotMinimum)
 
         let result = FeeCalculator.calculate(
             price: try #require(Decimal(string: testCase.price)), shares: testCase.shares, side: testCase.side,
@@ -51,35 +66,21 @@ struct FeeCalculatorTests {
         let discount = try #require(Decimal(string: String(2.8 as Double)))
 
         let result = FeeCalculator.calculate(
-            price: 1000, shares: 1000, side: .sell, settings: FeeSettings(mode: .discount(discount)), taxCategory: .stock)
+            price: 1000, shares: 1000, side: .sell, settings: FeeSettings(discount: discount), taxCategory: .stock)
 
         #expect(result?.fee == 399)
     }
 
-    @Test func aFixedAmountReplacesTheFormulaAndTheMinimum() {
-        let settings = FeeSettings(mode: .fixedAmount(30))
-
-        #expect(FeeCalculator.calculate(price: 100, shares: 1000, side: .buy, settings: settings, taxCategory: .stock)?.fee == 30)
-        #expect(FeeCalculator.calculate(price: 1, shares: 1, side: .buy, settings: settings, taxCategory: .stock)?.fee == 30)
-    }
-
-    @Test func aFixedAmountStillLeavesTheTaxOfASell() {
-        let result = FeeCalculator.calculate(
-            price: 105, shares: 1000, side: .sell, settings: FeeSettings(mode: .fixedAmount(30)), taxCategory: .stock)
-
-        #expect(result == FeeAndTax(fee: 30, tax: 315))
-    }
-
     @Test func sameDayTradeTaxIsHalfAPercentLessThanStock() {
         let result = FeeCalculator.calculate(
-            price: 100, shares: 1000, side: .sell, settings: FeeSettings(mode: .discount(10)), taxCategory: .dayTrade)
+            price: 100, shares: 1000, side: .sell, settings: FeeSettings(discount: 10), taxCategory: .dayTrade)
 
         #expect(result?.tax == 150)
     }
 
     @Test func aBuyNeverPaysTax() {
         let result = FeeCalculator.calculate(
-            price: 100, shares: 1000, side: .buy, settings: FeeSettings(mode: .discount(10)), taxCategory: .stock)
+            price: 100, shares: 1000, side: .buy, settings: FeeSettings(discount: 10), taxCategory: .stock)
 
         #expect(result?.tax == 0)
     }
@@ -87,20 +88,25 @@ struct FeeCalculatorTests {
     @Test(arguments: [(Decimal(0), 10), (Decimal(-1), 10), (Decimal(100), 0), (Decimal(100), -5)])
     func noResultWithoutAPositivePriceAndAShare(_ input: (price: Decimal, shares: Int)) {
         let result = FeeCalculator.calculate(
-            price: input.price, shares: input.shares, side: .buy, settings: FeeSettings(mode: .discount(10)), taxCategory: .stock)
+            price: input.price, shares: input.shares, side: .buy, settings: FeeSettings(discount: 10), taxCategory: .stock)
 
         #expect(result == nil)
     }
 
     @Test func noResultWhenTheFeeOrTheTaxWouldNotFitInTheRecord() {
         let price = Decimal(string: "99999999999999999999")!
+        let discount = Decimal(string: "0.1")!
 
         let buy = FeeCalculator.calculate(
-            price: price, shares: 30000, side: .buy, settings: FeeSettings(mode: .discount(10)), taxCategory: .stock)
+            price: price, shares: 30000, side: .buy, settings: FeeSettings(discount: 10), taxCategory: .stock)
+        // The fee of this trade is 17100000 and fits in a record; only the tax of the sell does not.
+        let fee = FeeCalculator.calculate(
+            price: 40_000_000, shares: 30000, side: .buy, settings: FeeSettings(discount: discount), taxCategory: .stock)
         let sell = FeeCalculator.calculate(
-            price: price, shares: 30000, side: .sell, settings: FeeSettings(mode: .fixedAmount(1)), taxCategory: .stock)
+            price: 40_000_000, shares: 30000, side: .sell, settings: FeeSettings(discount: discount), taxCategory: .stock)
 
         #expect(buy == nil)
+        #expect(fee == FeeAndTax(fee: 17_100_000, tax: 0))
         #expect(sell == nil)
     }
 }

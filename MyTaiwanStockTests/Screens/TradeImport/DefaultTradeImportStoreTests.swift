@@ -50,7 +50,7 @@ final class DefaultTradeImportStoreTests: XCTestCase {
 
     private func makeViewModel(
         listName: String? = "自選", lists: [String] = ["自選"], side: TradeSide = .buy,
-        settings: FeeSettings = FeeSettings(mode: .discount(10))
+        settings: FeeSettings = FeeSettings(discount: 10)
     ) -> TradeImportViewModel {
         let codes = Set(entries.map(\.code))
         let trade = ParsedTrade(

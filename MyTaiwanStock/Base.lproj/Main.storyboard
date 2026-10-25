@@ -1163,7 +1163,8 @@
                             <constraint firstItem="LA3-sX-6Z3" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="cyt-YM-8jY" secondAttribute="trailing" constant="20" id="gKW-bh-hcd"/>
                             <constraint firstItem="cyt-YM-8jY" firstAttribute="top" secondItem="uKv-jR-DHA" secondAttribute="bottom" constant="8" symbolic="YES" id="hij-8T-8DF"/>
                             <constraint firstItem="uKv-jR-DHA" firstAttribute="top" secondItem="GSN-rh-AeI" secondAttribute="bottom" constant="8" symbolic="YES" id="jDx-yY-Mkg"/>
-                            <constraint firstItem="GSN-rh-AeI" firstAttribute="centerY" secondItem="LA3-sX-6Z3" secondAttribute="centerY" constant="-58" id="w0O-h3-WB9"/>
+                            <constraint firstItem="GSN-rh-AeI" firstAttribute="centerY" secondItem="LA3-sX-6Z3" secondAttribute="centerY" priority="750" id="w0O-h3-WB9"/>
+                            <constraint firstItem="GSN-rh-AeI" firstAttribute="top" relation="greaterThanOrEqual" secondItem="LA3-sX-6Z3" secondAttribute="top" constant="8" id="tP8-aq-3Mv"/>
                             <constraint firstItem="uKv-jR-DHA" firstAttribute="centerX" secondItem="LA3-sX-6Z3" secondAttribute="centerX" id="yEs-u1-T4Q"/>
                         </constraints>
                     </view>

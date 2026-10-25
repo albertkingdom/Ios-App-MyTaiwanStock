@@ -57,6 +57,13 @@ class AccountViewController: UIViewController {
             signOutButton.heightAnchor.constraint(equalToConstant: 40),
             signOutButton.widthAnchor.constraint(equalToConstant: 120)
         ])
+        // The avatar is centered in the safe area by the storyboard. In a window too short for that, this keeps
+        // the Apple button above the bottom edge (and the floating tab bar) by pushing the group up, which the
+        // storyboard's required "avatar below the top of the safe area" limits.
+        let appleButtonAboveBottom = appleSignInButton.bottomAnchor.constraint(
+            lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16)
+        appleButtonAboveBottom.priority = UILayoutPriority(900)
+        appleButtonAboveBottom.isActive = true
         appleSignInButton.addTarget(self, action: #selector(handleSignInWithApple), for: .touchUpInside)
     }
     @objc func tapGoogleSignInButton() {

@@ -86,10 +86,14 @@ struct FeeSettings: Equatable {
     private static let minimumDiscount = Decimal(string: "0.1")!
 
     private static func storedMinimumFee(forKey key: String, defaultFee: Int, in userDefaults: UserDefaults) -> Int {
-        guard let saved = userDefaults.object(forKey: key) as? Int, (0...Int(Int32.max)).contains(saved) else {
+        // `as? Int` alone would also take a Double such as 25.0 or a Bool, so check how the number was saved.
+        guard let number = userDefaults.object(forKey: key) as? NSNumber,
+              CFGetTypeID(number) != CFBooleanGetTypeID(), !CFNumberIsFloatType(number),
+              (0...Int(Int32.max)).contains(number.intValue)
+        else {
             return defaultFee
         }
-        return saved
+        return number.intValue
     }
 
     private static func storedDiscount(in userDefaults: UserDefaults) -> Decimal {

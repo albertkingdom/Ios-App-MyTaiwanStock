@@ -94,7 +94,8 @@ struct FeeSettingsTests {
     }
 
     @Test func aMinimumFeeThatIsNotAWholeNumberInRangeFallsBackToTheDefault() {
-        let invalidValues: [Any] = ["20", 20.5, -1, 2_147_483_648]
+        // 25.0 is a Double and true is a Bool; neither was saved as a whole number, though both bridge to an Int.
+        let invalidValues: [Any] = ["20", 20.5, -1, 2_147_483_648, 25.0, true]
         for value in invalidValues {
             let defaults = makeDefaults()
             defaults.set(value, forKey: UserDefaults.feeMinimumWholeLotKey)

@@ -85,7 +85,7 @@ final class SettingViewControllerTests: XCTestCase {
     private func feeRowCell(_ settings: SettingViewController) throws -> UITableViewCell {
         XCTAssertEqual(settings.tableView(settings.tableView, numberOfRowsInSection: 1), 1)
         return try XCTUnwrap(settings.tableView.dataSource?.tableView(
-            settings.tableView, cellForRowAt: IndexPath(row: 0, section: 1)))
+            settings.tableView, cellForRowAt: SettingViewController.feeRow))
     }
 
     private func descendants(of view: UIView) -> [UIView] {
@@ -132,7 +132,7 @@ final class SettingViewControllerTests: XCTestCase {
         let settings = try makeSettings(defaults: defaults)
         let nav = UINavigationController(rootViewController: settings)
 
-        settings.tableView(settings.tableView, didSelectRowAt: IndexPath(row: 0, section: 1))
+        settings.tableView(settings.tableView, didSelectRowAt: SettingViewController.feeRow)
 
         let feePage = try XCTUnwrap(nav.topViewController as? FeeSettingsViewController)
         XCTAssertTrue(feePage.userDefaults === defaults)

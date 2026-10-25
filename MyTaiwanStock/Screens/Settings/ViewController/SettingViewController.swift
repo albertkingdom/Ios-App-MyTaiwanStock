@@ -10,6 +10,9 @@ import FirebaseAuth
 
 class SettingViewController: UITableViewController {
 
+    /// The one row of the fee section; it opens the fee page.
+    static let feeRow = IndexPath(row: 0, section: 1)
+
     @IBOutlet weak var feeSummaryLabel: UILabel!
     @IBOutlet weak var syncSwitch: UISwitch!
     /// Where the fee settings are read from and saved to; tests pass a store of their own.
@@ -156,7 +159,7 @@ class SettingViewController: UITableViewController {
 
 
     override func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        if indexPath.section == 1 && indexPath.row == 0 {
+        if indexPath == Self.feeRow {
             let vc = FeeSettingsViewController(userDefaults: userDefaults)
             self.navigationController?.pushViewController(vc, animated: true)
         }

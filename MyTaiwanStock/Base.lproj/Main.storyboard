@@ -1150,20 +1150,22 @@
                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="30" id="nlq-d9-fCa"/>
+                                    <constraint firstAttribute="width" constant="350" priority="750" id="wD3-9k-Gbn"/>
                                 </constraints>
                             </view>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="LA3-sX-6Z3"/>
                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                         <constraints>
-                            <constraint firstItem="GSN-rh-AeI" firstAttribute="centerX" secondItem="fop-Md-3kF" secondAttribute="centerX" id="QFG-uK-JXe"/>
-                            <constraint firstItem="cyt-YM-8jY" firstAttribute="leading" secondItem="LA3-sX-6Z3" secondAttribute="leading" constant="20" id="Yea-gn-FIL"/>
-                            <constraint firstItem="cyt-YM-8jY" firstAttribute="centerX" secondItem="fop-Md-3kF" secondAttribute="centerX" id="bkD-si-fCa"/>
-                            <constraint firstItem="LA3-sX-6Z3" firstAttribute="trailing" secondItem="cyt-YM-8jY" secondAttribute="trailing" constant="20" id="gKW-bh-hcd"/>
+                            <constraint firstItem="GSN-rh-AeI" firstAttribute="centerX" secondItem="LA3-sX-6Z3" secondAttribute="centerX" id="QFG-uK-JXe"/>
+                            <constraint firstItem="cyt-YM-8jY" firstAttribute="leading" relation="greaterThanOrEqual" secondItem="LA3-sX-6Z3" secondAttribute="leading" constant="20" id="Yea-gn-FIL"/>
+                            <constraint firstItem="cyt-YM-8jY" firstAttribute="centerX" secondItem="LA3-sX-6Z3" secondAttribute="centerX" id="bkD-si-fCa"/>
+                            <constraint firstItem="LA3-sX-6Z3" firstAttribute="trailing" relation="greaterThanOrEqual" secondItem="cyt-YM-8jY" secondAttribute="trailing" constant="20" id="gKW-bh-hcd"/>
                             <constraint firstItem="cyt-YM-8jY" firstAttribute="top" secondItem="uKv-jR-DHA" secondAttribute="bottom" constant="8" symbolic="YES" id="hij-8T-8DF"/>
                             <constraint firstItem="uKv-jR-DHA" firstAttribute="top" secondItem="GSN-rh-AeI" secondAttribute="bottom" constant="8" symbolic="YES" id="jDx-yY-Mkg"/>
-                            <constraint firstItem="GSN-rh-AeI" firstAttribute="centerY" secondItem="fop-Md-3kF" secondAttribute="centerY" id="w0O-h3-WB9"/>
-                            <constraint firstItem="uKv-jR-DHA" firstAttribute="centerX" secondItem="fop-Md-3kF" secondAttribute="centerX" id="yEs-u1-T4Q"/>
+                            <constraint firstItem="GSN-rh-AeI" firstAttribute="centerY" secondItem="LA3-sX-6Z3" secondAttribute="centerY" priority="750" id="w0O-h3-WB9"/>
+                            <constraint firstItem="GSN-rh-AeI" firstAttribute="top" relation="greaterThanOrEqual" secondItem="LA3-sX-6Z3" secondAttribute="top" constant="8" id="tP8-aq-3Mv"/>
+                            <constraint firstItem="uKv-jR-DHA" firstAttribute="centerX" secondItem="LA3-sX-6Z3" secondAttribute="centerX" id="yEs-u1-T4Q"/>
                         </constraints>
                     </view>
                     <navigationItem key="navigationItem" id="1fB-Lv-jO8"/>

@@ -46,15 +46,24 @@ class AccountViewController: UIViewController {
         signOutButton.translatesAutoresizingMaskIntoConstraints = false
         appleSignInButton.translatesAutoresizingMaskIntoConstraints = false
         NSLayoutConstraint.activate([
-            appleSignInButton.leadingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.leadingAnchor, constant: 20),
-            appleSignInButton.trailingAnchor.constraint(equalTo: view.safeAreaLayoutGuide.trailingAnchor, constant: -20),
+            // Same width and position as the Google button, which the storyboard keeps centered in the safe
+            // area and caps in width, so on a wide window the buttons do not stretch across the screen.
+            appleSignInButton.leadingAnchor.constraint(equalTo: googleSignInButton.leadingAnchor),
+            appleSignInButton.trailingAnchor.constraint(equalTo: googleSignInButton.trailingAnchor),
             appleSignInButton.topAnchor.constraint(equalTo: googleSignInButton.bottomAnchor, constant: 20),
             appleSignInButton.heightAnchor.constraint(equalTo: googleSignInButton.heightAnchor),
             signOutButton.bottomAnchor.constraint(equalTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -30),
-            signOutButton.centerXAnchor.constraint(equalTo: view.centerXAnchor),
+            signOutButton.centerXAnchor.constraint(equalTo: view.safeAreaLayoutGuide.centerXAnchor),
             signOutButton.heightAnchor.constraint(equalToConstant: 40),
             signOutButton.widthAnchor.constraint(equalToConstant: 120)
         ])
+        // The avatar is centered in the safe area by the storyboard. In a window too short for that, this keeps
+        // the Apple button above the bottom edge (and the floating tab bar) by pushing the group up, which the
+        // storyboard's required "avatar below the top of the safe area" limits.
+        let appleButtonAboveBottom = appleSignInButton.bottomAnchor.constraint(
+            lessThanOrEqualTo: view.safeAreaLayoutGuide.bottomAnchor, constant: -16)
+        appleButtonAboveBottom.priority = UILayoutPriority(900)
+        appleButtonAboveBottom.isActive = true
         appleSignInButton.addTarget(self, action: #selector(handleSignInWithApple), for: .touchUpInside)
     }
     @objc func tapGoogleSignInButton() {

@@ -49,6 +49,25 @@ final class StockViewControllerTests: XCTestCase {
         XCTAssertEqual(controller.containerTableView.tableHeaderView!.frame.height, heightWithoutNote, accuracy: 0.5)
     }
 
+    private func dayRow(change: String) -> [String] {
+        ["115/09/01", "1,000", "12,345", "100.0", "105.0", "99.0", "103.0", change, "10"]
+    }
+
+    func test_the_price_change_is_cleared_when_the_latest_row_has_no_readable_change() {
+        let (controller, _) = makeController()
+        controller.stockInfoForCandleStickChart = [dayRow(change: "-2.50")]
+        XCTAssertEqual(controller.priceDiffLabel.text, "2.5")
+
+        // TWSE writes "--" for a day without trades and "X0.00" for an ex-dividend day.
+        for unreadable in ["--", "X0.00"] {
+            controller.stockInfoForCandleStickChart = [dayRow(change: "-2.50"), dayRow(change: unreadable)]
+
+            XCTAssertNil(controller.priceDiffLabel.text, "\"\(unreadable)\" must not keep the earlier change on screen")
+            XCTAssertNil(controller.arrowImageView.image)
+            controller.stockInfoForCandleStickChart = [dayRow(change: "-2.50")]
+        }
+    }
+
     func test_the_note_and_the_title_use_the_localized_texts() {
         let (controller, _) = makeController()
 

@@ -32,8 +32,8 @@ class StockViewController: UIViewController {
     private var fittedHeaderWidth: CGFloat = 0
     var stockInfoForCandleStickChart: [[String]]! {
         didSet {
-            if let stockPriceDiffString = stockInfoForCandleStickChart.last?[7],
-               let stockPriceDiffFloat = Float(stockPriceDiffString) {
+            if let lastDay = stockInfoForCandleStickChart.last, lastDay.count > 7,
+               let stockPriceDiffFloat = lastDay[7].twseNumber.map(Float.init) {
                 
                 priceDiffLabel.text = "\(abs(stockPriceDiffFloat))"
                 arrowImageView.tintColor = stockPriceDiffFloat>=0 ? .systemRed : .systemGreen
@@ -41,6 +41,14 @@ class StockViewController: UIViewController {
                 stockPriceLabel.textColor = stockPriceDiffFloat>=0 ? .systemRed : .systemGreen
                 priceDiffLabel.textColor = stockPriceDiffFloat>=0 ? .systemRed : .systemGreen
                 arrowImageView.image = stockPriceDiffFloat>=0 ? UIImage(systemName: "arrowtriangle.up.fill") : UIImage(systemName: "arrowtriangle.down.fill")
+            } else {
+                // No readable change ("--" on a day without trades, "X0.00" on an ex-dividend day): show nothing
+                // rather than the change of an earlier load.
+                priceDiffLabel.text = nil
+                arrowImageView.image = nil
+                priceContainerView.backgroundColor = .clear
+                stockPriceLabel.textColor = .label
+                priceDiffLabel.textColor = .label
             }
         }
     }

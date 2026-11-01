@@ -10,6 +10,17 @@ platform :ios do
     )
   end
 
+  # Every bundle id that is signed through match: the app and its extensions.
+  # New extensions are added here once, for both sync_signing and beta.
+  def app_identifiers
+    [
+      "com.a2006mike.MyTaiwanStock",
+      "com.a2006mike.MyTaiwanStock.StockWidget",
+      "com.a2006mike.MyTaiwanStock.LiveActivity",
+      "com.a2006mike.MyTaiwanStock.ShareExtension"
+    ]
+  end
+
   desc "Sync code signing assets via match (type: development|adhoc|appstore)"
   lane :sync_signing do |options|
     api_key = fetch_app_store_api_key
@@ -18,11 +29,7 @@ platform :ios do
       type: (options[:type] || "appstore"),
       readonly: (options[:readonly] == true || options[:readonly].to_s == "true"),
       force: (options[:force] == true || options[:force].to_s == "true"),
-      app_identifier: [
-        "com.a2006mike.MyTaiwanStock",
-        "com.a2006mike.MyTaiwanStock.StockWidget",
-        "com.a2006mike.MyTaiwanStock.LiveActivity"
-      ],
+      app_identifier: app_identifiers,
       api_key: api_key
     )
   end
@@ -34,11 +41,7 @@ platform :ios do
     match(
       type: "appstore",
       readonly: false,
-      app_identifier: [
-        "com.a2006mike.MyTaiwanStock",
-        "com.a2006mike.MyTaiwanStock.StockWidget",
-        "com.a2006mike.MyTaiwanStock.LiveActivity"
-      ],
+      app_identifier: app_identifiers,
       api_key: api_key
     )
 

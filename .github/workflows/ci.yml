@@ -65,6 +65,17 @@ jobs:
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGNING_ALLOWED=YES
 
+      - name: Build ShareExtension
+        run: |
+          xcodebuild build \
+            -project "$PROJECT" \
+            -target ShareExtension \
+            -sdk iphonesimulator \
+            -destination "$DESTINATION" \
+            CODE_SIGN_IDENTITY="-" \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGNING_ALLOWED=YES
+
       - name: Run unit tests
         run: |
           xcodebuild test \

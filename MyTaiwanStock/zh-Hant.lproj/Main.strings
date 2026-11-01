@@ -38,9 +38,6 @@
 /* Class = "UILabel"; text = "數量(股)"; ObjectID = "DDV-A6-hpC"; */
 "DDV-A6-hpC.text" = "數量(股)";
 
-/* Class = "UILabel"; text = "手續費(NTD)"; ObjectID = "DgW-h3-Tq7"; */
-"DgW-h3-Tq7.text" = "手續費(NTD)";
-
 /* Class = "UILabel"; text = "title"; ObjectID = "EMp-7k-1Ta"; */
 "EMp-7k-1Ta.text" = "title";
 
@@ -49,9 +46,6 @@
 
 /* Class = "UISegmentedControl"; Jcf-Fr-t8X.segmentTitles[1] = "股利"; ObjectID = "Jcf-Fr-t8X"; */
 "Jcf-Fr-t8X.segmentTitles[1]" = "股利";
-
-/* Class = "UILabel"; text = "元"; ObjectID = "JkS-Y3-3X6"; */
-"JkS-Y3-3X6.text" = "元";
 
 /* Class = "UILabel"; text = "股票代號"; ObjectID = "Jxi-R9-Kpm"; */
 "Jxi-R9-Kpm.text" = "股票代號";
@@ -104,17 +98,14 @@
 /* Class = "UISegmentedControl"; iWP-Kh-Okt.segmentTitles[1] = "賣出"; ObjectID = "iWP-Kh-Okt"; */
 "iWP-Kh-Okt.segmentTitles[1]" = "賣出";
 
-/* Class = "UILabel"; text = "自訂手續費"; ObjectID = "mPW-VC-YWK"; */
-"mPW-VC-YWK.text" = "自訂手續費";
+/* Class = "UILabel"; text = "手續費"; ObjectID = "mPW-VC-YWK"; */
+"mPW-VC-YWK.text" = "手續費";
 
 /* Class = "UISearchBar"; placeholder = "Search for stockNo. in your following list."; ObjectID = "oov-FH-Poj"; */
 "oov-FH-Poj.placeholder" = "搜尋追蹤的股票";
 
 /* Class = "UITabBarItem"; title = "設定"; ObjectID = "pPn-GZ-ctF"; */
 "pPn-GZ-ctF.title" = "設定";
-
-/* Class = "UILabel"; text = "手續費折數"; ObjectID = "ss2-gw-9Vk"; */
-"ss2-gw-9Vk.text" = "手續費折數";
 
 /* Class = "UILabel"; text = "Label"; ObjectID = "t19-qn-QW7"; */
 "t19-qn-QW7.text" = "Label";

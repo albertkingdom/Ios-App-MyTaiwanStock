@@ -11,8 +11,14 @@ import XCTest
 /// the coordinator's accessor closure.
 final class FakeFileCoordinator: FileCoordinating {
     private(set) var coordinateWritingCallCount = 0
+    private(set) var coordinatedReads: [URL] = []
     private(set) var lastOptions: NSFileCoordinator.WritingOptions?
     var shouldInvokeWriter = true
+
+    func coordinateReading(itemAt url: URL, options: NSFileCoordinator.ReadingOptions, byAccessor reader: (URL) throws -> Void) throws {
+        coordinatedReads.append(url)
+        try reader(url)
+    }
 
     func coordinateWriting(itemAt url: URL, options: NSFileCoordinator.WritingOptions, byAccessor writer: (URL) throws -> Void) throws {
         coordinateWritingCallCount += 1
@@ -157,5 +163,33 @@ final class BackupDestinationTests: XCTestCase {
         XCTAssertEqual(try String(contentsOf: destinationSet.mainURL, encoding: .utf8), "restored-content")
         XCTAssertFalse(FileManager.default.fileExists(atPath: destinationSet.walURL.path), "stale -wal must be removed")
         XCTAssertFalse(FileManager.default.fileExists(atPath: destinationSet.shmURL.path), "stale -shm must be removed")
+    }
+
+    // MARK: - snapshot staging
+
+    func test_staging_copies_the_store_and_its_sidecars_into_every_directory_through_the_coordinator() throws {
+        let source = tempDir.appendingPathComponent("snapshot.sqlite")
+        try Data("main".utf8).write(to: source)
+        try Data("wal".utf8).write(to: URL(fileURLWithPath: source.path + "-wal"))
+        let coordinator = FakeFileCoordinator()
+        let first = tempDir.appendingPathComponent("first")
+        let second = tempDir.appendingPathComponent("second")
+
+        let copies = try SnapshotStaging.copy(SQLiteStoreFileSet(mainURL: source), into: [first, second], coordinator: coordinator)
+
+        XCTAssertEqual(coordinator.coordinatedReads.count, 2, "one coordinated read per file that exists, however many copies")
+        for (copy, directory) in zip(copies, [first, second]) {
+            XCTAssertEqual(copy.mainURL, directory.appendingPathComponent("snapshot.sqlite"))
+            XCTAssertEqual(try String(contentsOf: copy.mainURL, encoding: .utf8), "main")
+            XCTAssertEqual(try String(contentsOf: copy.walURL, encoding: .utf8), "wal")
+            XCTAssertFalse(FileManager.default.fileExists(atPath: copy.shmURL.path), "a missing sidecar is skipped")
+        }
+    }
+
+    func test_staging_fails_when_the_store_file_itself_is_missing() {
+        let source = tempDir.appendingPathComponent("missing.sqlite")
+
+        XCTAssertThrowsError(try SnapshotStaging.copy(
+            SQLiteStoreFileSet(mainURL: source), into: [tempDir.appendingPathComponent("copy")], coordinator: FakeFileCoordinator()))
     }
 }

@@ -49,7 +49,7 @@ protocol NetworkService {
     func saveStockNumber(with stockNumber: String, currentFollowingList: ListStruct)
     
     // save new investing record
-    func saveNewRecord(stockNo: String, price: Float, amount: Int, reason: String, buyOrSellStatus: Int, date: Date)
+    func saveNewRecord(stockNo: String, price: Float, amount: Int, reason: String, buyOrSellStatus: Int, date: Date, fee: Int?, tax: Int?)
     
     // save 股票股利
     func saveStockDividend(stockNo: String, amount: Int, date: Date)

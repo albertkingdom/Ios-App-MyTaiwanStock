@@ -31,12 +31,14 @@ class ChartService {
         self.stockNoObjects = stockNoObjects
     }
     func generateCandleData(stockInfoForCandleStickChart: [[String]], stockNo: String) -> CandleChartData {
-        let candleStickEntries = stockInfoForCandleStickChart.enumerated().map { (index, day) in
-
-            let shadowH = Double(day[4]) ?? 0.0
-            let shadowL = Double(day[5]) ?? 0.0
-            let open = Double(day[3]) ?? 0.0
-            let close = Double(day[6]) ?? 0.0
+        // A day without trades has no prices ("--"); leave a gap at its x instead of drawing a candle at 0.
+        let candleStickEntries = stockInfoForCandleStickChart.enumerated().compactMap { (index, day) -> CandleChartDataEntry? in
+            guard day.count >= 7,
+                  let open = day[3].twseNumber,
+                  let shadowH = day[4].twseNumber,
+                  let shadowL = day[5].twseNumber,
+                  let close = day[6].twseNumber
+            else { return nil }
             return CandleChartDataEntry.init(x: Double(index), shadowH: shadowH, shadowL: shadowL, open: open, close: close)
         }
         
@@ -71,19 +73,15 @@ class ChartService {
             let end = i + 1
             let sum = candleEntries[start..<end].reduce(0.0) { $0 + $1.close }
             let average = sum / Double(windowSize)
-            averageEntries.append(ChartDataEntry(x: Double(Float(i)), y: Double(Float(average))))
+            // The entry's own x, because skipped no-trade days make the position differ from the x.
+            averageEntries.append(ChartDataEntry(x: candleEntries[i].x, y: Double(Float(average))))
         }
         
         return averageEntries
     }
     func generateBarData(stockInfoForCandleStickChart: [[String]]) -> BarChartData {
         let barEntries = stockInfoForCandleStickChart.enumerated().map({ (index, day) -> BarChartDataEntry in
-            let formatter = NumberFormatter()
-            formatter.numberStyle = .decimal
-            let number = formatter.number(from: day[2])
-            
-            return BarChartDataEntry(x: Double(index), y: Double(truncating: number ?? 0))
-            
+            BarChartDataEntry(x: Double(index), y: day.count > 2 ? day[2].twseNumber ?? 0 : 0)
         })
         let barDataSet = BarChartDataSet(entries: barEntries, label: "volume")
         barDataSet.drawValuesEnabled = false
@@ -97,7 +95,7 @@ class ChartService {
     func generateXLabel(data: [[String]]) -> [String] {
         data.enumerated().map {
             (index, day) in
-            String(day[0])
+            day.first ?? ""
         }
     }
     func prepareForCombinedChart(combinedChartView: CombinedChartView) {
@@ -178,8 +176,8 @@ class ChartService {
         // 顯示幾個數據點
         combinedChartView.setVisibleXRangeMaximum(20) // 必須先有資料
         
-        guard let totalCandleCount = combinedData.candleData.dataSets.first?.entryCount else {return}
-        combinedChartView.moveViewToX(Double(max(0, totalCandleCount - 10)))
+        // x is the day's position, so count days, not candles (days without trades have no candle).
+        combinedChartView.moveViewToX(Double(max(0, rows.count - 10)))
     }
     
     func prepareForPieChart(pieChartView: PieChartView) {

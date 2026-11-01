@@ -350,7 +350,9 @@ class LocalDBService {
         amount: Int,
         reason: String,
         buyOrSellStatus: Int,
-        date: Date
+        date: Date,
+        fee: Int? = nil,
+        tax: Int? = nil
     ) {
         
         let newInvestHistory = InvestHistory(context: context)
@@ -360,6 +362,8 @@ class LocalDBService {
         newInvestHistory.date = date
         newInvestHistory.status = Int16(buyOrSellStatus)
         newInvestHistory.reason = reason
+        newInvestHistory.fee = fee.map { NSNumber(value: Int32(clamping: $0)) }
+        newInvestHistory.tax = tax.map { NSNumber(value: Int32(clamping: $0)) }
         saveContext()
         
     }
